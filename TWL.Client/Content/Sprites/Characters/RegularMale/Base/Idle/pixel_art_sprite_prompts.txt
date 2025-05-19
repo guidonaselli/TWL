@@ -1,0 +1,54 @@
+🧩 PROMPT GENERAL PARA TODAS LAS ACCIONES
+(esto va como encabezado en cada prompt para máxima precisión)
+
+Usa el sprite adjuntado como referencia directa. Mantén idéntico el diseño del personaje: mismo peinado, rostro, proporciones (7 cabezas de altura), complexión adulta, colores cálidos, líneas limpias, sombreado suave, misma resolución, nitidez y tamaño de píxeles, y calidad de diseño estilo anime-JRPG.
+No cambies el diseño, la ropa (camiseta blanca ajustada sin mangas, shorts gris oscuro, sin calzado) ni la expresión base a menos que se indique explícitamente.
+Solamente adapta la postura y movimiento según la instrucción específica, respetando fielmente el estilo visual del sprite de referencia.
+El personaje se ve de frente (posición frontal completa) salvo que se indique mirar hacia un lado (para acciones específicas de combate y estado).
+
+1. Idle / Quieto
+Genera al personaje de pie, completamente de frente (posición frontal recta). Brazos relajados a los costados, piernas separadas al ancho de hombros, expresión serena y neutra. Misma proporción, líneas limpias y estilo de diseño del sprite original.
+
+2. Walk / Caminar
+Genera al personaje caminando de frente: una pierna adelante, brazo opuesto balanceándose. Movimiento natural y fluido, respetando el estilo, ropa y proporciones originales.
+
+3. Run / Correr
+Genera al personaje corriendo de frente: torso levemente inclinado hacia adelante, zancada amplia, brazos en movimiento coordinado. Misma expresión o una leve concentración, manteniendo fielmente el diseño base.
+
+4. Ride / Pose de Montura
+Genera al personaje sentado en posición frontal, piernas abiertas como montando una criatura o vehículo, manos simulando sujetar riendas. Estilo de diseño y proporción igual a la referencia.
+
+5. Jump / Salto
+Genera al personaje saltando de frente: una rodilla elevada, brazos alzados para balancear el cuerpo, expresión de ligera concentración. Igual anatomía, sombreado, colores, estilo de diseño y proporción igual a la referencia
+
+6. Basic Attack / Ataque Básico
+Genera al personaje ejecutando un ataque físico básico: cuerpo de frente pero con un brazo lanzando un golpe lateral, expresión decidida. El torso puede rotar apenas si es necesario para mostrar el movimiento, pero sin perder la vista frontal predominante.
+
+7. Skill Cast / Magia
+Genera al personaje realizando una acción mágica de frente, hacia un lado. Formando un gesto mágico, expresión intensa de concentración. Mantén el trazo, proporción y sombreado suave original.
+
+8. Damage Taken / Recibir Daño
+Genera al personaje de frente recibiendo daño: cuerpo ligeramente arqueado hacia atrás, rostro mostrando dolor o sorpresa. Igual anatomía, sombreado, colores, estilo de dibujo y proporciones.
+
+9. Knockback / Empujado
+Genera al personaje de frente siendo empujado hacia atrás: cuerpo inclinado, brazos descontrolados o moviéndose hacia atrás, rostro de sobresalto. Mateniendo igual anatomía, sombreado, colores, estilo de dibujo y proporciones.
+
+10. Defeated / Desmayarse
+Genera al personaje visto de frente pero caído de lado (de perfil parcial), cuerpo apoyado en el suelo, ojos cerrados, postura débil o derrotada. Se ve la vista lateral o semi-lateral del cuerpo colapsado. Haz la imagen rotada, para que puedas hacerla a lo alto y mantener correctamente las proporciones. Mantén el trazo, proporción y sombreado suave original.
+
+11. Sit / Sentado
+Genera al personaje sentado de frente: piernas cruzadas o semiflexionadas, manos descansando sobre las rodillas o al costado, expresión tranquila. Mantén la anatomía, color y proporciones del sprite de referencia.
+
+12. Sleep / Dormir
+Genera al personaje acostado, visto de frente pero girado hacia un lado (como durmiendo de lado), cuerpo relajado, ojos cerrados. Respeta el estilo visual, sombreado y ropa original. Haz la imagen rotada, para que puedas hacerla a lo alto y mantener correctamente las proporciones.
+
+13. Victory Pose / Festejo
+Genera al personaje celebrando de frente: brazo en alto o dando un pequeño salto, sonrisa de triunfo, expresión feliz. Debe mantener proporciones, colores, líneas y calidad del sprite original.
+
+14. Use Item / Usar Objeto
+Genera al personaje usando un objeto de frente: levantando una mano con un objeto pequeño (poción, comida, piedra mágica, etc.). Rostro atento y enfocado. Mantener proporciones, diseño y sombreado igual.
+
+15. Wave / Saludar
+Genera al personaje saludando de frente: brazo levantado amigablemente, expresión sonriente o relajada. Mismo estilo gráfico, colores cálidos, líneas y tamaño que el sprite de referencia.
+
+

@@ -1,0 +1,10 @@
+﻿{
+  "Serilog": {
+    "MinimumLevel": "Debug",
+    "WriteTo": [
+      { "Name": "Console" },
+      { "Name": "File",
+        "Args": { "path": "Logs/server-.log", "rollingInterval": "Day" } }
+    ]
+  }
+}

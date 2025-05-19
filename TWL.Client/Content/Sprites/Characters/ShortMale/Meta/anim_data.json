@@ -1,0 +1,61 @@
+﻿{
+  "idle": {
+    "directions": [
+      "front",
+      "back",
+      "left",
+      "right"
+    ],
+    "frames": 1,
+    "frame_size": [
+      64,
+      64
+    ]
+  },
+  "walk": {
+    "directions": [
+      "front",
+      "back",
+      "left",
+      "right"
+    ],
+    "frames": 4,
+    "frame_size": [
+      64,
+      64
+    ]
+  },
+  "attack": {
+    "directions": [
+      "front",
+      "back",
+      "left",
+      "right"
+    ],
+    "frames": 3,
+    "frame_size": [
+      64,
+      64
+    ]
+  },
+  "hurt": {
+    "directions": [
+      "front"
+    ],
+    "frames": 1,
+    "frame_size": [
+      64,
+      64
+    ]
+  },
+  "die": {
+    "directions": [
+      "front"
+    ],
+    "frames": 3,
+    "frame_size": [
+      64,
+      64
+    ]
+  }
+}

@@ -1,0 +1,37 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TWL.Server", "TWL.Server\TWL.Server.csproj", "{B0BC9AAD-5D80-4872-BB04-D583175E9111}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TWL.Shared", "TWL.Shared\TWL.Shared.csproj", "{DAF23308-2852-4213-AD61-EDB9A549B793}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TWL.Client", "TWL.Client\TWL.Client.csproj", "{9051ED00-2A84-4D46-A415-C3B9E58AEFA6}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{91BCAB7B-9632-4709-86BE-0C6D39231EDA}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B536CD7D-A674-47F8-A644-3DD58EF33616}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{B0BC9AAD-5D80-4872-BB04-D583175E9111}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B0BC9AAD-5D80-4872-BB04-D583175E9111}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B0BC9AAD-5D80-4872-BB04-D583175E9111}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B0BC9AAD-5D80-4872-BB04-D583175E9111}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DAF23308-2852-4213-AD61-EDB9A549B793}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DAF23308-2852-4213-AD61-EDB9A549B793}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DAF23308-2852-4213-AD61-EDB9A549B793}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DAF23308-2852-4213-AD61-EDB9A549B793}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9051ED00-2A84-4D46-A415-C3B9E58AEFA6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9051ED00-2A84-4D46-A415-C3B9E58AEFA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9051ED00-2A84-4D46-A415-C3B9E58AEFA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9051ED00-2A84-4D46-A415-C3B9E58AEFA6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{9051ED00-2A84-4D46-A415-C3B9E58AEFA6} = {91BCAB7B-9632-4709-86BE-0C6D39231EDA}
+		{B0BC9AAD-5D80-4872-BB04-D583175E9111} = {91BCAB7B-9632-4709-86BE-0C6D39231EDA}
+		{DAF23308-2852-4213-AD61-EDB9A549B793} = {91BCAB7B-9632-4709-86BE-0C6D39231EDA}
+	EndGlobalSection
+EndGlobal

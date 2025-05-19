@@ -1,0 +1,1302 @@
+[
+  {
+    "SkillId": 101,
+    "Name": "Flame Fist",
+    "Element": "Fire",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 15,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 15,
+    "Power": 2.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A burning punch that scorches on impact."
+  },
+  {
+    "SkillId": 102,
+    "Name": "Inferno Blow",
+    "Element": "Fire",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 30,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 25,
+    "Power": 2.7,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A mighty strike that unleashes the fury of flames."
+  },
+  {
+    "SkillId": 103,
+    "Name": "Blazing Uppercut",
+    "Element": "Fire",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 45,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 35,
+    "Power": 3.5,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "An uppercut engulfed in intense flames."
+  },
+  {
+    "SkillId": 104,
+    "Name": "Scorching Ram",
+    "Element": "Fire",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 60,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 45,
+    "Power": 4.2,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A charging attack that slams with searing heat."
+  },
+  {
+    "SkillId": 105,
+    "Name": "Ember Impact",
+    "Element": "Fire",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 90,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 60,
+    "Power": 5.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A devastating strike that leaves ashes in its wake."
+  },
+  {
+    "SkillId": 111,
+    "Name": "Flame Burst",
+    "Element": "Fire",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 15,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 15,
+    "Power": 2.2,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A concentrated explosion of fire that incinerates foes."
+  },
+  {
+    "SkillId": 112,
+    "Name": "Fireball",
+    "Element": "Fire",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 30,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 30,
+    "Power": 2.8,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A blazing orb that strikes with precision."
+  },
+  {
+    "SkillId": 113,
+    "Name": "Blazing Orb",
+    "Element": "Fire",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 45,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 40,
+    "Power": 3.5,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A sphere of fire that devastates all in its path."
+  },
+  {
+    "SkillId": 114,
+    "Name": "Solar Flare",
+    "Element": "Fire",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 60,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 55,
+    "Power": 4.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A burst of solar fire that blinds and burns."
+  },
+  {
+    "SkillId": 115,
+    "Name": "Hellfire",
+    "Element": "Fire",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 90,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 70,
+    "Power": 4.8,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "An infernal blaze that reduces enemies to ashes."
+  },
+  {
+    "SkillId": 121,
+    "Name": "Seal of Ashes",
+    "Element": "Fire",
+    "Type": "Seal",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 15,
+      "Agi": 0
+    },
+    "SpCost": 20,
+    "Power": 0.0,
+    "SealChance": 0.6,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Seals the enemy, preventing skill use, with the essence of smoldering ashes."
+  },
+  {
+    "SkillId": 122,
+    "Name": "Blazing Fury",
+    "Element": "Fire",
+    "Type": "Buff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 30,
+      "Agi": 0
+    },
+    "SpCost": 30,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Increases the user's physical attack power with the heat of battle."
+  },
+  {
+    "SkillId": 123,
+    "Name": "Searing Curse",
+    "Element": "Fire",
+    "Type": "Debuff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 45,
+      "Agi": 0
+    },
+    "SpCost": 35,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Reduces the enemy's defense as if scorched by relentless flames."
+  },
+  {
+    "SkillId": 124,
+    "Name": "Flame Ward",
+    "Element": "Fire",
+    "Type": "Buff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 60,
+      "Agi": 0
+    },
+    "SpCost": 40,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Grants a protective barrier that increases fire resistance."
+  },
+  {
+    "SkillId": 125,
+    "Name": "Scorching Daze",
+    "Element": "Fire",
+    "Type": "Debuff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 90,
+      "Agi": 0
+    },
+    "SpCost": 45,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Inflicts a brief stun on the enemy, leaving them dazed from burning pain."
+  },
+  {
+    "SkillId": 126,
+    "Name": "Flame Liberation",
+    "Element": "Fire",
+    "Type": "Unseal",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 20,
+      "Agi": 0
+    },
+    "SpCost": 30,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": 0.8,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Removes the immobilization of Wind enemies."
+  },
+  {
+    "SkillId": 201,
+    "Name": "Stone Crash",
+    "Element": "Earth",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 15,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 15,
+    "Power": 2.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A brutal blow that shakes the very ground."
+  },
+  {
+    "SkillId": 202,
+    "Name": "Quake Slam",
+    "Element": "Earth",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 30,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 25,
+    "Power": 2.5,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A forceful strike that sends out a minor seismic wave."
+  },
+  {
+    "SkillId": 203,
+    "Name": "Terra Smash",
+    "Element": "Earth",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 45,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 35,
+    "Power": 3.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A punch empowered by the unyielding force of the earth."
+  },
+  {
+    "SkillId": 204,
+    "Name": "Boulder Bash",
+    "Element": "Earth",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 60,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 45,
+    "Power": 3.5,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Strikes the enemy with the force of a massive rock."
+  },
+  {
+    "SkillId": 205,
+    "Name": "Mountain Breaker",
+    "Element": "Earth",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 90,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 60,
+    "Power": 4.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A devastating blow capable of splitting mountains."
+  },
+  {
+    "SkillId": 211,
+    "Name": "Geo Burst",
+    "Element": "Earth",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 15,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 15,
+    "Power": 2.2,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "An explosion of energy drawn from the heart of the earth."
+  },
+  {
+    "SkillId": 212,
+    "Name": "Earth Spike",
+    "Element": "Earth",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 30,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 25,
+    "Power": 2.7,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Rocks spike upward to impale the enemy."
+  },
+  {
+    "SkillId": 213,
+    "Name": "Rock Shard",
+    "Element": "Earth",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 45,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 35,
+    "Power": 3.2,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Sharp fragments of stone are hurled with precision."
+  },
+  {
+    "SkillId": 214,
+    "Name": "Mud Surge",
+    "Element": "Earth",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 60,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 45,
+    "Power": 3.8,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A surge of mud that engulfs and drags foes."
+  },
+  {
+    "SkillId": 215,
+    "Name": "Seismic Wave",
+    "Element": "Earth",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 90,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 60,
+    "Power": 4.5,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A powerful wave of tremors that destabilizes all in its path."
+  },
+  {
+    "SkillId": 221,
+    "Name": "Stone Seal",
+    "Element": "Earth",
+    "Type": "Seal",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 15,
+      "Agi": 0
+    },
+    "SpCost": 20,
+    "Power": 0.0,
+    "SealChance": 0.6,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Seals the enemy with the unyielding force of rock."
+  },
+  {
+    "SkillId": 222,
+    "Name": "Earthen Fortitude",
+    "Element": "Earth",
+    "Type": "Buff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 30,
+      "Agi": 0
+    },
+    "SpCost": 30,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Increases the user's defense by channeling the strength of the earth."
+  },
+  {
+    "SkillId": 223,
+    "Name": "Rooted Curse",
+    "Element": "Earth",
+    "Type": "Debuff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 45,
+      "Agi": 0
+    },
+    "SpCost": 35,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Slows the enemy's movement as if bound by deep roots."
+  },
+  {
+    "SkillId": 224,
+    "Name": "Gaia's Blessing",
+    "Element": "Earth",
+    "Type": "Buff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 60,
+      "Agi": 0
+    },
+    "SpCost": 40,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Gradually restores HP and increases elemental resistance."
+  },
+  {
+    "SkillId": 225,
+    "Name": "Crushing Tremor",
+    "Element": "Earth",
+    "Type": "Debuff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 90,
+      "Agi": 0
+    },
+    "SpCost": 45,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Reduces the enemy's attack speed with earth-shaking force."
+  },
+  {
+    "SkillId": 226,
+    "Name": "Earthen Release",
+    "Element": "Earth",
+    "Type": "Unseal",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 20,
+      "Agi": 0
+    },
+    "SpCost": 30,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": 0.8,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Removes the immobilization of Water enemies."
+  },
+  {
+    "SkillId": 301,
+    "Name": "Gale Strike",
+    "Element": "Wind",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 15,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 15,
+    "Power": 2.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A swift blow as cutting as the wind."
+  },
+  {
+    "SkillId": 302,
+    "Name": "Whirlwind Kick",
+    "Element": "Wind",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 30,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 25,
+    "Power": 2.5,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A spinning kick that creates a mini-tornado."
+  },
+  {
+    "SkillId": 303,
+    "Name": "Tempest Blow",
+    "Element": "Wind",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 45,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 35,
+    "Power": 3.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A powerful gust that hits like a raging storm."
+  },
+  {
+    "SkillId": 304,
+    "Name": "Breeze Pound",
+    "Element": "Wind",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 60,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 45,
+    "Power": 3.5,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A focused strike propelled by the gentle force of the breeze."
+  },
+  {
+    "SkillId": 305,
+    "Name": "Cyclone Uppercut",
+    "Element": "Wind",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 90,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 60,
+    "Power": 4.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "An uppercut that mimics the devastating force of a cyclone."
+  },
+  {
+    "SkillId": 311,
+    "Name": "Wind Blade",
+    "Element": "Wind",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 15,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 15,
+    "Power": 2.2,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A razor-sharp slice of air that cuts precisely."
+  },
+  {
+    "SkillId": 312,
+    "Name": "Air Torrent",
+    "Element": "Wind",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 30,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 25,
+    "Power": 2.7,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A blast of compressed air that strikes forcefully."
+  },
+  {
+    "SkillId": 313,
+    "Name": "Sky Shard",
+    "Element": "Wind",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 45,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 35,
+    "Power": 3.2,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Wind fragments that slice the enemy with precision."
+  },
+  {
+    "SkillId": 314,
+    "Name": "Zephyr Orb",
+    "Element": "Wind",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 60,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 45,
+    "Power": 3.8,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A soft yet lethal sphere of air upon impact."
+  },
+  {
+    "SkillId": 315,
+    "Name": "Storm Call",
+    "Element": "Wind",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 90,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 60,
+    "Power": 4.5,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Summons the fury of a storm in a devastating orb."
+  },
+  {
+    "SkillId": 321,
+    "Name": "Wind Seal",
+    "Element": "Wind",
+    "Type": "Seal",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 15,
+      "Agi": 0
+    },
+    "SpCost": 20,
+    "Power": 0.0,
+    "SealChance": 0.6,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Seals the enemy, blocking their actions, with the force of a mighty gale."
+  },
+  {
+    "SkillId": 322,
+    "Name": "Zephyr's Grace",
+    "Element": "Wind",
+    "Type": "Buff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 30,
+      "Agi": 0
+    },
+    "SpCost": 30,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Enhances agility and evasion with the gentle touch of the wind."
+  },
+  {
+    "SkillId": 323,
+    "Name": "Disrupting Gust",
+    "Element": "Wind",
+    "Type": "Debuff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 45,
+      "Agi": 0
+    },
+    "SpCost": 35,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Reduces enemy agility and accuracy with a forceful burst of wind."
+  },
+  {
+    "SkillId": 324,
+    "Name": "Breeze of Clarity",
+    "Element": "Wind",
+    "Type": "Buff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 60,
+      "Agi": 0
+    },
+    "SpCost": 40,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Sharpen skills and enhance accuracy through a refreshing breeze."
+  },
+  {
+    "SkillId": 325,
+    "Name": "Tempest Shock",
+    "Element": "Wind",
+    "Type": "Debuff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 90,
+      "Agi": 0
+    },
+    "SpCost": 45,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Stuns the enemy briefly with the overwhelming force of a tempest."
+  },
+  {
+    "SkillId": 326,
+    "Name": "Gale Dispersion",
+    "Element": "Wind",
+    "Type": "Unseal",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 20,
+      "Agi": 0
+    },
+    "SpCost": 30,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": 0.8,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Removes the immobilization of Earth enemies."
+  },
+  {
+    "SkillId": 401,
+    "Name": "Tidal Punch",
+    "Element": "Water",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 15,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 15,
+    "Power": 2.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A punch inspired by the unstoppable force of the sea."
+  },
+  {
+    "SkillId": 402,
+    "Name": "Wave Strike",
+    "Element": "Water",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 30,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 25,
+    "Power": 2.5,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A strike that mimics the powerful surge of a wave."
+  },
+  {
+    "SkillId": 403,
+    "Name": "Aqua Fist",
+    "Element": "Water",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 45,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 35,
+    "Power": 3.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A fist soaked with the relentless fury of water."
+  },
+  {
+    "SkillId": 404,
+    "Name": "Liquid Ram",
+    "Element": "Water",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 60,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 45,
+    "Power": 3.5,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Charges the enemy with the unstoppable force of a torrent."
+  },
+  {
+    "SkillId": 405,
+    "Name": "Deep Impact",
+    "Element": "Water",
+    "Type": "PhysicalDamage",
+    "Requirements": {
+      "Str": 90,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 60,
+    "Power": 4.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A crushing blow that resonates from the ocean's depths."
+  },
+  {
+    "SkillId": 411,
+    "Name": "Water Surge",
+    "Element": "Water",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 15,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 15,
+    "Power": 2.2,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A surge of aquatic energy that strikes relentlessly."
+  },
+  {
+    "SkillId": 412,
+    "Name": "Aqua Bolt",
+    "Element": "Water",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 30,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 25,
+    "Power": 2.7,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A concentrated bolt of water that hits with pinpoint accuracy."
+  },
+  {
+    "SkillId": 413,
+    "Name": "Hydro Blast",
+    "Element": "Water",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 45,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 35,
+    "Power": 3.2,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "An explosive burst of water that overwhelms foes."
+  },
+  {
+    "SkillId": 414,
+    "Name": "Sea Orb",
+    "Element": "Water",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 60,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 45,
+    "Power": 3.8,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A mystical sphere of water that shatters on contact."
+  },
+  {
+    "SkillId": 415,
+    "Name": "Oceanic Wrath",
+    "Element": "Water",
+    "Type": "MagicalDamage",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 90,
+      "Wis": 0,
+      "Agi": 0
+    },
+    "SpCost": 60,
+    "Power": 4.5,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Unleashes the uncontrollable fury of the ocean upon enemies."
+  },
+  {
+    "SkillId": 421,
+    "Name": "Freeze",
+    "Element": "Water",
+    "Type": "Seal",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 15,
+      "Agi": 0
+    },
+    "SpCost": 20,
+    "Power": 0.0,
+    "SealChance": 0.6,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A double-target seal in a row that freezes enemies solid."
+  },
+  {
+    "SkillId": 422,
+    "Name": "Sleep",
+    "Element": "Water",
+    "Type": "Seal",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 30,
+      "Agi": 0
+    },
+    "SpCost": 25,
+    "Power": 0.0,
+    "SealChance": 0.65,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "A T-shaped seal that puts enemies to sleep, affecting up to 4 targets."
+  },
+  {
+    "SkillId": 423,
+    "Name": "Aqua Veil",
+    "Element": "Water",
+    "Type": "Buff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 45,
+      "Agi": 0
+    },
+    "SpCost": 30,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Grants a protective veil that increases water resistance."
+  },
+  {
+    "SkillId": 424,
+    "Name": "Tidal Weakness",
+    "Element": "Water",
+    "Type": "Debuff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 60,
+      "Agi": 0
+    },
+    "SpCost": 35,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Inflicts a debuff that reduces the enemy's physical defense with the force of the tide."
+  },
+  {
+    "SkillId": 425,
+    "Name": "Ocean's Blessing",
+    "Element": "Water",
+    "Type": "Buff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 90,
+      "Agi": 0
+    },
+    "SpCost": 40,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Gradually restores SP and increases elemental resistance with the power of the ocean."
+  },
+  {
+    "SkillId": 426,
+    "Name": "Revive",
+    "Element": "Water",
+    "Type": "Buff",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 100,
+      "Agi": 0
+    },
+    "SpCost": 50,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": null,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Revives a fallen ally with the restorative power of water."
+  },
+  {
+    "SkillId": 427,
+    "Name": "Aqueous Renewal",
+    "Element": "Water",
+    "Type": "Unseal",
+    "Requirements": {
+      "Str": 0,
+      "Con": 0,
+      "Int": 0,
+      "Wis": 20,
+      "Agi": 0
+    },
+    "SpCost": 30,
+    "Power": 0.0,
+    "SealChance": null,
+    "UnsealChance": 0.8,
+    "Level": 1,
+    "MaxLevel": 10,
+    "Description": "Removes the immobilization of Fire enemies."
+  }
+]

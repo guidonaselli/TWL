@@ -1,0 +1,60 @@
+# Referencias a MonoGame.Extended
+/reference:D:\…\MonoGame.Extended.Content.Pipeline.dll
+/reference:D:\…\MonoGame.Extended.dll
+
+# Ajustes globales
+/outputDir:bin/$(Platform)/$(Configuration)
+/intermediateDir:obj/$(Platform)/$(Configuration)
+/platform:DesktopGL
+/profile:Reach
+/quiet
+
+# Fuentes .spritefont
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/build:Fonts/MenuFont.spritefont
+
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/build:Fonts/UIFont.spritefont
+
+/importer:FontDescriptionImporter
+/processor:FontDescriptionProcessor
+/processorParam:PremultiplyAlpha=True
+/build:Fonts/DefaultFont.spritefont
+
+# Texturas
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Tilesets/GreenTile.png
+
+# Mapas TMX
+/importer:TiledMapImporter
+/processor:TiledMapProcessor
+/processorParam:GenerateMipmaps=False
+/processorParam:TilePaddingPixels=2
+/build:Maps/GreenMap.tmx
+
+# Sprites del jugador
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/player_down.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/player_up.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/player_left.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/player_right.png
+
+# UI
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:UI/inventory_background.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:UI/inventory_slot.png

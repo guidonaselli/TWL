@@ -1,0 +1,8 @@
+﻿{
+  "ConnectionStrings": {
+    "PostgresConn": "Host=localhost;Port=5432;Database=twl_db;Username=twl;Password=twladmin;"
+  },
+  "Network": {
+    "Port": 7777
+  }
+}
