@@ -93,7 +93,7 @@ public class NetworkManager
     {
         lock (_clients)
         {
-            foreach (var client in _clients.ToArray()) client.SendMessage(data);
+            foreach (var client in _clients.ToArray()) _ = client.SendMessageAsync(data);
         }
     }
 }
@@ -127,7 +127,7 @@ public class ClientConnection
                 if (bytesRead == 0)
                     break; // Client disconnected
 
-                ProcessMessage(buffer, bytesRead);
+                await ProcessMessageAsync(buffer, bytesRead);
             }
         }
         catch (Exception ex) when (!(ex is OperationCanceledException))
@@ -140,7 +140,7 @@ public class ClientConnection
         }
     }
 
-    private void ProcessMessage(byte[] buffer, int bytesRead)
+    private async Task ProcessMessageAsync(byte[] buffer, int bytesRead)
     {
         // Here implement your protocol
         // Example: Login handling
@@ -151,7 +151,7 @@ public class ClientConnection
         // For now, just echo back the message
         try
         {
-            _stream.Write(buffer, 0, bytesRead);
+            await _stream.WriteAsync(buffer, 0, bytesRead);
         }
         catch (Exception ex)
         {
@@ -159,11 +159,11 @@ public class ClientConnection
         }
     }
 
-    public void SendMessage(byte[] data)
+    public async Task SendMessageAsync(byte[] data)
     {
         try
         {
-            if (_tcpClient.Connected && _stream.CanWrite) _stream.Write(data, 0, data.Length);
+            if (_tcpClient.Connected && _stream.CanWrite) await _stream.WriteAsync(data, 0, data.Length);
         }
         catch (Exception ex)
         {
