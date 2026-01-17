@@ -36,17 +36,41 @@ public class EncounterManager
         }
     }
 
+    public void ForceEncounter(PlayerCharacter player)
+    {
+        StartBattle(player);
+    }
+
     // ------------------------------------------------------------------
     private void StartBattle(PlayerCharacter player)
     {
-        // por ahora siempre 1 enemigo Slime genérico
-        var slime = new EnemyCharacter("Slime", Element.Earth, false)
+        var enemies = new List<EnemyCharacter>();
+        int count = _rng.Next(1, 4); // 1 to 3
+
+        for (int i = 0; i < count; i++)
         {
-            Health = 30, MaxHealth = 30, Str = 4
-        };
+            int type = _rng.Next(0, 3);
+            if (type == 0)
+            {
+                enemies.Add(new EnemyCharacter("Slime", Element.Earth, false) {
+                    Health = 30, MaxHealth = 30, Str = 4, Spd = 3
+                });
+            }
+            else if (type == 1)
+            {
+                enemies.Add(new EnemyCharacter("Wolf", Element.Wind, false) {
+                    Health = 50, MaxHealth = 50, Str = 6, Spd = 6
+                });
+            }
+            else
+            {
+                enemies.Add(new EnemyCharacter("Bat", Element.Wind, false) {
+                    Health = 20, MaxHealth = 20, Str = 3, Spd = 8
+                });
+            }
+        }
 
         var allies = new List<PlayerCharacter> { player };
-        var enemies = new List<EnemyCharacter> { slime };
 
         EventBus.Publish(new BattleStarted(allies, enemies));
     }

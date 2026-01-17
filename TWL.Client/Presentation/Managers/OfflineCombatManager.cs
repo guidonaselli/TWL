@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Events;
 using TWL.Shared.Domain.Models;
@@ -17,95 +18,100 @@ public enum LocalBattleState
 
 public class OfflineCombatManager
 {
-    // ---------- datos internos ----------
-    private readonly List<PlayerCharacter> _allies;
-    private readonly List<EnemyCharacter> _enemies;
-    private int _turnIndex;
+    private readonly BattleInstance _battle;
+    private bool _finishedPublished = false;
 
-    public OfflineCombatManager(IEnumerable<PlayerCharacter> allies,
-        IEnumerable<EnemyCharacter> enemies)
-    {
-        _allies = allies.ToList();
-        _enemies = enemies.ToList();
-    }
-
-    // ---------- API pública ----------
+    // Expose for UI
+    public BattleInstance Battle => _battle;
     public string LastMessage { get; private set; } = "Battle start!";
     public LocalBattleState State { get; private set; } = LocalBattleState.AwaitingInput;
 
-    public PlayerCharacter CurrentActor => _allies[_turnIndex % _allies.Count];
-
-    // ------------------------------------------------------------------
-    // 1. Acción del jugador
-    // ------------------------------------------------------------------
-    public void PlayerAttack(EnemyCharacter target)
+    public OfflineCombatManager(IEnumerable<PlayerCharacter> allies, IEnumerable<EnemyCharacter> enemies)
     {
-        if (State != LocalBattleState.AwaitingInput || target.Health <= 0) return;
+        _battle = new BattleInstance(allies, enemies);
+    }
 
-        var dmg = CalcDamage(CurrentActor.Str, target.CalculateDefense());
-        target.Health = Math.Max(0, target.Health - dmg);
+    public Combatant CurrentActor => _battle.CurrentTurnCombatant;
 
-        LastMessage = $"{CurrentActor.Name} hits {target.Name} for {dmg}";
-        _turnIndex++;
-        State = LocalBattleState.ResolvingAI;
+    // ------------------------------------------------------------------
+    // 1. Actions
+    // ------------------------------------------------------------------
+    public void PlayerAction(CombatAction action)
+    {
+        if (_battle.State != BattleState.Active) return;
+        if (CurrentActor == null || !CurrentActor.Character.IsAlly()) return;
+        if (action.ActorId != CurrentActor.BattleId) return; // mismatch
+
+        LastMessage = _battle.ResolveAction(action);
     }
 
     // ------------------------------------------------------------------
-    // 2. Tick por frame
+    // 2. Tick
     // ------------------------------------------------------------------
-    public void Tick()
+    public void Tick(float deltaTime)
     {
-        if (State == LocalBattleState.Finished) return;
+        if (_finishedPublished) return;
 
-        if (IsBattleOver())
+        _battle.Tick(deltaTime);
+
+        if (_battle.State != BattleState.Active)
         {
             PublishFinish();
             return;
         }
 
-        // turno IA
-        if (State == LocalBattleState.ResolvingAI)
+        var current = _battle.CurrentTurnCombatant;
+        if (current != null)
         {
-            var enemy = _enemies.FirstOrDefault(e => e.Health > 0);
-            var ally = _allies.FirstOrDefault(a => a.Health > 0);
-
-            if (enemy != null && ally != null)
+            if (current.Character.IsAlly())
             {
-                var dmg = CalcDamage(enemy.Str, ally.CalculateDefense());
-                ally.Health = Math.Max(0, ally.Health - dmg);
-
-                LastMessage = $"{enemy.Name} hits {ally.Name} for {dmg}";
+                State = LocalBattleState.AwaitingInput;
             }
-
-            _turnIndex++;
-            State = LocalBattleState.AwaitingInput;
+            else
+            {
+                State = LocalBattleState.ResolvingAI;
+                PerformAI(current);
+            }
+        }
+        else
+        {
+            // Waiting for ATB
+            State = LocalBattleState.ResolvingAI; // Technically "Waiting", reusing enum or ignoring
         }
     }
 
-    // ------------------------------------------------------------------
-    // 3. Auxiliares
-    // ------------------------------------------------------------------
-    private static int CalcDamage(int atk, int def)
+    private void PerformAI(Combatant enemy)
     {
-        var dmg = atk * 2 - def;
-        return dmg < 1 ? 1 : dmg;
-    }
+        // Simple AI: Attack random living ally
+        var target = _battle.Allies
+            .Where(a => a.Character.IsAlive())
+            .OrderBy(_ => Guid.NewGuid()) // shuffle
+            .FirstOrDefault();
 
-    private bool IsBattleOver()
-    {
-        return _enemies.All(e => e.Health <= 0) ||
-               _allies.All(a => a.Health <= 0);
+        if (target != null)
+        {
+            var action = CombatAction.Attack(enemy.BattleId, target.BattleId);
+            LastMessage = _battle.ResolveAction(action);
+        }
+        else
+        {
+            // No targets? Should act to end turn or defend
+            var action = CombatAction.Defend(enemy.BattleId);
+            LastMessage = _battle.ResolveAction(action);
+        }
     }
 
     private void PublishFinish()
     {
+        _finishedPublished = true;
         State = LocalBattleState.Finished;
 
-        var victory = _enemies.All(e => e.Health <= 0);
-        var exp = victory ? 20 : 0;
+        var victory = _battle.State == BattleState.Victory;
+        var exp = victory ? 20 : 0; // Fixed exp for now
         var loot = victory ? LootTable.RollCommonChest() : new List<Item>();
 
-        EventBus.Publish(new BattleFinished(victory, exp, loot));
         LastMessage = victory ? "Victory!" : "Defeat...";
+
+        EventBus.Publish(new BattleFinished(victory, exp, loot));
     }
 }

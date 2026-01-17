@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -53,16 +53,12 @@ namespace TWL.Client.Presentation.Scenes
         {
             base.Initialize();
 
-            // supongamos que tu GameClientManager te da el playerId
-            var dto = new JsonPlayerColorsService(...)
-                .Get(_gameManager.PlayerId)
-                ?? throw new Exception("No hay colores");
+            var dto = new TWL.Shared.Domain.DTO.PlayerColorsDto();
 
-            _player = new PlayerCharacter("Hero", Element.Fire, dto);
+            _player = new PlayerCharacter(_gameManager.PlayerId, "Hero", Element.Fire, dto);
             _playerView = new PlayerView(_player);
             _ui = new UiGameplay(_player);
 
-            // 4) eventos de batalla
             EventBus.Subscribe<BattleStarted>(   e => Scenes.ChangeScene("Battle",    e) );
             EventBus.Subscribe<BattleFinished>( e => OnBattleFinished(e)               );
         }
@@ -84,14 +80,21 @@ namespace TWL.Client.Presentation.Scenes
             }
             _mapRenderer = new TiledMapRenderer(GraphicsDevice, _map);
 
-            // extraer colisión
             var layer = _map.GetLayer<TiledMapTileLayer>("Collision");
-            int w = _map.Width, h = _map.Height;
-            var grid = new bool[w,h];
-            for (int x=0;x<w;x++)
-            for (int y=0;y<h;y++)
-                grid[x,y] = layer.GetTile((ushort)x,(ushort)y).GlobalIdentifier != 0;
-            _player.SetCollisionInfo(grid, w, h);
+            if (layer != null)
+            {
+                int w = _map.Width, h = _map.Height;
+                var grid = new bool[w,h];
+                for (int x=0;x<w;x++)
+                for (int y=0;y<h;y++)
+                    grid[x,y] = layer.GetTile((ushort)x,(ushort)y).GlobalIdentifier != 0;
+                _player.SetCollisionInfo(grid, w, h);
+            }
+            else
+            {
+                 // Create empty grid if no collision layer
+                 _player.SetCollisionInfo(new bool[_map.Width,_map.Height], _map.Width, _map.Height);
+            }
         }
 
         public override void Update(GameTime gt,
@@ -100,6 +103,9 @@ namespace TWL.Client.Presentation.Scenes
         {
             if (ks.IsKeyDown(Keys.I))
                 _ui.ToggleInventory();
+
+            if (ks.IsKeyDown(Keys.B))
+                _encounter.ForceEncounter(_player);
 
             if (ms.LeftButton == ButtonState.Pressed)
             {
@@ -118,6 +124,9 @@ namespace TWL.Client.Presentation.Scenes
                 var path = PathFinder.FindPath(start, end, _map);
                 _player.SetPath(path);
             }
+
+            // Explicitly call MovementController (Client Side Input)
+            MovementController.UpdateMovement(_player, gt);
 
             _player.Update(gt);
             _encounter.CheckEncounter(_player);

@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 
 namespace TWL.Shared.Domain.Characters;
 
@@ -9,7 +9,6 @@ public class PetCharacter : Character
     public float ExpToNextLevel;
     public bool IsReborn; // si renació
     public bool IsUnique; // si es “única” de quest
-    public List<int> KnownSkills; // fijos, excepto 1 skill extra tras renacer
     public int PetLevel;
 
     public PetCharacter(string name, Element element) : base(name, element)
@@ -20,7 +19,7 @@ public class PetCharacter : Character
         CurrentExp = 0;
         ExpToNextLevel = 100; // Ejemplo, puedes ajustar esto
         CurrentPetState = PetState.Rest;
-        KnownSkills = new List<int>();
+        // KnownSkills is initialized in base
     }
 
     public void GainExp(float amount)
