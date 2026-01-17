@@ -1,10 +1,13 @@
-﻿using System.Collections.Generic;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TWL.Client.Presentation.Managers;
+using TWL.Shared.Domain.Battle;
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Events;
 using TWL.Shared.Domain.Models;
 using TWL.Shared.Net;
@@ -12,15 +15,32 @@ using TWL.Shared.Net.Abstractions;
 
 namespace TWL.Client.Presentation.Scenes;
 
-/// <summary>Escena de combate en modo offline.</summary>
+public enum BattleUiState
+{
+    Idle,
+    Menu,
+    TargetSelection
+}
+
 public sealed class SceneBattle : SceneBase, IPayloadReceiver
 {
     private OfflineCombatManager _combat = null!;
     private readonly IAssetLoader _assets;
 
     private SpriteFont _font = null!;
+    private Texture2D _whiteTexture = null!;
     private BattleStarted _payload = null!;
     private string _status = "Battle start!";
+
+    // UI State
+    private BattleUiState _uiState = BattleUiState.Idle;
+    private int _menuIndex = 0; // 0: Attack, 1: Skill, 2: Defend
+    private int _targetIndex = 0;
+    private List<Combatant> _potentialTargets = new();
+    private CombatActionType _selectedActionType;
+
+    // Input Debounce
+    private KeyboardState _lastKs;
 
     public SceneBattle(ContentManager content,
         GraphicsDevice gd,
@@ -33,12 +53,17 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
     public void ReceivePayload(object payload)
     {
         _payload = (BattleStarted)payload;
-        _combat = new OfflineCombatManager(
-            _payload.Allies, _payload.Enemies);
+        _combat = new OfflineCombatManager(_payload.Allies, _payload.Enemies);
+        _uiState = BattleUiState.Idle;
+        _menuIndex = 0;
     }
 
-    public override void LoadContent() =>
+    public override void LoadContent()
+    {
         _font = Assets.Load<SpriteFont>("Fonts/BattleFont");
+        _whiteTexture = new Texture2D(GraphicsDevice, 1, 1);
+        _whiteTexture.SetData(new[] { Color.White });
+    }
 
     public override void Initialize()
     {
@@ -50,52 +75,190 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         MouseState ms,
         KeyboardState ks)
     {
-        if (ks.IsKeyDown(Keys.Space))
-        {
-            var enemy = _payload.Enemies.FirstOrDefault(e => e.Health > 0);
-            if (enemy != null)
-                _combat.PlayerAttack(enemy);
-        }
-
-        if (ks.IsKeyDown(Keys.E))
-        {
-            EventBus.Publish(new BattleFinished(false, 0, new List<Item>()));
-            return;
-        }
-
-        _combat.Tick();
+        float dt = (float)gt.ElapsedGameTime.TotalSeconds;
+        _combat.Tick(dt);
         _status = _combat.LastMessage;
+
+        // Input Handling
+        if (_combat.State == LocalBattleState.AwaitingInput)
+        {
+            if (_uiState == BattleUiState.Idle)
+            {
+                _uiState = BattleUiState.Menu;
+                _menuIndex = 0;
+            }
+
+            HandleInput(ks);
+        }
+        else
+        {
+            _uiState = BattleUiState.Idle;
+        }
+
+        _lastKs = ks;
+    }
+
+    private void HandleInput(KeyboardState ks)
+    {
+        if (JustPressed(ks, Keys.Up))
+        {
+            if (_uiState == BattleUiState.Menu) _menuIndex = (_menuIndex - 1 + 3) % 3;
+            if (_uiState == BattleUiState.TargetSelection) _targetIndex = (_targetIndex - 1 + _potentialTargets.Count) % _potentialTargets.Count;
+        }
+        if (JustPressed(ks, Keys.Down))
+        {
+            if (_uiState == BattleUiState.Menu) _menuIndex = (_menuIndex + 1) % 3;
+            if (_uiState == BattleUiState.TargetSelection) _targetIndex = (_targetIndex + 1) % _potentialTargets.Count;
+        }
+
+        if (JustPressed(ks, Keys.Enter) || JustPressed(ks, Keys.Space))
+        {
+            if (_uiState == BattleUiState.Menu)
+            {
+                SelectMenuOption();
+            }
+            else if (_uiState == BattleUiState.TargetSelection)
+            {
+                ExecuteAction();
+            }
+        }
+
+        if (JustPressed(ks, Keys.Escape))
+        {
+            if (_uiState == BattleUiState.TargetSelection)
+            {
+                _uiState = BattleUiState.Menu;
+            }
+        }
+
+        // Debug/Cheat to exit
+        if (ks.IsKeyDown(Keys.E) && _uiState == BattleUiState.Idle)
+        {
+             // Flee implementation if needed
+        }
+    }
+
+    private void SelectMenuOption()
+    {
+        var actor = _combat.Battle.CurrentTurnCombatant;
+        if (actor == null) return;
+
+        switch (_menuIndex)
+        {
+            case 0: // Attack
+                _selectedActionType = CombatActionType.Attack;
+                StartTargetSelection(_combat.Battle.Enemies.Where(e => e.Character.IsAlive()).ToList());
+                break;
+            case 1: // Skill
+                _selectedActionType = CombatActionType.Skill;
+                // Ideally show skill list. For vertical slice, just pick default skill or show targets if only 1 skill.
+                StartTargetSelection(_combat.Battle.Enemies.Where(e => e.Character.IsAlive()).ToList());
+                break;
+            case 2: // Defend
+                _combat.PlayerAction(CombatAction.Defend(actor.BattleId));
+                _uiState = BattleUiState.Idle;
+                break;
+        }
+    }
+
+    private void StartTargetSelection(List<Combatant> targets)
+    {
+        if (targets.Count == 0) return;
+        _potentialTargets = targets;
+        _targetIndex = 0;
+        _uiState = BattleUiState.TargetSelection;
+    }
+
+    private void ExecuteAction()
+    {
+        var actor = _combat.Battle.CurrentTurnCombatant;
+        var target = _potentialTargets[_targetIndex];
+
+        if (_selectedActionType == CombatActionType.Attack)
+        {
+            _combat.PlayerAction(CombatAction.Attack(actor.BattleId, target.BattleId));
+        }
+        else if (_selectedActionType == CombatActionType.Skill)
+        {
+            // Hardcoded skill ID for now (1 = Power Strike, 2 = Fireball, 3 = Heal)
+            // Let's alternate or pick 2
+            _combat.PlayerAction(CombatAction.UseSkill(actor.BattleId, target.BattleId, 2));
+        }
+
+        _uiState = BattleUiState.Idle;
+    }
+
+    private bool JustPressed(KeyboardState ks, Keys key)
+    {
+        return ks.IsKeyDown(key) && _lastKs.IsKeyUp(key);
     }
 
     public override void Draw(SpriteBatch sb)
     {
-        // (opcional) si quieres un fondo negro solo en batalla…
         GraphicsDevice.Clear(Color.Black);
 
-        // aquí ya NO hay Begin/End
-        sb.DrawString(_font, _status, new Vector2(50, 50), Color.White);
-        sb.DrawString(_font, "SPACE = attack   E = flee",
-            new Vector2(50, 70), Color.Yellow);
+        sb.DrawString(_font, _status, new Vector2(50, 20), Color.White);
 
-        // …y el resto sigue igual
-        int y = 100;
-        sb.DrawString(_font, "--- Allies ---", new Vector2(50, y), Color.Green);
-        y += 20;
-        foreach (var a in _payload.Allies)
+        int startY = 60;
+
+        // Allies
+        DrawGroup(sb, _combat.Battle.Allies, new Vector2(50, startY), Color.LightGreen);
+
+        // Enemies
+        DrawGroup(sb, _combat.Battle.Enemies, new Vector2(400, startY), Color.IndianRed);
+
+        // Menu
+        if (_uiState == BattleUiState.Menu || _uiState == BattleUiState.TargetSelection)
         {
-            sb.DrawString(_font, $"{a.Name} {a.Health}/{a.MaxHealth}",
-                new Vector2(50, y), Color.Green);
-            y += 20;
+            DrawMenu(sb, new Vector2(50, 300));
         }
+    }
 
-        y += 40;
-        sb.DrawString(_font, "--- Enemies ---", new Vector2(50, y), Color.Red);
-        y += 20;
-        foreach (var e in _payload.Enemies)
+    private void DrawGroup(SpriteBatch sb, List<Combatant> group, Vector2 pos, Color color)
+    {
+        float y = pos.Y;
+        foreach (var c in group)
         {
-            sb.DrawString(_font, $"{e.Name} {e.Health}/{e.MaxHealth}",
-                new Vector2(50, y), Color.Red);
-            y += 20;
+            string hp = $"{c.Character.Health}/{c.Character.MaxHealth}";
+            string sp = $"{c.Character.Sp}/{c.Character.MaxSp}";
+            string name = c.Character.Name;
+            if (!c.Character.IsAlive()) name += " (Dead)";
+
+            sb.DrawString(_font, $"{name}  HP:{hp}  SP:{sp}", new Vector2(pos.X, y), color);
+
+            // Draw ATB Bar
+            DrawBar(sb, new Rectangle((int)pos.X, (int)y + 20, 100, 5), c.Atb / 100.0, Color.Yellow);
+
+            // Draw HP Bar
+            double hpPct = (double)c.Character.Health / c.Character.MaxHealth;
+            DrawBar(sb, new Rectangle((int)pos.X + 110, (int)y + 20, 50, 5), hpPct, Color.Red);
+
+            // Target Indicator
+            if (_uiState == BattleUiState.TargetSelection && _potentialTargets.Count > _targetIndex && _potentialTargets[_targetIndex] == c)
+            {
+                sb.DrawString(_font, "<--", new Vector2(pos.X + 200, y), Color.White);
+            }
+
+            y += 40;
+        }
+    }
+
+    private void DrawBar(SpriteBatch sb, Rectangle rect, double pct, Color color)
+    {
+        // Background
+        sb.Draw(_whiteTexture, rect, Color.Gray);
+        // Foreground
+        int width = (int)(rect.Width * Math.Clamp(pct, 0, 1));
+        sb.Draw(_whiteTexture, new Rectangle(rect.X, rect.Y, width, rect.Height), color);
+    }
+
+    private void DrawMenu(SpriteBatch sb, Vector2 pos)
+    {
+        string[] options = { "Attack", "Skill", "Defend" };
+        for (int i = 0; i < options.Length; i++)
+        {
+            Color c = (_uiState == BattleUiState.Menu && _menuIndex == i) ? Color.Yellow : Color.Gray;
+            sb.DrawString(_font, options[i], new Vector2(pos.X, pos.Y + i * 25), c);
         }
     }
 }
