@@ -37,11 +37,25 @@ namespace TWL.Client.Presentation.UI
 
         public bool IsInventoryVisible => _invWindow.Visible;
 
-        public void LoadContent(ContentManager content)
+        public void LoadContent(ContentManager content, GraphicsDevice gd)
         {
             _font      = content.Load<SpriteFont>("Fonts/DefaultFont");
-            _panelBg   = content.Load<Texture2D>("UI/hud_panel_bg");
-            _miniMapBg = content.Load<Texture2D>("UI/minimap_bg");
+
+            // Create placeholder textures if files are missing
+            try { _panelBg = content.Load<Texture2D>("UI/hud_panel_bg"); }
+            catch
+            {
+                 _panelBg = new Texture2D(gd, 1, 1);
+                 _panelBg.SetData(new[] { new Color(0, 0, 0, 128) });
+            }
+
+            try { _miniMapBg = content.Load<Texture2D>("UI/minimap_bg"); }
+            catch
+            {
+                 _miniMapBg = new Texture2D(gd, 1, 1);
+                 _miniMapBg.SetData(new[] { new Color(0, 0, 0, 128) });
+            }
+
             _invWindow.LoadContent(content);
         }
 

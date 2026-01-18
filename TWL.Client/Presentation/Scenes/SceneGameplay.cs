@@ -66,7 +66,7 @@ namespace TWL.Client.Presentation.Scenes
         public override void LoadContent()
         {
             _playerView.Load(Content, GraphicsDevice);
-            _ui.LoadContent(Content);
+            _ui.LoadContent(Content, GraphicsDevice);
 
             try {
                 _map = Content.Load<TiledMap>("Maps/GreenMap");
@@ -152,7 +152,7 @@ namespace TWL.Client.Presentation.Scenes
                 foreach (var loot in e.Loot)
                     _player.Inventory.AddItem(loot.ItemId, loot.Quantity);
             }
-            Scenes.ChangeScene("Gameplay");
+            // Scene change is now handled by SceneBattle after showing results
         }
     }
 }
