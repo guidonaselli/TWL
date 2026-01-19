@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TWL.Client.Presentation.Managers;
+using TWL.Client.Presentation.Networking;
 using TWL.Client.Presentation.UI;
 using TWL.Shared.Net.Abstractions;
 
@@ -17,11 +18,11 @@ namespace TWL.Client.Presentation.Scenes
             GraphicsDevice  graphicsDevice,
             ISceneManager   scenes,
             IAssetLoader    assets,
-            PersistenceManager persistence
+            NetworkClient   networkClient
         ) : base(content, graphicsDevice, scenes, assets)
         {
             // Inicializo mi UI pasando los servicios necesarios
-            _ui = new UiMainMenu(scenes, graphicsDevice, assets, persistence);
+            _ui = new UiMainMenu(scenes, graphicsDevice, assets, networkClient);
         }
 
         public override void Initialize()
@@ -45,10 +46,6 @@ namespace TWL.Client.Presentation.Scenes
         {
             // Delego la entrada al UI
             _ui.Update(gameTime);
-
-            // Ejemplo: si presionas Enter en cualquier parte del menú
-            if (keyboardState.IsKeyDown(Keys.Enter))
-                Scenes.ChangeScene("Gameplay");
         }
 
         public override void Draw(SpriteBatch spriteBatch)

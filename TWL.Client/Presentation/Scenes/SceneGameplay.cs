@@ -27,7 +27,7 @@ namespace TWL.Client.Presentation.Scenes
     {
         private readonly GameClientManager _gameManager;
         private readonly LoopbackChannel   _netChannel;
-        private readonly PersistenceManager _persistence;
+        private PlayerCharacterData _playerData;
         private readonly EncounterManager  _encounter = new();
 
         private PlayerCharacter  _player     = null!;
@@ -78,6 +78,28 @@ namespace TWL.Client.Presentation.Scenes
             }
         }
 
+        public void ReceivePayload(object payload)
+        {
+            if (payload is PlayerCharacterData playerData)
+            {
+                _playerData = playerData;
+            }
+            else
+            {
+                // Fallback or error if payload is not correct
+                // For now, create a default player
+                _playerData = new PlayerCharacterData
+                {
+                    PlayerId = 1,
+                    UserId = 1,
+                    PosX = 100,
+                    PosY = 100,
+                    Hp = 100,
+                    MaxHp = 100
+                };
+            }
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -85,6 +107,9 @@ namespace TWL.Client.Presentation.Scenes
             var dto = new TWL.Shared.Domain.DTO.PlayerColorsDto();
 
             _player = new PlayerCharacter(_gameManager.PlayerId, "Hero", Element.Fire, dto);
+            _player.Position = new Vector2(_playerData.PosX, _playerData.PosY);
+            // You might want to set other stats from _playerData here as well
+
             _playerView = new PlayerView(_player);
             _ui = new UiGameplay(_player);
 

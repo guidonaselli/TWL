@@ -1,4 +1,5 @@
 ﻿using Npgsql;
+using System.Threading.Tasks;
 
 namespace TWL.Server.Persistence.Database;
 
@@ -51,18 +52,18 @@ public class DbService : IDisposable
     }
 
     // Ejemplo: login
-    public int CheckLogin(string username, string passHash)
+    public async Task<int> CheckLoginAsync(string username, string passHash)
     {
-        using var con = new NpgsqlConnection(_connString);
-        con.Open();
-        using var cmd = new NpgsqlCommand(@"
+        await using var con = new NpgsqlConnection(_connString);
+        await con.OpenAsync();
+        await using var cmd = new NpgsqlCommand(@"
                 SELECT user_id FROM accounts
                 WHERE username=@u AND pass_hash=@p
             ", con);
         cmd.Parameters.AddWithValue("u", username);
         cmd.Parameters.AddWithValue("p", passHash);
 
-        var result = cmd.ExecuteScalar();
+        var result = await cmd.ExecuteScalarAsync();
         if (result == null) return -1;
         return Convert.ToInt32(result);
     }

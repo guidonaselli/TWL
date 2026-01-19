@@ -59,9 +59,9 @@ namespace TWL.Client.Presentation.Core
         {
             // Solo registramos las escenas; no cargamos contenido todavía
             _scenes.RegisterScene("MainMenu",
-                new SceneMainMenu(Content, GraphicsDevice, _scenes, _assets, _persistence));
+                new SceneMainMenu(Content, GraphicsDevice, _scenes, _assets, _gameClientManager.NetworkClient));
             _scenes.RegisterScene("Gameplay",
-                new SceneGameplay(Content, GraphicsDevice, _scenes, _assets, _gameClientManager, _net, _persistence));
+                new SceneGameplay(Content, Graphics-Device, _scenes, _assets, _gameClientManager, _net));
             _scenes.RegisterScene("Battle",
                 new SceneBattle(Content, GraphicsDevice, _scenes, _assets));
             _scenes.RegisterScene("Marketplace",

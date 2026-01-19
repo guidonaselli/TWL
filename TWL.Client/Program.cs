@@ -24,6 +24,7 @@ namespace TWL.Client
                     services.AddSingleton<IAssetLoader, AssetLoader>();
                     services.AddSingleton<ISceneManager, SceneManager>();
                     services.AddSingleton<IGameManager, GameManager>();
+                    services.AddSingleton<GameSessionManager>();
                     services.AddSingleton<GameClientManager>();
                     services.AddSingleton<INetworkChannel, LoopbackChannel>();
                     services.AddSingleton<SettingsManager>();
