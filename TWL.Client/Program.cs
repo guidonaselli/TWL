@@ -24,7 +24,9 @@ namespace TWL.Client
                     services.AddSingleton<IAssetLoader, AssetLoader>();
                     services.AddSingleton<ISceneManager, SceneManager>();
                     services.AddSingleton<IGameManager, GameManager>();
+                    services.AddSingleton<GameClientManager>();
                     services.AddSingleton<INetworkChannel, LoopbackChannel>();
+                    services.AddSingleton<PersistenceManager>();
                     services.AddLogging();
                     // Registra el Game1
                     services.AddSingleton<Game1>();
