@@ -1,4 +1,4 @@
-﻿using System.Net.Sockets;
+using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
 using TWL.Server.Persistence.Database;
@@ -24,23 +24,23 @@ public class ClientSession
 
     public void StartHandling()
     {
-        var t = new Thread(ReceiveLoop);
-        t.Start();
+        // Fire and forget the async receive loop
+        _ = ReceiveLoopAsync();
     }
 
-    private void ReceiveLoop()
+    private async Task ReceiveLoopAsync()
     {
         try
         {
             var buffer = new byte[4096];
             while (true)
             {
-                var read = _stream.Read(buffer, 0, buffer.Length);
+                var read = await _stream.ReadAsync(buffer, 0, buffer.Length);
                 if (read <= 0) break;
 
                 var msgStr = Encoding.UTF8.GetString(buffer, 0, read);
                 var netMsg = JsonConvert.DeserializeObject<NetMessage>(msgStr);
-                HandleMessage(netMsg);
+                await HandleMessageAsync(netMsg);
             }
         }
         catch (Exception ex)
@@ -54,12 +54,14 @@ public class ClientSession
         }
     }
 
-    private void HandleMessage(NetMessage msg)
+    private async Task HandleMessageAsync(NetMessage msg)
     {
+        if (msg == null) return;
+
         switch (msg.Op)
         {
             case Opcode.LoginRequest:
-                HandleLogin(msg.JsonPayload);
+                await HandleLoginAsync(msg.JsonPayload);
                 break;
             case Opcode.MoveRequest:
                 HandleMove(msg.JsonPayload);
@@ -68,11 +70,14 @@ public class ClientSession
         }
     }
 
-    private void HandleLogin(string payload)
+    private async Task HandleLoginAsync(string payload)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
         var loginDto = JsonConvert.DeserializeObject<LoginDTO>(payload);
-        var uid = _dbService.CheckLogin(loginDto.Username, loginDto.PassHash);
+
+        // Use async DB call
+        var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
+
         if (uid < 0)
         {
             // login fallido
