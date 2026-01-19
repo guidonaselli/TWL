@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -36,6 +38,7 @@ namespace TWL.Client.Presentation.Scenes
         private TiledMap         _map;
         private TiledMapRenderer _mapRenderer;
         private Vector2          _clickTarget;
+        private Point?           _lastTargetTile;
 
         public SceneGameplay(
             ContentManager    content,
@@ -43,11 +46,36 @@ namespace TWL.Client.Presentation.Scenes
             ISceneManager     scenes,
             IAssetLoader      assets,
             GameClientManager gameManager,
-            LoopbackChannel   netChannel
+            LoopbackChannel   netChannel,
+            PersistenceManager persistence
         ) : base(content, graphicsDevice, scenes, assets)
         {
             _gameManager = gameManager;
             _netChannel  = netChannel;
+            _persistence = persistence;
+        }
+
+        public void ReceivePayload(object payload)
+        {
+            if (payload is GameSaveData data && _player != null)
+            {
+                _player.SetProgress(data.Level, data.Exp, data.ExpToNextLevel);
+                _player.Health = data.Health;
+                _player.MaxHealth = data.MaxHealth;
+                _player.Sp = data.Sp;
+                _player.MaxSp = data.MaxSp;
+                _player.Str = data.Str;
+                _player.Con = data.Con;
+                _player.Int = data.Int;
+                _player.Wis = data.Wis;
+                _player.Spd = data.Spd;
+                _player.Gold = data.Gold;
+                _player.TwlPoints = data.TwlPoints;
+                _player.Position = new Vector2(data.PositionX, data.PositionY);
+
+                _player.Inventory.ItemSlots = data.Inventory.Select(i =>
+                    new TWL.Shared.Domain.Characters.ItemSlot(i.ItemId, i.Quantity)).ToList();
+            }
         }
 
         public void ReceivePayload(object payload)
@@ -123,6 +151,12 @@ namespace TWL.Client.Presentation.Scenes
             }
         }
 
+        public override void UnloadContent()
+        {
+            _playerView?.Dispose();
+            base.UnloadContent();
+        }
+
         public override void Update(GameTime gt,
                                     MouseState ms,
                                     KeyboardState ks)
@@ -132,6 +166,9 @@ namespace TWL.Client.Presentation.Scenes
 
             if (ks.IsKeyDown(Keys.B))
                 _encounter.ForceEncounter(_player);
+
+            if (ks.IsKeyDown(Keys.F5))
+                _persistence.SaveGame(_player);
 
             if (ms.LeftButton == ButtonState.Pressed)
             {
@@ -147,8 +184,17 @@ namespace TWL.Client.Presentation.Scenes
                     (int)(world.X / _player.TileWidth),
                     (int)(world.Y / _player.TileHeight)
                 );
-                var path = PathFinder.FindPath(start, end, _map);
-                _player.SetPath(path);
+
+                if (_lastTargetTile != end)
+                {
+                    var path = PathFinder.FindPath(start, end, _map);
+                    _player.SetPath(path);
+                    _lastTargetTile = end;
+                }
+            }
+            else
+            {
+                _lastTargetTile = null;
             }
 
             // Explicitly call MovementController (Client Side Input)

@@ -27,6 +27,7 @@ namespace TWL.Client
                     services.AddSingleton<GameSessionManager>();
                     services.AddSingleton<GameClientManager>();
                     services.AddSingleton<INetworkChannel, LoopbackChannel>();
+                    services.AddSingleton<SettingsManager>();
                     services.AddLogging();
                     // Registra el Game1
                     services.AddSingleton<Game1>();

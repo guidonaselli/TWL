@@ -161,4 +161,9 @@ public class BattleInstance
             State = BattleState.Victory;
         }
     }
+
+    public void ForceEnd()
+    {
+        State = BattleState.Defeat;
+    }
 }

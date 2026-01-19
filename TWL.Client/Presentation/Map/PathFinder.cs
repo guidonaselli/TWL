@@ -1,4 +1,4 @@
-﻿// File: TWL.Client/Presentation/Map/Pathfinder.cs
+// File: TWL.Client/Presentation/Map/Pathfinder.cs
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,18 +17,24 @@ namespace TWL.Client.Presentation.Map
         /// una lista vacía si no existe trayecto.</summary>
         public List<Point> FindPath(Point start, Point goal)
         {
-            var open   = new List<Node>();          // nodos por evaluar
-            var closed = new HashSet<Point>();      // posiciones ya evaluadas
+            var open = new PriorityQueue<Node, int>();
+            var nodes = new Dictionary<Point, Node>();
+            var closed = new HashSet<Point>();
 
-            open.Add(new Node(start, null, g: 0, h: Heuristic(start, goal)));
+            var startNode = new Node(start, null, g: 0, h: Heuristic(start, goal));
+            open.Enqueue(startNode, startNode.F);
+            nodes.Add(start, startNode);
 
             while (open.Count > 0)
             {
-                var current = open.MinBy(n => n.F)!;        // nodo con F más baja
+                var current = open.Dequeue();
+
+                if (closed.Contains(current.Pos))
+                    continue;
+
                 if (current.Pos == goal)
                     return BuildPath(current);
 
-                open.Remove(current);
                 closed.Add(current.Pos);
 
                 foreach (var nPos in GetNeighbors(current.Pos))
@@ -36,22 +42,24 @@ namespace TWL.Client.Presentation.Map
                     if (_tileMap.IsBlocked(nPos) || closed.Contains(nPos))
                         continue;
 
-                    var g    = current.G + 1;
-                    var node = open.FirstOrDefault(n => n.Pos == nPos);
+                    var newG = current.G + 1;
 
-                    if (node is null)                       // descubrir nodo nuevo
+                    if (!nodes.TryGetValue(nPos, out var neighborNode))
                     {
-                        open.Add(new Node(nPos, current, g, Heuristic(nPos, goal)));
+                        neighborNode = new Node(nPos, current, newG, Heuristic(nPos, goal));
+                        nodes.Add(nPos, neighborNode);
+                        open.Enqueue(neighborNode, neighborNode.F);
                     }
-                    else if (g < node.G)                    // mejor ruta conocida
+                    else if (newG < neighborNode.G)
                     {
-                        node.G      = g;
-                        node.Parent = current;
+                        neighborNode.G = newG;
+                        neighborNode.Parent = current;
+                        open.Enqueue(neighborNode, neighborNode.F);
                     }
                 }
             }
 
-            return new();                                   // sin camino
+            return new(); // sin camino
         }
 
         /* ---------- helpers ---------- */
