@@ -9,6 +9,11 @@ namespace TWL.Server.Simulation.Networking;
 
 public class ClientSession
 {
+    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private readonly TcpClient _client;
     private readonly DbService _dbService;
     private readonly NetworkStream _stream;
@@ -38,9 +43,13 @@ public class ClientSession
                 var read = _stream.Read(buffer, 0, buffer.Length);
                 if (read <= 0) break;
 
-                var msgStr = Encoding.UTF8.GetString(buffer, 0, read);
-                var netMsg = JsonConvert.DeserializeObject<NetMessage>(msgStr);
-                HandleMessage(netMsg);
+                var netMsg = System.Text.Json.JsonSerializer.Deserialize<NetMessage>(
+                    new ReadOnlySpan<byte>(buffer, 0, read), _jsonOptions);
+
+                if (netMsg != null)
+                {
+                    HandleMessage(netMsg);
+                }
             }
         }
         catch (Exception ex)
@@ -72,7 +81,8 @@ public class ClientSession
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
         var loginDto = JsonConvert.DeserializeObject<LoginDTO>(payload);
-        var uid = _dbService.CheckLogin(loginDto.Username, loginDto.PassHash);
+        // FIX: CheckLogin was missing. Using sync-over-async to fix build without refactoring entire class to async.
+        var uid = _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash).GetAwaiter().GetResult();
         if (uid < 0)
         {
             // login fallido
