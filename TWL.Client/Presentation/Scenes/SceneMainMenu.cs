@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -18,11 +18,12 @@ namespace TWL.Client.Presentation.Scenes
             GraphicsDevice  graphicsDevice,
             ISceneManager   scenes,
             IAssetLoader    assets,
-            NetworkClient   networkClient
+            NetworkClient   networkClient,
+            PersistenceManager persistence
         ) : base(content, graphicsDevice, scenes, assets)
         {
             // Inicializo mi UI pasando los servicios necesarios
-            _ui = new UiMainMenu(scenes, graphicsDevice, assets, networkClient);
+            _ui = new UiMainMenu(scenes, graphicsDevice, assets, networkClient, persistence);
         }
 
         public override void Initialize()

@@ -27,7 +27,15 @@ namespace TWL.Client.Presentation.Scenes
     {
         private readonly GameClientManager _gameManager;
         private readonly LoopbackChannel   _netChannel;
-        private PlayerCharacterData _playerData;
+        private PlayerCharacterData _playerData = new PlayerCharacterData
+        {
+            PlayerId = 1,
+            UserId = 1,
+            PosX = 100,
+            PosY = 100,
+            Hp = 100,
+            MaxHp = 100
+        };
         private readonly EncounterManager  _encounter = new();
 
         private PlayerCharacter  _player     = null!;
