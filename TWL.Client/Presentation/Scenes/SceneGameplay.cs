@@ -97,6 +97,12 @@ namespace TWL.Client.Presentation.Scenes
             }
         }
 
+        public override void UnloadContent()
+        {
+            _playerView?.Dispose();
+            base.UnloadContent();
+        }
+
         public override void Update(GameTime gt,
                                     MouseState ms,
                                     KeyboardState ks)
