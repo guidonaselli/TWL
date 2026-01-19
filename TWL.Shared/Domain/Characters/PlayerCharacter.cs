@@ -7,6 +7,8 @@ namespace TWL.Shared.Domain.Characters
     {
         public Guid GuidId { get; private set; }
 
+        public PlayerColorsDto Colors { get; set; } = new PlayerColorsDto();
+
         // Resources
         public int Gold { get; set; }
         public int TwlPoints { get; set; }
@@ -59,6 +61,7 @@ namespace TWL.Shared.Domain.Characters
         public PlayerCharacter(Guid guidId, string name, Element element, PlayerColorsDto colors)
             : this(guidId, name, element)
         {
+            Colors = colors;
         }
 
         public void SetCollisionInfo(bool[,] grid, int width, int height)
@@ -192,6 +195,13 @@ namespace TWL.Shared.Domain.Characters
             UpdateDerivedStats();
             Health = MaxHealth;
             Sp = MaxSp;
+        }
+
+        public void SetProgress(int level, int exp, int expToNextLevel)
+        {
+            Level = level;
+            Exp = exp;
+            ExpToNextLevel = expToNextLevel;
         }
     }
 }

@@ -1,4 +1,4 @@
-﻿using System.Net;
+using System.Net;
 using System.Net.Sockets;
 using TWL.Server.Persistence.Database;
 using TWL.Shared.Net.Messages;
@@ -21,8 +21,7 @@ public class NetworkServer
     {
         _running = true;
         _listener.Start();
-        var acceptThread = new Thread(AcceptLoop);
-        acceptThread.Start();
+        _ = AcceptLoopAsync();
     }
 
     public void Stop()
@@ -31,20 +30,29 @@ public class NetworkServer
         _listener.Stop();
     }
 
-    private void AcceptLoop()
+    private async Task AcceptLoopAsync()
     {
-        while (_running)
+        try
         {
-            if (!_listener.Pending())
+            while (_running)
             {
-                Thread.Sleep(100);
-                continue;
+                var client = await _listener.AcceptTcpClientAsync();
+                Console.WriteLine("New client connected!");
+                var session = new ClientSession(client, _dbService);
+                session.StartHandling();
             }
-
-            var client = _listener.AcceptTcpClient();
-            Console.WriteLine("New client connected!");
-            var session = new ClientSession(client, _dbService);
-            session.StartHandling();
+        }
+        catch (ObjectDisposedException)
+        {
+            // Listener stopped
+        }
+        catch (SocketException)
+        {
+            // Socket error or stopped
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Accept loop error: {ex}");
         }
     }
 

@@ -38,7 +38,7 @@ public class OfflineCombatManager
     // ------------------------------------------------------------------
     public void PlayerAction(CombatAction action)
     {
-        if (_battle.State != BattleState.Active) return;
+        if (_battle.State != TWL.Shared.Domain.Battle.BattleState.Active) return;
         if (CurrentActor == null || !CurrentActor.Character.IsAlly()) return;
         if (action.ActorId != CurrentActor.BattleId) return; // mismatch
 
@@ -54,7 +54,7 @@ public class OfflineCombatManager
 
         _battle.Tick(deltaTime);
 
-        if (_battle.State != BattleState.Active)
+        if (_battle.State != TWL.Shared.Domain.Battle.BattleState.Active)
         {
             PublishFinish();
             return;
@@ -101,12 +101,19 @@ public class OfflineCombatManager
         }
     }
 
+    public void ForceEndBattle()
+    {
+        if (_finishedPublished) return;
+        _battle.ForceEnd();
+        PublishFinish();
+    }
+
     private void PublishFinish()
     {
         _finishedPublished = true;
         State = LocalBattleState.Finished;
 
-        var victory = _battle.State == BattleState.Victory;
+        var victory = _battle.State == TWL.Shared.Domain.Battle.BattleState.Victory;
         var exp = victory ? 20 : 0; // Fixed exp for now
         var loot = victory ? LootTable.RollCommonChest() : new List<Item>();
 

@@ -1,13 +1,16 @@
 // TWL.Client/Presentation/Views/PlayerView.cs
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using TWL.Shared.Domain.Characters;
 using TWL.Client.Presentation.Graphics;
+using TWL.Client.Presentation.Models;
+using TWL.Client.Presentation.Helpers;
 
 namespace TWL.Client.Presentation.Views
 {
-    public class PlayerView
+    public class PlayerView : IDisposable
     {
         private readonly PlayerCharacter _player;
         private Texture2D _down, _up, _left, _right;
@@ -17,16 +20,42 @@ namespace TWL.Client.Presentation.Views
 
         public void Load(ContentManager content, GraphicsDevice gd)
         {
+            // Ensure we clean up any previous textures if Load is called multiple times
+            Dispose();
+
             var d = content.Load<Texture2D>("Sprites/.../player_down");
             var u = content.Load<Texture2D>("Sprites/.../player_up");
             var l = content.Load<Texture2D>("Sprites/.../player_left");
             var r = content.Load<Texture2D>("Sprites/.../player_right");
 
-            _down  = PaletteSwapper.Swap(d, _player.Colors, gd);
-            _up    = PaletteSwapper.Swap(u, _player.Colors, gd);
-            _left  = PaletteSwapper.Swap(l, _player.Colors, gd);
-            _right = PaletteSwapper.Swap(r, _player.Colors, gd);
+            var clientColors = new PlayerColors
+            {
+                Skin = ColorHelper.FromHex(_player.Colors.SkinColor),
+                Hair = ColorHelper.FromHex(_player.Colors.HairColor),
+                Eye = ColorHelper.FromHex(_player.Colors.EyeColor)
+            };
+
+            _down  = PaletteSwapper.Swap(d, clientColors, gd);
+            _up    = PaletteSwapper.Swap(u, clientColors, gd);
+            _left  = PaletteSwapper.Swap(l, clientColors, gd);
+            _right = PaletteSwapper.Swap(r, clientColors, gd);
         }
+
+        public void Update(GameTime gameTime)
+        {
+            // Animation logic can go here
+        }
+
+        public void Dispose()
+        {
+            _down?.Dispose();
+            _up?.Dispose();
+            _left?.Dispose();
+            _right?.Dispose();
+            _down = _up = _left = _right = null;
+        }
+
+        public void Update(GameTime gt) { }
 
         public void Draw(SpriteBatch sb)
         {
