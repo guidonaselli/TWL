@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -9,14 +10,23 @@ namespace TWL.Client.Presentation.Services;
 
 public class JsonPlayerColorsService : IPlayerColorsService
 {
-    private readonly Dictionary<Guid,PlayerColorsDto> _map;
+    // Static cache to prevent repeated File I/O and deserialization
+    private static readonly ConcurrentDictionary<string, Dictionary<Guid, PlayerColorsDto>> _cache = new();
+
+    private readonly Dictionary<Guid, PlayerColorsDto> _map;
 
     public JsonPlayerColorsService(string filePath)
     {
+        // Get from cache or load if not present
+        _map = _cache.GetOrAdd(filePath, LoadColors);
+    }
+
+    private static Dictionary<Guid, PlayerColorsDto> LoadColors(string filePath)
+    {
         var json = File.ReadAllText(filePath);
-        var raw = JsonSerializer.Deserialize<Dictionary<string,PlayerColorsDto>>(json)
+        var raw = JsonSerializer.Deserialize<Dictionary<string, PlayerColorsDto>>(json)
                   ?? new();
-        _map = raw.ToDictionary(
+        return raw.ToDictionary(
             kv => Guid.Parse(kv.Key),
             kv => kv.Value);
     }
