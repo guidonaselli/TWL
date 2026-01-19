@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using TWL.Client.Managers;
 using TWL.Client.Presentation.Managers;
 using TWL.Client.Presentation.Networking;
 using TWL.Client.Presentation.Scenes;
@@ -19,7 +20,6 @@ namespace TWL.Client.Presentation.Core
         private readonly SettingsManager _settings;
         private readonly AssetLoader _assets;
         private readonly PersistenceManager _persistence;
-        private readonly GameClientManager _gameClientManager;
 
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch = null!;
@@ -30,7 +30,8 @@ namespace TWL.Client.Presentation.Core
             GameClientManager gameClientManager,
             LoopbackChannel net,
             SettingsManager settings,
-            Logger<Game1> log)
+            Logger<Game1> log,
+            PersistenceManager persistence)
         {
             _scenes = scenes;
             _gameManager = gameManager;
@@ -38,6 +39,7 @@ namespace TWL.Client.Presentation.Core
             _net = net;
             _settings = settings;
             _log = log;
+            _persistence = persistence;
 
             // Configuración inicial de MonoGame
             _graphics = new GraphicsDeviceManager(this);
@@ -60,13 +62,17 @@ namespace TWL.Client.Presentation.Core
             // Solo registramos las escenas; no cargamos contenido todavía
             _scenes.RegisterScene("MainMenu",
                 new SceneMainMenu(Content, GraphicsDevice, _scenes, _assets, _gameClientManager.NetworkClient));
+
             _scenes.RegisterScene("Gameplay",
-                new SceneGameplay(Content, Graphics-Device, _scenes, _assets, _gameClientManager, _net));
+                new SceneGameplay(Content, GraphicsDevice, _scenes, _assets, _gameClientManager, _net, _persistence));
+
             _scenes.RegisterScene("Battle",
                 new SceneBattle(Content, GraphicsDevice, _scenes, _assets));
+
             _scenes.RegisterScene("Marketplace",
                 new SceneMarketplace(Content, GraphicsDevice, _scenes, _assets,
                     new MarketplaceManager()));
+
             _scenes.RegisterScene("Options",
                 new SceneOptions(Content, GraphicsDevice, _scenes, _assets, _settings));
 

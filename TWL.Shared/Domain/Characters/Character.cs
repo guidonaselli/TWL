@@ -73,7 +73,7 @@ public abstract class Character
     public int GetSpd() => Spd;
 
     public virtual int CalculatePhysicalDamage() => Str * 2;
-    public virtual int CalculateMagicalDamage() => Int * 2; // Added
+    public virtual int CalculateMagicalDamage() => Int * 2;
 
     public virtual int CalculateDefense() => Con * 2;
     public virtual int CalculateMagicalDefense() => Wis * 2;
@@ -84,6 +84,21 @@ public abstract class Character
         Sp -= cost;
         if (Sp < 0) Sp = 0;
         return true;
+    }
+
+    public void Heal(int amount)
+    {
+        Health = Math.Min(MaxHealth, Health + amount);
+    }
+
+    public void TakeDamage(int amount)
+    {
+        Health = Math.Max(0, Health - amount);
+    }
+
+    public void RestoreMana(int amount)
+    {
+        Sp = Math.Min(MaxSp, Sp + amount);
     }
 
     public void CheckNewSkills(ISkillCatalog skills)

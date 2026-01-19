@@ -39,6 +39,7 @@ namespace TWL.Client.Presentation.Scenes
         private TiledMapRenderer _mapRenderer;
         private Vector2          _clickTarget;
         private Point?           _lastTargetTile;
+        private readonly PersistenceManager _persistence;
 
         public SceneGameplay(
             ContentManager    content,
@@ -57,7 +58,11 @@ namespace TWL.Client.Presentation.Scenes
 
         public void ReceivePayload(object payload)
         {
-            if (payload is GameSaveData data && _player != null)
+            if (payload is PlayerCharacterData playerData)
+            {
+                _playerData = playerData;
+            }
+            else if (payload is GameSaveData data && _player != null)
             {
                 _player.SetProgress(data.Level, data.Exp, data.ExpToNextLevel);
                 _player.Health = data.Health;
@@ -76,15 +81,7 @@ namespace TWL.Client.Presentation.Scenes
                 _player.Inventory.ItemSlots = data.Inventory.Select(i =>
                     new TWL.Shared.Domain.Characters.ItemSlot(i.ItemId, i.Quantity)).ToList();
             }
-        }
-
-        public void ReceivePayload(object payload)
-        {
-            if (payload is PlayerCharacterData playerData)
-            {
-                _playerData = playerData;
-            }
-            else
+            else if (_playerData == null)
             {
                 // Fallback or error if payload is not correct
                 // For now, create a default player

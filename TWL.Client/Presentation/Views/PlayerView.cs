@@ -23,10 +23,12 @@ namespace TWL.Client.Presentation.Views
             // Ensure we clean up any previous textures if Load is called multiple times
             Dispose();
 
-            var d = content.Load<Texture2D>("Sprites/.../player_down");
-            var u = content.Load<Texture2D>("Sprites/.../player_up");
-            var l = content.Load<Texture2D>("Sprites/.../player_left");
-            var r = content.Load<Texture2D>("Sprites/.../player_right");
+            // Note: Hardcoding to RegularMale/Base/Idle for vertical slice as per instructions (Finish the game not the engine)
+            // Ideally this would come from PlayerCharacter.BodyType or similar.
+            var d = content.Load<Texture2D>("Sprites/Characters/RegularMale/Base/Idle/player_down");
+            var u = content.Load<Texture2D>("Sprites/Characters/RegularMale/Base/Idle/player_up");
+            var l = content.Load<Texture2D>("Sprites/Characters/RegularMale/Base/Idle/player_left");
+            var r = content.Load<Texture2D>("Sprites/Characters/RegularMale/Base/Idle/player_right");
 
             var clientColors = new PlayerColors
             {
@@ -55,8 +57,6 @@ namespace TWL.Client.Presentation.Views
             _down = _up = _left = _right = null;
         }
 
-        public void Update(GameTime gt) { }
-
         public void Draw(SpriteBatch sb)
         {
             var tex = _down;
@@ -66,7 +66,8 @@ namespace TWL.Client.Presentation.Views
                 case FacingDirection.Left:  tex = _left;  break;
                 case FacingDirection.Right: tex = _right; break;
             }
-            sb.Draw(tex, _player.Position, Color.White);
+            if (tex != null)
+                sb.Draw(tex, _player.Position, Color.White);
         }
     }
 }
