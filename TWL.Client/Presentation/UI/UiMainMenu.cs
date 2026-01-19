@@ -24,7 +24,7 @@ namespace TWL.Client.Presentation.UI
         private Texture2D? _background;
 
         // --- Estado del Menú Principal ---
-        private readonly List<string> _options = new() { "Login", "Exit" };
+        private readonly List<string> _options = new() { "Login", "Options", "Exit" };
         private int _mainMenuSelectedIndex;
 
         // --- Estado del Formulario de Login ---
@@ -123,7 +123,10 @@ namespace TWL.Client.Presentation.UI
                 case 0: // Login
                     _currentState = MenuState.ShowingLogin;
                     break;
-                case 1: // Exit
+                case 1: // Options
+                    _scenes.ChangeScene("Options");
+                    break;
+                case 2: // Exit
                     Environment.Exit(0);
                     break;
             }
