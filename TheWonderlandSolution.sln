@@ -1,5 +1,6 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
+#
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TWL.Server", "TWL.Server\TWL.Server.csproj", "{B0BC9AAD-5D80-4872-BB04-D583175E9111}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TWL.Shared", "TWL.Shared\TWL.Shared.csproj", "{DAF23308-2852-4213-AD61-EDB9A549B793}"
@@ -9,6 +10,8 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{91BCAB7B-9632-4709-86BE-0C6D39231EDA}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{B536CD7D-A674-47F8-A644-3DD58EF33616}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TWL.Tests", "TWL.Tests\TWL.Tests.csproj", "{C9FE1BA4-61EA-4E5E-B566-FBCAD74B5B1F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -28,6 +31,10 @@ Global
 		{9051ED00-2A84-4D46-A415-C3B9E58AEFA6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9051ED00-2A84-4D46-A415-C3B9E58AEFA6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9051ED00-2A84-4D46-A415-C3B9E58AEFA6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C9FE1BA4-61EA-4E5E-B566-FBCAD74B5B1F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C9FE1BA4-61EA-4E5E-B566-FBCAD74B5B1F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C9FE1BA4-61EA-4E5E-B566-FBCAD74B5B1F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C9FE1BA4-61EA-4E5E-B566-FBCAD74B5B1F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{9051ED00-2A84-4D46-A415-C3B9E58AEFA6} = {91BCAB7B-9632-4709-86BE-0C6D39231EDA}

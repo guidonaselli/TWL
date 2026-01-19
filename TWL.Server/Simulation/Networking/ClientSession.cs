@@ -72,7 +72,7 @@ public class ClientSession
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
         var loginDto = JsonConvert.DeserializeObject<LoginDTO>(payload);
-        var uid = _dbService.CheckLogin(loginDto.Username, loginDto.PassHash);
+        var uid = _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash).GetAwaiter().GetResult();
         if (uid < 0)
         {
             // login fallido
