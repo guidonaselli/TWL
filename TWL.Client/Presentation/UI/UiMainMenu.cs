@@ -16,6 +16,7 @@ namespace TWL.Client.Presentation.UI
     {
         private readonly ISceneManager   _scenes;
         private readonly IAssetLoader    _assets;
+        private readonly PersistenceManager _persistence;
         private readonly GraphicsDevice  _graphicsDevice;
 
         private SpriteFont  _titleFont      = null!;
@@ -37,11 +38,12 @@ namespace TWL.Client.Presentation.UI
         /// <summary>
         /// Crea una instancia de UiMainMenu.
         /// </summary>
-        public UiMainMenu(ISceneManager scenes, GraphicsDevice graphicsDevice, IAssetLoader assets)
+        public UiMainMenu(ISceneManager scenes, GraphicsDevice graphicsDevice, IAssetLoader assets, PersistenceManager persistence)
         {
             _scenes        = scenes;
             _graphicsDevice = graphicsDevice;
             _assets        = assets;
+            _persistence   = persistence;
         }
 
         /// <summary>
@@ -110,8 +112,11 @@ namespace TWL.Client.Presentation.UI
                     _scenes.ChangeScene("Gameplay");
                     break;
                 case 1: // Load Game
-                    // TODO: lógica de carga
-                    _scenes.ChangeScene("Gameplay");
+                    var data = _persistence.LoadGame();
+                    if (data != null)
+                    {
+                        _scenes.ChangeScene("Gameplay", data);
+                    }
                     break;
                 case 2: // Options
                     // TODO: empujar escena de opciones

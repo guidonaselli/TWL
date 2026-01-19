@@ -16,11 +16,12 @@ namespace TWL.Client.Presentation.Scenes
             ContentManager content,
             GraphicsDevice  graphicsDevice,
             ISceneManager   scenes,
-            IAssetLoader    assets
+            IAssetLoader    assets,
+            PersistenceManager persistence
         ) : base(content, graphicsDevice, scenes, assets)
         {
             // Inicializo mi UI pasando los servicios necesarios
-            _ui = new UiMainMenu(scenes, graphicsDevice, assets);
+            _ui = new UiMainMenu(scenes, graphicsDevice, assets, persistence);
         }
 
         public override void Initialize()

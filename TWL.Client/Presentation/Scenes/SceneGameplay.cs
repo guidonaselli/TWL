@@ -1,4 +1,6 @@
 using System;
+using System.Linq;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -21,10 +23,11 @@ using TWL.Shared.Net.Abstractions;
 
 namespace TWL.Client.Presentation.Scenes
 {
-    public sealed class SceneGameplay : SceneBase
+    public sealed class SceneGameplay : SceneBase, IPayloadReceiver
     {
         private readonly GameClientManager _gameManager;
         private readonly LoopbackChannel   _netChannel;
+        private readonly PersistenceManager _persistence;
         private readonly EncounterManager  _encounter = new();
 
         private PlayerCharacter  _player     = null!;
@@ -42,11 +45,36 @@ namespace TWL.Client.Presentation.Scenes
             ISceneManager     scenes,
             IAssetLoader      assets,
             GameClientManager gameManager,
-            LoopbackChannel   netChannel
+            LoopbackChannel   netChannel,
+            PersistenceManager persistence
         ) : base(content, graphicsDevice, scenes, assets)
         {
             _gameManager = gameManager;
             _netChannel  = netChannel;
+            _persistence = persistence;
+        }
+
+        public void ReceivePayload(object payload)
+        {
+            if (payload is GameSaveData data && _player != null)
+            {
+                _player.SetProgress(data.Level, data.Exp, data.ExpToNextLevel);
+                _player.Health = data.Health;
+                _player.MaxHealth = data.MaxHealth;
+                _player.Sp = data.Sp;
+                _player.MaxSp = data.MaxSp;
+                _player.Str = data.Str;
+                _player.Con = data.Con;
+                _player.Int = data.Int;
+                _player.Wis = data.Wis;
+                _player.Spd = data.Spd;
+                _player.Gold = data.Gold;
+                _player.TwlPoints = data.TwlPoints;
+                _player.Position = new Vector2(data.PositionX, data.PositionY);
+
+                _player.Inventory.ItemSlots = data.Inventory.Select(i =>
+                    new TWL.Shared.Domain.Characters.ItemSlot(i.ItemId, i.Quantity)).ToList();
+            }
         }
 
         public override void Initialize()
@@ -106,6 +134,9 @@ namespace TWL.Client.Presentation.Scenes
 
             if (ks.IsKeyDown(Keys.B))
                 _encounter.ForceEncounter(_player);
+
+            if (ks.IsKeyDown(Keys.F5))
+                _persistence.SaveGame(_player);
 
             if (ms.LeftButton == ButtonState.Pressed)
             {

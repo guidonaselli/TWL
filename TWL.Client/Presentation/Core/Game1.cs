@@ -17,6 +17,8 @@ namespace TWL.Client.Presentation.Core
         private readonly LoopbackChannel _net;
         private readonly Logger<Game1> _log;
         private readonly AssetLoader _assets;
+        private readonly PersistenceManager _persistence;
+        private readonly GameClientManager _gameClientManager;
 
         private readonly GraphicsDeviceManager _graphics;
         private SpriteBatch _spriteBatch = null!;
@@ -26,12 +28,14 @@ namespace TWL.Client.Presentation.Core
             GameManager  gameManager,
             GameClientManager gameClientManager,
             LoopbackChannel net,
+            PersistenceManager persistence,
             Logger<Game1> log)
         {
             _scenes = scenes;
             _gameManager = gameManager;
             _gameClientManager = gameClientManager;
             _net = net;
+            _persistence = persistence;
             _log = log;
 
             // Configuración inicial de MonoGame
@@ -47,9 +51,9 @@ namespace TWL.Client.Presentation.Core
         {
             // Solo registramos las escenas; no cargamos contenido todavía
             _scenes.RegisterScene("MainMenu",
-                new SceneMainMenu(Content, GraphicsDevice, _scenes, _assets));
+                new SceneMainMenu(Content, GraphicsDevice, _scenes, _assets, _persistence));
             _scenes.RegisterScene("Gameplay",
-                new SceneGameplay(Content, GraphicsDevice, _scenes, _assets, _gameClientManager, _net));
+                new SceneGameplay(Content, GraphicsDevice, _scenes, _assets, _gameClientManager, _net, _persistence));
             _scenes.RegisterScene("Battle",
                 new SceneBattle(Content, GraphicsDevice, _scenes, _assets));
             _scenes.RegisterScene("Marketplace",
