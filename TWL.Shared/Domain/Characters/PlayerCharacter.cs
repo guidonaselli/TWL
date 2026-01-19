@@ -193,5 +193,12 @@ namespace TWL.Shared.Domain.Characters
             Health = MaxHealth;
             Sp = MaxSp;
         }
+
+        public void SetProgress(int level, int exp, int expToNextLevel)
+        {
+            Level = level;
+            Exp = exp;
+            ExpToNextLevel = expToNextLevel;
+        }
     }
 }
