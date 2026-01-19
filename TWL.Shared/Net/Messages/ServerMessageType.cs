@@ -2,6 +2,8 @@
 
 public enum ServerMessageType
 {
+    LoginSuccess,
+    LoginFailed,
     CombatResult,
     QuestStarted,
     QuestUpdated,

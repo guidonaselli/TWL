@@ -26,7 +26,7 @@ public class GameClientManager
     private List<Character> _allies;
     private List<Character> _enemies;
 
-    private NetworkClient _networkClient;
+    public NetworkClient NetworkClient { get; }
 
     public GameClientManager()
     {
@@ -35,7 +35,7 @@ public class GameClientManager
         var port = 7777;
         var gameClientManager = this;
 
-        var net = new NetworkClient(ip, port, gameClientManager, log);
+        NetworkClient = new NetworkClient(ip, port, gameClientManager, log);
         var allies = new List<Character>();
         var enemies = new List<Character>();
         // Initialize example characters

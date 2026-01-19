@@ -2,6 +2,7 @@
 
 public enum ClientMessageType
 {
+    LoginRequest,
     UseSkill,
     RequestQuestStart,
     MovePlayer,
