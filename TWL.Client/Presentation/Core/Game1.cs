@@ -52,6 +52,8 @@ namespace TWL.Client.Presentation.Core
             _scenes.RegisterScene("Marketplace",
                 new SceneMarketplace(Content, GraphicsDevice, _scenes, _assets,
                     new MarketplaceManager()));
+            _scenes.RegisterScene("Options",
+                new SceneOptions(Content, GraphicsDevice, _scenes, _assets));
 
             base.Initialize();
         }
