@@ -190,6 +190,12 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
                 _uiState = BattleUiState.Menu;
             }
         }
+
+        // Debug/Cheat to exit
+        if (ks.IsKeyDown(Keys.E))
+        {
+            _combat.ForceEndBattle();
+        }
     }
 
     private void SelectMenuOption()
