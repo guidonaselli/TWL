@@ -119,7 +119,7 @@ namespace TWL.Client.Presentation.UI
                     }
                     break;
                 case 2: // Options
-                    // TODO: empujar escena de opciones
+                    _scenes.ChangeScene("Options");
                     break;
                 case 3: // Exit
                     Environment.Exit(0);
