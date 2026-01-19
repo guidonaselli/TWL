@@ -15,6 +15,7 @@ namespace TWL.Client.Presentation.Core
         private readonly GameManager  _gameManager;
         private readonly LoopbackChannel _net;
         private readonly Logger<Game1> _log;
+        private readonly SettingsManager _settings;
         private readonly AssetLoader _assets;
 
         private readonly GraphicsDeviceManager _graphics;
@@ -24,17 +25,26 @@ namespace TWL.Client.Presentation.Core
             SceneManager scenes,
             GameManager  gameManager,
             LoopbackChannel net,
+            SettingsManager settings,
             Logger<Game1> log)
         {
             _scenes = scenes;
             _gameManager = gameManager;
             _net = net;
+            _settings = settings;
             _log = log;
 
             // Configuración inicial de MonoGame
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
+
+            Activated += (s, e) => _settings.SetMuteState(false);
+            Deactivated += (s, e) =>
+            {
+                if (_settings.MuteOnUnfocus)
+                    _settings.SetMuteState(true);
+            };
 
             // Creamos el loader de assets (se registra internamente GraphicsDevice y Content)
             _assets = new AssetLoader(Services);
@@ -53,7 +63,7 @@ namespace TWL.Client.Presentation.Core
                 new SceneMarketplace(Content, GraphicsDevice, _scenes, _assets,
                     new MarketplaceManager()));
             _scenes.RegisterScene("Options",
-                new SceneOptions(Content, GraphicsDevice, _scenes, _assets));
+                new SceneOptions(Content, GraphicsDevice, _scenes, _assets, _settings));
 
             base.Initialize();
         }

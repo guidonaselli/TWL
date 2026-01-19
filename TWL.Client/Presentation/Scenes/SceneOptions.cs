@@ -16,10 +16,11 @@ namespace TWL.Client.Presentation.Scenes
             ContentManager content,
             GraphicsDevice  graphicsDevice,
             ISceneManager   scenes,
-            IAssetLoader    assets
+            IAssetLoader    assets,
+            SettingsManager settings
         ) : base(content, graphicsDevice, scenes, assets)
         {
-            _ui = new UiOptions(scenes, graphicsDevice, assets);
+            _ui = new UiOptions(scenes, graphicsDevice, assets, settings);
         }
 
         public override void Initialize()
