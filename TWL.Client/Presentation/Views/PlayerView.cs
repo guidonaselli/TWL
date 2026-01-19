@@ -1,3 +1,5 @@
+// TWL.Client/Presentation/Views/PlayerView.cs
+using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
@@ -8,7 +10,7 @@ using TWL.Client.Presentation.Helpers;
 
 namespace TWL.Client.Presentation.Views
 {
-    public class PlayerView
+    public class PlayerView : IDisposable
     {
         private readonly PlayerCharacter _player;
         private Texture2D _down, _up, _left, _right;
@@ -18,10 +20,13 @@ namespace TWL.Client.Presentation.Views
 
         public void Load(ContentManager content, GraphicsDevice gd)
         {
-            var d = content.Load<Texture2D>("Sprites/Characters/RegularMale/Base/Idle/player_down");
-            var u = content.Load<Texture2D>("Sprites/Characters/RegularMale/Base/Idle/player_up");
-            var l = content.Load<Texture2D>("Sprites/Characters/RegularMale/Base/Idle/player_left");
-            var r = content.Load<Texture2D>("Sprites/Characters/RegularMale/Base/Idle/player_right");
+            // Ensure we clean up any previous textures if Load is called multiple times
+            Dispose();
+
+            var d = content.Load<Texture2D>("Sprites/.../player_down");
+            var u = content.Load<Texture2D>("Sprites/.../player_up");
+            var l = content.Load<Texture2D>("Sprites/.../player_left");
+            var r = content.Load<Texture2D>("Sprites/.../player_right");
 
             var clientColors = new PlayerColors
             {
@@ -40,6 +45,17 @@ namespace TWL.Client.Presentation.Views
         {
             // Animation logic can go here
         }
+
+        public void Dispose()
+        {
+            _down?.Dispose();
+            _up?.Dispose();
+            _left?.Dispose();
+            _right?.Dispose();
+            _down = _up = _left = _right = null;
+        }
+
+        public void Update(GameTime gt) { }
 
         public void Draw(SpriteBatch sb)
         {
