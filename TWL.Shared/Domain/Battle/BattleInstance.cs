@@ -47,7 +47,7 @@ public class BattleInstance
                 }
 
                 // ATB Fill Speed formula: Base + Spd * Factor
-                double fillRate = (10 + c.Character.Spd) * 2;
+                double fillRate = (10 + c.Character.Spd) * 5; // Increased speed for snappier combat
                 c.Atb += fillRate * deltaTimeSeconds;
 
                 if (c.Atb >= 100)
@@ -84,8 +84,12 @@ public class BattleInstance
                     int damage = Math.Max(1, actor.Character.CalculatePhysicalDamage() - targetCombatant.Character.CalculateDefense());
                     if (targetCombatant.IsDefending) damage /= 2;
 
-                    targetCombatant.Character.Health = Math.Max(0, targetCombatant.Character.Health - damage);
+                    targetCombatant.Character.TakeDamage(damage);
                     resultMessage = $"{actor.Character.Name} attacks {targetCombatant.Character.Name} for {damage} damage!";
+                }
+                else
+                {
+                    resultMessage = $"{actor.Character.Name} attacks thin air!";
                 }
                 break;
 
@@ -100,7 +104,7 @@ public class BattleInstance
                 break;
 
             case CombatActionType.Flee:
-                 resultMessage = $"{actor.Character.Name} tries to flee...";
+                 resultMessage = $"{actor.Character.Name} tries to flee... failed!";
                  break;
         }
 
@@ -115,34 +119,35 @@ public class BattleInstance
 
     private string UseSkill(Combatant actor, Combatant target, int skillId)
     {
-        if (target == null) return "No target";
-
         int cost = 0;
         switch (skillId)
         {
-            case 1: cost = 5; break;
-            case 2: cost = 10; break;
-            case 3: cost = 15; break;
+            case 1: cost = 5; break;  // Power Strike
+            case 2: cost = 10; break; // Fireball
+            case 3: cost = 15; break; // Heal
         }
 
         if (!actor.Character.ConsumeSp(cost)) return "Not enough SP!";
+
+        if (target == null && skillId != 3) return "No target"; // Heal might be self if null, but UI enforces target
 
         switch (skillId)
         {
             case 1: // Power Strike (Phys)
                 int dmg1 = Math.Max(1, (int)(actor.Character.CalculatePhysicalDamage() * 1.5) - target.Character.CalculateDefense());
                 if (target.IsDefending) dmg1 /= 2;
-                target.Character.Health = Math.Max(0, target.Character.Health - dmg1);
+                target.Character.TakeDamage(dmg1);
                 return $"{actor.Character.Name} uses Power Strike on {target.Character.Name} for {dmg1}!";
 
             case 2: // Fireball (Magic)
                 int dmg2 = Math.Max(1, actor.Character.CalculateMagicalDamage() * 2 - target.Character.CalculateMagicalDefense());
-                target.Character.Health = Math.Max(0, target.Character.Health - dmg2);
+                target.Character.TakeDamage(dmg2);
                 return $"{actor.Character.Name} casts Fireball on {target.Character.Name} for {dmg2}!";
 
             case 3: // Heal
                 int heal = actor.Character.Int * 4;
-                target.Character.Health = Math.Min(target.Character.MaxHealth, target.Character.Health + heal);
+                if (target == null) target = actor; // Self heal fallback
+                target.Character.Heal(heal);
                 return $"{actor.Character.Name} heals {target.Character.Name} for {heal}!";
 
             default:

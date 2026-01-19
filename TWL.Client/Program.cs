@@ -1,7 +1,8 @@
-﻿using System;
+using System;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Xna.Framework.Content;
+using TWL.Client.Managers;
 using TWL.Client.Presentation.Core;
 using TWL.Client.Presentation.Managers;
 using TWL.Client.Presentation.Networking;
@@ -20,6 +21,7 @@ namespace TWL.Client
                 .ConfigureServices((_, services) =>
                 {
                     // Registra tus servicios
+                    // Fix: sp is already IServiceProvider, no need to Resolve it again
                     services.AddSingleton(sp => new ContentManager(sp, "Content"));
                     services.AddSingleton<IAssetLoader, AssetLoader>();
                     services.AddSingleton<ISceneManager, SceneManager>();
@@ -28,6 +30,7 @@ namespace TWL.Client
                     services.AddSingleton<GameClientManager>();
                     services.AddSingleton<INetworkChannel, LoopbackChannel>();
                     services.AddSingleton<SettingsManager>();
+                    services.AddSingleton<PersistenceManager>();
                     services.AddLogging();
                     // Registra el Game1
                     services.AddSingleton<Game1>();
