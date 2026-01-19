@@ -19,7 +19,9 @@ public enum BattleUiState
 {
     Idle,
     Menu,
-    TargetSelection
+    SkillSelection,
+    TargetSelection,
+    Result
 }
 
 public sealed class SceneBattle : SceneBase, IPayloadReceiver
@@ -35,9 +37,22 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
     // UI State
     private BattleUiState _uiState = BattleUiState.Idle;
     private int _menuIndex = 0; // 0: Attack, 1: Skill, 2: Defend
+    private int _skillIndex = 0;
     private int _targetIndex = 0;
     private List<Combatant> _potentialTargets = new();
     private CombatActionType _selectedActionType;
+    private int _selectedSkillId;
+
+    // Hardcoded skills for vertical slice
+    private readonly List<(string Name, int Id)> _availableSkills = new()
+    {
+        ("Power Strike", 1),
+        ("Fireball", 2),
+        ("Heal", 3)
+    };
+
+    // Result State
+    private BattleFinished _result = null!;
 
     // Input Debounce
     private KeyboardState _lastKs;
@@ -56,11 +71,12 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         _combat = new OfflineCombatManager(_payload.Allies, _payload.Enemies);
         _uiState = BattleUiState.Idle;
         _menuIndex = 0;
+        _status = "Battle start!";
     }
 
     public override void LoadContent()
     {
-        _font = Assets.Load<SpriteFont>("Fonts/BattleFont");
+        _font = Assets.Load<SpriteFont>("Fonts/UIFont");
         _whiteTexture = new Texture2D(GraphicsDevice, 1, 1);
         _whiteTexture.SetData(new[] { Color.White });
     }
@@ -68,7 +84,14 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
     public override void Initialize()
     {
         base.Initialize();
-        EventBus.Subscribe<BattleFinished>(_ => Scenes.ChangeScene("Gameplay"));
+        EventBus.Subscribe<BattleFinished>(OnBattleFinished);
+    }
+
+    private void OnBattleFinished(BattleFinished e)
+    {
+        _result = e;
+        _uiState = BattleUiState.Result;
+        _status = e.Victory ? "Victory!" : "Defeat...";
     }
 
     public override void Update(GameTime gt,
@@ -76,23 +99,36 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         KeyboardState ks)
     {
         float dt = (float)gt.ElapsedGameTime.TotalSeconds;
-        _combat.Tick(dt);
-        _status = _combat.LastMessage;
 
-        // Input Handling
-        if (_combat.State == LocalBattleState.AwaitingInput)
+        if (_uiState == BattleUiState.Result)
         {
-            if (_uiState == BattleUiState.Idle)
+            if (JustPressed(ks, Keys.Enter) || JustPressed(ks, Keys.Space) || JustPressed(ks, Keys.Escape))
             {
-                _uiState = BattleUiState.Menu;
-                _menuIndex = 0;
+                Scenes.ChangeScene("Gameplay");
             }
-
-            HandleInput(ks);
         }
         else
         {
-            _uiState = BattleUiState.Idle;
+            _combat.Tick(dt);
+            if (_uiState != BattleUiState.Result)
+                 _status = _combat.LastMessage;
+
+            // Input Handling
+            if (_combat.State == LocalBattleState.AwaitingInput)
+            {
+                if (_uiState == BattleUiState.Idle)
+                {
+                    _uiState = BattleUiState.Menu;
+                    _menuIndex = 0;
+                }
+
+                HandleInput(ks);
+            }
+            else
+            {
+                if (_uiState != BattleUiState.Result)
+                     _uiState = BattleUiState.Idle;
+            }
         }
 
         _lastKs = ks;
@@ -103,12 +139,14 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         if (JustPressed(ks, Keys.Up))
         {
             if (_uiState == BattleUiState.Menu) _menuIndex = (_menuIndex - 1 + 3) % 3;
-            if (_uiState == BattleUiState.TargetSelection) _targetIndex = (_targetIndex - 1 + _potentialTargets.Count) % _potentialTargets.Count;
+            else if (_uiState == BattleUiState.SkillSelection) _skillIndex = (_skillIndex - 1 + _availableSkills.Count) % _availableSkills.Count;
+            else if (_uiState == BattleUiState.TargetSelection) _targetIndex = (_targetIndex - 1 + _potentialTargets.Count) % _potentialTargets.Count;
         }
         if (JustPressed(ks, Keys.Down))
         {
             if (_uiState == BattleUiState.Menu) _menuIndex = (_menuIndex + 1) % 3;
-            if (_uiState == BattleUiState.TargetSelection) _targetIndex = (_targetIndex + 1) % _potentialTargets.Count;
+            else if (_uiState == BattleUiState.SkillSelection) _skillIndex = (_skillIndex + 1) % _availableSkills.Count;
+            else if (_uiState == BattleUiState.TargetSelection) _targetIndex = (_targetIndex + 1) % _potentialTargets.Count;
         }
 
         if (JustPressed(ks, Keys.Enter) || JustPressed(ks, Keys.Space))
@@ -116,6 +154,21 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
             if (_uiState == BattleUiState.Menu)
             {
                 SelectMenuOption();
+            }
+            else if (_uiState == BattleUiState.SkillSelection)
+            {
+                _selectedSkillId = _availableSkills[_skillIndex].Id;
+                // Determine targets based on skill type (Heal targets allies, others enemies)
+                // For simplicity, Heal targets anyone or allies. Let's say anyone for now, or just allies.
+                // Looking at BattleInstance.UseSkill, Heal targets "target".
+
+                List<Combatant> targets;
+                if (_selectedSkillId == 3) // Heal
+                    targets = _combat.Battle.Allies.Where(a => a.Character.IsAlive()).ToList();
+                else
+                    targets = _combat.Battle.Enemies.Where(e => e.Character.IsAlive()).ToList();
+
+                StartTargetSelection(targets);
             }
             else if (_uiState == BattleUiState.TargetSelection)
             {
@@ -127,14 +180,15 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         {
             if (_uiState == BattleUiState.TargetSelection)
             {
+                if (_selectedActionType == CombatActionType.Skill)
+                    _uiState = BattleUiState.SkillSelection;
+                else
+                    _uiState = BattleUiState.Menu;
+            }
+            else if (_uiState == BattleUiState.SkillSelection)
+            {
                 _uiState = BattleUiState.Menu;
             }
-        }
-
-        // Debug/Cheat to exit
-        if (ks.IsKeyDown(Keys.E) && _uiState == BattleUiState.Idle)
-        {
-             // Flee implementation if needed
         }
     }
 
@@ -151,8 +205,8 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
                 break;
             case 1: // Skill
                 _selectedActionType = CombatActionType.Skill;
-                // Ideally show skill list. For vertical slice, just pick default skill or show targets if only 1 skill.
-                StartTargetSelection(_combat.Battle.Enemies.Where(e => e.Character.IsAlive()).ToList());
+                _skillIndex = 0;
+                _uiState = BattleUiState.SkillSelection;
                 break;
             case 2: // Defend
                 _combat.PlayerAction(CombatAction.Defend(actor.BattleId));
@@ -180,9 +234,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         }
         else if (_selectedActionType == CombatActionType.Skill)
         {
-            // Hardcoded skill ID for now (1 = Power Strike, 2 = Fireball, 3 = Heal)
-            // Let's alternate or pick 2
-            _combat.PlayerAction(CombatAction.UseSkill(actor.BattleId, target.BattleId, 2));
+            _combat.PlayerAction(CombatAction.UseSkill(actor.BattleId, target.BattleId, _selectedSkillId));
         }
 
         _uiState = BattleUiState.Idle;
@@ -199,6 +251,21 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
 
         sb.DrawString(_font, _status, new Vector2(50, 20), Color.White);
 
+        if (_uiState == BattleUiState.Result)
+        {
+             string msg = _result.Victory ? "YOU WON! Press Enter" : "YOU LOST... Press Enter";
+             if (_result.Victory)
+             {
+                 msg += $"\nEXP Gained: {_result.ExpGained}";
+                 if (_result.Loot.Count > 0)
+                 {
+                     msg += "\nLoot: " + string.Join(", ", _result.Loot.Select(i => i.Name));
+                 }
+             }
+             sb.DrawString(_font, msg, new Vector2(200, 200), Color.Yellow);
+             return;
+        }
+
         int startY = 60;
 
         // Allies
@@ -208,9 +275,22 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         DrawGroup(sb, _combat.Battle.Enemies, new Vector2(400, startY), Color.IndianRed);
 
         // Menu
-        if (_uiState == BattleUiState.Menu || _uiState == BattleUiState.TargetSelection)
+        if (_uiState == BattleUiState.Menu)
         {
             DrawMenu(sb, new Vector2(50, 300));
+        }
+        else if (_uiState == BattleUiState.SkillSelection)
+        {
+            DrawSkillMenu(sb, new Vector2(150, 300));
+        }
+        else if (_uiState == BattleUiState.TargetSelection)
+        {
+            // Just draw indicator (handled in DrawGroup)
+            // But maybe re-draw menu to keep it visible?
+             if (_selectedActionType == CombatActionType.Skill)
+                 DrawSkillMenu(sb, new Vector2(150, 300));
+             else
+                 DrawMenu(sb, new Vector2(50, 300));
         }
     }
 
@@ -259,6 +339,15 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         {
             Color c = (_uiState == BattleUiState.Menu && _menuIndex == i) ? Color.Yellow : Color.Gray;
             sb.DrawString(_font, options[i], new Vector2(pos.X, pos.Y + i * 25), c);
+        }
+    }
+
+    private void DrawSkillMenu(SpriteBatch sb, Vector2 pos)
+    {
+        for (int i = 0; i < _availableSkills.Count; i++)
+        {
+            Color c = (_uiState == BattleUiState.SkillSelection && _skillIndex == i) ? Color.Yellow : Color.Gray;
+            sb.DrawString(_font, _availableSkills[i].Name, new Vector2(pos.X, pos.Y + i * 25), c);
         }
     }
 }

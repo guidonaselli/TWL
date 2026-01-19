@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using TWL.Client.Presentation.Managers;
@@ -13,6 +13,7 @@ namespace TWL.Client.Presentation.Core
     {
         private readonly SceneManager _scenes;
         private readonly GameManager  _gameManager;
+        private readonly GameClientManager _gameClientManager;
         private readonly LoopbackChannel _net;
         private readonly Logger<Game1> _log;
         private readonly AssetLoader _assets;
