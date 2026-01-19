@@ -16,6 +16,9 @@ public class EnemyCharacter : Character
 
     public bool IsCapturable { get; private set; }
 
+    public int Level { get; set; } = 1;
+
+    public int ExpReward => Level * 10;
 
     public override void Update(GameTime gameTime)
     {

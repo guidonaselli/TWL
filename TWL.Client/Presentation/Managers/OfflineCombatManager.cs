@@ -114,7 +114,17 @@ public class OfflineCombatManager
         State = LocalBattleState.Finished;
 
         var victory = _battle.State == TWL.Shared.Domain.Battle.BattleState.Victory;
-        var exp = victory ? 20 : 0; // Fixed exp for now
+        var exp = 0;
+        if (victory)
+        {
+            foreach (var enemy in _battle.Enemies)
+            {
+                if (enemy.Character is EnemyCharacter ec)
+                {
+                    exp += ec.ExpReward;
+                }
+            }
+        }
         var loot = victory ? LootTable.RollCommonChest() : new List<Item>();
 
         LastMessage = victory ? "Victory!" : "Defeat...";
