@@ -101,6 +101,13 @@ public class OfflineCombatManager
         }
     }
 
+    public void ForceEndBattle()
+    {
+        if (_finishedPublished) return;
+        _battle.ForceEnd();
+        PublishFinish();
+    }
+
     private void PublishFinish()
     {
         _finishedPublished = true;

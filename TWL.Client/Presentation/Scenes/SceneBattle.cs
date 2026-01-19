@@ -132,9 +132,9 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         }
 
         // Debug/Cheat to exit
-        if (ks.IsKeyDown(Keys.E) && _uiState == BattleUiState.Idle)
+        if (ks.IsKeyDown(Keys.E))
         {
-             // Flee implementation if needed
+            _combat.ForceEndBattle();
         }
     }
 
