@@ -62,6 +62,7 @@ public class BattleInstance
         if (_readyQueue.Count > 0 && CurrentTurnCombatant == null)
         {
             CurrentTurnCombatant = _readyQueue.Dequeue();
+            CurrentTurnCombatant.IsDefending = false;
         }
     }
 
@@ -95,6 +96,7 @@ public class BattleInstance
 
             case CombatActionType.Skill:
                 resultMessage = UseSkill(actor, targetCombatant, action.SkillId);
+                if (resultMessage == "Not enough SP!" || resultMessage == "No target") return resultMessage;
                 break;
 
             case CombatActionType.Flee:
@@ -115,9 +117,15 @@ public class BattleInstance
     {
         if (target == null) return "No target";
 
-        // Cost check could go here (SP)
-        // int cost = 10;
-        // if (!actor.Character.ConsumeSp(cost)) return "Not enough SP!";
+        int cost = 0;
+        switch (skillId)
+        {
+            case 1: cost = 5; break;
+            case 2: cost = 10; break;
+            case 3: cost = 15; break;
+        }
+
+        if (!actor.Character.ConsumeSp(cost)) return "Not enough SP!";
 
         switch (skillId)
         {
