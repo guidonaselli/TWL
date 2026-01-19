@@ -35,6 +35,7 @@ namespace TWL.Client.Presentation.Scenes
         private TiledMap         _map;
         private TiledMapRenderer _mapRenderer;
         private Vector2          _clickTarget;
+        private Point?           _lastTargetTile;
 
         public SceneGameplay(
             ContentManager    content,
@@ -121,8 +122,17 @@ namespace TWL.Client.Presentation.Scenes
                     (int)(world.X / _player.TileWidth),
                     (int)(world.Y / _player.TileHeight)
                 );
-                var path = PathFinder.FindPath(start, end, _map);
-                _player.SetPath(path);
+
+                if (_lastTargetTile != end)
+                {
+                    var path = PathFinder.FindPath(start, end, _map);
+                    _player.SetPath(path);
+                    _lastTargetTile = end;
+                }
+            }
+            else
+            {
+                _lastTargetTile = null;
             }
 
             // Explicitly call MovementController (Client Side Input)
