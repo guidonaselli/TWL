@@ -1,5 +1,5 @@
 using System.Collections.Concurrent;
-﻿using TWL.Server.Simulation.Networking;
+using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Requests;
 
 // donde tienes CombatResult, UseSkillRequest, etc.
@@ -24,6 +24,11 @@ public class CombatManager
         // _characters[201] = new ServerCharacter { Id=201, Name="Slime", Hp=50, Str=5, ... };
     }
 
+    public void AddCharacter(ServerCharacter character)
+    {
+        _characters[character.Id] = character;
+    }
+
     /// <summary>
     ///     Usa una skill (basado en la petición del cliente).
     /// </summary>
@@ -35,18 +40,16 @@ public class CombatManager
             // En un caso real, podrías retornar un error o un CombatResult con "invalid target".
             return null;
 
-        // 2) Calcular daño (ejemplo muy simple).
-        // En un proyecto real, mezclarías:
-        // - attacker.Stats
-        // - skillDefinition (Power, type, etc.)
-        // - Resistencias, sell, etc.
+        int newTargetHp;
         var baseDamage = attacker.Str * 2;
 
-        // Locking target to ensure thread-safe HP update
+        // 2) Calcular daño (ejemplo muy simple).
+        // Bloqueamos el target para asegurar integridad de HP
         lock (target)
         {
             target.Hp -= baseDamage;
             if (target.Hp < 0) target.Hp = 0;
+            newTargetHp = target.Hp;
         }
 
         // 3) Retornar el resultado para avisar al cliente.
@@ -55,7 +58,7 @@ public class CombatManager
             AttackerId = attacker.Id,
             TargetId = target.Id,
             Damage = baseDamage,
-            NewTargetHp = target.Hp
+            NewTargetHp = newTargetHp
         };
 
         return result;
