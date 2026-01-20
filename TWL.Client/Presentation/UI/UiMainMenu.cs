@@ -18,13 +18,15 @@ namespace TWL.Client.Presentation.UI
         private readonly ISceneManager _scenes;
         private readonly IAssetLoader _assets;
         private readonly GraphicsDevice _graphicsDevice;
+        private readonly NetworkClient _networkClient;
+        private readonly PersistenceManager _persistence;
 
         private SpriteFont _titleFont = null!;
         private SpriteFont _optionFont = null!;
         private Texture2D? _background;
 
         // --- Estado del Menú Principal ---
-        private readonly List<string> _options = new() { "Login", "Options", "Exit" };
+        private readonly List<string> _options = new() { "Login", "Load Game", "Exit" };
         private int _mainMenuSelectedIndex;
 
         // --- Estado del Formulario de Login ---
@@ -43,11 +45,18 @@ namespace TWL.Client.Presentation.UI
 
         private KeyboardState _prevKeyboardState;
 
-        public UiMainMenu(ISceneManager scenes, GraphicsDevice graphicsDevice, IAssetLoader assets)
+        public UiMainMenu(
+            ISceneManager scenes,
+            GraphicsDevice graphicsDevice,
+            IAssetLoader assets,
+            NetworkClient networkClient,
+            PersistenceManager persistence)
         {
             _scenes = scenes;
             _graphicsDevice = graphicsDevice;
             _assets = assets;
+            _networkClient = networkClient;
+            _persistence = persistence;
         }
 
         public void LoadContent()
@@ -123,8 +132,20 @@ namespace TWL.Client.Presentation.UI
                 case 0: // Login
                     _currentState = MenuState.ShowingLogin;
                     break;
-                case 1: // Options
-                    _scenes.ChangeScene("Options");
+                case 1: // Load Game
+                    if (_persistence.SaveExists())
+                    {
+                        var data = _persistence.LoadGame();
+                        if (data != null)
+                        {
+                            _scenes.ChangeScene("Gameplay", data);
+                        }
+                    }
+                    else
+                    {
+                        // Optional: Show "No save game found" feedback
+                        Console.WriteLine("No save game found.");
+                    }
                     break;
                 case 2: // Exit
                     Environment.Exit(0);
