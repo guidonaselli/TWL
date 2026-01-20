@@ -1,4 +1,4 @@
-﻿namespace TWL.Server.Simulation.Networking;
+namespace TWL.Server.Simulation.Networking;
 
 /// <summary>
 ///     Representa un personaje en el lado del servidor.
@@ -6,10 +6,22 @@
 /// </summary>
 public class ServerCharacter
 {
+    private readonly object _syncRoot = new object();
+
     public int Hp;
     public int Id;
     public string Name;
 
     public int Str;
     // Resto de stats (Con, Int, Spd, etc.)
+
+    public int ApplyDamage(int damage)
+    {
+        lock (_syncRoot)
+        {
+            Hp -= damage;
+            if (Hp < 0) Hp = 0;
+            return Hp;
+        }
+    }
 }
