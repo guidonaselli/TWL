@@ -6,7 +6,8 @@ namespace TWL.Server.Simulation.Networking;
 
 public class NetworkManager
 {
-    private readonly List<ClientConnection> _clients = new();
+    private volatile List<IClientConnection> _clients = new();
+    private readonly object _clientsLock = new();
     private readonly GameServer _gameServer;
     private CancellationTokenSource _cancellationTokenSource;
     private bool _isRunning;
@@ -40,11 +41,14 @@ public class NetworkManager
         _cancellationTokenSource.Cancel();
         _listener.Stop();
 
-        lock (_clients)
+        List<IClientConnection> clientsSnapshot;
+        lock (_clientsLock)
         {
-            foreach (var client in _clients.ToArray()) client.Disconnect();
-            _clients.Clear();
+            clientsSnapshot = _clients;
+            _clients = new List<IClientConnection>();
         }
+
+        foreach (var client in clientsSnapshot) client.Disconnect();
 
         Console.WriteLine("Network manager stopped");
     }
@@ -58,9 +62,11 @@ public class NetworkManager
                 var client = await _listener.AcceptTcpClientAsync();
                 var clientConnection = new ClientConnection(client, this, _gameServer.DB);
 
-                lock (_clients)
+                lock (_clientsLock)
                 {
-                    _clients.Add(clientConnection);
+                    var newClients = new List<IClientConnection>(_clients);
+                    newClients.Add(clientConnection);
+                    _clients = newClients;
                 }
 
                 _ = Task.Run(() => clientConnection.ProcessMessagesAsync(token));
@@ -77,13 +83,15 @@ public class NetworkManager
         }
     }
 
-    public void RemoveClient(ClientConnection client)
+    public void RemoveClient(IClientConnection client)
     {
-        lock (_clients)
+        lock (_clientsLock)
         {
             if (_clients.Contains(client))
             {
-                _clients.Remove(client);
+                var newClients = new List<IClientConnection>(_clients);
+                newClients.Remove(client);
+                _clients = newClients;
                 Console.WriteLine("Client disconnected");
             }
         }
@@ -91,14 +99,13 @@ public class NetworkManager
 
     public void BroadcastMessage(byte[] data)
     {
-        lock (_clients)
-        {
-            foreach (var client in _clients.ToArray()) _ = client.SendMessageAsync(data);
-        }
+        var clients = _clients;
+        foreach (var client in clients)
+            _ = client.SendMessageAsync(data);
     }
 }
 
-public class ClientConnection
+public class ClientConnection : IClientConnection
 {
     private readonly DbService _dbService;
     private readonly NetworkManager _networkManager;
