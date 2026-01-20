@@ -206,7 +206,10 @@ namespace TWL.Client.Presentation.Scenes
             MovementController.UpdateMovement(_player, gt);
 
             _player.Update(gt);
-            _encounter.CheckEncounter(_player);
+            if (_player.IsMoving)
+            {
+                _encounter.CheckEncounter(_player);
+            }
             _playerView.Update(gt);
             _mapRenderer.Update(gt);
             _ui.Update(gt, ms, ks);

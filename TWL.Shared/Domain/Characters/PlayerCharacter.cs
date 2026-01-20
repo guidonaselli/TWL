@@ -35,6 +35,8 @@ namespace TWL.Shared.Domain.Characters
         private Vector2 _targetPosition;
         private bool _isMoving;
 
+        public bool IsMoving => _isMoving;
+
         public PlayerCharacter(Guid guidId, string name, Element element)
             : base(name, element)
         {

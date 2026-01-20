@@ -43,13 +43,8 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
     private CombatActionType _selectedActionType;
     private int _selectedSkillId;
 
-    // Hardcoded skills for vertical slice
-    private readonly List<(string Name, int Id)> _availableSkills = new()
-    {
-        ("Power Strike", 1),
-        ("Fireball", 2),
-        ("Heal", 3)
-    };
+    // Skills
+    private List<(string Name, int Id)> _availableSkills = new();
 
     // Result State
     private BattleFinished _result = null!;
@@ -72,6 +67,34 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         _uiState = BattleUiState.Idle;
         _menuIndex = 0;
         _status = "Battle start!";
+
+        // Initialize skills from the first ally (Single Player assumption)
+        // In a party system, we'd need to update this when the active character changes.
+        // For now, since it's 1 player vs enemies, this is fine.
+        var player = _payload.Allies.FirstOrDefault();
+        if (player != null)
+        {
+             // For vertical slice, if no skills are known, give defaults.
+             if (player.KnownSkills.Count == 0)
+             {
+                 player.KnownSkills.Add(1); // Power Strike
+                 player.KnownSkills.Add(2); // Fireball
+                 player.KnownSkills.Add(3); // Heal
+             }
+
+             _availableSkills = player.KnownSkills.Select(id => (GetSkillName(id), id)).ToList();
+        }
+    }
+
+    private string GetSkillName(int id)
+    {
+        switch (id)
+        {
+            case 1: return "Power Strike";
+            case 2: return "Fireball";
+            case 3: return "Heal";
+            default: return "Unknown";
+        }
     }
 
     public override void LoadContent()
@@ -157,18 +180,18 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
             }
             else if (_uiState == BattleUiState.SkillSelection)
             {
-                _selectedSkillId = _availableSkills[_skillIndex].Id;
-                // Determine targets based on skill type (Heal targets allies, others enemies)
-                // For simplicity, Heal targets anyone or allies. Let's say anyone for now, or just allies.
-                // Looking at BattleInstance.UseSkill, Heal targets "target".
+                if (_availableSkills.Count > 0)
+                {
+                    _selectedSkillId = _availableSkills[_skillIndex].Id;
 
-                List<Combatant> targets;
-                if (_selectedSkillId == 3) // Heal
-                    targets = _combat.Battle.Allies.Where(a => a.Character.IsAlive()).ToList();
-                else
-                    targets = _combat.Battle.Enemies.Where(e => e.Character.IsAlive()).ToList();
+                    List<Combatant> targets;
+                    if (_selectedSkillId == 3) // Heal
+                        targets = _combat.Battle.Allies.Where(a => a.Character.IsAlive()).ToList();
+                    else
+                        targets = _combat.Battle.Enemies.Where(e => e.Character.IsAlive()).ToList();
 
-                StartTargetSelection(targets);
+                    StartTargetSelection(targets);
+                }
             }
             else if (_uiState == BattleUiState.TargetSelection)
             {
@@ -212,6 +235,18 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
             case 1: // Skill
                 _selectedActionType = CombatActionType.Skill;
                 _skillIndex = 0;
+
+                // Refresh available skills based on current actor
+                // In party play, we need to do this. For single player, it's already set in ReceivePayload but doing it again is safer.
+                if (actor.Character.KnownSkills.Count == 0)
+                {
+                     // Fallback
+                     actor.Character.KnownSkills.Add(1);
+                     actor.Character.KnownSkills.Add(2);
+                     actor.Character.KnownSkills.Add(3);
+                }
+                _availableSkills = actor.Character.KnownSkills.Select(id => (GetSkillName(id), id)).ToList();
+
                 _uiState = BattleUiState.SkillSelection;
                 break;
             case 2: // Defend
@@ -291,8 +326,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         }
         else if (_uiState == BattleUiState.TargetSelection)
         {
-            // Just draw indicator (handled in DrawGroup)
-            // But maybe re-draw menu to keep it visible?
+             // Draw menu or skill menu depending on what we are selecting targets for
              if (_selectedActionType == CombatActionType.Skill)
                  DrawSkillMenu(sb, new Vector2(150, 300));
              else

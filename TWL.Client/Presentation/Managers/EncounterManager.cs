@@ -10,8 +10,8 @@ namespace TWL.Client.Managers;
 /// Comprueba cada n-pasos si se dispara un encuentro aleatorio.
 public class EncounterManager
 {
-    private const int MinSteps = 50; // pasos mínimos antes de poder luchar
-    private const float EncounterChance = 0.05f;
+    private const int MinSteps = 120; // about 2 seconds of walking at 60fps
+    private const float EncounterChance = 0.005f; // 0.5% chance per frame (approx 30% per second)
 
     private static readonly Random _rng = new();
     private bool _firstTick = true;
