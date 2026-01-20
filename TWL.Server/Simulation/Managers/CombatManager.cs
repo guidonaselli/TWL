@@ -45,7 +45,7 @@ public class CombatManager
 
         // 2) Calcular daño (ejemplo muy simple).
         // Bloqueamos el target para asegurar integridad de HP
-        lock (target)
+        lock (target.SyncRoot)
         {
             target.Hp -= baseDamage;
             if (target.Hp < 0) target.Hp = 0;
