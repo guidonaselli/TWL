@@ -87,13 +87,7 @@ public class ClientSession
     private async Task HandleLoginAsync(string payload)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
-        var loginDto = JsonSerializer.Deserialize<LoginDTO>(payload, _jsonOptions);
-
-        if (loginDto == null) return;
-
-        // NOTE: Using synchronous wait on async method is necessary here because
-        // we are running in a dedicated Thread (StartHandling creates a Thread).
-        // Refactoring to full async/await (Task-based) is outside the scope of this optimization task.
+        var loginDto = JsonConvert.DeserializeObject<LoginDTO>(payload);
         var uid = _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash).GetAwaiter().GetResult();
         if (uid < 0)
         {
