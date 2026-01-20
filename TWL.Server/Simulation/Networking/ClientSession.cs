@@ -2,7 +2,6 @@ using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
 using TWL.Server.Persistence.Database;
-using TWL.Shared.Net;
 using TWL.Shared.Net.Network;
 
 namespace TWL.Server.Simulation.Networking;
@@ -17,6 +16,12 @@ public class ClientSession
     private readonly TcpClient _client;
     private readonly DbService _dbService;
     private readonly NetworkStream _stream;
+
+    // Ensure compatibility with camelCase JSON from clients, matching Newtonsoft behavior
+    private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    };
 
     public int UserId = -1; // se setea tras login
 
@@ -43,11 +48,12 @@ public class ClientSession
                 var read = await _stream.ReadAsync(buffer, 0, buffer.Length);
                 if (read <= 0) break;
 
-                var msgStr = Encoding.UTF8.GetString(buffer, 0, read);
-                var netMsg = JsonConvert.DeserializeObject<NetMessage>(msgStr);
+                var span = new ReadOnlySpan<byte>(buffer, 0, read);
+                var netMsg = JsonSerializer.Deserialize<NetMessage>(span, _jsonOptions);
+
                 if (netMsg != null)
                 {
-                    await HandleMessageAsync(netMsg);
+                    HandleMessage(netMsg);
                 }
             }
         }
@@ -81,10 +87,14 @@ public class ClientSession
     private async Task HandleLoginAsync(string payload)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
-        var loginDto = JsonConvert.DeserializeObject<LoginDTO>(payload);
+        var loginDto = JsonSerializer.Deserialize<LoginDTO>(payload, _jsonOptions);
+
         if (loginDto == null) return;
 
-        var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
+        // NOTE: Using synchronous wait on async method is necessary here because
+        // we are running in a dedicated Thread (StartHandling creates a Thread).
+        // Refactoring to full async/await (Task-based) is outside the scope of this optimization task.
+        var uid = _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash).GetAwaiter().GetResult();
         if (uid < 0)
         {
             // login fallido
@@ -112,7 +122,8 @@ public class ClientSession
         // EJ: {"dx":1,"dy":0}
         if (UserId < 0) return; // no logueado
 
-        var moveDto = JsonConvert.DeserializeObject<MoveDTO>(payload);
+        var moveDto = JsonSerializer.Deserialize<MoveDTO>(payload, _jsonOptions);
+
         if (moveDto == null) return;
 
         // Actualizar la pos en el server side:
@@ -124,9 +135,8 @@ public class ClientSession
 
     private async Task SendAsync(NetMessage msg)
     {
-        var str = JsonConvert.SerializeObject(msg);
-        var bytes = Encoding.UTF8.GetBytes(str);
-        await _stream.WriteAsync(bytes, 0, bytes.Length);
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
+        _stream.Write(bytes, 0, bytes.Length);
     }
 }
 
