@@ -14,6 +14,7 @@ public class PlayerCharacterData
     public int MaxHp { get; set; }
     public float PosX { get; set; }
     public float PosY { get; set; }
+    public TWL.Shared.Domain.Graphics.CharacterAppearance Appearance { get; set; } = new();
 
     public PlayerCharacterData() { }
 
@@ -28,6 +29,7 @@ public class PlayerCharacterData
             MaxHp = dto.MaxHp,
             PosX = dto.X,
             PosY = dto.Y,
+            Appearance = dto.Appearance
             // Level/Exp defaults or mapped if available
         };
     }
