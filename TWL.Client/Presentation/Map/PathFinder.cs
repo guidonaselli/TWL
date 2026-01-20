@@ -67,12 +67,31 @@ namespace TWL.Client.Presentation.Map
         private static int Heuristic(Point a, Point b) =>
             Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);      // distancia Manhattan
 
-        private static IEnumerable<Point> GetNeighbors(Point p)
+        private static NeighborEnumerator GetNeighbors(Point p) => new(p);
+
+        private struct NeighborEnumerator
         {
-            yield return new Point(p.X,     p.Y - 1);       // Norte
-            yield return new Point(p.X,     p.Y + 1);       // Sur
-            yield return new Point(p.X - 1, p.Y);           // Oeste
-            yield return new Point(p.X + 1, p.Y);           // Este
+            private readonly Point _p;
+            private int _index;
+
+            public NeighborEnumerator(Point p)
+            {
+                _p = p;
+                _index = -1;
+            }
+
+            public Point Current => _index switch
+            {
+                0 => new Point(_p.X, _p.Y - 1), // Norte
+                1 => new Point(_p.X, _p.Y + 1), // Sur
+                2 => new Point(_p.X - 1, _p.Y), // Oeste
+                3 => new Point(_p.X + 1, _p.Y), // Este
+                _ => default
+            };
+
+            public bool MoveNext() => ++_index < 4;
+
+            public NeighborEnumerator GetEnumerator() => this;
         }
 
         private static List<Point> BuildPath(Node endNode)
