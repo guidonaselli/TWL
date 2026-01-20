@@ -1,4 +1,4 @@
-﻿namespace TWL.Server.Simulation.Networking;
+namespace TWL.Server.Simulation.Networking;
 
 /// <summary>
 ///     Representa un personaje en el lado del servidor.
@@ -6,6 +6,8 @@
 /// </summary>
 public class ServerCharacter
 {
+    private readonly object _syncRoot = new object();
+
     public int Hp;
     public int Id;
     public string Name;
