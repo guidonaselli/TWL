@@ -5,7 +5,6 @@ using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
 using TWL.Shared.Net.Messages;
@@ -18,6 +17,12 @@ public class NetworkClient
     private readonly string _ip;
     private readonly ILogger<NetworkClient> _log;
     private readonly int _port;
+
+    // Configuration to be case-insensitive (PascalCase vs camelCase)
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
 
     private GameClientManager _gameClientManager;
     private NetworkStream? _stream;
@@ -72,8 +77,9 @@ public class NetworkClient
             var read = _stream.Read(_buffer, 0, _buffer.Length);
             if (read <= 0) return;
 
-            var json = Encoding.UTF8.GetString(_buffer, 0, read);
-            var serverMsg = JsonConvert.DeserializeObject<ServerMessage>(json);
+            // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
+            var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
+
             if (serverMsg != null)
                 HandleServerMessage(serverMsg);
         }

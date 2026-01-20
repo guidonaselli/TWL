@@ -1,4 +1,4 @@
-﻿using Newtonsoft.Json;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Net.Messages;
@@ -7,6 +7,11 @@ namespace TWL.Server.Simulation.Networking;
 
 public class ServerNetworkListener
 {
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private readonly CombatManager _combatManager;
     private readonly NetworkServer _network;
 
@@ -22,7 +27,9 @@ public class ServerNetworkListener
         {
             case ClientMessageType.UseSkill:
                 // Deserializamos la petición
-                var req = JsonConvert.DeserializeObject<UseSkillRequest>(msg.Payload);
+                var req = JsonSerializer.Deserialize<UseSkillRequest>(msg.Payload, _jsonOptions);
+                if (req == null) return;
+
                 var combatResult = _combatManager.UseSkill(req);
 
                 if (combatResult != null)
@@ -31,7 +38,7 @@ public class ServerNetworkListener
                     var serverMsg = new ServerMessage
                     {
                         MessageType = ServerMessageType.CombatResult,
-                        Payload = JsonConvert.SerializeObject(combatResult)
+                        Payload = JsonSerializer.Serialize(combatResult, _jsonOptions)
                     };
                     SendToClient(req.PlayerId, serverMsg);
                 }
