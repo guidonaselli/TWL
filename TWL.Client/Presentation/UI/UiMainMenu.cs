@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TWL.Client.Presentation.Helpers;
 using TWL.Client.Presentation.Managers;
+using TWL.Client.Presentation.Networking;
 using TWL.Shared.Net.Abstractions;
 
 namespace TWL.Client.Presentation.UI
