@@ -33,12 +33,6 @@ public class ClientSession
         _ = ReceiveLoopAsync();
     }
 
-    private NetMessage? DeserializeMessage(byte[] buffer, int length)
-    {
-        var span = new ReadOnlySpan<byte>(buffer, 0, length);
-        return System.Text.Json.JsonSerializer.Deserialize<NetMessage>(span, _jsonOptions);
-    }
-
     private async Task ReceiveLoopAsync()
     {
         try
@@ -49,7 +43,7 @@ public class ClientSession
                 var read = await _stream.ReadAsync(buffer, 0, buffer.Length);
                 if (read <= 0) break;
 
-                var netMsg = DeserializeMessage(buffer, read);
+                var netMsg = NetMessage.Deserialize(buffer, read);
 
                 if (netMsg != null)
                 {
@@ -78,7 +72,7 @@ public class ClientSession
                 await HandleLoginAsync(msg.JsonPayload);
                 break;
             case Opcode.MoveRequest:
-                HandleMove(msg.JsonPayload);
+                await HandleMoveAsync(msg.JsonPayload);
                 break;
             // etc.
         }
@@ -111,7 +105,7 @@ public class ClientSession
         }
     }
 
-    private void HandleMove(string payload)
+    private async Task HandleMoveAsync(string payload)
     {
         // EJ: {"dx":1,"dy":0}
         if (UserId < 0) return; // no logueado
@@ -125,6 +119,7 @@ public class ClientSession
         // data.X += moveDto.dx * speed
         // etc.
         // Broadcast a otros en la misma zona
+        await Task.CompletedTask; // Placeholder for async broadcast
     }
 
     private async Task SendAsync(NetMessage msg)
