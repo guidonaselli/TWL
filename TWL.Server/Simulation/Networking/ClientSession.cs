@@ -1,17 +1,27 @@
-﻿using System.Net.Sockets;
+using System.Net.Sockets;
 using System.Text;
 using Newtonsoft.Json;
 using TWL.Server.Persistence.Database;
-using TWL.Shared.Net;
 using TWL.Shared.Net.Network;
 
 namespace TWL.Server.Simulation.Networking;
 
 public class ClientSession
 {
+    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private readonly TcpClient _client;
     private readonly DbService _dbService;
     private readonly NetworkStream _stream;
+
+    // Ensure compatibility with camelCase JSON from clients, matching Newtonsoft behavior
+    private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
+    {
+        PropertyNameCaseInsensitive = true
+    };
 
     public int UserId = -1; // se setea tras login
 
@@ -24,23 +34,27 @@ public class ClientSession
 
     public void StartHandling()
     {
-        var t = new Thread(ReceiveLoop);
-        t.Start();
+        // Fire and forget the async receive loop
+        _ = ReceiveLoopAsync();
     }
 
-    private void ReceiveLoop()
+    private async Task ReceiveLoopAsync()
     {
         try
         {
             var buffer = new byte[4096];
             while (true)
             {
-                var read = _stream.Read(buffer, 0, buffer.Length);
+                var read = await _stream.ReadAsync(buffer, 0, buffer.Length);
                 if (read <= 0) break;
 
-                var msgStr = Encoding.UTF8.GetString(buffer, 0, read);
-                var netMsg = JsonConvert.DeserializeObject<NetMessage>(msgStr);
-                HandleMessage(netMsg);
+                var span = new ReadOnlySpan<byte>(buffer, 0, read);
+                var netMsg = JsonSerializer.Deserialize<NetMessage>(span, _jsonOptions);
+
+                if (netMsg != null)
+                {
+                    HandleMessage(netMsg);
+                }
             }
         }
         catch (Exception ex)
@@ -54,12 +68,14 @@ public class ClientSession
         }
     }
 
-    private void HandleMessage(NetMessage msg)
+    private async Task HandleMessageAsync(NetMessage msg)
     {
+        if (msg == null) return;
+
         switch (msg.Op)
         {
             case Opcode.LoginRequest:
-                HandleLogin(msg.JsonPayload);
+                await HandleLoginAsync(msg.JsonPayload);
                 break;
             case Opcode.MoveRequest:
                 HandleMove(msg.JsonPayload);
@@ -68,7 +84,7 @@ public class ClientSession
         }
     }
 
-    private void HandleLogin(string payload)
+    private async Task HandleLoginAsync(string payload)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
         var loginDto = JsonConvert.DeserializeObject<LoginDTO>(payload);
@@ -76,7 +92,7 @@ public class ClientSession
         if (uid < 0)
         {
             // login fallido
-            Send(new NetMessage
+            await SendAsync(new NetMessage
             {
                 Op = Opcode.LoginResponse,
                 JsonPayload = "{\"success\":false}"
@@ -87,7 +103,7 @@ public class ClientSession
             UserId = uid;
             // cargar PlayerData
             // mandar una LoginResponse
-            Send(new NetMessage
+            await SendAsync(new NetMessage
             {
                 Op = Opcode.LoginResponse,
                 JsonPayload = "{\"success\":true,\"userId\":" + uid + "}"
@@ -100,7 +116,10 @@ public class ClientSession
         // EJ: {"dx":1,"dy":0}
         if (UserId < 0) return; // no logueado
 
-        var moveDto = JsonConvert.DeserializeObject<MoveDTO>(payload);
+        var moveDto = JsonSerializer.Deserialize<MoveDTO>(payload, _jsonOptions);
+
+        if (moveDto == null) return;
+
         // Actualizar la pos en el server side:
         // PlayerData data = ...
         // data.X += moveDto.dx * speed
@@ -108,10 +127,9 @@ public class ClientSession
         // Broadcast a otros en la misma zona
     }
 
-    private void Send(NetMessage msg)
+    private async Task SendAsync(NetMessage msg)
     {
-        var str = JsonConvert.SerializeObject(msg);
-        var bytes = Encoding.UTF8.GetBytes(str);
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
         _stream.Write(bytes, 0, bytes.Length);
     }
 }
