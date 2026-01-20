@@ -40,7 +40,10 @@ public class ClientSession
 
                 var msgStr = Encoding.UTF8.GetString(buffer, 0, read);
                 var netMsg = JsonConvert.DeserializeObject<NetMessage>(msgStr);
-                await HandleMessageAsync(netMsg);
+                if (netMsg != null)
+                {
+                    await HandleMessageAsync(netMsg);
+                }
             }
         }
         catch (Exception ex)
@@ -74,14 +77,13 @@ public class ClientSession
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
         var loginDto = JsonConvert.DeserializeObject<LoginDTO>(payload);
+        if (loginDto == null) return;
 
-        // Use async DB call
         var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
-
         if (uid < 0)
         {
             // login fallido
-            Send(new NetMessage
+            await SendAsync(new NetMessage
             {
                 Op = Opcode.LoginResponse,
                 JsonPayload = "{\"success\":false}"
@@ -92,7 +94,7 @@ public class ClientSession
             UserId = uid;
             // cargar PlayerData
             // mandar una LoginResponse
-            Send(new NetMessage
+            await SendAsync(new NetMessage
             {
                 Op = Opcode.LoginResponse,
                 JsonPayload = "{\"success\":true,\"userId\":" + uid + "}"
@@ -106,6 +108,8 @@ public class ClientSession
         if (UserId < 0) return; // no logueado
 
         var moveDto = JsonConvert.DeserializeObject<MoveDTO>(payload);
+        if (moveDto == null) return;
+
         // Actualizar la pos en el server side:
         // PlayerData data = ...
         // data.X += moveDto.dx * speed
@@ -113,11 +117,11 @@ public class ClientSession
         // Broadcast a otros en la misma zona
     }
 
-    private void Send(NetMessage msg)
+    private async Task SendAsync(NetMessage msg)
     {
         var str = JsonConvert.SerializeObject(msg);
         var bytes = Encoding.UTF8.GetBytes(str);
-        _stream.Write(bytes, 0, bytes.Length);
+        await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
 }
 
