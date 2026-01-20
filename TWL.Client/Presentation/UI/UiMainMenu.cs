@@ -4,10 +4,12 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TWL.Client.Presentation.Helpers;
+using Newtonsoft.Json;
 using TWL.Client.Presentation.Managers;
 using TWL.Client.Presentation.Networking;
 using TWL.Shared.Net.Abstractions;
+using TWL.Shared.Net.Messages;
+using TWL.Shared.Net.Payloads;
 
 namespace TWL.Client.Presentation.UI
 {
@@ -156,10 +158,13 @@ namespace TWL.Client.Presentation.UI
 
         private void OnLoginSelected()
         {
-            var hashedPassword = CryptographyHelper.HashPassword(_password);
+            var loginRequest = new LoginRequestDto { Username = _username, Password = _password };
+            var jsonPayload = JsonConvert.SerializeObject(loginRequest);
+            var clientMessage = new ClientMessage(ClientMessageType.LoginRequest, jsonPayload);
 
-            // TODO: Step 4 - Send login request
-            Console.WriteLine($"Attempting login with U: {_username} P_hash: {hashedPassword}");
+            _networkClient.SendClientMessage(clientMessage);
+
+            Console.WriteLine($"Attempting login for user: {_username}");
         }
 
         private void ProcessTextInput(KeyboardState ks)
