@@ -10,6 +10,7 @@ public class NetworkServer
     private readonly DbService _dbService;
     private readonly TcpListener _listener;
     private bool _running;
+    private CancellationTokenSource _cts;
 
     public NetworkServer(int port, DbService dbService)
     {
@@ -20,27 +21,34 @@ public class NetworkServer
     public void Start()
     {
         _running = true;
+        _cts = new CancellationTokenSource();
         _listener.Start();
-        _ = AcceptLoopAsync();
+        _ = AcceptLoopAsync(_cts.Token);
     }
 
     public void Stop()
     {
         _running = false;
+        _cts?.Cancel();
         _listener.Stop();
+        _cts?.Dispose();
     }
 
-    private async Task AcceptLoopAsync()
+    private async Task AcceptLoopAsync(CancellationToken token)
     {
         try
         {
             while (_running)
             {
-                var client = await _listener.AcceptTcpClientAsync();
+                var client = await _listener.AcceptTcpClientAsync(token);
                 Console.WriteLine("New client connected!");
                 var session = new ClientSession(client, _dbService);
                 session.StartHandling();
             }
+        }
+        catch (OperationCanceledException)
+        {
+            // Server stopping
         }
         catch (ObjectDisposedException)
         {
