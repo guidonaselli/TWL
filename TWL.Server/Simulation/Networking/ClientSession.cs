@@ -24,6 +24,7 @@ public class ClientSession
 
     public void StartHandling()
     {
+        // Fire and forget the async receive loop
         _ = ReceiveLoopAsync();
     }
 
@@ -58,6 +59,8 @@ public class ClientSession
 
     private async Task HandleMessageAsync(NetMessage msg)
     {
+        if (msg == null) return;
+
         switch (msg.Op)
         {
             case Opcode.LoginRequest:
