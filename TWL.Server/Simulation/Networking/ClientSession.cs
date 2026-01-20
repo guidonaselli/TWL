@@ -80,9 +80,8 @@ public class ClientSession
     private async Task HandleLoginAsync(string payload)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
-        var loginDto = System.Text.Json.JsonSerializer.Deserialize<LoginDTO>(payload, _jsonOptions);
+        var loginDto = JsonConvert.DeserializeObject<LoginDTO>(payload);
         if (loginDto == null) return;
-
         var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
         if (uid < 0)
         {
