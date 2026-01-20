@@ -1,7 +1,6 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using Newtonsoft.Json;
 using TWL.Server.Persistence.Database;
 using TWL.Shared.Net.Network;
 
@@ -81,8 +80,10 @@ public class ClientSession
     private async Task HandleLoginAsync(string payload)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
-        var loginDto = JsonConvert.DeserializeObject<LoginDTO>(payload);
-        var uid = _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash).Result;
+        var loginDto = System.Text.Json.JsonSerializer.Deserialize<LoginDTO>(payload, _jsonOptions);
+        if (loginDto == null) return;
+
+        var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
         if (uid < 0)
         {
             // login fallido
