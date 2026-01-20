@@ -37,7 +37,8 @@ namespace TWL.Client.Presentation.Views
             {
                 Skin = ColorHelper.FromHex(_player.Colors.SkinColor),
                 Hair = ColorHelper.FromHex(_player.Colors.HairColor),
-                Eye = ColorHelper.FromHex(_player.Colors.EyeColor)
+                Eye = ColorHelper.FromHex(_player.Colors.EyeColor),
+                Cloth = ColorHelper.FromHex(_player.Colors.ClothColor ?? "#888888")
             };
 
             _down  = GetSwappedTexture(content, gd, $"{basePath}/player_down", clientColors);
@@ -60,7 +61,7 @@ namespace TWL.Client.Presentation.Views
 
         private Texture2D GetSwappedTexture(ContentManager content, GraphicsDevice gd, string path, PlayerColors colors)
         {
-            string colorKey = $"{colors.Skin.PackedValue}_{colors.Hair.PackedValue}_{colors.Eye.PackedValue}";
+            string colorKey = $"{colors.Skin.PackedValue}_{colors.Hair.PackedValue}_{colors.Eye.PackedValue}_{colors.Cloth.PackedValue}";
             string cacheKey = $"{path}_{colorKey}";
 
             var cached = PaletteTextureCache.Get(cacheKey);
