@@ -44,8 +44,13 @@ public class CombatManager
         var baseDamage = attacker.Str * 2;
 
         // 2) Calcular daño (ejemplo muy simple).
-        // Utilizamos el método thread-safe del personaje
-        newTargetHp = target.ApplyDamage(baseDamage);
+        // Bloqueamos el target para asegurar integridad de HP
+        lock (target.SyncRoot)
+        {
+            target.Hp -= baseDamage;
+            if (target.Hp < 0) target.Hp = 0;
+            newTargetHp = target.Hp;
+        }
 
         // 3) Retornar el resultado para avisar al cliente.
         var result = new CombatResult
