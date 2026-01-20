@@ -68,4 +68,19 @@ public class CombatManager
     // public void NextTurn(int battleId) { ... }
 
     // Podrías agregar más métodos: Revive, ApplyBuff, etc.
+
+    public void AddCharacter(ServerCharacter character)
+    {
+        _characters[character.Id] = character;
+    }
+
+    public void RemoveCharacter(int id)
+    {
+        _characters.TryRemove(id, out _);
+    }
+
+    public List<ServerCharacter> GetAllCharacters()
+    {
+        return _characters.Values.ToList();
+    }
 }
