@@ -1,4 +1,5 @@
 using TWL.Shared.Domain.DTO;
+using TWL.Shared.Domain.Graphics;
 using Microsoft.Xna.Framework;
 
 namespace TWL.Shared.Domain.Characters
@@ -8,6 +9,7 @@ namespace TWL.Shared.Domain.Characters
         public Guid GuidId { get; private set; }
 
         public PlayerColorsDto Colors { get; set; } = new PlayerColorsDto();
+        public CharacterAppearance Appearance { get; set; } = new CharacterAppearance();
 
         // Resources
         public int Gold { get; set; }

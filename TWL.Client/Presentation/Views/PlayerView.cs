@@ -15,6 +15,13 @@ namespace TWL.Client.Presentation.Views
         private readonly PlayerCharacter _player;
         private Texture2D _down, _up, _left, _right;
 
+        // Dictionary to store equipment textures by key (Slot_AssetId_Dir)
+        private System.Collections.Generic.Dictionary<string, Texture2D> _equipmentTextures = new();
+
+        // Cache for current frame textures to avoid dictionary lookups/allocations in Draw
+        private System.Collections.Generic.List<Texture2D> _currentFrameOverlays = new();
+        private FacingDirection _lastDirection = FacingDirection.Down; // Force update on first frame
+
         public PlayerView(PlayerCharacter player)
             => _player = player;
 
@@ -41,11 +48,69 @@ namespace TWL.Client.Presentation.Views
             _up    = PaletteSwapper.Swap(u, clientColors, gd);
             _left  = PaletteSwapper.Swap(l, clientColors, gd);
             _right = PaletteSwapper.Swap(r, clientColors, gd);
+
+            // Load Equipment Visuals
+            foreach (var part in _player.Appearance.EquipmentVisuals)
+            {
+                if (string.IsNullOrEmpty(part.AssetId)) continue;
+
+                // Load 4 directions for each part
+                LoadPartTexture(content, gd, part, "down");
+                LoadPartTexture(content, gd, part, "up");
+                LoadPartTexture(content, gd, part, "left");
+                LoadPartTexture(content, gd, part, "right");
+            }
+        }
+
+        private void LoadPartTexture(ContentManager content, GraphicsDevice gd, TWL.Shared.Domain.Graphics.AvatarPart part, string dir)
+        {
+             try
+             {
+                 // Path convention: Sprites/Items/{AssetId}/{dir}
+                 string path = $"Sprites/Items/{part.AssetId}/{dir}";
+                 var tex = content.Load<Texture2D>(path);
+
+                 // Apply palette if override exists (TODO: Implement item palette logic if different from Body)
+                 // For now, raw texture
+
+                 string key = $"{part.AssetId}_{dir}";
+                 _equipmentTextures[key] = tex;
+             }
+             catch
+             {
+                 // Ignore missing assets for now
+             }
         }
 
         public void Update(GameTime gameTime)
         {
-            // Animation logic can go here
+            // Optimize: Update overlay cache only when direction changes
+            if (_player.CurrentDirection != _lastDirection)
+            {
+                _lastDirection = _player.CurrentDirection;
+                UpdateOverlayCache();
+            }
+        }
+
+        private void UpdateOverlayCache()
+        {
+            _currentFrameOverlays.Clear();
+            string dirStr = _player.CurrentDirection switch
+            {
+                FacingDirection.Up => "up",
+                FacingDirection.Left => "left",
+                FacingDirection.Right => "right",
+                _ => "down"
+            };
+
+            foreach (var part in _player.Appearance.EquipmentVisuals)
+            {
+                string key = $"{part.AssetId}_{dirStr}";
+                if (_equipmentTextures.TryGetValue(key, out var tex))
+                {
+                    _currentFrameOverlays.Add(tex);
+                }
+            }
         }
 
         public void Dispose()
@@ -55,11 +120,16 @@ namespace TWL.Client.Presentation.Views
             _left?.Dispose();
             _right?.Dispose();
             _down = _up = _left = _right = null;
+
+            foreach(var t in _equipmentTextures.Values) t.Dispose();
+            _equipmentTextures.Clear();
         }
 
         public void Draw(SpriteBatch sb)
         {
+            // 1. Draw Base Body
             var tex = _down;
+
             switch (_player.CurrentDirection)
             {
                 case FacingDirection.Up:    tex = _up;    break;
@@ -68,6 +138,13 @@ namespace TWL.Client.Presentation.Views
             }
             if (tex != null)
                 sb.Draw(tex, _player.Position, Color.White);
+
+            // 2. Draw Equipment Overlay
+            // Draw cached overlays
+            foreach (var overlay in _currentFrameOverlays)
+            {
+                sb.Draw(overlay, _player.Position, Color.White);
+            }
         }
     }
 }
