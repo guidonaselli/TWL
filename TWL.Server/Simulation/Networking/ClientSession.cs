@@ -9,6 +9,11 @@ namespace TWL.Server.Simulation.Networking;
 
 public class ClientSession
 {
+    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true
+    };
+
     private readonly TcpClient _client;
     private readonly DbService _dbService;
     private readonly NetworkStream _stream;
