@@ -1,5 +1,6 @@
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using Newtonsoft.Json;
 using TWL.Server.Persistence.Database;
 using TWL.Shared.Net.Network;
@@ -8,7 +9,7 @@ namespace TWL.Server.Simulation.Networking;
 
 public class ClientSession
 {
-    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new()
+    private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
@@ -16,12 +17,6 @@ public class ClientSession
     private readonly TcpClient _client;
     private readonly DbService _dbService;
     private readonly NetworkStream _stream;
-
-    // Ensure compatibility with camelCase JSON from clients, matching Newtonsoft behavior
-    private static readonly JsonSerializerOptions _jsonOptions = new JsonSerializerOptions
-    {
-        PropertyNameCaseInsensitive = true
-    };
 
     public int UserId = -1; // se setea tras login
 
@@ -48,12 +43,11 @@ public class ClientSession
                 var read = await _stream.ReadAsync(buffer, 0, buffer.Length);
                 if (read <= 0) break;
 
-                var span = new ReadOnlySpan<byte>(buffer, 0, read);
-                var netMsg = JsonSerializer.Deserialize<NetMessage>(span, _jsonOptions);
+                var netMsg = NetMessage.Deserialize(buffer, read);
 
                 if (netMsg != null)
                 {
-                    HandleMessage(netMsg);
+                    await HandleMessageAsync(netMsg);
                 }
             }
         }
@@ -78,7 +72,7 @@ public class ClientSession
                 await HandleLoginAsync(msg.JsonPayload);
                 break;
             case Opcode.MoveRequest:
-                HandleMove(msg.JsonPayload);
+                await HandleMoveAsync(msg.JsonPayload);
                 break;
             // etc.
         }
@@ -111,12 +105,12 @@ public class ClientSession
         }
     }
 
-    private void HandleMove(string payload)
+    private async Task HandleMoveAsync(string payload)
     {
         // EJ: {"dx":1,"dy":0}
         if (UserId < 0) return; // no logueado
 
-        var moveDto = JsonSerializer.Deserialize<MoveDTO>(payload, _jsonOptions);
+        var moveDto = System.Text.Json.JsonSerializer.Deserialize<MoveDTO>(payload, _jsonOptions);
 
         if (moveDto == null) return;
 
@@ -125,12 +119,13 @@ public class ClientSession
         // data.X += moveDto.dx * speed
         // etc.
         // Broadcast a otros en la misma zona
+        await Task.CompletedTask; // Placeholder for async broadcast
     }
 
     private async Task SendAsync(NetMessage msg)
     {
-        var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
-        _stream.Write(bytes, 0, bytes.Length);
+        var bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(msg);
+        await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
 }
 

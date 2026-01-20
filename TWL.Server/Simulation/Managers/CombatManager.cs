@@ -69,11 +69,6 @@ public class CombatManager
 
     // Podrías agregar más métodos: Revive, ApplyBuff, etc.
 
-    public void AddCharacter(ServerCharacter character)
-    {
-        _characters[character.Id] = character;
-    }
-
     public void RemoveCharacter(int id)
     {
         _characters.TryRemove(id, out _);
