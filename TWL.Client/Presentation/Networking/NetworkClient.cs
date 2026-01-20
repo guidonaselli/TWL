@@ -1,6 +1,9 @@
-﻿using System;
+using System;
 using System.Net.Sockets;
 using System.Text;
+using System.Threading;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using TWL.Client.Presentation.Managers;
@@ -20,6 +23,9 @@ public class NetworkClient
     private NetworkStream? _stream;
     private TcpClient _tcp;
 
+    private readonly Channel<ClientMessage> _sendChannel;
+    private CancellationTokenSource? _cts;
+
     public NetworkClient(string ip, int port, GameClientManager gameClientManager, ILogger<NetworkClient> log)
     {
         _log = log;
@@ -29,6 +35,8 @@ public class NetworkClient
 
         _tcp = new TcpClient();
         _buffer = new byte[4096];
+
+        _sendChannel = Channel.CreateUnbounded<ClientMessage>();
     }
 
     public bool IsConnected => _tcp?.Connected ?? false;
@@ -40,6 +48,9 @@ public class NetworkClient
             _tcp.Connect(_ip, _port);
             _stream = _tcp.GetStream();
             Console.WriteLine($"Connected to server at {_ip}:{_port}");
+
+            _cts = new CancellationTokenSource();
+            _ = SendLoopAsync(_cts.Token);
         }
         catch (Exception ex)
         {
@@ -80,26 +91,57 @@ public class NetworkClient
 
     public void SendClientMessage(ClientMessage message)
     {
-        if (!IsConnected || _stream == null)
+        if (!IsConnected)
         {
             Console.WriteLine("Cannot send message: not connected");
             return;
         }
 
+        if (!_sendChannel.Writer.TryWrite(message))
+        {
+            Console.WriteLine("Failed to enqueue message.");
+        }
+    }
+
+    private async Task SendLoopAsync(CancellationToken token)
+    {
         try
         {
-            var json = JsonConvert.SerializeObject(message);
-            var data = Encoding.UTF8.GetBytes(json);
-            _stream.Write(data, 0, data.Length);
+            while (await _sendChannel.Reader.WaitToReadAsync(token))
+            {
+                while (_sendChannel.Reader.TryRead(out var message))
+                {
+                    if (_stream == null || !IsConnected) return;
+
+                    try
+                    {
+                        var json = JsonConvert.SerializeObject(message);
+                        var data = Encoding.UTF8.GetBytes(json);
+                        await _stream.WriteAsync(data, 0, data.Length, token);
+                    }
+                    catch (Exception ex)
+                    {
+                        Console.WriteLine($"Error sending client message: {ex.Message}");
+                    }
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Graceful shutdown
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Error sending client message: {ex.Message}");
+            Console.WriteLine($"SendLoopAsync error: {ex.Message}");
         }
     }
 
     public void Disconnect()
     {
+        _cts?.Cancel();
+        _cts?.Dispose();
+        _cts = null;
+
         if (_stream != null)
         {
             _stream.Close();
