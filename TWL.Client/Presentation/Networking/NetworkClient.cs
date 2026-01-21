@@ -4,6 +4,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
@@ -18,7 +19,7 @@ public class NetworkClient
     private readonly int _port;
 
     // Configuration to be case-insensitive (PascalCase vs camelCase)
-    private static readonly JsonSerializerOptions _jsonOptions = new()
+    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
@@ -161,6 +162,40 @@ public class NetworkClient
         catch (Exception ex)
         {
             Console.WriteLine($"SendLoopAsync error: {ex.Message}");
+        }
+    }
+
+    private async Task ReceiveLoopAsync(CancellationToken token)
+    {
+        try
+        {
+            while (!token.IsCancellationRequested && IsConnected && _stream != null)
+            {
+                var read = await _stream.ReadAsync(_buffer, 0, _buffer.Length, token);
+                if (read <= 0) break;
+
+                // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
+                try
+                {
+                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
+                    if (serverMsg != null)
+                    {
+                        await _receiveChannel.Writer.WriteAsync(serverMsg, token);
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    Console.WriteLine($"JSON Deserialization error: {ex.Message}");
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Graceful shutdown
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
         }
     }
 
