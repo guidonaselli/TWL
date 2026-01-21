@@ -81,7 +81,7 @@ namespace TWL.Client.Presentation.Scenes
                 _player.Con = data.Con;
                 _player.Int = data.Int;
                 _player.Wis = data.Wis;
-                _player.Spd = data.Spd;
+                _player.Agi = data.Spd;
                 _player.Gold = data.Gold;
                 _player.TwlPoints = data.TwlPoints;
                 _player.Position = new Vector2(data.PositionX, data.PositionY);

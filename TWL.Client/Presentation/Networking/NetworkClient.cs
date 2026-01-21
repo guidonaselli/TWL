@@ -1,9 +1,11 @@
 using System;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
@@ -13,13 +15,12 @@ namespace TWL.Client.Presentation.Networking;
 
 public class NetworkClient
 {
-    private readonly byte[] _buffer;
     private readonly string _ip;
     private readonly ILogger<NetworkClient> _log;
     private readonly int _port;
 
     // Configuration to be case-insensitive (PascalCase vs camelCase)
-    private static readonly JsonSerializerOptions _jsonOptions = new()
+    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
@@ -29,6 +30,7 @@ public class NetworkClient
     private TcpClient _tcp;
 
     private readonly Channel<ClientMessage> _sendChannel;
+    private readonly Channel<ServerMessage> _receiveChannel;
     private CancellationTokenSource? _cts;
 
     public NetworkClient(string ip, int port, GameClientManager gameClientManager, ILogger<NetworkClient> log)
@@ -39,9 +41,9 @@ public class NetworkClient
         _gameClientManager = gameClientManager;
 
         _tcp = new TcpClient();
-        _buffer = new byte[4096];
 
         _sendChannel = Channel.CreateUnbounded<ClientMessage>();
+        _receiveChannel = Channel.CreateUnbounded<ServerMessage>();
     }
 
     public bool IsConnected => _tcp?.Connected ?? false;
@@ -56,6 +58,7 @@ public class NetworkClient
 
             _cts = new CancellationTokenSource();
             _ = SendLoopAsync(_cts.Token);
+            _ = ReceiveLoopAsync(_cts.Token);
         }
         catch (Exception ex)
         {
@@ -78,14 +81,14 @@ public class NetworkClient
             if (read <= 0) return;
 
             // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
-            var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
+            var serverMsg = System.Text.Json.JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
 
             if (serverMsg != null)
                 HandleServerMessage(serverMsg);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Network error in update: {ex.Message}");
+            HandleServerMessage(serverMsg);
         }
     }
 
@@ -121,8 +124,7 @@ public class NetworkClient
 
                     try
                     {
-                        var json = JsonConvert.SerializeObject(message);
-                        var data = Encoding.UTF8.GetBytes(json);
+                        var data = JsonSerializer.SerializeToUtf8Bytes(message, _jsonOptions);
                         await _stream.WriteAsync(data, 0, data.Length, token);
                     }
                     catch (Exception ex)
@@ -139,6 +141,40 @@ public class NetworkClient
         catch (Exception ex)
         {
             Console.WriteLine($"SendLoopAsync error: {ex.Message}");
+        }
+    }
+
+    private async Task ReceiveLoopAsync(CancellationToken token)
+    {
+        try
+        {
+            while (!token.IsCancellationRequested && IsConnected && _stream != null)
+            {
+                var read = await _stream.ReadAsync(_buffer, 0, _buffer.Length, token);
+                if (read <= 0) break;
+
+                // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
+                try
+                {
+                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
+                    if (serverMsg != null)
+                    {
+                        await _receiveChannel.Writer.WriteAsync(serverMsg, token);
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    Console.WriteLine($"JSON Deserialization error: {ex.Message}");
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Graceful shutdown
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
         }
     }
 
