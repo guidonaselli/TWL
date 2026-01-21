@@ -2,6 +2,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using TWL.Server.Persistence.Database;
+using TWL.Shared.Domain.DTO;
 using TWL.Shared.Net.Network;
 
 namespace TWL.Server.Simulation.Networking;
@@ -129,16 +130,4 @@ public class ClientSession
         var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
-}
-
-public class LoginDTO
-{
-    public string Username { get; set; }
-    public string PassHash { get; set; }
-}
-
-public class MoveDTO
-{
-    public float dx { get; set; }
-    public float dy { get; set; }
 }

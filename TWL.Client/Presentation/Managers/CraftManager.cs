@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
 using TWL.Client.Presentation.Crafting;
 using TWL.Shared.Domain.Characters;
 
@@ -9,6 +9,7 @@ namespace TWL.Client.Managers;
 public class CraftManager
 {
     private readonly Dictionary<int, CraftRecipe> _recipes;
+    private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     public CraftManager()
     {
@@ -22,7 +23,9 @@ public class CraftManager
         if (!File.Exists(path)) throw new FileNotFoundException($"Recipes file not found at path: {path}");
 
         var jsonContent = File.ReadAllText(path);
-        var recipeDefinitions = JsonConvert.DeserializeObject<List<RecipeDefinition>>(jsonContent);
+        var recipeDefinitions = JsonSerializer.Deserialize<List<RecipeDefinition>>(jsonContent, _jsonOptions);
+
+        if (recipeDefinitions == null) return;
 
         _recipes.Clear();
         foreach (var definition in recipeDefinitions)
