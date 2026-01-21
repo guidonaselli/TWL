@@ -44,8 +44,7 @@ public class CombatManager
         var baseDamage = attacker.Str * 2;
 
         // 2) Calcular daño (ejemplo muy simple).
-        // Bloqueamos el target para asegurar integridad de HP
-        newTargetHp = target.TakeDamage(baseDamage);
+        newTargetHp = target.ApplyDamage(baseDamage);
 
         // 3) Retornar el resultado para avisar al cliente.
         var result = new CombatResult
