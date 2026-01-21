@@ -1,6 +1,8 @@
 using System;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
+using Newtonsoft.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -78,7 +80,7 @@ public class NetworkClient
             if (read <= 0) return;
 
             // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
-            var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
+            var serverMsg = System.Text.Json.JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
 
             if (serverMsg != null)
                 HandleServerMessage(serverMsg);
