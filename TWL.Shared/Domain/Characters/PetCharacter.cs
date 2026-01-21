@@ -37,7 +37,7 @@ public class PetCharacter : Character
             Con += 1;
             Int += 1;
             Wis += 1;
-            Spd += 1;
+            Agi += 1;
         }
     }
 
