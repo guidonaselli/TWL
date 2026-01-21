@@ -4,7 +4,7 @@ using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using Newtonsoft.Json;
+using System.Text.Json;
 using TWL.Client.Presentation.Managers;
 using TWL.Client.Presentation.Networking;
 using TWL.Shared.Net.Abstractions;
@@ -160,7 +160,7 @@ namespace TWL.Client.Presentation.UI
         {
             var loginRequest = new LoginRequestDto { Username = _username, Password = _password };
             var jsonPayload = JsonConvert.SerializeObject(loginRequest);
-            var clientMessage = new ClientMessage(ClientMessageType.LoginRequest, jsonPayload);
+            var clientMessage = new ClientMessage { MessageType = ClientMessageType.LoginRequest, Payload = jsonPayload };
 
             _networkClient.SendClientMessage(clientMessage);
 
