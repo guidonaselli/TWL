@@ -11,50 +11,55 @@ namespace TWL.Client.Presentation.Map
     {
         private readonly TileMap _tileMap;
 
+        // Reused collections to avoid allocations per pathfind call
+        private readonly PriorityQueue<Node, int> _open = new();
+        private readonly Dictionary<Point, Node> _nodes = new();
+        private readonly HashSet<Point> _closed = new();
+
         public Pathfinder(TileMap tileMap) => _tileMap = tileMap;
 
         /// <summary>Devuelve la lista de tiles (incluido <paramref name="start"/> y <paramref name="goal"/>) o
         /// una lista vacía si no existe trayecto.</summary>
         public List<Point> FindPath(Point start, Point goal)
         {
-            var open = new PriorityQueue<Node, int>();
-            var nodes = new Dictionary<Point, Node>();
-            var closed = new HashSet<Point>();
+            _open.Clear();
+            _nodes.Clear();
+            _closed.Clear();
 
             var startNode = new Node(start, null, g: 0, h: Heuristic(start, goal));
-            open.Enqueue(startNode, startNode.F);
-            nodes.Add(start, startNode);
+            _open.Enqueue(startNode, startNode.F);
+            _nodes.Add(start, startNode);
 
-            while (open.Count > 0)
+            while (_open.Count > 0)
             {
-                var current = open.Dequeue();
+                var current = _open.Dequeue();
 
-                if (closed.Contains(current.Pos))
+                if (_closed.Contains(current.Pos))
                     continue;
 
                 if (current.Pos == goal)
                     return BuildPath(current);
 
-                closed.Add(current.Pos);
+                _closed.Add(current.Pos);
 
                 foreach (var nPos in GetNeighbors(current.Pos))
                 {
-                    if (_tileMap.IsBlocked(nPos) || closed.Contains(nPos))
+                    if (_tileMap.IsBlocked(nPos) || _closed.Contains(nPos))
                         continue;
 
                     var newG = current.G + 1;
 
-                    if (!nodes.TryGetValue(nPos, out var neighborNode))
+                    if (!_nodes.TryGetValue(nPos, out var neighborNode))
                     {
                         neighborNode = new Node(nPos, current, newG, Heuristic(nPos, goal));
-                        nodes.Add(nPos, neighborNode);
-                        open.Enqueue(neighborNode, neighborNode.F);
+                        _nodes.Add(nPos, neighborNode);
+                        _open.Enqueue(neighborNode, neighborNode.F);
                     }
                     else if (newG < neighborNode.G)
                     {
                         neighborNode.G = newG;
                         neighborNode.Parent = current;
-                        open.Enqueue(neighborNode, neighborNode.F);
+                        _open.Enqueue(neighborNode, neighborNode.F);
                     }
                 }
             }
