@@ -82,6 +82,8 @@ public class ClientSession
         // payload podría ser {"username":"xxx","passHash":"abc"}
         var loginDto = JsonSerializer.Deserialize<LoginDTO>(payload, _jsonOptions);
         if (loginDto == null) return;
+        // Using await here instead of .Result prevents thread pool starvation
+        // and improves scalability under high load.
         var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
         if (uid < 0)
         {
