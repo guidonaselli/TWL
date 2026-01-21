@@ -69,7 +69,6 @@ public class NetworkClient
 
     public void Update()
     {
-        // Consume received messages from the channel on the main thread
         while (_receiveChannel.Reader.TryRead(out var serverMsg))
         {
             HandleServerMessage(serverMsg);
@@ -108,8 +107,8 @@ public class NetworkClient
 
                     try
                     {
-                        var bytes = JsonSerializer.SerializeToUtf8Bytes(message, _jsonOptions);
-                        await _stream.WriteAsync(bytes, 0, bytes.Length, token);
+                        var data = JsonSerializer.SerializeToUtf8Bytes(message, _jsonOptions);
+                        await _stream.WriteAsync(data, 0, data.Length, token);
                     }
                     catch (Exception ex)
                     {
@@ -130,34 +129,43 @@ public class NetworkClient
 
     private async Task ReceiveLoopAsync(CancellationToken token)
     {
-        var buffer = new byte[4096];
         try
         {
-            while (!token.IsCancellationRequested)
+            while (!token.IsCancellationRequested && IsConnected && _stream != null)
             {
-                if (_stream == null || !IsConnected) break;
+                // Note: ReadAsync will wait until data is available.
+                // We use a separate buffer logic or reuse _buffer carefully.
+                // Since this is a single thread loop, reusing _buffer is fine.
+                // But _buffer field is also accessed by Update in previous version. Now Update doesn't touch it.
+                // However, we must ensure _buffer is not accessed concurrently.
+                // _buffer is private and only used here now.
 
-                int read = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
+                var read = await _stream.ReadAsync(_buffer, 0, _buffer.Length, token);
                 if (read == 0) break; // Connection closed
 
                 try
                 {
-                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(buffer.AsSpan(0, read), _jsonOptions);
+                    // Deserialize directly from Span<byte>
+                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
+
                     if (serverMsg != null)
                     {
                         _receiveChannel.Writer.TryWrite(serverMsg);
                     }
                 }
-                catch (JsonException)
+                catch (Exception ex)
                 {
-                    // Handle malformed JSON or partial reads
+                    Console.WriteLine($"Error deserializing server message: {ex.Message}");
                 }
             }
         }
-        catch (OperationCanceledException) { }
+        catch (OperationCanceledException)
+        {
+            // Graceful shutdown
+        }
         catch (Exception ex)
         {
-             Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
+            Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
         }
     }
 
