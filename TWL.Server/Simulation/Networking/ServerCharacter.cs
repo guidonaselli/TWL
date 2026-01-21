@@ -1,3 +1,5 @@
+using System.Threading;
+
 namespace TWL.Server.Simulation.Networking;
 
 /// <summary>
@@ -6,8 +8,6 @@ namespace TWL.Server.Simulation.Networking;
 /// </summary>
 public class ServerCharacter
 {
-    private readonly object _syncRoot = new object();
-
     public int Hp;
     public int Id;
     public string Name;
@@ -16,7 +16,21 @@ public class ServerCharacter
     // Resto de stats (Con, Int, Spd, etc.)
 
     /// <summary>
-    /// Object dedicated to synchronization to avoid locking on the public instance.
+    /// Applies damage to the character in a thread-safe manner.
     /// </summary>
-    internal readonly object SyncRoot = new object();
+    /// <param name="damage">Amount of damage to apply.</param>
+    /// <returns>The new HP value.</returns>
+    public int ApplyDamage(int damage)
+    {
+        int initialHp, newHp;
+        do
+        {
+            initialHp = Hp;
+            newHp = initialHp - damage;
+            if (newHp < 0) newHp = 0;
+        }
+        while (Interlocked.CompareExchange(ref Hp, newHp, initialHp) != initialHp);
+
+        return newHp;
+    }
 }
