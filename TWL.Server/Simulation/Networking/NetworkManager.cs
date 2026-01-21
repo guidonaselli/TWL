@@ -99,8 +99,8 @@ public class NetworkManager
 
     public void BroadcastMessage(byte[] data)
     {
-        // Copy-On-Write pattern: _clients is replaced on modification, so local reference is safe to iterate.
-        // This avoids locking and allocation (ToArray) during high-frequency broadcasts.
+        // Optimization: Uses Copy-On-Write (COW) pattern to enable lock-free iteration.
+        // Capturing the volatile reference ensures thread safety without allocation or locking.
         var clients = _clients;
         foreach (var client in clients)
             _ = client.SendMessageAsync(data);
