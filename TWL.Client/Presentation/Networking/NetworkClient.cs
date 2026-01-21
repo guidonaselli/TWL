@@ -2,11 +2,9 @@ using System;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using Newtonsoft.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
@@ -21,7 +19,7 @@ public class NetworkClient
     private readonly int _port;
 
     // Configuration to be case-insensitive (PascalCase vs camelCase)
-    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new()
+    private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
@@ -33,6 +31,9 @@ public class NetworkClient
     private readonly Channel<ClientMessage> _sendChannel;
     private readonly Channel<ServerMessage> _receiveChannel;
     private CancellationTokenSource? _cts;
+
+    // Reusable buffer for receiving data to avoid repeated allocations
+    private readonly byte[] _receiveBuffer = new byte[8192];
 
     public NetworkClient(string ip, int port, GameClientManager gameClientManager, ILogger<NetworkClient> log)
     {
@@ -53,6 +54,12 @@ public class NetworkClient
     {
         try
         {
+            // Re-instantiate TcpClient if it was closed/disposed
+            if (_tcp == null)
+            {
+                _tcp = new TcpClient();
+            }
+
             _tcp.Connect(_ip, _port);
             _stream = _tcp.GetStream();
             Console.WriteLine($"Connected to server at {_ip}:{_port}");
@@ -74,41 +81,6 @@ public class NetworkClient
         while (_receiveChannel.Reader.TryRead(out var serverMsg))
         {
             HandleServerMessage(serverMsg);
-        }
-    }
-
-    private async Task ReceiveLoopAsync(CancellationToken token)
-    {
-        var buffer = new byte[4096];
-        try
-        {
-            while (!token.IsCancellationRequested && _stream != null && IsConnected)
-            {
-                // Async read to avoid blocking threads
-                int read = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
-                if (read == 0) break;
-
-            // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
-            var serverMsg = System.Text.Json.JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
-
-                    if (serverMsg != null)
-                    {
-                        await _receiveChannel.Writer.WriteAsync(serverMsg, token);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error deserializing message: {ex.Message}");
-                }
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            // Graceful shutdown
-        }
-        catch (Exception ex)
-        {
-             Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
         }
     }
 
@@ -171,13 +143,13 @@ public class NetworkClient
         {
             while (!token.IsCancellationRequested && IsConnected && _stream != null)
             {
-                var read = await _stream.ReadAsync(_buffer, 0, _buffer.Length, token);
+                var read = await _stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length, token);
                 if (read <= 0) break;
 
                 // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
                 try
                 {
-                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
+                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_receiveBuffer.AsSpan(0, read), _jsonOptions);
                     if (serverMsg != null)
                     {
                         await _receiveChannel.Writer.WriteAsync(serverMsg, token);
@@ -211,8 +183,11 @@ public class NetworkClient
             _stream = null;
         }
 
-        _tcp.Close();
-        _tcp = null;
+        if (_tcp != null)
+        {
+            _tcp.Close();
+            _tcp = null;
+        }
 
         Console.WriteLine("Disconnected from server");
     }
