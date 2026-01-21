@@ -99,6 +99,8 @@ public class NetworkManager
 
     public void BroadcastMessage(byte[] data)
     {
+        // Optimization: Uses Copy-On-Write (COW) pattern to enable lock-free iteration.
+        // Capturing the volatile reference ensures thread safety without allocation or locking.
         var clients = _clients;
         foreach (var client in clients)
             _ = client.SendMessageAsync(data);
