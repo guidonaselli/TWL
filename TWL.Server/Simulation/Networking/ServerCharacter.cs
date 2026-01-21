@@ -8,7 +8,14 @@ namespace TWL.Server.Simulation.Networking;
 /// </summary>
 public class ServerCharacter
 {
-    public int Hp;
+    private int _hp;
+
+    public int Hp
+    {
+        get => _hp;
+        init => _hp = value;
+    }
+
     public int Id;
     public string Name;
 
@@ -25,11 +32,11 @@ public class ServerCharacter
         int initialHp, newHp;
         do
         {
-            initialHp = Hp;
+            initialHp = _hp;
             newHp = initialHp - damage;
             if (newHp < 0) newHp = 0;
         }
-        while (Interlocked.CompareExchange(ref Hp, newHp, initialHp) != initialHp);
+        while (Interlocked.CompareExchange(ref _hp, newHp, initialHp) != initialHp);
 
         return newHp;
     }
