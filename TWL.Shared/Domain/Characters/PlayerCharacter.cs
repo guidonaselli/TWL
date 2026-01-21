@@ -48,11 +48,11 @@ namespace TWL.Shared.Domain.Characters
             Exp = 0;
             ExpToNextLevel = 100;
 
-            Str = 5;
-            Con = 5;
-            Int = 5;
-            Wis = 5;
-            Agi = 5;
+            Str = 8;
+            Con = 8;
+            Int = 8;
+            Wis = 8;
+            Agi = 8;
 
             Gold = 0;
             TwlPoints = 0;

@@ -232,6 +232,13 @@ namespace TWL.Client.Presentation.Scenes
                 foreach (var loot in e.Loot)
                     _player.Inventory.AddItem(loot.ItemId, loot.Quantity);
             }
+            else
+            {
+                // Defeat: Respawn and heal
+                _player.Health = _player.MaxHealth;
+                _player.Sp = _player.MaxSp;
+                _player.Position = new Vector2(100, 100);
+            }
             // Scene change is now handled by SceneBattle after showing results
         }
     }

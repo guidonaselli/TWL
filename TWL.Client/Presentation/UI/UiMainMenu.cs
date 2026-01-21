@@ -5,7 +5,6 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Text.Json;
-using Newtonsoft.Json;
 using TWL.Client.Presentation.Managers;
 using TWL.Client.Presentation.Networking;
 using TWL.Shared.Net.Abstractions;
