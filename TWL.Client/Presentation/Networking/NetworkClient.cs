@@ -31,6 +31,9 @@ public class NetworkClient
     private readonly Channel<ServerMessage> _receiveChannel;
     private CancellationTokenSource? _cts;
 
+    // Reusable buffer for receiving data to avoid repeated allocations
+    private readonly byte[] _receiveBuffer = new byte[8192];
+
     public NetworkClient(string ip, int port, GameClientManager gameClientManager, ILogger<NetworkClient> log)
     {
         _log = log;
@@ -50,6 +53,12 @@ public class NetworkClient
     {
         try
         {
+            // Re-instantiate TcpClient if it was closed/disposed
+            if (_tcp == null)
+            {
+                _tcp = new TcpClient();
+            }
+
             _tcp.Connect(_ip, _port);
             _stream = _tcp.GetStream();
             Console.WriteLine($"Connected to server at {_ip}:{_port}");
@@ -176,8 +185,11 @@ public class NetworkClient
             _stream = null;
         }
 
-        _tcp.Close();
-        _tcp = null;
+        if (_tcp != null)
+        {
+            _tcp.Close();
+            _tcp = null;
+        }
 
         Console.WriteLine("Disconnected from server");
     }

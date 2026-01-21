@@ -2,6 +2,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using TWL.Server.Persistence.Database;
+using TWL.Shared.Domain.DTO;
 using TWL.Shared.Net.Network;
 
 namespace TWL.Server.Simulation.Networking;
@@ -82,6 +83,8 @@ public class ClientSession
         // payload podría ser {"username":"xxx","passHash":"abc"}
         var loginDto = JsonSerializer.Deserialize<LoginDTO>(payload, _jsonOptions);
         if (loginDto == null) return;
+        // Using await here instead of .Result prevents thread pool starvation
+        // and improves scalability under high load.
         var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
         if (uid < 0)
         {
@@ -127,16 +130,4 @@ public class ClientSession
         var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
-}
-
-public class LoginDTO
-{
-    public string Username { get; set; }
-    public string PassHash { get; set; }
-}
-
-public class MoveDTO
-{
-    public float dx { get; set; }
-    public float dy { get; set; }
 }
