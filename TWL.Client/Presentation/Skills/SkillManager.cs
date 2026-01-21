@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Newtonsoft.Json;
+using System.Text.Json;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
 
@@ -11,6 +11,7 @@ namespace TWL.Client.Presentation.Skills;
 public class SkillManager : ISkillCatalog
 {
     private readonly Dictionary<int, Skill> _skills;
+    private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     public SkillManager()
     {
@@ -21,7 +22,9 @@ public class SkillManager : ISkillCatalog
     public void LoadSkillsFromJson(string path)
     {
         var json = File.ReadAllText(path);
-        var definitions = JsonConvert.DeserializeObject<List<SkillDefinition>>(json);
+        var definitions = JsonSerializer.Deserialize<List<SkillDefinition>>(json, _jsonOptions);
+
+        if (definitions == null) return;
 
         foreach (var def in definitions)
         {

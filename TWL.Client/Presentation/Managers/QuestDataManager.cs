@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using Newtonsoft.Json;
+using System.Text.Json;
 using TWL.Client.Presentation.Quests;
 
 namespace TWL.Client.Presentation.Managers;
@@ -8,6 +8,7 @@ namespace TWL.Client.Presentation.Managers;
 public class QuestDataManager
 {
     private readonly Dictionary<int, QuestDefinition> _questDefinitions;
+    private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
 
     public QuestDataManager()
     {
@@ -17,8 +18,11 @@ public class QuestDataManager
     public void LoadQuestDefinitions(string path)
     {
         var json = File.ReadAllText(path);
-        var list = JsonConvert.DeserializeObject<List<QuestDefinition>>(json);
-        foreach (var def in list) _questDefinitions[def.QuestId] = def;
+        var list = JsonSerializer.Deserialize<List<QuestDefinition>>(json, _jsonOptions);
+        if (list != null)
+        {
+            foreach (var def in list) _questDefinitions[def.QuestId] = def;
+        }
     }
 
     public QuestDefinition GetDefinition(int questId)
