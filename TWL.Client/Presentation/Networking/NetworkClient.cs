@@ -1,6 +1,7 @@
 using System;
 using System.Net.Sockets;
 using System.Text;
+using System.Text.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
@@ -121,7 +122,7 @@ public class NetworkClient
 
                     try
                     {
-                        var json = JsonConvert.SerializeObject(message);
+                        var json = JsonSerializer.Serialize(message);
                         var data = Encoding.UTF8.GetBytes(json);
                         await _stream.WriteAsync(data, 0, data.Length, token);
                     }
