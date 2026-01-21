@@ -138,17 +138,18 @@ public class NetworkClient
 
     private async Task ReceiveLoopAsync(CancellationToken token)
     {
+        var buffer = new byte[4096];
         try
         {
             while (!token.IsCancellationRequested && IsConnected && _stream != null)
             {
-                var read = await _stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length, token);
+                var read = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
                 if (read <= 0) break;
 
                 // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
                 try
                 {
-                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_receiveBuffer.AsSpan(0, read), _jsonOptions);
+                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(buffer.AsSpan(0, read), _jsonOptions);
                     if (serverMsg != null)
                     {
                         await _receiveChannel.Writer.WriteAsync(serverMsg, token);
