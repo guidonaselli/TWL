@@ -53,19 +53,19 @@ public class EncounterManager
             if (type == 0)
             {
                 enemies.Add(new EnemyCharacter("Slime", Element.Earth, false) {
-                    Health = 30, MaxHealth = 30, Str = 4, Spd = 3, Level = 1
+                    Health = 30, MaxHealth = 30, Str = 4, Agi = 3, Level = 1
                 });
             }
             else if (type == 1)
             {
                 enemies.Add(new EnemyCharacter("Wolf", Element.Wind, false) {
-                    Health = 50, MaxHealth = 50, Str = 6, Spd = 6, Level = 3
+                    Health = 50, MaxHealth = 50, Str = 6, Agi = 6, Level = 3
                 });
             }
             else
             {
                 enemies.Add(new EnemyCharacter("Bat", Element.Wind, false) {
-                    Health = 20, MaxHealth = 20, Str = 3, Spd = 8, Level = 2
+                    Health = 20, MaxHealth = 20, Str = 3, Agi = 8, Level = 2
                 });
             }
         }

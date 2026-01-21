@@ -10,9 +10,9 @@ namespace TWL.Tests.Domain
     {
         private class TestCharacter : Character
         {
-            public TestCharacter(string name, int spd) : base(name, Element.Fire)
+            public TestCharacter(string name, int agi) : base(name, Element.Fire)
             {
-                Spd = spd;
+                Agi = agi;
                 Str = 10;
                 Con = 5;
                 Health = 100;
@@ -23,9 +23,9 @@ namespace TWL.Tests.Domain
 
         private class TestEnemy : Character
         {
-            public TestEnemy(string name, int spd) : base(name, Element.Water)
+            public TestEnemy(string name, int agi) : base(name, Element.Water)
             {
-                Spd = spd;
+                Agi = agi;
                 Str = 5;
                 Con = 2;
                 Health = 50;
