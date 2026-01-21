@@ -52,7 +52,7 @@ namespace TWL.Shared.Domain.Characters
             Con = 5;
             Int = 5;
             Wis = 5;
-            Spd = 5;
+            Agi = 5;
 
             Gold = 0;
             TwlPoints = 0;
@@ -143,7 +143,7 @@ namespace TWL.Shared.Domain.Characters
                 Con++;
                 Int++;
                 Wis++;
-                Spd++;
+                Agi++;
 
                 UpdateDerivedStats();
 
@@ -194,7 +194,7 @@ namespace TWL.Shared.Domain.Characters
             Con += 10;
             Int += 10;
             Wis += 10;
-            Spd += 10;
+            Agi += 10;
 
             UpdateDerivedStats();
             Health = MaxHealth;

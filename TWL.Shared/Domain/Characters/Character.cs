@@ -35,7 +35,7 @@ public abstract class Character
         Con = 5;
         Int = 5;
         Wis = 5;
-        Spd = 5;
+        Agi = 5;
         Position = Vector2.Zero;
 
         KnownSkills = new List<int>();
@@ -56,7 +56,14 @@ public abstract class Character
     public int Con { get; set; }
     public int Int { get; set; }
     public int Wis { get; set; }
-    public int Spd { get; set; }
+    public int Agi { get; set; }
+
+    // Derived Battle Stats
+    public int Atk => Str * 2;
+    public int Def => Con * 2;
+    public int Mat => Int * 2;
+    public int Mdf => Wis * 2;
+    public int Spd => Agi;
 
     public bool IsSealed { get; set; }
     public float MovementSpeed { get; set; } = 2f;
@@ -72,11 +79,11 @@ public abstract class Character
     public bool IsAlly() => Team == Team.Player;
     public int GetSpd() => Spd;
 
-    public virtual int CalculatePhysicalDamage() => Str * 2;
-    public virtual int CalculateMagicalDamage() => Int * 2;
+    public virtual int CalculatePhysicalDamage() => Atk;
+    public virtual int CalculateMagicalDamage() => Mat;
 
-    public virtual int CalculateDefense() => Con * 2;
-    public virtual int CalculateMagicalDefense() => Wis * 2;
+    public virtual int CalculateDefense() => Def;
+    public virtual int CalculateMagicalDefense() => Mdf;
 
     public bool ConsumeSp(int cost)
     {
@@ -116,7 +123,7 @@ public abstract class Character
                 Con >= skill.ConRequirement &&
                 Int >= skill.IntRequirement &&
                 Wis >= skill.WisRequirement &&
-                Spd >= skill.AgiRequirement;
+                Agi >= skill.AgiRequirement;
 
             if (ok) KnownSkills.Add(skill.SkillId);
         }

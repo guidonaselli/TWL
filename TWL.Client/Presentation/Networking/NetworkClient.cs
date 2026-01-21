@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
@@ -14,7 +15,6 @@ namespace TWL.Client.Presentation.Networking;
 
 public class NetworkClient
 {
-    private readonly byte[] _buffer;
     private readonly string _ip;
     private readonly ILogger<NetworkClient> _log;
     private readonly int _port;
@@ -41,7 +41,6 @@ public class NetworkClient
         _gameClientManager = gameClientManager;
 
         _tcp = new TcpClient();
-        _buffer = new byte[4096];
 
         _sendChannel = Channel.CreateUnbounded<ClientMessage>();
         _receiveChannel = Channel.CreateUnbounded<ServerMessage>();
