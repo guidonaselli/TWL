@@ -44,29 +44,9 @@ public class TileMap
         _tilesPerRow = _tileSet.Width / TileWidth;
     }
 
-    public void Draw(SpriteBatch spriteBatch)
-    {
-        if (_tileSet is null) return;                      // null-check
-
-        for (var y = 0; y < _rows; y++)
-        for (var x = 0; x < _cols; x++)
-        {
-            var tileIndex = _mapData[y, x];
-            var tileX = tileIndex % _tilesPerRow;
-            var tileY = tileIndex / _tilesPerRow;
-
-            var source = new Rectangle(
-                tileX * TileWidth,
-                tileY * TileHeight,
-                TileWidth,
-                TileHeight
-            );
-
-            var pos = new Vector2(x * TileWidth, y * TileHeight);
-            spriteBatch.Draw(_tileSet, pos, source, Color.White);
-        }
-    }
-
+    /// <summary>
+    /// Draws the visible portion of the map using frustum culling.
+    /// </summary>
     public void Draw(SpriteBatch spriteBatch, Camera2D camera, GraphicsDevice graphicsDevice)
     {
         if (_tileSet is null) return;
