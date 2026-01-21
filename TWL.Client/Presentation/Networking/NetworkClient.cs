@@ -31,6 +31,9 @@ public class NetworkClient
     private readonly Channel<ServerMessage> _receiveChannel;
     private CancellationTokenSource? _cts;
 
+    // Reusable buffer for receiving data to avoid repeated allocations
+    private readonly byte[] _receiveBuffer = new byte[8192];
+
     public NetworkClient(string ip, int port, GameClientManager gameClientManager, ILogger<NetworkClient> log)
     {
         _log = log;
@@ -50,6 +53,12 @@ public class NetworkClient
     {
         try
         {
+            // Re-instantiate TcpClient if it was closed/disposed
+            if (_tcp == null)
+            {
+                _tcp = new TcpClient();
+            }
+
             _tcp.Connect(_ip, _port);
             _stream = _tcp.GetStream();
             Console.WriteLine($"Connected to server at {_ip}:{_port}");
@@ -71,48 +80,6 @@ public class NetworkClient
         while (_receiveChannel.Reader.TryRead(out var serverMsg))
         {
             HandleServerMessage(serverMsg);
-        }
-    }
-
-    private async Task ReceiveLoopAsync(CancellationToken token)
-    {
-        var buffer = new byte[4096];
-        try
-        {
-            while (!token.IsCancellationRequested && _stream != null && IsConnected)
-            {
-                // Async read to avoid blocking threads
-                int read = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
-                if (read == 0) break;
-
-                // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
-                try
-                {
-                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(buffer.AsSpan(0, read), _jsonOptions);
-                    if (serverMsg != null)
-                    {
-                        await _receiveChannel.Writer.WriteAsync(serverMsg, token);
-                    }
-                }
-                catch (JsonException ex)
-                {
-                    Console.WriteLine($"JSON Deserialization error: {ex.Message}");
-                }
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            // Graceful shutdown
-        }
-        catch (Exception ex)
-        {
-             Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
-        }
-        finally
-        {
-            // Only disconnect if we broke out of loop due to error or closure, but Disconnect cancels token so handle carefully
-            // Actually, if loop ends, we probably want to signal disconnection.
-            // But for now let's keep it simple and safe.
         }
     }
 
@@ -166,6 +133,40 @@ public class NetworkClient
         catch (Exception ex)
         {
             Console.WriteLine($"SendLoopAsync error: {ex.Message}");
+        }
+    }
+
+    private async Task ReceiveLoopAsync(CancellationToken token)
+    {
+        try
+        {
+            while (!token.IsCancellationRequested && IsConnected && _stream != null)
+            {
+                var read = await _stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length, token);
+                if (read <= 0) break;
+
+                // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
+                try
+                {
+                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_receiveBuffer.AsSpan(0, read), _jsonOptions);
+                    if (serverMsg != null)
+                    {
+                        await _receiveChannel.Writer.WriteAsync(serverMsg, token);
+                    }
+                }
+                catch (JsonException ex)
+                {
+                    Console.WriteLine($"JSON Deserialization error: {ex.Message}");
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Graceful shutdown
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
         }
     }
 

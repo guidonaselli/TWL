@@ -160,8 +160,7 @@ namespace TWL.Client.Presentation.UI
         private void OnLoginSelected()
         {
             var loginRequest = new LoginRequestDto { Username = _username, Password = _password };
-            var jsonOptions = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
-            var jsonPayload = JsonSerializer.Serialize(loginRequest, jsonOptions);
+            var jsonPayload = JsonSerializer.Serialize(loginRequest);
             var clientMessage = new ClientMessage { MessageType = ClientMessageType.LoginRequest, Payload = jsonPayload };
 
             _networkClient.SendClientMessage(clientMessage);
