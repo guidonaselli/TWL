@@ -5,7 +5,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using System.Text.Json;
+using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
@@ -20,7 +20,7 @@ public class NetworkClient
     private readonly int _port;
 
     // Configuration to be case-insensitive (PascalCase vs camelCase)
-    private static readonly JsonSerializerOptions _jsonOptions = new()
+    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
@@ -69,8 +69,24 @@ public class NetworkClient
 
     public void Update()
     {
-        // Process received messages on the main thread
-        while (_receiveChannel.Reader.TryRead(out var serverMsg))
+        // 1) si nunca conectó, salimos
+        if (!IsConnected || _stream == null)
+            return;
+
+        try
+        {
+            if (!_stream.DataAvailable) return;
+
+            var read = _stream.Read(_buffer, 0, _buffer.Length);
+            if (read <= 0) return;
+
+            // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
+            var serverMsg = System.Text.Json.JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
+
+            if (serverMsg != null)
+                HandleServerMessage(serverMsg);
+        }
+        catch (Exception ex)
         {
             HandleServerMessage(serverMsg);
         }
