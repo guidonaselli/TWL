@@ -19,8 +19,6 @@
         <!-- Sólo para los tipos compartidos de MonoGame, si los necesitas -->
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.3" />
 
-        <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
-
         <!-- Alinea Serilog igual que en los demás -->
         <PackageReference Include="Serilog.AspNetCore"    Version="8.0.0" />
         <PackageReference Include="Serilog.Sinks.Console" Version="5.0.1" />
