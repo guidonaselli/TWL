@@ -1,6 +1,5 @@
 using System;
 using System.Net.Sockets;
-using System.Text;
 using System.Text.Json;
 using System.Threading;
 using System.Threading.Channels;
@@ -69,29 +68,49 @@ public class NetworkClient
 
     public void Update()
     {
-        // 1) si nunca conectó, salimos
-        if (!IsConnected || _stream == null)
-            return;
-
-        try
-        {
-            if (!_stream.DataAvailable) return;
-
-            var read = _stream.Read(_buffer, 0, _buffer.Length);
-            if (read <= 0) return;
-
-            // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
-            var serverMsg = System.Text.Json.JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
-
-            if (serverMsg != null)
-                HandleServerMessage(serverMsg);
-        }
-        catch (Exception ex)
+        // Consume messages from the receive channel and handle them on the main thread
+        while (_receiveChannel.Reader.TryRead(out var serverMsg))
         {
             HandleServerMessage(serverMsg);
         }
     }
 
+    private async Task ReceiveLoopAsync(CancellationToken token)
+    {
+        var buffer = new byte[4096];
+        try
+        {
+            while (!token.IsCancellationRequested && _stream != null && IsConnected)
+            {
+                // Async read to avoid blocking threads
+                int read = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
+                if (read == 0) break;
+
+                try
+                {
+                    // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
+                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(buffer.AsSpan(0, read), _jsonOptions);
+
+                    if (serverMsg != null)
+                    {
+                        await _receiveChannel.Writer.WriteAsync(serverMsg, token);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error deserializing message: {ex.Message}");
+                }
+            }
+        }
+        catch (OperationCanceledException)
+        {
+            // Graceful shutdown
+        }
+        catch (Exception ex)
+        {
+             Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
+        }
+    }
 
     private void HandleServerMessage(ServerMessage serverMsg)
     {
@@ -124,6 +143,8 @@ public class NetworkClient
 
                     try
                     {
+                        // Optimization: Use System.Text.Json (SerializeToUtf8Bytes)
+                        // to avoid intermediate string allocations and utilize existing _jsonOptions
                         var data = JsonSerializer.SerializeToUtf8Bytes(message, _jsonOptions);
                         await _stream.WriteAsync(data, 0, data.Length, token);
                     }

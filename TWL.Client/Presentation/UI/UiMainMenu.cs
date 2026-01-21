@@ -160,11 +160,7 @@ namespace TWL.Client.Presentation.UI
         {
             var loginRequest = new LoginRequestDto { Username = _username, Password = _password };
             var jsonPayload = JsonConvert.SerializeObject(loginRequest);
-            var clientMessage = new ClientMessage
-            {
-                MessageType = ClientMessageType.LoginRequest,
-                Payload = jsonPayload
-            };
+            var clientMessage = new ClientMessage { MessageType = ClientMessageType.LoginRequest, Payload = jsonPayload };
 
             _networkClient.SendClientMessage(clientMessage);
 
