@@ -16,7 +16,17 @@ public class ServerCharacter
     // Resto de stats (Con, Int, Spd, etc.)
 
     /// <summary>
-    /// Object dedicated to synchronization to avoid locking on the public instance.
+    /// Apply damage to the character in a thread-safe manner.
     /// </summary>
-    internal readonly object SyncRoot = new object();
+    /// <param name="damage">Amount of damage to deal.</param>
+    /// <returns>The new HP value.</returns>
+    public int TakeDamage(int damage)
+    {
+        lock (_syncRoot)
+        {
+            Hp -= damage;
+            if (Hp < 0) Hp = 0;
+            return Hp;
+        }
+    }
 }
