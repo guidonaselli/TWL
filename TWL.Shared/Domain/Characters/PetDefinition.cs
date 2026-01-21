@@ -3,7 +3,7 @@
 public class PetDefinition
 {
     public int BaseHp;
-    public int BaseStr, BaseCon, BaseInt, BaseWis, BaseSpd;
+    public int BaseStr, BaseCon, BaseInt, BaseWis, BaseAgi;
     public Element Element;
     public bool IsUnique;
     public string Name;

@@ -37,7 +37,7 @@ namespace TWL.Client.Presentation.Managers
                 Con = player.Con,
                 Int = player.Int,
                 Wis = player.Wis,
-                Spd = player.Spd,
+                Spd = player.Agi,
                 Gold = player.Gold,
                 TwlPoints = player.TwlPoints,
                 PositionX = player.Position.X,
