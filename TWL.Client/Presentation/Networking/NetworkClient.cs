@@ -2,11 +2,9 @@ using System;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using Newtonsoft.Json;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
@@ -77,41 +75,6 @@ public class NetworkClient
         }
     }
 
-    private async Task ReceiveLoopAsync(CancellationToken token)
-    {
-        var buffer = new byte[4096];
-        try
-        {
-            while (!token.IsCancellationRequested && _stream != null && IsConnected)
-            {
-                // Async read to avoid blocking threads
-                int read = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
-                if (read == 0) break;
-
-            // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
-            var serverMsg = System.Text.Json.JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
-
-                    if (serverMsg != null)
-                    {
-                        await _receiveChannel.Writer.WriteAsync(serverMsg, token);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Error deserializing message: {ex.Message}");
-                }
-            }
-        }
-        catch (OperationCanceledException)
-        {
-            // Graceful shutdown
-        }
-        catch (Exception ex)
-        {
-             Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
-        }
-    }
-
     private void HandleServerMessage(ServerMessage serverMsg)
     {
         EventBus.Publish(serverMsg);
@@ -167,17 +130,18 @@ public class NetworkClient
 
     private async Task ReceiveLoopAsync(CancellationToken token)
     {
+        var buffer = new byte[4096];
         try
         {
             while (!token.IsCancellationRequested && IsConnected && _stream != null)
             {
-                var read = await _stream.ReadAsync(_buffer, 0, _buffer.Length, token);
+                var read = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
                 if (read <= 0) break;
 
                 // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
                 try
                 {
-                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
+                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(buffer.AsSpan(0, read), _jsonOptions);
                     if (serverMsg != null)
                     {
                         await _receiveChannel.Writer.WriteAsync(serverMsg, token);

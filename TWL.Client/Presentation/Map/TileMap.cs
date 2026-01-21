@@ -64,9 +64,12 @@ public class TileMap
         var minWorld = new Vector2(float.MaxValue);
         var maxWorld = new Vector2(float.MinValue);
 
+        var transform = camera.GetTransformation(graphicsDevice);
+        var inverse = Matrix.Invert(transform);
+
         foreach (var corner in corners)
         {
-            var worldPos = camera.ScreenToWorld(corner, graphicsDevice);
+            var worldPos = Vector2.Transform(corner, inverse);
             minWorld = Vector2.Min(minWorld, worldPos);
             maxWorld = Vector2.Max(maxWorld, worldPos);
         }
