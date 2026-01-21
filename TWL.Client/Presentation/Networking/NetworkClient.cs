@@ -4,6 +4,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Channels;
 using System.Threading.Tasks;
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
@@ -13,7 +14,6 @@ namespace TWL.Client.Presentation.Networking;
 
 public class NetworkClient
 {
-    private readonly byte[] _buffer;
     private readonly string _ip;
     private readonly ILogger<NetworkClient> _log;
     private readonly int _port;
@@ -29,6 +29,7 @@ public class NetworkClient
     private TcpClient _tcp;
 
     private readonly Channel<ClientMessage> _sendChannel;
+    private readonly Channel<ServerMessage> _receiveChannel;
     private CancellationTokenSource? _cts;
 
     public NetworkClient(string ip, int port, GameClientManager gameClientManager, ILogger<NetworkClient> log)
@@ -39,9 +40,9 @@ public class NetworkClient
         _gameClientManager = gameClientManager;
 
         _tcp = new TcpClient();
-        _buffer = new byte[4096];
 
         _sendChannel = Channel.CreateUnbounded<ClientMessage>();
+        _receiveChannel = Channel.CreateUnbounded<ServerMessage>();
     }
 
     public bool IsConnected => _tcp?.Connected ?? false;
@@ -56,6 +57,7 @@ public class NetworkClient
 
             _cts = new CancellationTokenSource();
             _ = SendLoopAsync(_cts.Token);
+            _ = ReceiveLoopAsync(_cts.Token);
         }
         catch (Exception ex)
         {
@@ -66,26 +68,10 @@ public class NetworkClient
 
     public void Update()
     {
-        // 1) si nunca conectó, salimos
-        if (!IsConnected || _stream == null)
-            return;
-
-        try
+        // Consume received messages from the channel on the main thread
+        while (_receiveChannel.Reader.TryRead(out var serverMsg))
         {
-            if (!_stream.DataAvailable) return;
-
-            var read = _stream.Read(_buffer, 0, _buffer.Length);
-            if (read <= 0) return;
-
-            // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
-            var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
-
-            if (serverMsg != null)
-                HandleServerMessage(serverMsg);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Network error in update: {ex.Message}");
+            HandleServerMessage(serverMsg);
         }
     }
 
@@ -121,9 +107,8 @@ public class NetworkClient
 
                     try
                     {
-                        var json = JsonConvert.SerializeObject(message);
-                        var data = Encoding.UTF8.GetBytes(json);
-                        await _stream.WriteAsync(data, 0, data.Length, token);
+                        var bytes = JsonSerializer.SerializeToUtf8Bytes(message, _jsonOptions);
+                        await _stream.WriteAsync(bytes, 0, bytes.Length, token);
                     }
                     catch (Exception ex)
                     {
@@ -139,6 +124,39 @@ public class NetworkClient
         catch (Exception ex)
         {
             Console.WriteLine($"SendLoopAsync error: {ex.Message}");
+        }
+    }
+
+    private async Task ReceiveLoopAsync(CancellationToken token)
+    {
+        var buffer = new byte[4096];
+        try
+        {
+            while (!token.IsCancellationRequested)
+            {
+                if (_stream == null || !IsConnected) break;
+
+                int read = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
+                if (read == 0) break; // Connection closed
+
+                try
+                {
+                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(buffer.AsSpan(0, read), _jsonOptions);
+                    if (serverMsg != null)
+                    {
+                        _receiveChannel.Writer.TryWrite(serverMsg);
+                    }
+                }
+                catch (JsonException)
+                {
+                    // Handle malformed JSON or partial reads
+                }
+            }
+        }
+        catch (OperationCanceledException) { }
+        catch (Exception ex)
+        {
+             Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
         }
     }
 
