@@ -1,7 +1,6 @@
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
-using Newtonsoft.Json;
 using TWL.Server.Persistence.Database;
 using TWL.Shared.Net.Network;
 
@@ -81,7 +80,7 @@ public class ClientSession
     private async Task HandleLoginAsync(string payload)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
-        var loginDto = JsonConvert.DeserializeObject<LoginDTO>(payload);
+        var loginDto = JsonSerializer.Deserialize<LoginDTO>(payload, _jsonOptions);
         if (loginDto == null) return;
         var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
         if (uid < 0)
@@ -111,7 +110,7 @@ public class ClientSession
         // EJ: {"dx":1,"dy":0}
         if (UserId < 0) return; // no logueado
 
-        var moveDto = System.Text.Json.JsonSerializer.Deserialize<MoveDTO>(payload, _jsonOptions);
+        var moveDto = JsonSerializer.Deserialize<MoveDTO>(payload, _jsonOptions);
 
         if (moveDto == null) return;
 
@@ -125,7 +124,7 @@ public class ClientSession
 
     private async Task SendAsync(NetMessage msg)
     {
-        var bytes = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(msg);
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
     }
 }
