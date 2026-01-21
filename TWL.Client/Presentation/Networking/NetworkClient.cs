@@ -69,6 +69,7 @@ public class NetworkClient
 
     public void Update()
     {
+        // Process received messages on the main thread
         while (_receiveChannel.Reader.TryRead(out var serverMsg))
         {
             HandleServerMessage(serverMsg);
@@ -133,29 +134,21 @@ public class NetworkClient
         {
             while (!token.IsCancellationRequested && IsConnected && _stream != null)
             {
-                // Note: ReadAsync will wait until data is available.
-                // We use a separate buffer logic or reuse _buffer carefully.
-                // Since this is a single thread loop, reusing _buffer is fine.
-                // But _buffer field is also accessed by Update in previous version. Now Update doesn't touch it.
-                // However, we must ensure _buffer is not accessed concurrently.
-                // _buffer is private and only used here now.
-
                 var read = await _stream.ReadAsync(_buffer, 0, _buffer.Length, token);
-                if (read == 0) break; // Connection closed
+                if (read <= 0) break;
 
+                // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
                 try
                 {
-                    // Deserialize directly from Span<byte>
                     var serverMsg = JsonSerializer.Deserialize<ServerMessage>(_buffer.AsSpan(0, read), _jsonOptions);
-
                     if (serverMsg != null)
                     {
-                        _receiveChannel.Writer.TryWrite(serverMsg);
+                        await _receiveChannel.Writer.WriteAsync(serverMsg, token);
                     }
                 }
-                catch (Exception ex)
+                catch (JsonException ex)
                 {
-                    Console.WriteLine($"Error deserializing server message: {ex.Message}");
+                    Console.WriteLine($"JSON Deserialization error: {ex.Message}");
                 }
             }
         }
