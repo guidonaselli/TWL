@@ -109,6 +109,10 @@ public class ClientSession
         var collected = QuestComponent.TryProgress("Collect", dto.TargetName);
         updated.AddRange(collected);
 
+        // Also try "Interact" generic objectives
+        var interacted = QuestComponent.TryProgress("Interact", dto.TargetName);
+        updated.AddRange(interacted);
+
         // Remove duplicates
         var uniqueUpdates = updated.Distinct().ToList();
 
@@ -151,6 +155,12 @@ public class ClientSession
                             sb.Append($", Item {item.ItemId} x{item.Quantity}");
                         }
                         itemsLog = sb.ToString();
+                    }
+
+                    if (def.Rewards.PetUnlockId.HasValue)
+                    {
+                        Character.AddPet(def.Rewards.PetUnlockId.Value);
+                        itemsLog += $", Pet Unlock {def.Rewards.PetUnlockId.Value}";
                     }
 
                     Console.WriteLine($"Player {UserId} claimed quest {questId}, gained {def.Rewards.Exp} EXP, {def.Rewards.Gold} Gold{itemsLog}.");

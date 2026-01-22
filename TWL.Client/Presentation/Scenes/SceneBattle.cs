@@ -10,6 +10,7 @@ using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Events;
 using TWL.Shared.Domain.Models;
+using TWL.Shared.Domain.Skills;
 using TWL.Shared.Net;
 using TWL.Shared.Net.Abstractions;
 

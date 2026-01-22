@@ -14,7 +14,8 @@ public sealed record ItemReward(int ItemId, int Quantity);
 public sealed record RewardDefinition(
     int                      Exp,
     int                      Gold,
-    IReadOnlyList<ItemReward> Items);
+    IReadOnlyList<ItemReward> Items,
+    int?                     PetUnlockId = null);
 
 public sealed record QuestDefinition
 {

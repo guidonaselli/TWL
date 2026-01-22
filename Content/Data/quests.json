@@ -22,7 +22,9 @@
     "QuestId": 1002,
     "Title": "First Meal",
     "Description": "Collect 3 Coconuts for the survivors.",
-    "Requirements": [1001],
+    "Requirements": [
+      1001
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -35,7 +37,10 @@
       "Exp": 20,
       "Gold": 0,
       "Items": [
-        { "ItemId": 101, "Quantity": 1 }
+        {
+          "ItemId": 101,
+          "Quantity": 1
+        }
       ]
     }
   },
@@ -43,7 +48,9 @@
     "QuestId": 1003,
     "Title": "Reporting In",
     "Description": "Report to the Doctor.",
-    "Requirements": [1002],
+    "Requirements": [
+      1002
+    ],
     "Objectives": [
       {
         "Type": "Talk",
@@ -56,7 +63,10 @@
       "Exp": 30,
       "Gold": 10,
       "Items": [
-        { "ItemId": 102, "Quantity": 2 }
+        {
+          "ItemId": 102,
+          "Quantity": 2
+        }
       ]
     }
   },
@@ -64,7 +74,9 @@
     "QuestId": 1004,
     "Title": "Improvised Defense",
     "Description": "The wilds are dangerous. Ask the Blacksmith about a weapon.",
-    "Requirements": [1003],
+    "Requirements": [
+      1003
+    ],
     "Objectives": [
       {
         "Type": "Talk",
@@ -89,7 +101,10 @@
       "Exp": 50,
       "Gold": 0,
       "Items": [
-        { "ItemId": 103, "Quantity": 1 }
+        {
+          "ItemId": 103,
+          "Quantity": 1
+        }
       ]
     }
   },
@@ -97,7 +112,9 @@
     "QuestId": 1005,
     "Title": "Water Source",
     "Description": "The survivors are dehydrated. Find a source of fresh water inland.",
-    "Requirements": [1004],
+    "Requirements": [
+      1004
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -116,7 +133,9 @@
     "QuestId": 1006,
     "Title": "Fire Starter",
     "Description": "We need to boil the water. Ask the Survivalist for help starting a fire.",
-    "Requirements": [1005],
+    "Requirements": [
+      1005
+    ],
     "Objectives": [
       {
         "Type": "Talk",
@@ -135,7 +154,9 @@
     "QuestId": 1007,
     "Title": "Kindling",
     "Description": "I can start a fire, but I need dry wood. The driftwood isn't enough.",
-    "Requirements": [1006],
+    "Requirements": [
+      1006
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -148,8 +169,81 @@
       "Exp": 100,
       "Gold": 20,
       "Items": [
-        { "ItemId": 101, "Quantity": 1 }
+        {
+          "ItemId": 101,
+          "Quantity": 1
+        }
       ]
+    }
+  },
+  {
+    "QuestId": 1008,
+    "Title": "Strange Noises",
+    "Description": "Ive been hearing strange noises coming from the bushes near the wreck. It sounds... distressed. Can you investigate?",
+    "Requirements": [
+      1007
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Survivalist",
+        "RequiredCount": 1,
+        "Description": "Speak with the Survivalist."
+      },
+      {
+        "Type": "Interact",
+        "TargetName": "RustlingBushes",
+        "RequiredCount": 1,
+        "Description": "Investigate the rustling bushes."
+      }
+    ],
+    "Rewards": {
+      "Exp": 20,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1009,
+    "Title": "A New Friend?",
+    "Description": "Its a small monkey! It looks hurt and scared. It needs medicine. The Survivalist mentioned seeing medicinal herbs inland.",
+    "Requirements": [
+      1008
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "MedicinalHerb",
+        "RequiredCount": 2,
+        "Description": "Find Medicinal Herbs."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1010,
+    "Title": "Nursing to Health",
+    "Description": "You have the herbs. Apply them gently to the monkeys wounds.",
+    "Requirements": [
+      1009
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "WoundedMonkey",
+        "RequiredCount": 1,
+        "Description": "Tend to the Wounded Monkey."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": [],
+      "PetUnlockId": 1
     }
   }
 ]
