@@ -60,6 +60,29 @@ public class ServerCharacter
         }
     }
 
+    private readonly List<int> _pets = new();
+    public IReadOnlyList<int> Pets
+    {
+        get
+        {
+            lock (_pets)
+            {
+                return _pets.ToArray();
+            }
+        }
+    }
+
+    public void AddPet(int petId)
+    {
+        lock (_pets)
+        {
+            if (!_pets.Contains(petId))
+            {
+                _pets.Add(petId);
+            }
+        }
+    }
+
     public void AddExp(int amount)
     {
         Interlocked.Add(ref _exp, amount);
