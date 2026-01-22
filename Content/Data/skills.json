@@ -1,0 +1,77 @@
+[
+  {
+    "SkillId": 20,
+    "Name": "Fireball",
+    "Description": "Throws a ball of fire at a single enemy.",
+    "Element": "Fire",
+    "Branch": "Magical",
+    "Tier": 1,
+    "TargetType": "SingleEnemy",
+    "SpCost": 10,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Mat", "Coefficient": 1.2 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 },
+      { "Tag": "Burn", "Value": 5, "Duration": 2, "Chance": 0.3 }
+    ],
+    "Requirements": { "Int": 5 }
+  },
+  {
+    "SkillId": 21,
+    "Name": "Blaze",
+    "Description": "A fierce flame that engulfs the enemy, causing heavy burn.",
+    "Element": "Fire",
+    "Branch": "Magical",
+    "Tier": 2,
+    "TargetType": "SingleEnemy",
+    "SpCost": 25,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Mat", "Coefficient": 1.5 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 },
+      { "Tag": "Burn", "Value": 15, "Duration": 3, "Chance": 0.6 }
+    ],
+    "Requirements": { "Int": 15 }
+  },
+  {
+    "SkillId": 22,
+    "Name": "Heat Wave",
+    "Description": "Scorching air hits a row of enemies.",
+    "Element": "Fire",
+    "Branch": "Magical",
+    "Tier": 2,
+    "TargetType": "RowEnemies",
+    "SpCost": 40,
+    "Cooldown": 1,
+    "Scaling": [
+      { "Stat": "Mat", "Coefficient": 1.0 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 }
+    ],
+    "Requirements": { "Int": 20 }
+  },
+  {
+    "SkillId": 23,
+    "Name": "Flame Strike",
+    "Description": "A physical attack imbued with fire.",
+    "Element": "Fire",
+    "Branch": "Physical",
+    "Tier": 1,
+    "TargetType": "SingleEnemy",
+    "SpCost": 8,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Atk", "Coefficient": 1.1 },
+      { "Stat": "Str", "Coefficient": 0.5 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 }
+    ],
+    "Requirements": { "Str": 10 }
+  }
+]

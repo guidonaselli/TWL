@@ -11,11 +11,33 @@ public class Combatant
 
     public int AttackBuffTurns { get; set; }
 
+    public List<StatusEffectInstance> StatusEffects { get; private set; } = new();
+
     public Combatant(Character character)
     {
         Character = character;
         Atb = 0;
         IsDefending = false;
+    }
+
+    public void AddStatusEffect(StatusEffectInstance effect)
+    {
+        // Simple stacking logic: Refresh duration if exists, else add
+        var existing = StatusEffects.FirstOrDefault(e => e.Tag == effect.Tag);
+        if (existing != null)
+        {
+            existing.TurnsRemaining = Math.Max(existing.TurnsRemaining, effect.TurnsRemaining);
+            existing.Value = Math.Max(existing.Value, effect.Value); // Keep strongest
+        }
+        else
+        {
+            StatusEffects.Add(effect);
+        }
+    }
+
+    public void RemoveStatusEffect(TWL.Shared.Domain.Skills.SkillEffectTag tag)
+    {
+        StatusEffects.RemoveAll(e => e.Tag == tag);
     }
 
     public void ResetTurn()

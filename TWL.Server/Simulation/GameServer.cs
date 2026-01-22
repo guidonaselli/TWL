@@ -17,8 +17,17 @@ public class GameServer
         DB = new DbService(connString);
         DB.Init();
 
-        // 2) Carga definiciones (items, quests) si lo deseas
-        // e.g. LoadItemDefinitions();
+        // 2) Carga definiciones (items, quests, skills)
+        if (System.IO.File.Exists("Content/Data/skills.json"))
+        {
+            var json = System.IO.File.ReadAllText("Content/Data/skills.json");
+            TWL.Shared.Domain.Skills.SkillRegistry.Instance.LoadSkills(json);
+            Console.WriteLine("Skills loaded.");
+        }
+        else
+        {
+            Console.WriteLine("Warning: Content/Data/skills.json not found.");
+        }
 
         // 3) Inicia Network
         _netManager = new NetworkManager(this);

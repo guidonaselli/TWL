@@ -1,4 +1,5 @@
 using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.Skills;
 
 namespace TWL.Shared.Domain.Battle;
 
@@ -23,11 +24,15 @@ public class BattleInstance
     // Current combatant whose turn it is
     public Combatant CurrentTurnCombatant { get; private set; }
 
-    public BattleInstance(IEnumerable<Character> allies, IEnumerable<Character> enemies)
+    // Dependency on Skill Catalog
+    private ISkillCatalog _skillCatalog;
+
+    public BattleInstance(IEnumerable<Character> allies, IEnumerable<Character> enemies, ISkillCatalog? skillCatalog = null)
     {
         int idCounter = 1;
         Allies = allies.Select(c => new Combatant(c) { BattleId = idCounter++ }).ToList();
         Enemies = enemies.Select(c => new Combatant(c) { BattleId = idCounter++ }).ToList();
+        _skillCatalog = skillCatalog ?? SkillRegistry.Instance;
     }
 
     public void Tick(float deltaTimeSeconds)
@@ -114,6 +119,13 @@ public class BattleInstance
         // End turn
         if (actor.AttackBuffTurns > 0) actor.AttackBuffTurns--;
 
+        // Process Status Effects (Burn, etc)
+        string statusLogs = ProcessStatusEffects(actor);
+        if (!string.IsNullOrEmpty(statusLogs))
+        {
+            resultMessage += " " + statusLogs;
+        }
+
         actor.Atb = 0;
         CurrentTurnCombatant = null;
 
@@ -123,6 +135,148 @@ public class BattleInstance
     }
 
     private string UseSkill(Combatant actor, Combatant target, int skillId)
+    {
+        var skill = _skillCatalog.GetSkillById(skillId);
+
+        // Legacy fallback
+        if (skill == null)
+        {
+            return UseLegacySkill(actor, target, skillId);
+        }
+
+        if (!actor.Character.ConsumeSp(skill.SpCost)) return "Not enough SP!";
+
+        if (target == null && skill.TargetType == SkillTargetType.SingleEnemy) return "No target";
+
+        // Logic for Data-Driven Skill
+        return ApplyDataDrivenSkill(actor, target, skill);
+    }
+
+    private string ApplyDataDrivenSkill(Combatant actor, Combatant target, Skill skill)
+    {
+        // Identify Targets
+        List<Combatant> targets = new List<Combatant>();
+
+        if (skill.TargetType == SkillTargetType.RowEnemies && target != null)
+        {
+            // Simple logic: hit all enemies for now, or we would need row logic
+            // Assuming "Row" implies multiple targets. For simplicity in this thin slice, we hit all enemies if Row.
+            // A proper implementation would check Grid position.
+            targets.AddRange(Enemies.Where(e => e.Character.IsAlive()));
+        }
+        else if (target != null)
+        {
+            targets.Add(target);
+        }
+        else if (skill.TargetType == SkillTargetType.Self)
+        {
+            targets.Add(actor);
+        }
+
+        float totalValue = 0;
+        bool didDamage = false;
+        bool didHeal = false;
+
+        // Calculate base power from Scaling
+        foreach (var scaling in skill.Scaling)
+        {
+            float statValue = GetStatValue(actor.Character, scaling.Stat);
+            totalValue += statValue * scaling.Coefficient;
+        }
+
+        // Apply Buffs/Multipliers (e.g. AttackBuff) - simplified
+        if (skill.Branch == SkillBranch.Physical && actor.AttackBuffTurns > 0)
+        {
+            totalValue *= 1.5f;
+        }
+
+        // Apply Effects to All Targets
+        foreach (var currentTarget in targets)
+        {
+            foreach (var effect in skill.Effects)
+            {
+                 if (effect.Tag == SkillEffectTag.Damage)
+                 {
+                     int defense = (skill.Branch == SkillBranch.Magical)
+                         ? currentTarget.Character.CalculateMagicalDefense()
+                         : currentTarget.Character.CalculateDefense();
+
+                     int damage = Math.Max(1, (int)totalValue - defense);
+                     if (currentTarget.IsDefending) damage /= 2;
+
+                     currentTarget.Character.TakeDamage(damage);
+                     didDamage = true;
+                     // Only track last damage for simple logging
+                 }
+                 else if (effect.Tag == SkillEffectTag.Heal)
+                 {
+                     int healAmount = (int)totalValue;
+                     if (healAmount == 0) healAmount = (int)effect.Value;
+
+                     currentTarget.Character.Heal(healAmount);
+                     didHeal = true;
+                 }
+                 else if (effect.Tag == SkillEffectTag.Burn || effect.Tag == SkillEffectTag.BuffStats || effect.Tag == SkillEffectTag.DebuffStats)
+                 {
+                     var rng = new Random();
+                     if (rng.NextDouble() <= effect.Chance)
+                     {
+                         currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param));
+                     }
+                 }
+            }
+        }
+
+        if (didDamage) return $"{actor.Character.Name} uses {skill.Name}!";
+        if (didHeal) return $"{actor.Character.Name} uses {skill.Name} and heals!";
+
+        return $"{actor.Character.Name} uses {skill.Name}!";
+    }
+
+    public string ProcessStatusEffects(Combatant combatant)
+    {
+        var logs = new List<string>();
+        // Process DoTs and Duration
+        for (int i = combatant.StatusEffects.Count - 1; i >= 0; i--)
+        {
+            var effect = combatant.StatusEffects[i];
+
+            if (effect.Tag == SkillEffectTag.Burn)
+            {
+                int dmg = (int)effect.Value;
+                combatant.Character.TakeDamage(dmg);
+                logs.Add($"{combatant.Character.Name} takes {dmg} burn damage!");
+            }
+
+            effect.TurnsRemaining--;
+            if (effect.TurnsRemaining <= 0)
+            {
+                combatant.StatusEffects.RemoveAt(i);
+                logs.Add($"{combatant.Character.Name}'s {effect.Tag} wore off.");
+            }
+        }
+        return string.Join(" ", logs);
+    }
+
+    private float GetStatValue(Character c, StatType stat)
+    {
+        switch (stat)
+        {
+            case StatType.Str: return c.Str;
+            case StatType.Con: return c.Con;
+            case StatType.Int: return c.Int;
+            case StatType.Wis: return c.Wis;
+            case StatType.Agi: return c.Agi;
+            case StatType.Atk: return c.Atk;
+            case StatType.Def: return c.Def;
+            case StatType.Mat: return c.Mat;
+            case StatType.Mdf: return c.Mdf;
+            case StatType.Spd: return c.Spd;
+            default: return 0;
+        }
+    }
+
+    private string UseLegacySkill(Combatant actor, Combatant target, int skillId)
     {
         int cost = 0;
         switch (skillId)
