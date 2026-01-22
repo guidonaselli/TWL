@@ -78,7 +78,8 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
              if (player.KnownSkills.Count == 0)
              {
                  player.KnownSkills.Add(1); // Power Strike
-                 player.KnownSkills.Add(2); // Fireball
+                 player.KnownSkills.Add(23); // Flame Strike (Data)
+                 player.KnownSkills.Add(20); // Fireball (Data)
                  player.KnownSkills.Add(3); // Heal
                  player.KnownSkills.Add(4); // Focus
              }
@@ -89,6 +90,9 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
 
     private string GetSkillName(int id)
     {
+        var skill = SkillRegistry.Instance.GetSkillById(id);
+        if (skill != null) return skill.Name;
+
         switch (id)
         {
             case 1: return "Power Strike";
@@ -244,7 +248,8 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
                 {
                      // Fallback
                      actor.Character.KnownSkills.Add(1);
-                     actor.Character.KnownSkills.Add(2);
+                     actor.Character.KnownSkills.Add(23);
+                     actor.Character.KnownSkills.Add(20);
                      actor.Character.KnownSkills.Add(3);
                 }
                 _availableSkills = actor.Character.KnownSkills.Select(id => (GetSkillName(id), id)).ToList();

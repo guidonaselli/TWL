@@ -33,6 +33,12 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Content Include="Content\Data\**">
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
+    </ItemGroup>
+
+    <ItemGroup>
         <ProjectReference Include="..\TWL.Server\TWL.Server.csproj" />
     </ItemGroup>
     

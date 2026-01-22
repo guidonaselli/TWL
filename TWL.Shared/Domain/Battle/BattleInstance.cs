@@ -176,6 +176,8 @@ public class BattleInstance
         float totalValue = 0;
         bool didDamage = false;
         bool didHeal = false;
+        int lastDamage = 0;
+        Combatant lastTarget = null;
 
         // Calculate base power from Scaling
         foreach (var scaling in skill.Scaling)
@@ -206,7 +208,8 @@ public class BattleInstance
 
                      currentTarget.Character.TakeDamage(damage);
                      didDamage = true;
-                     // Only track last damage for simple logging
+                     lastDamage = damage;
+                     lastTarget = currentTarget;
                  }
                  else if (effect.Tag == SkillEffectTag.Heal)
                  {
@@ -227,7 +230,12 @@ public class BattleInstance
             }
         }
 
-        if (didDamage) return $"{actor.Character.Name} uses {skill.Name}!";
+        if (didDamage)
+        {
+            if (lastTarget != null)
+                return $"{actor.Character.Name} uses {skill.Name} on {lastTarget.Character.Name} for {lastDamage}!";
+            return $"{actor.Character.Name} uses {skill.Name}!";
+        }
         if (didHeal) return $"{actor.Character.Name} uses {skill.Name} and heals!";
 
         return $"{actor.Character.Name} uses {skill.Name}!";

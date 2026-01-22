@@ -59,6 +59,17 @@ namespace TWL.Client.Presentation.Core
 
         protected override void Initialize()
         {
+            // Cargar datos estáticos
+            try
+            {
+                var skillsJson = System.IO.File.ReadAllText("Content/Data/skills.json");
+                TWL.Shared.Domain.Skills.SkillRegistry.Instance.LoadSkills(skillsJson);
+            }
+            catch (System.Exception ex)
+            {
+                System.Console.WriteLine($"Error loading skills: {ex.Message}");
+            }
+
             // Solo registramos las escenas; no cargamos contenido todavía
             _scenes.RegisterScene("MainMenu",
                 new SceneMainMenu(Content, GraphicsDevice, _scenes, _assets, _gameClientManager.NetworkClient, _persistence));
