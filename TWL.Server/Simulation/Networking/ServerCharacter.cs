@@ -22,6 +22,18 @@ public class ServerCharacter
     public int Str;
     // Resto de stats (Con, Int, Spd, etc.)
 
+    private int _exp;
+    public int Exp
+    {
+        get => _exp;
+        init => _exp = value;
+    }
+
+    public void AddExp(int amount)
+    {
+        Interlocked.Add(ref _exp, amount);
+    }
+
     /// <summary>
     /// Applies damage to the character in a thread-safe manner.
     /// </summary>

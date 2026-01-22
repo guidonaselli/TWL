@@ -1,0 +1,63 @@
+[
+  {
+    "QuestId": 1001,
+    "Title": "Washed Ashore",
+    "Description": "You just woke up on the beach. Talk to the Captain.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Captain",
+        "RequiredCount": 1,
+        "Description": "Speak with the Captain."
+      }
+    ],
+    "Rewards": {
+      "Exp": 10,
+      "Gold": 5,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1002,
+    "Title": "First Meal",
+    "Description": "Collect 3 Coconuts for the survivors.",
+    "Requirements": [1001],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Coconut",
+        "RequiredCount": 3,
+        "Description": "Find 3 Coconuts on the beach."
+      }
+    ],
+    "Rewards": {
+      "Exp": 20,
+      "Gold": 0,
+      "Items": [
+        { "ItemId": 101, "Quantity": 1 }
+      ]
+    }
+  },
+  {
+    "QuestId": 1003,
+    "Title": "Reporting In",
+    "Description": "Report to the Doctor.",
+    "Requirements": [1002],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Doctor",
+        "RequiredCount": 1,
+        "Description": "Find the Doctor."
+      }
+    ],
+    "Rewards": {
+      "Exp": 30,
+      "Gold": 10,
+      "Items": [
+        { "ItemId": 102, "Quantity": 2 }
+      ]
+    }
+  }
+]

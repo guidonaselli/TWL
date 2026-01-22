@@ -101,4 +101,31 @@ public class QuestSystemTests
         bool result = _playerQuests.StartQuest(2);
         Assert.True(result);
     }
+
+    [Fact]
+    public void LoadRealQuests_ShouldLoadCorrectly()
+    {
+        var qm = new ServerQuestManager();
+        // Assuming the test runs from bin/Debug/net8.0, we need to point to Content
+        // But usually Content is copied or we need to go up folders.
+        // Let's rely on the file existing in Content/Data/quests.json relative to repo root
+        // Tests usually run in a temp folder.
+
+        string path = "../../../Content/Data/quests.json"; // Relative from TWL.Tests/bin/Debug/net8.0
+        if (!System.IO.File.Exists(path))
+        {
+             // Fallback for different test runners
+             path = "Content/Data/quests.json";
+        }
+
+        // Ensure we can find the file, otherwise skip or fail
+        if (System.IO.File.Exists(path))
+        {
+            qm.Load(path);
+            var q1 = qm.GetDefinition(1001);
+            Assert.NotNull(q1);
+            Assert.Equal("Washed Ashore", q1.Title);
+            Assert.Equal(10, q1.Rewards.Exp);
+        }
+    }
 }

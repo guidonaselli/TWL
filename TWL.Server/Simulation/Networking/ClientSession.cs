@@ -19,9 +19,11 @@ public class ClientSession
 
     private readonly TcpClient _client;
     private readonly DbService _dbService;
+    private readonly ServerQuestManager _questManager;
     private readonly NetworkStream _stream;
 
     public PlayerQuestComponent QuestComponent { get; private set; }
+    public ServerCharacter? Character { get; private set; }
 
     public int UserId = -1; // se setea tras login
 
@@ -30,6 +32,7 @@ public class ClientSession
         _client = client;
         _stream = client.GetStream();
         _dbService = db;
+        _questManager = questManager;
         QuestComponent = new PlayerQuestComponent(questManager);
     }
 
@@ -107,8 +110,12 @@ public class ClientSession
         {
             if (QuestComponent.ClaimReward(questId))
             {
-                // TODO: Give actual rewards (EXP, Items) to PlayerCharacter
-                // For now just update state
+                var def = _questManager.GetDefinition(questId);
+                if (def != null && Character != null)
+                {
+                    Character.AddExp(def.Rewards.Exp);
+                    Console.WriteLine($"Player {UserId} claimed quest {questId}, gained {def.Rewards.Exp} EXP.");
+                }
                 await SendQuestUpdateAsync(questId);
             }
         }
@@ -151,7 +158,8 @@ public class ClientSession
         else
         {
             UserId = uid;
-            // cargar PlayerData
+            Character = new ServerCharacter { Id = uid, Name = loginDto.Username, Hp = 100 };
+
             // mandar una LoginResponse
             await SendAsync(new NetMessage
             {

@@ -6,7 +6,7 @@ namespace TWL.Server.Simulation;
 
 public class GameServer
 {
-    private NetworkManager _netManager;
+    private NetworkServer _netServer;
 
     // Accesores para DB o lógic
     public DbService DB { get; private set; }
@@ -31,16 +31,19 @@ public class GameServer
             Console.WriteLine("Warning: Content/Data/skills.json not found.");
         }
 
+        QuestManager = new ServerQuestManager();
+        QuestManager.Load("Content/Data/quests.json");
+
         // 3) Inicia Network
-        _netManager = new NetworkManager(this);
-        _netManager.Start(9050); // un puerto a elección
+        _netServer = new NetworkServer(9050, DB, QuestManager);
+        _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");
     }
 
     public void Stop()
     {
-        _netManager?.Stop();
+        _netServer?.Stop();
         DB?.Dispose();
         Console.WriteLine("GameServer stopped.");
     }
