@@ -76,29 +76,53 @@ namespace TWL.Client.Presentation.UI
 
         public void Draw(SpriteBatch sb)
         {
-            // *** Barra superior izquierda: HP / XP ***
-            sb.Draw(_panelBg, new Vector2(10,10), Color.White);
-            // nivel
+            // *** Barra superior izquierda: HP / SP / XP ***
+            // Fondo del panel
+            sb.Draw(_panelBg, new Rectangle(10, 10, 320, 150), Color.White);
+
+            // Icono del personaje (placeholder)
+            sb.DrawRectangle(new Rectangle(20, 20, 60, 60), Color.Gray, 2);
+            sb.DrawString(_font, "Icon", new Vector2(25, 40), Color.Gray);
+
+            int statsX = 90;
+
+            // Nivel
             sb.DrawString(_font, 
-                $"Nivel: {_player.Level}", 
-                new Vector2(20,20), Color.Yellow);
+                $"Lv.{_player.Level}",
+                new Vector2(statsX, 20), Color.Yellow);
+
             // HP
             var hpPct = (float)_player.Health / _player.MaxHealth;
             sb.DrawString(_font,
                 $"HP: {_player.Health}/{_player.MaxHealth}",
-                new Vector2(20,40), Color.Red);
-            sb.DrawRectangle(
-                new Rectangle(20,60, (int)(200*hpPct), 10),
+                new Vector2(statsX, 40), Color.Red);
+            sb.FillRectangle(
+                new Rectangle(statsX, 60, (int)(200 * hpPct), 10),
                 Color.Red);
+            sb.DrawRectangle(
+                new Rectangle(statsX, 60, 200, 10), Color.DarkRed, 1);
+
+            // SP
+            var spPct = (float)_player.Sp / _player.MaxSp;
+            sb.DrawString(_font,
+                $"SP: {_player.Sp}/{_player.MaxSp}",
+                new Vector2(statsX, 75), Color.CornflowerBlue);
+            sb.FillRectangle(
+                new Rectangle(statsX, 95, (int)(200 * spPct), 10),
+                Color.CornflowerBlue);
+            sb.DrawRectangle(
+                new Rectangle(statsX, 95, 200, 10), Color.DarkBlue, 1);
 
             // XP
             var xpPct = (float)_player.Exp / _player.ExpToNextLevel;
             sb.DrawString(_font,
                 $"XP: {_player.Exp}/{_player.ExpToNextLevel}",
-                new Vector2(20,80), Color.LightGreen);
-            sb.DrawRectangle(
-                new Rectangle(20,100, (int)(200*xpPct), 6),
+                new Vector2(statsX, 110), Color.LightGreen);
+            sb.FillRectangle(
+                new Rectangle(statsX, 130, (int)(200 * xpPct), 6),
                 Color.LightGreen);
+            sb.DrawRectangle(
+                new Rectangle(statsX, 130, 200, 6), Color.DarkGreen, 1);
 
             // *** Minimap (placeholder) ***
             var mmPos = new Vector2(
