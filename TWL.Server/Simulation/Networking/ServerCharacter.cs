@@ -1,4 +1,7 @@
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
+using TWL.Shared.Domain.Models;
 
 namespace TWL.Server.Simulation.Networking;
 
@@ -29,9 +32,58 @@ public class ServerCharacter
         init => _exp = value;
     }
 
+    private int _gold;
+    public int Gold
+    {
+        get => _gold;
+        init => _gold = value;
+    }
+
+    private readonly List<Item> _inventory = new();
+    public IReadOnlyList<Item> Inventory
+    {
+        get
+        {
+            lock (_inventory)
+            {
+                // Return deep copies to prevent external modification without lock
+                return _inventory.Select(i => new Item
+                {
+                    ItemId = i.ItemId,
+                    Name = i.Name,
+                    Type = i.Type,
+                    MaxStack = i.MaxStack,
+                    Quantity = i.Quantity,
+                    ForgeSuccessRateBonus = i.ForgeSuccessRateBonus
+                }).ToArray();
+            }
+        }
+    }
+
     public void AddExp(int amount)
     {
         Interlocked.Add(ref _exp, amount);
+    }
+
+    public void AddGold(int amount)
+    {
+        Interlocked.Add(ref _gold, amount);
+    }
+
+    public void AddItem(int itemId, int quantity)
+    {
+        lock (_inventory)
+        {
+            var existing = _inventory.Find(i => i.ItemId == itemId);
+            if (existing != null)
+            {
+                existing.Quantity += quantity;
+            }
+            else
+            {
+                _inventory.Add(new Item { ItemId = itemId, Quantity = quantity });
+            }
+        }
     }
 
     /// <summary>
