@@ -292,5 +292,73 @@
         }
       ]
     }
+  },
+  {
+    "QuestId": 1013,
+    "Title": "Monkey's Favorite Snack",
+    "Description": "The monkey seems restless. The Survivalist suggests feeding it its favorite fruit found in the palm groves.",
+    "Requirements": [
+      1010
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "BananaCluster",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Bananas."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 105,
+          "Quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1014,
+    "Title": "Playtime",
+    "Description": "The monkey is full and happy. Now it wants to play!",
+    "Requirements": [
+      1013
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "MyMonkey",
+        "RequiredCount": 1,
+        "Description": "Play with your Monkey."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1015,
+    "Title": "The Old Hermit",
+    "Description": "With the Giant Crab defeated, seek out the Old Hermit inland.",
+    "Requirements": [
+      1012
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "OldHermit",
+        "RequiredCount": 1,
+        "Description": "Talk to the Old Hermit."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": []
+    }
   }
 ]
