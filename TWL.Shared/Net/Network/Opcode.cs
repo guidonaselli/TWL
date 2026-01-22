@@ -20,6 +20,7 @@ public enum Opcode
 
     // Quest
     StartQuestRequest,
+    ClaimRewardRequest,
     QuestUpdateBroadcast
 
     // etc. los que necesites

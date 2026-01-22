@@ -1,9 +1,8 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
-namespace TWL.Client.Presentation.Quests;
+namespace TWL.Shared.Domain.Quests;
 
-// QuestDefinition.cs (misma carpeta)
 public sealed record ObjectiveDefinition(
     string Type,
     string TargetName,

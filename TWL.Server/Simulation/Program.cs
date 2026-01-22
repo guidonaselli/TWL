@@ -5,6 +5,7 @@ using Serilog;
 using TWL.Server;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Simulation;
+using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 
 Host.CreateDefaultBuilder(args)
@@ -24,10 +25,11 @@ Host.CreateDefaultBuilder(args)
             var cs = ctx.Configuration.GetConnectionString("PostgresConn");
             return new DbService(cs);
         });
+        svcs.AddSingleton<ServerQuestManager>();
         svcs.AddSingleton<NetworkServer>(sp =>
         {
             var port = ctx.Configuration.GetValue<int>("Network:Port");
-            return new NetworkServer(port, sp.GetRequiredService<DbService>());
+            return new NetworkServer(port, sp.GetRequiredService<DbService>(), sp.GetRequiredService<ServerQuestManager>());
         });
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer
     })
