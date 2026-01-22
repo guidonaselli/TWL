@@ -128,4 +128,34 @@ public class QuestSystemTests
             Assert.Equal(10, q1.Rewards.Exp);
         }
     }
+
+    [Fact]
+    public void TryProgress_ShouldUpdateCorrectly()
+    {
+        _playerQuests.StartQuest(1); // Kill Slime (2)
+
+        // Correct type and target
+        var updated = _playerQuests.TryProgress("Kill", "Slime");
+        Assert.Single(updated);
+        Assert.Equal(1, updated[0]);
+        Assert.Equal(1, _playerQuests.QuestProgress[1][0]);
+
+        // Wrong target
+        updated = _playerQuests.TryProgress("Kill", "Goblin");
+        Assert.Empty(updated);
+
+        // Wrong type
+        updated = _playerQuests.TryProgress("Talk", "Slime");
+        Assert.Empty(updated);
+
+        // Complete it
+        updated = _playerQuests.TryProgress("Kill", "Slime");
+        Assert.Single(updated);
+        Assert.Equal(2, _playerQuests.QuestProgress[1][0]);
+        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[1]);
+
+        // Should not update if already complete
+        updated = _playerQuests.TryProgress("Kill", "Slime");
+        Assert.Empty(updated);
+    }
 }

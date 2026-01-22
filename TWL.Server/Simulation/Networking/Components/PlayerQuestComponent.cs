@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Domain.Quests;
@@ -99,5 +100,46 @@ public class PlayerQuestComponent
 
         QuestStates[questId] = QuestState.RewardClaimed;
         return true;
+    }
+
+    /// <summary>
+    /// Attempts to progress any active quest that matches the given type and target.
+    /// </summary>
+    /// <returns>List of QuestIds that were updated.</returns>
+    public List<int> TryProgress(string type, string targetName)
+    {
+        var updatedQuests = new List<int>();
+
+        foreach (var kvp in QuestStates)
+        {
+            if (kvp.Value != QuestState.InProgress) continue;
+
+            var questId = kvp.Key;
+            var def = _questManager.GetDefinition(questId);
+            if (def == null) continue;
+
+            bool changed = false;
+            for (int i = 0; i < def.Objectives.Count; i++)
+            {
+                var obj = def.Objectives[i];
+                // Match Type and TargetName
+                if (string.Equals(obj.Type, type, StringComparison.OrdinalIgnoreCase) &&
+                    string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Check if not already complete
+                    if (QuestProgress[questId][i] < obj.RequiredCount)
+                    {
+                        UpdateProgress(questId, i, 1);
+                        changed = true;
+                    }
+                }
+            }
+
+            if (changed)
+            {
+                updatedQuests.Add(questId);
+            }
+        }
+        return updatedQuests;
     }
 }

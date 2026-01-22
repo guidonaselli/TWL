@@ -21,7 +21,8 @@ public enum Opcode
     // Quest
     StartQuestRequest,
     ClaimRewardRequest,
-    QuestUpdateBroadcast
+    QuestUpdateBroadcast,
 
-    // etc. los que necesites
+    // Interacción
+    InteractRequest
 }

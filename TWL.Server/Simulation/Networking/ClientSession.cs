@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
@@ -89,7 +90,31 @@ public class ClientSession
             case Opcode.ClaimRewardRequest:
                 await HandleClaimRewardAsync(msg.JsonPayload);
                 break;
+            case Opcode.InteractRequest:
+                await HandleInteractAsync(msg.JsonPayload);
+                break;
             // etc.
+        }
+    }
+
+    private async Task HandleInteractAsync(string payload)
+    {
+        var dto = JsonSerializer.Deserialize<InteractDTO>(payload, _jsonOptions);
+        if (dto == null || string.IsNullOrEmpty(dto.TargetName)) return;
+
+        // Try to progress "Talk" objectives
+        var updated = QuestComponent.TryProgress("Talk", dto.TargetName);
+
+        // Also try "Collect" or "Search" if we treat interaction as searching
+        var collected = QuestComponent.TryProgress("Collect", dto.TargetName);
+        updated.AddRange(collected);
+
+        // Remove duplicates
+        var uniqueUpdates = updated.Distinct().ToList();
+
+        foreach (var questId in uniqueUpdates)
+        {
+            await SendQuestUpdateAsync(questId);
         }
     }
 
