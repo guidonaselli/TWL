@@ -59,5 +59,38 @@
         { "ItemId": 102, "Quantity": 2 }
       ]
     }
+  },
+  {
+    "QuestId": 1004,
+    "Title": "Improvised Defense",
+    "Description": "The wilds are dangerous. Ask the Blacksmith about a weapon.",
+    "Requirements": [1003],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Blacksmith",
+        "RequiredCount": 1,
+        "Description": "Speak with the Blacksmith."
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "DriftwoodPile",
+        "RequiredCount": 1,
+        "Description": "Find suitable wood on the beach."
+      },
+      {
+        "Type": "Talk",
+        "TargetName": "Blacksmith",
+        "RequiredCount": 1,
+        "Description": "Return to the Blacksmith."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": [
+        { "ItemId": 103, "Quantity": 1 }
+      ]
+    }
   }
 ]
