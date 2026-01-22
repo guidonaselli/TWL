@@ -1,50 +1,50 @@
-﻿using TWL.Shared.Domain.Characters;
+using System.Collections.Generic;
+using TWL.Shared.Domain.Characters;
 
 namespace TWL.Shared.Domain.Skills;
 
 public class Skill
 {
-    public int Id; // Identificador único
+    // Identifiers
+    public int SkillId;
+    public string Name = string.Empty;
+    public string Description = string.Empty;
 
-    public int AgiRequirement;
-    public int ConRequirement;
-    public string Description;
-    public Element Element; // Fire, Wind, Earth, Water
-    public int IntRequirement;
-    public float Level;
-    public int MaxLevel;
-    public string Name; // Ej: "Fire Punch", "Wind Seal", etc.
+    // Core Attributes
+    public Element Element;
+    public SkillBranch Branch;
+    public int Tier;
+    public SkillTargetType TargetType;
 
-    // Poder base (se usará en el cálculo de daño o sanación)
-    public float Power;
-
-    // Ej: para un skill de Seal, definimos la probabilidad base de sell
-    public float SealChance;
-    public int SkillId; // Identificador único
-
-    // Coste de SP para usar la habilidad
+    // Usage
     public int SpCost;
+    public int Cooldown;
 
-    // Requisitos para aprenderla (ej: STR >= 30, o INT >= 50, etc.)
-    public int StrRequirement;
-    public SkillType Type; // PhysicalDamage, MagicalDamage, Seal, Unseal, etc.
+    // Mechanics
+    public List<SkillScaling> Scaling { get; set; } = new();
+    public List<SkillEffect> Effects { get; set; } = new();
 
-    // Para un skill de "unseal", definimos la probabilidad de removerlo
+    // Legacy / Compatibility fields (Can be mapped from new structure or kept for backward compat)
+    public int Id; // Redundant, same as SkillId usually
+    public SkillType Type;
+    public float Power;
+    public float SealChance;
     public float UnsealChance;
+    public int Level;
+    public int MaxLevel;
+
+    // Requirements
+    public int StrRequirement;
+    public int ConRequirement;
+    public int IntRequirement;
     public int WisRequirement;
+    public int AgiRequirement;
 
     public override string ToString()
     {
-        return $"{Name} ({Element}, {Type}) [Req: STR>={StrRequirement}, INT>={IntRequirement}, WIS>={WisRequirement}]";
+        return $"{Name} ({Element}, {Branch}-T{Tier}) [SP: {SpCost}]";
     }
 
-    public void Apply(Character src, Character tgt) { /*…*/ }
+    // Placeholder for application logic if needed, but logic should move to BattleInstance/System
+    public void Apply(Character src, Character tgt) { }
 }
-
-// Notas:
-//
-// Power: un número base que mezclaremos con STR o INT.
-//
-//     SpCost: SP/MP necesario para lanzarla.
-//
-//     SealChance, UnsealChance: probabilidad de aplicar/quitar seal (puedes poner 1.0f para 100% si no quieres fallo).

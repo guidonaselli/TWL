@@ -19,10 +19,17 @@ public class GameServer
         DB = new DbService(connString);
         DB.Init();
 
-        // 2) Carga definiciones (items, quests) si lo deseas
-        QuestManager = new ServerQuestManager();
-        // Assuming Content is copied to the execution directory
-        QuestManager.Load("Content/Data/quests.json");
+        // 2) Carga definiciones (items, quests, skills)
+        if (System.IO.File.Exists("Content/Data/skills.json"))
+        {
+            var json = System.IO.File.ReadAllText("Content/Data/skills.json");
+            TWL.Shared.Domain.Skills.SkillRegistry.Instance.LoadSkills(json);
+            Console.WriteLine("Skills loaded.");
+        }
+        else
+        {
+            Console.WriteLine("Warning: Content/Data/skills.json not found.");
+        }
 
         // 3) Inicia Network
         _netManager = new NetworkManager(this);
