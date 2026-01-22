@@ -81,7 +81,10 @@ public class BattleInstance
             case CombatActionType.Attack:
                 if (targetCombatant != null)
                 {
-                    int damage = Math.Max(1, actor.Character.CalculatePhysicalDamage() - targetCombatant.Character.CalculateDefense());
+                    int dmgVal = actor.Character.CalculatePhysicalDamage();
+                    if (actor.AttackBuffTurns > 0) dmgVal = (int)(dmgVal * 1.5);
+
+                    int damage = Math.Max(1, dmgVal - targetCombatant.Character.CalculateDefense());
                     if (targetCombatant.IsDefending) damage /= 2;
 
                     targetCombatant.Character.TakeDamage(damage);
@@ -109,6 +112,8 @@ public class BattleInstance
         }
 
         // End turn
+        if (actor.AttackBuffTurns > 0) actor.AttackBuffTurns--;
+
         actor.Atb = 0;
         CurrentTurnCombatant = null;
 
@@ -125,30 +130,39 @@ public class BattleInstance
             case 1: cost = 5; break;  // Power Strike
             case 2: cost = 10; break; // Fireball
             case 3: cost = 15; break; // Heal
+            case 4: cost = 10; break; // Focus (Buff)
         }
 
         if (!actor.Character.ConsumeSp(cost)) return "Not enough SP!";
 
-        if (target == null && skillId != 3) return "No target"; // Heal might be self if null, but UI enforces target
+        if (target == null && skillId != 3 && skillId != 4) return "No target"; // Heal/Focus might be self
 
         switch (skillId)
         {
             case 1: // Power Strike (Phys)
-                int dmg1 = Math.Max(1, (int)(actor.Character.CalculatePhysicalDamage() * 1.5) - target.Character.CalculateDefense());
+                int baseDmg = (int)(actor.Character.CalculatePhysicalDamage() * 1.5);
+                if (actor.AttackBuffTurns > 0) baseDmg = (int)(baseDmg * 1.5);
+
+                int dmg1 = Math.Max(1, baseDmg - target.Character.CalculateDefense());
                 if (target.IsDefending) dmg1 /= 2;
                 target.Character.TakeDamage(dmg1);
                 return $"{actor.Character.Name} uses Power Strike on {target.Character.Name} for {dmg1}!";
 
             case 2: // Fireball (Magic)
+                // Magic not affected by physical attack buff
                 int dmg2 = Math.Max(1, actor.Character.CalculateMagicalDamage() * 2 - target.Character.CalculateMagicalDefense());
                 target.Character.TakeDamage(dmg2);
                 return $"{actor.Character.Name} casts Fireball on {target.Character.Name} for {dmg2}!";
 
             case 3: // Heal
                 int heal = actor.Character.Int * 4;
-                if (target == null) target = actor; // Self heal fallback
+                if (target == null) target = actor;
                 target.Character.Heal(heal);
                 return $"{actor.Character.Name} heals {target.Character.Name} for {heal}!";
+
+            case 4: // Focus
+                target.AttackBuffTurns = 3;
+                return $"{actor.Character.Name} focuses on {target.Character.Name}! Attack UP!";
 
             default:
                 return $"{actor.Character.Name} uses unknown skill!";

@@ -80,6 +80,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
                  player.KnownSkills.Add(1); // Power Strike
                  player.KnownSkills.Add(2); // Fireball
                  player.KnownSkills.Add(3); // Heal
+                 player.KnownSkills.Add(4); // Focus
              }
 
              _availableSkills = player.KnownSkills.Select(id => (GetSkillName(id), id)).ToList();
@@ -93,6 +94,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
             case 1: return "Power Strike";
             case 2: return "Fireball";
             case 3: return "Heal";
+            case 4: return "Focus";
             default: return "Unknown";
         }
     }
@@ -185,7 +187,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
                     _selectedSkillId = _availableSkills[_skillIndex].Id;
 
                     List<Combatant> targets;
-                    if (_selectedSkillId == 3) // Heal
+                    if (_selectedSkillId == 3 || _selectedSkillId == 4) // Heal or Focus
                         targets = _combat.Battle.Allies.Where(a => a.Character.IsAlive()).ToList();
                     else
                         targets = _combat.Battle.Enemies.Where(e => e.Character.IsAlive()).ToList();
@@ -353,6 +355,10 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
             double hpPct = (double)c.Character.Health / c.Character.MaxHealth;
             DrawBar(sb, new Rectangle((int)pos.X + 110, (int)y + 20, 50, 5), hpPct, Color.Red);
 
+            // Draw SP Bar (Only for Allies usually, but simple to draw for all)
+            double spPct = (double)c.Character.Sp / c.Character.MaxSp;
+            DrawBar(sb, new Rectangle((int)pos.X + 110, (int)y + 28, 50, 3), spPct, Color.Blue);
+
             // Target Indicator
             if (_uiState == BattleUiState.TargetSelection && _potentialTargets.Count > _targetIndex && _potentialTargets[_targetIndex] == c)
             {
@@ -374,6 +380,9 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
 
     private void DrawMenu(SpriteBatch sb, Vector2 pos)
     {
+        // Background box
+        sb.Draw(_whiteTexture, new Rectangle((int)pos.X - 10, (int)pos.Y - 10, 150, 100), Color.DarkSlateGray * 0.9f);
+
         string[] options = { "Attack", "Skill", "Defend" };
         for (int i = 0; i < options.Length; i++)
         {
@@ -384,6 +393,10 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
 
     private void DrawSkillMenu(SpriteBatch sb, Vector2 pos)
     {
+        // Background box
+        int h = _availableSkills.Count * 25 + 20;
+        sb.Draw(_whiteTexture, new Rectangle((int)pos.X - 10, (int)pos.Y - 10, 200, h), Color.DarkSlateGray * 0.9f);
+
         for (int i = 0; i < _availableSkills.Count; i++)
         {
             Color c = (_uiState == BattleUiState.SkillSelection && _skillIndex == i) ? Color.Yellow : Color.Gray;

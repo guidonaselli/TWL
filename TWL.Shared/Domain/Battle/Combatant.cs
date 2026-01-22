@@ -9,7 +9,7 @@ public class Combatant
     public double Atb { get; set; } // 0 to 100
     public bool IsDefending { get; set; }
 
-    // You could add temporary buffs/debuffs here
+    public int AttackBuffTurns { get; set; }
 
     public Combatant(Character character)
     {
