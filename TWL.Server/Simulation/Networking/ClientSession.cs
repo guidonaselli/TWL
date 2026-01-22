@@ -21,6 +21,7 @@ public class ClientSession
     private readonly TcpClient _client;
     private readonly DbService _dbService;
     private readonly ServerQuestManager _questManager;
+    private readonly CombatManager _combatManager;
     private readonly NetworkStream _stream;
 
     public PlayerQuestComponent QuestComponent { get; private set; }
@@ -28,12 +29,13 @@ public class ClientSession
 
     public int UserId = -1; // se setea tras login
 
-    public ClientSession(TcpClient client, DbService db, ServerQuestManager questManager)
+    public ClientSession(TcpClient client, DbService db, ServerQuestManager questManager, CombatManager combatManager)
     {
         _client = client;
         _stream = client.GetStream();
         _dbService = db;
         _questManager = questManager;
+        _combatManager = combatManager;
         QuestComponent = new PlayerQuestComponent(questManager);
     }
 
@@ -93,7 +95,47 @@ public class ClientSession
             case Opcode.InteractRequest:
                 await HandleInteractAsync(msg.JsonPayload);
                 break;
+            case Opcode.AttackRequest:
+                await HandleAttackAsync(msg.JsonPayload);
+                break;
             // etc.
+        }
+    }
+
+    private async Task HandleAttackAsync(string payload)
+    {
+        var request = JsonSerializer.Deserialize<UseSkillRequest>(payload, _jsonOptions);
+        if (request == null) return;
+
+        // Ensure the request comes from this player
+        if (request.PlayerId != UserId && Character != null) request.PlayerId = Character.Id;
+
+        var result = _combatManager.UseSkill(request);
+
+        if (result != null)
+        {
+            // Broadcast result (in a real game, only to nearby players)
+            var responseJson = JsonSerializer.Serialize(result, _jsonOptions);
+            await SendAsync(new NetMessage
+            {
+                Op = Opcode.AttackBroadcast,
+                JsonPayload = responseJson
+            });
+
+            // Check for death and quest progress
+            if (result.NewTargetHp <= 0)
+            {
+                var target = _combatManager.GetCharacter(result.TargetId);
+                if (target != null)
+                {
+                    // Update quest progress for "Kill" objective
+                    var updated = QuestComponent.TryProgress("Kill", target.Name);
+                    foreach (var questId in updated)
+                    {
+                        await SendQuestUpdateAsync(questId);
+                    }
+                }
+            }
         }
     }
 
