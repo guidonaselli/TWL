@@ -1,4 +1,5 @@
 ﻿using TWL.Server.Persistence.Database;
+using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 
 namespace TWL.Server.Simulation;
@@ -9,6 +10,7 @@ public class GameServer
 
     // Accesores para DB o lógic
     public DbService DB { get; private set; }
+    public ServerQuestManager QuestManager { get; private set; }
 
     public void Start()
     {

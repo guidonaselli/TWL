@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 using TWL.Server.Persistence.Database;
+using TWL.Server.Simulation.Managers;
 using TWL.Shared.Net.Messages;
 
 namespace TWL.Server.Simulation.Networking;
@@ -8,14 +9,16 @@ namespace TWL.Server.Simulation.Networking;
 public class NetworkServer
 {
     private readonly DbService _dbService;
+    private readonly ServerQuestManager _questManager;
     private readonly TcpListener _listener;
     private bool _running;
     private CancellationTokenSource _cts;
 
-    public NetworkServer(int port, DbService dbService)
+    public NetworkServer(int port, DbService dbService, ServerQuestManager questManager)
     {
         _listener = new TcpListener(IPAddress.Any, port);
         _dbService = dbService;
+        _questManager = questManager;
     }
 
     public void Start()
@@ -42,7 +45,7 @@ public class NetworkServer
             {
                 var client = await _listener.AcceptTcpClientAsync(token);
                 Console.WriteLine("New client connected!");
-                var session = new ClientSession(client, _dbService);
+                var session = new ClientSession(client, _dbService, _questManager);
                 session.StartHandling();
             }
         }
