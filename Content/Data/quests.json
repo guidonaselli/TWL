@@ -245,5 +245,52 @@
       "Items": [],
       "PetUnlockId": 1
     }
+  },
+  {
+    "QuestId": 1011,
+    "Title": "First Spar",
+    "Description": "Now that you have a companion, test your strength against the wildlife.",
+    "Requirements": [
+      1010
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "WeakCrab",
+        "RequiredCount": 3,
+        "Description": "Defeat 3 Weak Crabs."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 10,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1012,
+    "Title": "The Bully",
+    "Description": "A large crab is blocking the path inland. Defeat it!",
+    "Requirements": [
+      1011
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "GiantCrab",
+        "RequiredCount": 1,
+        "Description": "Defeat the Giant Crab."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 50,
+      "Items": [
+         {
+          "ItemId": 104,
+          "Quantity": 1
+        }
+      ]
+    }
   }
 ]

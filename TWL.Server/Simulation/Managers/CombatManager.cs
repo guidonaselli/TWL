@@ -68,6 +68,12 @@ public class CombatManager
         _characters.TryRemove(id, out _);
     }
 
+    public ServerCharacter? GetCharacter(int id)
+    {
+        _characters.TryGetValue(id, out var character);
+        return character;
+    }
+
     public List<ServerCharacter> GetAllCharacters()
     {
         return _characters.Values.ToList();

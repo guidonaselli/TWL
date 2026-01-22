@@ -11,6 +11,7 @@ public class GameServer
     // Accesores para DB o lógic
     public DbService DB { get; private set; }
     public ServerQuestManager QuestManager { get; private set; }
+    public CombatManager CombatManager { get; private set; }
 
     public void Start()
     {
@@ -34,8 +35,10 @@ public class GameServer
         QuestManager = new ServerQuestManager();
         QuestManager.Load("Content/Data/quests.json");
 
+        CombatManager = new CombatManager();
+
         // 3) Inicia Network
-        _netServer = new NetworkServer(9050, DB, QuestManager);
+        _netServer = new NetworkServer(9050, DB, QuestManager, CombatManager);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");

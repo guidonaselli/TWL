@@ -10,15 +10,17 @@ public class NetworkServer
 {
     private readonly DbService _dbService;
     private readonly ServerQuestManager _questManager;
+    private readonly CombatManager _combatManager;
     private readonly TcpListener _listener;
     private bool _running;
     private CancellationTokenSource _cts;
 
-    public NetworkServer(int port, DbService dbService, ServerQuestManager questManager)
+    public NetworkServer(int port, DbService dbService, ServerQuestManager questManager, CombatManager combatManager)
     {
         _listener = new TcpListener(IPAddress.Any, port);
         _dbService = dbService;
         _questManager = questManager;
+        _combatManager = combatManager;
     }
 
     public void Start()
@@ -45,7 +47,7 @@ public class NetworkServer
             {
                 var client = await _listener.AcceptTcpClientAsync(token);
                 Console.WriteLine("New client connected!");
-                var session = new ClientSession(client, _dbService, _questManager);
+                var session = new ClientSession(client, _dbService, _questManager, _combatManager);
                 session.StartHandling();
             }
         }
