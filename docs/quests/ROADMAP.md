@@ -1,30 +1,25 @@
-# Quest & Storyline Roadmap
+# Quest Progression Roadmap
 
-This roadmap outlines the progression arcs for the game, focusing on a WLO-like feel with server-authoritative structure.
+## Region 1: Crash Site (Levels 1-10)
+- **Theme**: Survival, Scavenging, Basic Crafting.
+- **Hubs**: Beach Camp.
+- **Key Arcs**:
+    - Awakening & First Needs (Tutorials).
+    - Setting up Camp (Hub establishment).
+    - Exploration of the Island (Mobility unlock).
+    - The First Mystery (Plot hook).
 
-## Level 1-10: Survivor's Beach (Intro)
-*   **Theme:** Survival, Scavenging, Basic Mechanics.
-*   **Goal:** Establish the setting (crash landing), introduce Movement, Interaction, and basic Combat.
-*   **Key Quests:**
-    *   *Washed Ashore*: Wake up, find other survivors.
-    *   *First Meal*: Gather food (collection tutorial).
-    *   *Improvised Defense*: Get a weapon.
-    *   *The Monkey Thief*: First combat/pet interaction (Amity intro).
+## Region 2: Jungle Interior (Levels 10-20)
+- **Theme**: Danger, Ancient Ruins, Combat.
+- **Hubs**: Forward Outpost.
+- **Key Arcs**:
+    - Clearing the Path.
+    - Ancient Technology.
+    - First Pet Capture (Tutorial).
 
-## Level 10-20: The First Village
-*   **Theme:** Community, Crafting, Roles.
-*   **Goal:** Unlock Crafting Bench, Skill Training, and first "Job".
-*   **Key Systems:**
-    *   Life Skills (Fishing, Gathering).
-    *   House/Tent System.
-
-## Level 20-30: Jungle of Trials
-*   **Theme:** Exploration, Danger, Dungeons.
-*   **Goal:** Teamwork, Elemental properties intro.
-*   **Key Systems:**
-    *   Party System.
-    *   First Instance/Dungeon.
-
-## Level 30+: The Ancient Ruins
-*   **Theme:** Mystery, Magic, Technology.
-*   **Goal:** Advanced Skills, Rebirth hints.
+## Region 3: Hidden Village (Levels 20-30)
+- **Theme**: Society, Trade, Advanced Crafting.
+- **Hubs**: Native Village.
+- **Key Arcs**:
+    - Cultural Exchange (Language skill).
+    - The Great Threat.

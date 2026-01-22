@@ -92,5 +92,64 @@
         { "ItemId": 103, "Quantity": 1 }
       ]
     }
+  },
+  {
+    "QuestId": 1005,
+    "Title": "Water Source",
+    "Description": "The survivors are dehydrated. Find a source of fresh water inland.",
+    "Requirements": [1004],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "FreshWater",
+        "RequiredCount": 1,
+        "Description": "Find a freshwater spring."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 10,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1006,
+    "Title": "Fire Starter",
+    "Description": "We need to boil the water. Ask the Survivalist for help starting a fire.",
+    "Requirements": [1005],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Survivalist",
+        "RequiredCount": 1,
+        "Description": "Talk to the Survivalist."
+      }
+    ],
+    "Rewards": {
+      "Exp": 20,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1007,
+    "Title": "Kindling",
+    "Description": "I can start a fire, but I need dry wood. The driftwood isn't enough.",
+    "Requirements": [1006],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "DrySticks",
+        "RequiredCount": 5,
+        "Description": "Collect Dry Sticks from dead trees."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 20,
+      "Items": [
+        { "ItemId": 101, "Quantity": 1 }
+      ]
+    }
   }
 ]

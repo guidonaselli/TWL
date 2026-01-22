@@ -139,7 +139,21 @@ public class ClientSession
                 if (def != null && Character != null)
                 {
                     Character.AddExp(def.Rewards.Exp);
-                    Console.WriteLine($"Player {UserId} claimed quest {questId}, gained {def.Rewards.Exp} EXP.");
+                    Character.AddGold(def.Rewards.Gold);
+
+                    var itemsLog = "";
+                    if (def.Rewards.Items != null)
+                    {
+                        var sb = new StringBuilder();
+                        foreach (var item in def.Rewards.Items)
+                        {
+                            Character.AddItem(item.ItemId, item.Quantity);
+                            sb.Append($", Item {item.ItemId} x{item.Quantity}");
+                        }
+                        itemsLog = sb.ToString();
+                    }
+
+                    Console.WriteLine($"Player {UserId} claimed quest {questId}, gained {def.Rewards.Exp} EXP, {def.Rewards.Gold} Gold{itemsLog}.");
                 }
                 await SendQuestUpdateAsync(questId);
             }
