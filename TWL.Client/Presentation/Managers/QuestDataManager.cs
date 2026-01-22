@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using TWL.Shared.Domain.Quests;
 using TWL.Client.Presentation.Quests;
 
 namespace TWL.Client.Presentation.Managers;

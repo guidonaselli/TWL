@@ -2,6 +2,7 @@
 
 using System.Collections.Generic;
 using TWL.Client.Managers;
+using TWL.Shared.Domain.Quests;
 using TWL.Client.Presentation.Quests;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;

@@ -2,7 +2,10 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using TWL.Server.Persistence.Database;
+using TWL.Server.Simulation.Managers;
+using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.DTO;
+using TWL.Shared.Domain.Requests;
 using TWL.Shared.Net.Network;
 
 namespace TWL.Server.Simulation.Networking;
@@ -18,13 +21,16 @@ public class ClientSession
     private readonly DbService _dbService;
     private readonly NetworkStream _stream;
 
+    public PlayerQuestComponent QuestComponent { get; private set; }
+
     public int UserId = -1; // se setea tras login
 
-    public ClientSession(TcpClient client, DbService db)
+    public ClientSession(TcpClient client, DbService db, ServerQuestManager questManager)
     {
         _client = client;
         _stream = client.GetStream();
         _dbService = db;
+        QuestComponent = new PlayerQuestComponent(questManager);
     }
 
     public void StartHandling()
@@ -74,8 +80,55 @@ public class ClientSession
             case Opcode.MoveRequest:
                 await HandleMoveAsync(msg.JsonPayload);
                 break;
+            case Opcode.StartQuestRequest:
+                await HandleStartQuestAsync(msg.JsonPayload);
+                break;
+            case Opcode.ClaimRewardRequest:
+                await HandleClaimRewardAsync(msg.JsonPayload);
+                break;
             // etc.
         }
+    }
+
+    private async Task HandleStartQuestAsync(string payload)
+    {
+        if (int.TryParse(payload, out int questId))
+        {
+            if (QuestComponent.StartQuest(questId))
+            {
+                await SendQuestUpdateAsync(questId);
+            }
+        }
+    }
+
+    private async Task HandleClaimRewardAsync(string payload)
+    {
+        if (int.TryParse(payload, out int questId))
+        {
+            if (QuestComponent.ClaimReward(questId))
+            {
+                // TODO: Give actual rewards (EXP, Items) to PlayerCharacter
+                // For now just update state
+                await SendQuestUpdateAsync(questId);
+            }
+        }
+    }
+
+    private async Task SendQuestUpdateAsync(int questId)
+    {
+        var update = new QuestUpdate
+        {
+            QuestId = questId,
+            State = QuestComponent.QuestStates.GetValueOrDefault(questId, QuestState.NotStarted),
+            CurrentCounts = QuestComponent.QuestProgress.GetValueOrDefault(questId, new List<int>())
+        };
+
+        var json = JsonSerializer.Serialize(update, _jsonOptions);
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.QuestUpdateBroadcast,
+            JsonPayload = json
+        });
     }
 
     private async Task HandleLoginAsync(string payload)
