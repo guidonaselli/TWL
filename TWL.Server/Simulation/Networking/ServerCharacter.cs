@@ -12,6 +12,7 @@ namespace TWL.Server.Simulation.Networking;
 public class ServerCharacter
 {
     private int _hp;
+    private int _sp;
 
     public int Hp
     {
@@ -19,16 +20,45 @@ public class ServerCharacter
         init => _hp = value;
     }
 
+    public int Sp
+    {
+        get => _sp;
+        init => _sp = value;
+    }
+
     public int Id;
     public string Name;
 
-    public int Str;
-    // Resto de stats (Con, Int, Spd, etc.)
+    // Stats & Progression
+    public int Level { get; private set; } = 1;
+    public int ExpToNextLevel { get; private set; } = 100;
+    public int StatPoints { get; private set; } = 0;
+
+    public int Str { get; set; } = 8;
+    public int Con { get; set; } = 8;
+    public int Int { get; set; } = 8;
+    public int Wis { get; set; } = 8;
+    public int Agi { get; set; } = 8;
+
+    // Derived Battle Stats
+    public int Atk => Str * 2;
+    public int Def => Con * 2;
+    public int Mat => Int * 2;
+    public int Mdf => Wis * 2;
+    public int Spd => Agi;
+
+    public int MaxHealth => Con * 10;
+    public int MaxSp => Int * 5;
 
     private int _exp;
+    private readonly object _progressLock = new();
+
     public int Exp
     {
-        get => _exp;
+        get
+        {
+            lock (_progressLock) return _exp;
+        }
         init => _exp = value;
     }
 
@@ -85,7 +115,17 @@ public class ServerCharacter
 
     public void AddExp(int amount)
     {
-        Interlocked.Add(ref _exp, amount);
+        lock (_progressLock)
+        {
+            _exp += amount;
+            while (_exp >= ExpToNextLevel)
+            {
+                _exp -= ExpToNextLevel;
+                Level++;
+                ExpToNextLevel = (int)(ExpToNextLevel * 1.2);
+                StatPoints += 3;
+            }
+        }
     }
 
     public void AddGold(int amount)
