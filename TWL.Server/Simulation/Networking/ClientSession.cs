@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Security;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.DTO;
@@ -288,8 +289,6 @@ public class ClientSession
 
         if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Username) || string.IsNullOrWhiteSpace(loginDto.PassHash)) return;
 
-        // Using await here instead of .Result prevents thread pool starvation
-        // and improves scalability under high load.
         var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
         if (uid < 0)
         {
