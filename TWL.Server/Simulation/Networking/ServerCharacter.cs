@@ -81,6 +81,13 @@ public class ServerCharacter
         init => _gold = value;
     }
 
+    private long _premiumCurrency;
+    public long PremiumCurrency
+    {
+        get => Interlocked.Read(ref _premiumCurrency);
+        init => _premiumCurrency = value;
+    }
+
     private readonly List<Item> _inventory = new();
     public IReadOnlyList<Item> Inventory
     {
@@ -179,6 +186,28 @@ public class ServerCharacter
         IsDirty = true;
     }
 
+    public void AddPremiumCurrency(long amount)
+    {
+        Interlocked.Add(ref _premiumCurrency, amount);
+        IsDirty = true;
+    }
+
+    public bool TryConsumePremiumCurrency(long amount)
+    {
+        if (amount < 0) return false;
+        long initial, current;
+        do
+        {
+            initial = Interlocked.Read(ref _premiumCurrency);
+            if (initial < amount) return false;
+            current = initial - amount;
+        }
+        while (Interlocked.CompareExchange(ref _premiumCurrency, current, initial) != initial);
+
+        IsDirty = true;
+        return true;
+    }
+
     public void AddItem(int itemId, int quantity)
     {
         lock (_inventory)
@@ -258,7 +287,8 @@ public class ServerCharacter
             Int = Int,
             Wis = Wis,
             Agi = Agi,
-            Gold = _gold
+            Gold = _gold,
+            PremiumCurrency = _premiumCurrency
         };
 
         lock (_progressLock)
@@ -302,6 +332,7 @@ public class ServerCharacter
         Wis = data.Wis;
         Agi = data.Agi;
         _gold = data.Gold;
+        _premiumCurrency = data.PremiumCurrency;
 
         lock (_progressLock)
         {

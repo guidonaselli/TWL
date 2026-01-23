@@ -18,6 +18,7 @@ public class GameServer
     public CombatManager CombatManager { get; private set; }
     public InteractionManager InteractionManager { get; private set; }
     public PlayerService PlayerService { get; private set; }
+    public EconomyManager EconomyManager { get; private set; }
 
     public void Start()
     {
@@ -55,10 +56,11 @@ public class GameServer
         var random = new SystemRandomService();
         var combatResolver = new StandardCombatResolver(random);
         CombatManager = new CombatManager(combatResolver);
+        EconomyManager = new EconomyManager();
         PopulateTestWorld();
 
         // 3) Inicia Network
-        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService);
+        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService, EconomyManager);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");

@@ -31,6 +31,7 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<ServerQuestManager>();
         svcs.AddSingleton<InteractionManager>();
         svcs.AddSingleton<CombatManager>();
+        svcs.AddSingleton<EconomyManager>();
         svcs.AddSingleton<IPlayerRepository, FilePlayerRepository>();
         svcs.AddSingleton<PlayerService>();
         svcs.AddSingleton<NetworkServer>(sp =>
@@ -43,7 +44,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<ServerQuestManager>(),
                 sp.GetRequiredService<CombatManager>(),
                 sp.GetRequiredService<InteractionManager>(),
-                sp.GetRequiredService<PlayerService>()
+                sp.GetRequiredService<PlayerService>(),
+                sp.GetRequiredService<EconomyManager>()
             );
         });
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer
