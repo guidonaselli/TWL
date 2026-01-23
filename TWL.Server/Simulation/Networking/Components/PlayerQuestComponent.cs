@@ -53,41 +53,7 @@ public class PlayerQuestComponent
                     return false;
             }
 
-            return true;
-        }
-    }
-
-    public bool StartQuest(int questId)
-    {
-        lock (_lock)
-        {
-            // Re-check inside lock logic if we didn't call CanStartQuest inside lock (we did but state could change if called separately)
-            // But CanStartQuest uses lock, so it's safe.
-            // However, calling CanStartQuest then StartQuest is not atomic if lock is released in between.
-            // So we should inline logic or trust single thread for now.
-            // For now, let's reuse logic carefully.
-
-            var def = _questManager.GetDefinition(questId);
-            if (def == null) return false;
-
-            if (QuestStates.TryGetValue(questId, out var currentState))
-            {
-                if (currentState == QuestState.InProgress || currentState == QuestState.Completed)
-                    return false;
-
-                if (currentState == QuestState.RewardClaimed && !def.Repeatable)
-                    return false;
-            }
-
-            foreach (var reqId in def.Requirements)
-            {
-                if (!QuestStates.ContainsKey(reqId)) return false;
-                var state = QuestStates[reqId];
-                if (state != QuestState.Completed && state != QuestState.RewardClaimed)
-                    return false;
-            }
-
-            // Check Flags
+            // Check RequiredFlags
             if (def.RequiredFlags != null)
             {
                 foreach (var flag in def.RequiredFlags)
@@ -96,15 +62,42 @@ public class PlayerQuestComponent
                 }
             }
 
-            // Handle Repeatable
-            if (QuestStates.ContainsKey(questId) && QuestStates[questId] == QuestState.RewardClaimed)
+            return true;
+        }
+    }
+
+    public bool StartQuest(int questId)
+    {
+        lock (_lock)
+        {
+            var def = _questManager.GetDefinition(questId);
+            if (def == null) return false;
+
+            // Check if already started/completed, unless Repeatable
+            if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
             {
                 if (!def.Repeatable) return false;
-                // If repeatable, reset
-                QuestStates[questId] = QuestState.InProgress;
-                QuestProgress[questId] = new List<int>(new int[def.Objectives.Count]);
-                IsDirty = true;
-                return true;
+                // If repeatable, must be in RewardClaimed state to restart? Or Completed?
+                // Usually restart after claiming reward.
+                if (QuestStates[questId] != QuestState.RewardClaimed) return false;
+            }
+
+            // Check Requirements (Quest Chains)
+            foreach (var reqId in def.Requirements)
+            {
+                if (!QuestStates.ContainsKey(reqId)) return false;
+                var state = QuestStates[reqId];
+                if (state != QuestState.Completed && state != QuestState.RewardClaimed)
+                    return false;
+            }
+
+            // Check RequiredFlags
+            if (def.RequiredFlags != null)
+            {
+                foreach (var flag in def.RequiredFlags)
+                {
+                    if (!Flags.Contains(flag)) return false;
+                }
             }
 
             QuestStates[questId] = QuestState.InProgress;
@@ -196,14 +189,22 @@ public class PlayerQuestComponent
     /// <returns>List of QuestIds that were updated.</returns>
     public List<int> TryProgress(string type, string targetName)
     {
+        var updatedQuests = new List<int>();
+        TryProgress(updatedQuests, targetName, type);
+        return updatedQuests;
+    }
+
+    /// <summary>
+    /// Optimized overload to check multiple types at once and use an existing collection.
+    /// </summary>
+    public void TryProgress(ICollection<int> output, string targetName, params string[] types)
+    {
         lock (_lock)
         {
-            var updatedQuests = new List<int>();
-
-            // Iterate over a copy of keys or ToList to avoid modification issues if CheckCompletion changes state (it doesn't remove)
-            // But if we modify QuestStates (CheckCompletion does), foreach on Dictionary might throw if it changes struct (add/remove).
-            // Changing value is fine for Dictionary, but let's be safe.
-            foreach (var kvp in QuestStates.ToList())
+            // Iterate directly over QuestStates.
+            // CheckCompletion only modifies values (states), does not add/remove keys.
+            // Dictionary enumeration is safe against value modifications in .NET Core+.
+            foreach (var kvp in QuestStates)
             {
                 if (kvp.Value != QuestState.InProgress) continue;
 
@@ -215,9 +216,23 @@ public class PlayerQuestComponent
                 for (int i = 0; i < def.Objectives.Count; i++)
                 {
                     var obj = def.Objectives[i];
-                    // Match Type and TargetName
-                    if (string.Equals(obj.Type, type, StringComparison.OrdinalIgnoreCase) &&
-                        string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase))
+
+                    // Match TargetName first (fast string check)
+                    if (!string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    // Match Type
+                    bool typeMatch = false;
+                    for (int t = 0; t < types.Length; t++)
+                    {
+                        if (string.Equals(obj.Type, types[t], StringComparison.OrdinalIgnoreCase))
+                        {
+                            typeMatch = true;
+                            break;
+                        }
+                    }
+
+                    if (typeMatch)
                     {
                         // Check if not already complete
                         if (QuestProgress[questId][i] < obj.RequiredCount)
@@ -230,10 +245,9 @@ public class PlayerQuestComponent
 
                 if (changed)
                 {
-                    updatedQuests.Add(questId);
+                    output.Add(questId);
                 }
             }
-            return updatedQuests;
         }
     }
 
