@@ -1,0 +1,30 @@
+[
+  {
+    "TargetName": "SharpStone",
+    "Type": "Gather",
+    "RewardItems": [
+      { "ItemId": 201, "Quantity": 1 }
+    ],
+    "RequiredQuestId": 1016
+  },
+  {
+    "TargetName": "StrongBranch",
+    "Type": "Gather",
+    "RewardItems": [
+      { "ItemId": 202, "Quantity": 1 }
+    ],
+    "RequiredQuestId": 1016
+  },
+  {
+    "TargetName": "OldWorkbench",
+    "Type": "Craft",
+    "RequiredItems": [
+      { "ItemId": 201, "Quantity": 1 },
+      { "ItemId": 202, "Quantity": 1 }
+    ],
+    "RewardItems": [
+      { "ItemId": 203, "Quantity": 1 }
+    ],
+    "RequiredQuestId": 1016
+  }
+]

@@ -22,6 +22,7 @@ public class ClientSession
     private readonly DbService _dbService;
     private readonly ServerQuestManager _questManager;
     private readonly CombatManager _combatManager;
+    private readonly InteractionManager _interactionManager;
     private readonly NetworkStream _stream;
 
     public PlayerQuestComponent QuestComponent { get; private set; }
@@ -29,13 +30,14 @@ public class ClientSession
 
     public int UserId = -1; // se setea tras login
 
-    public ClientSession(TcpClient client, DbService db, ServerQuestManager questManager, CombatManager combatManager)
+    public ClientSession(TcpClient client, DbService db, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager)
     {
         _client = client;
         _stream = client.GetStream();
         _dbService = db;
         _questManager = questManager;
         _combatManager = combatManager;
+        _interactionManager = interactionManager;
         QuestComponent = new PlayerQuestComponent(questManager);
     }
 
@@ -144,6 +146,13 @@ public class ClientSession
         var dto = JsonSerializer.Deserialize<InteractDTO>(payload, _jsonOptions);
         if (dto == null || string.IsNullOrEmpty(dto.TargetName)) return;
 
+        // Process Interaction Rules (Give Items, Craft, etc.)
+        bool interactionSuccess = false;
+        if (Character != null)
+        {
+            interactionSuccess = _interactionManager.ProcessInteraction(Character, QuestComponent, dto.TargetName);
+        }
+
         // Try to progress "Talk" objectives
         var updated = QuestComponent.TryProgress("Talk", dto.TargetName);
 
@@ -154,6 +163,13 @@ public class ClientSession
         // Also try "Interact" generic objectives
         var interacted = QuestComponent.TryProgress("Interact", dto.TargetName);
         updated.AddRange(interacted);
+
+        // If interaction was successful (e.g. Crafting done), try "Craft" objectives
+        if (interactionSuccess)
+        {
+            var crafted = QuestComponent.TryProgress("Craft", dto.TargetName);
+            updated.AddRange(crafted);
+        }
 
         // Remove duplicates
         var uniqueUpdates = updated.Distinct().ToList();

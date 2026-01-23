@@ -109,6 +109,34 @@ public class ServerCharacter
         }
     }
 
+    public bool HasItem(int itemId, int quantity)
+    {
+        lock (_inventory)
+        {
+            var item = _inventory.Find(i => i.ItemId == itemId);
+            return item != null && item.Quantity >= quantity;
+        }
+    }
+
+    public bool RemoveItem(int itemId, int quantity)
+    {
+        lock (_inventory)
+        {
+            var item = _inventory.Find(i => i.ItemId == itemId);
+            if (item == null || item.Quantity < quantity)
+            {
+                return false;
+            }
+
+            item.Quantity -= quantity;
+            if (item.Quantity <= 0)
+            {
+                _inventory.Remove(item);
+            }
+            return true;
+        }
+    }
+
     /// <summary>
     /// Applies damage to the character in a thread-safe manner.
     /// </summary>

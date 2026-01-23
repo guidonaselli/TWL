@@ -66,4 +66,44 @@ public class ServerCharacterTests
             Assert.Equal(100, item.Quantity);
         }
     }
+
+    [Fact]
+    public void HasItem_ShouldReturnTrue_WhenEnoughQuantity()
+    {
+        var character = new ServerCharacter { Id = 1, Name = "Test" };
+        character.AddItem(101, 5);
+        Assert.True(character.HasItem(101, 3));
+        Assert.True(character.HasItem(101, 5));
+    }
+
+    [Fact]
+    public void HasItem_ShouldReturnFalse_WhenNotEnoughQuantity()
+    {
+        var character = new ServerCharacter { Id = 1, Name = "Test" };
+        character.AddItem(101, 5);
+        Assert.False(character.HasItem(101, 6));
+        Assert.False(character.HasItem(102, 1));
+    }
+
+    [Fact]
+    public void RemoveItem_ShouldRemoveAndReturnTrue_WhenEnoughQuantity()
+    {
+        var character = new ServerCharacter { Id = 1, Name = "Test" };
+        character.AddItem(101, 5);
+
+        bool result = character.RemoveItem(101, 3);
+        Assert.True(result);
+        Assert.Equal(2, character.Inventory.First(i => i.ItemId == 101).Quantity);
+    }
+
+    [Fact]
+    public void RemoveItem_ShouldReturnFalseAndNotChange_WhenNotEnoughQuantity()
+    {
+        var character = new ServerCharacter { Id = 1, Name = "Test" };
+        character.AddItem(101, 5);
+
+        bool result = character.RemoveItem(101, 6);
+        Assert.False(result);
+        Assert.Equal(5, character.Inventory.First(i => i.ItemId == 101).Quantity);
+    }
 }

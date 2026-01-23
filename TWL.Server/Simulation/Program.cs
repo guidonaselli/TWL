@@ -26,11 +26,18 @@ Host.CreateDefaultBuilder(args)
             return new DbService(cs);
         });
         svcs.AddSingleton<ServerQuestManager>();
+        svcs.AddSingleton<InteractionManager>();
         svcs.AddSingleton<CombatManager>();
         svcs.AddSingleton<NetworkServer>(sp =>
         {
             var port = ctx.Configuration.GetValue<int>("Network:Port");
-            return new NetworkServer(port, sp.GetRequiredService<DbService>(), sp.GetRequiredService<ServerQuestManager>(), sp.GetRequiredService<CombatManager>());
+            return new NetworkServer(
+                port,
+                sp.GetRequiredService<DbService>(),
+                sp.GetRequiredService<ServerQuestManager>(),
+                sp.GetRequiredService<CombatManager>(),
+                sp.GetRequiredService<InteractionManager>()
+            );
         });
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer
     })

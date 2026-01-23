@@ -5,23 +5,40 @@ using TWL.Server.Simulation.Networking;
 
 namespace TWL.Server.Simulation;
 
+using TWL.Server.Simulation.Managers;
+
 public class ServerWorker : IHostedService
 {
     private readonly DbService _db;
     private readonly ILogger<ServerWorker> _log;
     private readonly NetworkServer _net;
+    private readonly ServerQuestManager _questManager;
+    private readonly InteractionManager _interactionManager;
 
-    public ServerWorker(NetworkServer net, DbService db, ILogger<ServerWorker> log)
+    public ServerWorker(NetworkServer net, DbService db, ILogger<ServerWorker> log, ServerQuestManager questManager, InteractionManager interactionManager)
     {
         _net = net;
         _db = db;
         _log = log;
+        _questManager = questManager;
+        _interactionManager = interactionManager;
     }
 
     public Task StartAsync(CancellationToken ct)
     {
         _log.LogInformation("Init DB...");
         _db.InitDatabase();
+
+        _log.LogInformation("Loading Game Data...");
+        _questManager.Load("Content/Data/quests.json");
+        _interactionManager.Load("Content/Data/interactions.json");
+
+        if (System.IO.File.Exists("Content/Data/skills.json"))
+        {
+            var json = System.IO.File.ReadAllText("Content/Data/skills.json");
+            TWL.Shared.Domain.Skills.SkillRegistry.Instance.LoadSkills(json);
+        }
+
         _log.LogInformation("Starting server...");
         _net.Start();
         return Task.CompletedTask;
