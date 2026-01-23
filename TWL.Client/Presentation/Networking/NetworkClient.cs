@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
 using TWL.Shared.Net.Messages;
+using TWL.Shared.Net.Network;
 
 namespace TWL.Client.Presentation.Networking;
 
@@ -85,19 +86,20 @@ public class NetworkClient
 
     private async Task ReceiveLoopAsync(CancellationToken token)
     {
-        var buffer = new byte[4096];
         try
         {
             while (!token.IsCancellationRequested && _stream != null && IsConnected)
             {
                 // Async read to avoid blocking threads
-                int read = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
+                // Use _receiveBuffer instead of allocating a new buffer
+                int read = await _stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length, token);
                 if (read == 0) break;
 
                 try
                 {
                     // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
-                    var serverMsg = JsonSerializer.Deserialize<ServerMessage>(buffer.AsSpan(0, read), _jsonOptions);
+                    // Using Source Generator Context for better performance
+                    var serverMsg = JsonSerializer.Deserialize(_receiveBuffer.AsSpan(0, read), AppJsonContext.Default.ServerMessage);
 
                     if (serverMsg != null)
                     {
@@ -153,7 +155,8 @@ public class NetworkClient
                     {
                         // Optimization: Use System.Text.Json (SerializeToUtf8Bytes)
                         // to avoid intermediate string allocations and utilize existing _jsonOptions
-                        var data = JsonSerializer.SerializeToUtf8Bytes(message, _jsonOptions);
+                        // Using Source Generator Context for better performance
+                        var data = JsonSerializer.SerializeToUtf8Bytes(message, AppJsonContext.Default.ClientMessage);
                         await _stream.WriteAsync(data, 0, data.Length, token);
                     }
                     catch (Exception ex)
