@@ -15,12 +15,12 @@ public class CombatManager
     // Supongamos que guardamos todos los personajes en un diccionario
     // (en un MMO real podrías tener combates instanciados).
     private readonly ConcurrentDictionary<int, ServerCharacter> _characters;
-    private readonly IRandomService _random;
+    private readonly ICombatResolver _resolver;
 
-    public CombatManager(IRandomService random)
+    public CombatManager(ICombatResolver resolver)
     {
         _characters = new ConcurrentDictionary<int, ServerCharacter>();
-        _random = random;
+        _resolver = resolver;
     }
 
     public void AddCharacter(ServerCharacter character)
@@ -40,13 +40,8 @@ public class CombatManager
             return null;
 
         int newTargetHp;
-        var baseDamage = attacker.Str * 2;
-
-        // Variance +/- 5%
-        float variance = _random.NextFloat(0.95f, 1.05f);
-        int finalDamage = (int)Math.Round(baseDamage * variance);
-
-        // 2) Calcular daño (ejemplo muy simple).
+        // 2) Calcular daño
+        int finalDamage = _resolver.CalculateDamage(attacker, target, request);
         newTargetHp = target.ApplyDamage(finalDamage);
 
         // 3) Retornar el resultado para avisar al cliente.
