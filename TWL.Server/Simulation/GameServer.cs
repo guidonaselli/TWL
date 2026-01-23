@@ -1,4 +1,5 @@
 ﻿using TWL.Server.Persistence.Database;
+using TWL.Server.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 
@@ -39,7 +40,7 @@ public class GameServer
         InteractionManager = new InteractionManager();
         InteractionManager.Load("Content/Data/interactions.json");
 
-        CombatManager = new CombatManager();
+        CombatManager = new CombatManager(new SystemRandomService());
         PopulateTestWorld();
 
         // 3) Inicia Network
