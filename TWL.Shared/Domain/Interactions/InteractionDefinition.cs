@@ -10,4 +10,5 @@ public sealed record InteractionDefinition
     public List<ItemReward> RequiredItems { get; init; } = new();
     public List<ItemReward> RewardItems { get; init; } = new();
     public int? RequiredQuestId { get; init; }
+    public bool ConsumeRequiredItems { get; init; } = true;
 }

@@ -78,9 +78,12 @@ public class InteractionManager
                 if (!hasAll) continue; // Try next definition
 
                 // Consume Items
-                foreach (var req in def.RequiredItems)
+                if (def.ConsumeRequiredItems)
                 {
-                    character.RemoveItem(req.ItemId, req.Quantity);
+                    foreach (var req in def.RequiredItems)
+                    {
+                        character.RemoveItem(req.ItemId, req.Quantity);
+                    }
                 }
             }
 

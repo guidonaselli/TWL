@@ -26,5 +26,41 @@
       { "ItemId": 203, "Quantity": 1 }
     ],
     "RequiredQuestId": 1016
+  },
+  {
+    "TargetName": "DrySticks",
+    "Type": "Gather",
+    "RewardItems": [
+      { "ItemId": 101, "Quantity": 1 }
+    ]
+  },
+  {
+    "TargetName": "DriftwoodPile",
+    "Type": "Gather",
+    "RewardItems": [
+      { "ItemId": 103, "Quantity": 1 }
+    ]
+  },
+  {
+    "TargetName": "ThickVines",
+    "Type": "Craft",
+    "ConsumeRequiredItems": false,
+    "RequiredItems": [
+      { "ItemId": 203, "Quantity": 1 }
+    ],
+    "RewardItems": [],
+    "RequiredQuestId": 1018
+  },
+  {
+    "TargetName": "TrainingDummy",
+    "Type": "Craft",
+    "RequiredItems": [
+      { "ItemId": 101, "Quantity": 5 },
+      { "ItemId": 103, "Quantity": 2 }
+    ],
+    "RewardItems": [
+      { "ItemId": 206, "Quantity": 1 }
+    ],
+    "RequiredQuestId": 2001
   }
 ]

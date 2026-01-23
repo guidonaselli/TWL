@@ -393,5 +393,90 @@
       "Gold": 0,
       "Items": []
     }
+  },
+  {
+    "QuestId": 1017,
+    "Title": "The Way Out",
+    "Description": "The Hermit says the path to the jungle is blocked by thick overgrowth. He suggests using your new Stone Axe to clear a path.",
+    "Requirements": [
+      1016
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "OldHermit",
+        "RequiredCount": 1,
+        "Description": "Speak with the Old Hermit."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1018,
+    "Title": "Cutting the Path",
+    "Description": "Cut the Thick Vines blocking the path inland.",
+    "Requirements": [
+      1017
+    ],
+    "Objectives": [
+      {
+        "Type": "Craft",
+        "TargetName": "ThickVines",
+        "RequiredCount": 1,
+        "Description": "Cut the Thick Vines with your Stone Axe."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 204,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 2001,
+    "Title": "Training Basics",
+    "Description": "You need to keep your skills sharp. The Survivalist suggests building a Training Dummy.",
+    "Requirements": [
+      1016
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "DrySticks",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Dry Sticks."
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "DriftwoodPile",
+        "RequiredCount": 2,
+        "Description": "Collect 2 Driftwood."
+      },
+      {
+        "Type": "Craft",
+        "TargetName": "TrainingDummy",
+        "RequiredCount": 1,
+        "Description": "Craft a Training Dummy."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 10,
+      "Items": [
+        {
+          "ItemId": 205,
+          "Quantity": 1
+        }
+      ]
+    }
   }
 ]
