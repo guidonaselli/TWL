@@ -48,7 +48,9 @@ public class GameServer
         InteractionManager = new InteractionManager();
         InteractionManager.Load("Content/Data/interactions.json");
 
-        CombatManager = new CombatManager(new SystemRandomService());
+        var random = new SystemRandomService();
+        var combatResolver = new StandardCombatResolver(random);
+        CombatManager = new CombatManager(combatResolver);
         PopulateTestWorld();
 
         // 3) Inicia Network

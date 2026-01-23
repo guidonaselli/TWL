@@ -16,7 +16,8 @@ public class CombatManagerTests
         // Variance logic: 0.95f + (1.05f - 0.95f) * NextFloat()
         // If NextFloat is 0.5f, then variance is 0.95 + 0.10 * 0.5 = 1.00
         var mockRandom = new MockRandomService(0.5f);
-        var manager = new CombatManager(mockRandom);
+        var resolver = new StandardCombatResolver(mockRandom);
+        var manager = new CombatManager(resolver);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000 };
@@ -41,7 +42,8 @@ public class CombatManagerTests
         // Arrange
         // Set Mock to 0.0 -> Variance should be 0.95
         var mockRandom = new MockRandomService(0.0f);
-        var manager = new CombatManager(mockRandom);
+        var resolver = new StandardCombatResolver(mockRandom);
+        var manager = new CombatManager(resolver);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000 };
@@ -64,7 +66,8 @@ public class CombatManagerTests
         // Arrange
         // Set Mock to 1.0 -> Variance should be 1.05
         var mockRandom = new MockRandomService(1.0f);
-        var manager = new CombatManager(mockRandom);
+        var resolver = new StandardCombatResolver(mockRandom);
+        var manager = new CombatManager(resolver);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000 };

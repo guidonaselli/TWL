@@ -23,7 +23,9 @@ public class CombatManagerConcurrencyTests
     [Fact]
     public void CombatManager_ConcurrentAccess_ShouldNotCrash()
     {
-        var manager = new CombatManager(new MockRandomService());
+        var random = new MockRandomService();
+        var resolver = new StandardCombatResolver(random);
+        var manager = new CombatManager(resolver);
         bool running = true;
         var exceptions = new List<Exception>();
 

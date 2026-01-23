@@ -41,7 +41,9 @@ public class QuestCombatIntegrationTests
         _questManager.Load("test_combat_quests.json");
 
         // 2. Setup Combat Manager
-        _combatManager = new CombatManager(new MockRandomService());
+        var random = new MockRandomService();
+        var resolver = new StandardCombatResolver(random);
+        _combatManager = new CombatManager(resolver);
 
         // 3. Setup Player Component
         _playerQuests = new PlayerQuestComponent(_questManager);
