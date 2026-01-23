@@ -36,8 +36,14 @@ public class PlayerQuestComponent
             var def = _questManager.GetDefinition(questId);
             if (def == null) return false;
 
-            if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
-                return false;
+            if (QuestStates.TryGetValue(questId, out var currentState))
+            {
+                if (currentState == QuestState.InProgress || currentState == QuestState.Completed)
+                    return false;
+
+                if (currentState == QuestState.RewardClaimed && !def.Repeatable)
+                    return false;
+            }
 
             foreach (var reqId in def.Requirements)
             {
@@ -64,8 +70,14 @@ public class PlayerQuestComponent
             var def = _questManager.GetDefinition(questId);
             if (def == null) return false;
 
-            if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
-                return false;
+            if (QuestStates.TryGetValue(questId, out var currentState))
+            {
+                if (currentState == QuestState.InProgress || currentState == QuestState.Completed)
+                    return false;
+
+                if (currentState == QuestState.RewardClaimed && !def.Repeatable)
+                    return false;
+            }
 
             foreach (var reqId in def.Requirements)
             {
@@ -73,6 +85,26 @@ public class PlayerQuestComponent
                 var state = QuestStates[reqId];
                 if (state != QuestState.Completed && state != QuestState.RewardClaimed)
                     return false;
+            }
+
+            // Check Flags
+            if (def.RequiredFlags != null)
+            {
+                foreach (var flag in def.RequiredFlags)
+                {
+                    if (!Flags.Contains(flag)) return false;
+                }
+            }
+
+            // Handle Repeatable
+            if (QuestStates.ContainsKey(questId) && QuestStates[questId] == QuestState.RewardClaimed)
+            {
+                if (!def.Repeatable) return false;
+                // If repeatable, reset
+                QuestStates[questId] = QuestState.InProgress;
+                QuestProgress[questId] = new List<int>(new int[def.Objectives.Count]);
+                IsDirty = true;
+                return true;
             }
 
             QuestStates[questId] = QuestState.InProgress;
@@ -138,6 +170,19 @@ public class PlayerQuestComponent
         {
             if (!QuestStates.ContainsKey(questId) || QuestStates[questId] != QuestState.Completed)
                 return false;
+
+            var def = _questManager.GetDefinition(questId);
+            if (def != null)
+            {
+                if (def.FlagsSet != null)
+                {
+                    foreach (var f in def.FlagsSet) Flags.Add(f);
+                }
+                if (def.FlagsClear != null)
+                {
+                    foreach (var f in def.FlagsClear) Flags.Remove(f);
+                }
+            }
 
             QuestStates[questId] = QuestState.RewardClaimed;
             IsDirty = true;

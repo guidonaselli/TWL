@@ -265,5 +265,61 @@
     ],
     "Requirements": { "Wis": 5, "Agi": 5 },
     "Stage": 1
+  },
+  {
+    "SkillId": 63,
+    "Name": "Tectonic Slam",
+    "Description": "A heavy, ground-shaking strike that disrupts the enemy.",
+    "Element": "Earth",
+    "Branch": "Physical",
+    "Tier": 2,
+    "TargetType": "SingleEnemy",
+    "SpCost": 25,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Atk", "Coefficient": 1.3 },
+      { "Stat": "Str", "Coefficient": 0.5 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 },
+      { "Tag": "Seal", "Value": 0, "Duration": 1, "Chance": 0.4 }
+    ],
+    "Requirements": { "Str": 20 }
+  },
+  {
+    "SkillId": 64,
+    "Name": "Earthquake",
+    "Description": "Causes the ground to tremble violently, damaging multiple enemies.",
+    "Element": "Earth",
+    "Branch": "Magical",
+    "Tier": 2,
+    "TargetType": "RowEnemies",
+    "SpCost": 40,
+    "Cooldown": 1,
+    "Scaling": [
+      { "Stat": "Mat", "Coefficient": 1.0 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 }
+    ],
+    "Requirements": { "Int": 20 }
+  },
+  {
+    "SkillId": 65,
+    "Name": "Fortify",
+    "Description": "Creates a magical barrier of stone around an ally to absorb damage.",
+    "Element": "Earth",
+    "Branch": "Support",
+    "Tier": 2,
+    "TargetType": "SingleAlly",
+    "SpCost": 30,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Wis", "Coefficient": 2.0 }
+    ],
+    "Effects": [
+      { "Tag": "Shield", "Value": 0, "Duration": 2 }
+    ],
+    "Requirements": { "Wis": 20 }
   }
 ]

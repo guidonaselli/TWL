@@ -103,7 +103,7 @@ public class BattleInstance
                     int damage = Math.Max(1, dmgVal - defense);
                     if (targetCombatant.IsDefending) damage /= 2;
 
-                    targetCombatant.Character.TakeDamage(damage);
+                    damage = ApplyDamage(targetCombatant, damage);
                     resultMessage = $"{actor.Character.Name} attacks {targetCombatant.Character.Name} for {damage} damage!";
                 }
                 else
@@ -217,10 +217,18 @@ public class BattleInstance
                      int damage = Math.Max(1, (int)totalValue - defense);
                      if (currentTarget.IsDefending) damage /= 2;
 
-                     currentTarget.Character.TakeDamage(damage);
+                     damage = ApplyDamage(currentTarget, damage);
                      didDamage = true;
                      lastDamage = damage;
                      lastTarget = currentTarget;
+                 }
+                 else if (effect.Tag == SkillEffectTag.Shield)
+                 {
+                     float value = effect.Value;
+                     if (value == 0 && totalValue > 0) value = totalValue; // Use scaled value if provided
+
+                     currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, value, effect.Duration, effect.Param));
+                     didHeal = true; // Treating shield as positive
                  }
                  else if (effect.Tag == SkillEffectTag.Heal)
                  {
@@ -383,13 +391,13 @@ public class BattleInstance
 
                 int dmg1 = Math.Max(1, baseDmg - target.Character.CalculateDefense());
                 if (target.IsDefending) dmg1 /= 2;
-                target.Character.TakeDamage(dmg1);
+                dmg1 = ApplyDamage(target, dmg1);
                 return $"{actor.Character.Name} uses Power Strike on {target.Character.Name} for {dmg1}!";
 
             case 2: // Fireball (Magic)
                 // Magic not affected by physical attack buff
                 int dmg2 = Math.Max(1, actor.Character.CalculateMagicalDamage() * 2 - target.Character.CalculateMagicalDefense());
-                target.Character.TakeDamage(dmg2);
+                dmg2 = ApplyDamage(target, dmg2);
                 return $"{actor.Character.Name} casts Fireball on {target.Character.Name} for {dmg2}!";
 
             case 3: // Heal
@@ -422,5 +430,28 @@ public class BattleInstance
     public void ForceEnd()
     {
         State = BattleState.Defeat;
+    }
+
+    private int ApplyDamage(Combatant target, int damage)
+    {
+        var shield = target.StatusEffects.FirstOrDefault(e => e.Tag == SkillEffectTag.Shield);
+        if (shield != null)
+        {
+            int absorbed = Math.Min(damage, (int)shield.Value);
+            shield.Value -= absorbed;
+            damage -= absorbed;
+
+            if (shield.Value <= 0)
+            {
+                target.StatusEffects.Remove(shield);
+            }
+        }
+
+        if (damage > 0)
+        {
+            target.Character.TakeDamage(damage);
+        }
+
+        return damage;
     }
 }
