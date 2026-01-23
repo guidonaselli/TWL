@@ -12,6 +12,7 @@ public class GameServer
     public DbService DB { get; private set; }
     public ServerQuestManager QuestManager { get; private set; }
     public CombatManager CombatManager { get; private set; }
+    public InteractionManager InteractionManager { get; private set; }
 
     public void Start()
     {
@@ -35,10 +36,13 @@ public class GameServer
         QuestManager = new ServerQuestManager();
         QuestManager.Load("Content/Data/quests.json");
 
+        InteractionManager = new InteractionManager();
+        InteractionManager.Load("Content/Data/interactions.json");
+
         CombatManager = new CombatManager();
 
         // 3) Inicia Network
-        _netServer = new NetworkServer(9050, DB, QuestManager, CombatManager);
+        _netServer = new NetworkServer(9050, DB, QuestManager, CombatManager, InteractionManager);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");

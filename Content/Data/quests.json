@@ -360,5 +360,38 @@
       "Gold": 50,
       "Items": []
     }
+  },
+  {
+    "QuestId": 1016,
+    "Title": "Primitive Tools",
+    "Description": "You need tools to survive. Collect a Sharp Stone and a Strong Branch, then use the Old Workbench to make a Stone Axe.",
+    "Requirements": [
+      1015
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "SharpStone",
+        "RequiredCount": 1,
+        "Description": "Find a Sharp Stone."
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "StrongBranch",
+        "RequiredCount": 1,
+        "Description": "Find a Strong Branch."
+      },
+      {
+        "Type": "Craft",
+        "TargetName": "OldWorkbench",
+        "RequiredCount": 1,
+        "Description": "Craft a Stone Axe at the Old Workbench."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   }
 ]
