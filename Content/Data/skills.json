@@ -145,5 +145,66 @@
       { "Tag": "Damage", "Value": 0, "Duration": 0 }
     ],
     "Requirements": { "Str": 10 }
+  },
+  {
+    "SkillId": 60,
+    "Name": "Rock Smash",
+    "Description": "A heavy strike with a solid rock.",
+    "Element": "Earth",
+    "Branch": "Physical",
+    "Tier": 1,
+    "TargetType": "SingleEnemy",
+    "SpCost": 8,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Atk", "Coefficient": 1.2 },
+      { "Stat": "Str", "Coefficient": 0.5 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 }
+    ],
+    "Requirements": { "Str": 5 },
+    "Stage": 1,
+    "UnlockRules": { "Level": 1 }
+  },
+  {
+    "SkillId": 61,
+    "Name": "Stone Bullet",
+    "Description": "Shoots a small rock projectile at high speed.",
+    "Element": "Earth",
+    "Branch": "Magical",
+    "Tier": 1,
+    "TargetType": "SingleEnemy",
+    "SpCost": 10,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Mat", "Coefficient": 1.2 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 }
+    ],
+    "Requirements": { "Int": 5 },
+    "Stage": 1,
+    "UnlockRules": { "Level": 1 }
+  },
+  {
+    "SkillId": 62,
+    "Name": "Earth Barrier",
+    "Description": "Surrounds an ally with floating stones, increasing defense.",
+    "Element": "Earth",
+    "Branch": "Support",
+    "Tier": 1,
+    "TargetType": "SingleAlly",
+    "SpCost": 15,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Wis", "Coefficient": 1.5 }
+    ],
+    "Effects": [
+      { "Tag": "BuffStats", "Value": 0, "Duration": 3, "Param": "Def" }
+    ],
+    "Requirements": { "Wis": 5 },
+    "Stage": 1,
+    "UnlockRules": { "Level": 1 }
   }
 ]
