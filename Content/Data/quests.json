@@ -802,5 +802,139 @@
         }
       ]
     }
+  },
+  {
+    "QuestId": 1205,
+    "Title": "Dark Corridors",
+    "Description": "The console flickers and points to threats in the darkness. Clear the path.",
+    "Requirements": [
+      1204
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "RuinsConsole",
+        "RequiredCount": 1,
+        "Description": "Check the Console."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "RuinsBat",
+        "RequiredCount": 3,
+        "Description": "Defeat 3 Ruins Bats."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "GiantSpider",
+        "RequiredCount": 1,
+        "Description": "Defeat the Giant Spider."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 50,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1206,
+    "Title": "Ancient Power",
+    "Description": "The console needs power. Find a Power Crystal deep in the ruins.",
+    "Requirements": [
+      1205
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "PowerCrystalSource",
+        "RequiredCount": 1,
+        "Description": "Collect a Power Crystal."
+      },
+      {
+        "Type": "Talk",
+        "TargetName": "RuinsConsole",
+        "RequiredCount": 1,
+        "Description": "Return to the Console."
+      }
+    ],
+    "Rewards": {
+      "Exp": 350,
+      "Gold": 50,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1207,
+    "Title": "The Hologram",
+    "Description": "The system is online. Activate the main projector.",
+    "Requirements": [
+      1206
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "HologramProjector",
+        "RequiredCount": 1,
+        "Description": "Activate the Projector."
+      }
+    ],
+    "Rewards": {
+      "Exp": 500,
+      "Gold": 100,
+      "Items": [
+        {
+          "ItemId": 8109,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 2203,
+    "Title": "Bat Wings",
+    "Description": "The Doctor needs samples from the ruins bats.",
+    "Requirements": [
+      1205
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "BatNest",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Bat Wings from nests."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 20,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2204,
+    "Title": "Lost Toy",
+    "Description": "You saw a stuffed bear. Maybe your monkey would like it?",
+    "Requirements": [
+      1010
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "StuffedBearLocation",
+        "RequiredCount": 1,
+        "Description": "Find the Stuffed Bear."
+      },
+      {
+        "Type": "Interact",
+        "TargetName": "MyMonkey",
+        "RequiredCount": 1,
+        "Description": "Give the toy to your Monkey."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 0,
+      "Items": []
+    }
   }
 ]

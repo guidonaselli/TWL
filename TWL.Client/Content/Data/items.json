@@ -132771,6 +132771,86 @@
         "sell": 10
       },
       "icon": 1000
+    },
+    {
+      "id": 8106,
+      "name": "Bat Wing",
+      "type": 6,
+      "category": 26,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 8107,
+      "name": "Stuffed Bear",
+      "type": 4,
+      "category": 19,
+      "level": 1,
+      "rarity": "Unique",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 8108,
+      "name": "Power Crystal",
+      "type": 4,
+      "category": 19,
+      "level": 1,
+      "rarity": "Rare",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 8109,
+      "name": "Data Chip",
+      "type": 4,
+      "category": 19,
+      "level": 1,
+      "rarity": "Rare",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
     }
   ],
   "meta": {
