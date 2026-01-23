@@ -36,12 +36,9 @@ public class PlayerQuestComponent
             var def = _questManager.GetDefinition(questId);
             if (def == null) return false;
 
-            if (QuestStates.TryGetValue(questId, out var currentState))
+            if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
             {
-                if (currentState == QuestState.InProgress || currentState == QuestState.Completed)
-                    return false;
-
-                if (currentState == QuestState.RewardClaimed && !def.Repeatable)
+                if (!def.Repeatable || QuestStates[questId] != QuestState.RewardClaimed)
                     return false;
             }
 
@@ -53,13 +50,9 @@ public class PlayerQuestComponent
                     return false;
             }
 
-            // Check RequiredFlags
-            if (def.RequiredFlags != null)
+            foreach (var flag in def.RequiredFlags)
             {
-                foreach (var flag in def.RequiredFlags)
-                {
-                    if (!Flags.Contains(flag)) return false;
-                }
+                if (!Flags.Contains(flag)) return false;
             }
 
             return true;
@@ -76,10 +69,8 @@ public class PlayerQuestComponent
             // Check if already started/completed, unless Repeatable
             if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
             {
-                if (!def.Repeatable) return false;
-                // If repeatable, must be in RewardClaimed state to restart? Or Completed?
-                // Usually restart after claiming reward.
-                if (QuestStates[questId] != QuestState.RewardClaimed) return false;
+                if (!def.Repeatable || QuestStates[questId] != QuestState.RewardClaimed)
+                    return false;
             }
 
             // Check Requirements (Quest Chains)
@@ -91,13 +82,9 @@ public class PlayerQuestComponent
                     return false;
             }
 
-            // Check RequiredFlags
-            if (def.RequiredFlags != null)
+            foreach (var flag in def.RequiredFlags)
             {
-                foreach (var flag in def.RequiredFlags)
-                {
-                    if (!Flags.Contains(flag)) return false;
-                }
+                if (!Flags.Contains(flag)) return false;
             }
 
             QuestStates[questId] = QuestState.InProgress;
@@ -167,14 +154,8 @@ public class PlayerQuestComponent
             var def = _questManager.GetDefinition(questId);
             if (def != null)
             {
-                if (def.FlagsSet != null)
-                {
-                    foreach (var f in def.FlagsSet) Flags.Add(f);
-                }
-                if (def.FlagsClear != null)
-                {
-                    foreach (var f in def.FlagsClear) Flags.Remove(f);
-                }
+                foreach (var f in def.FlagsSet) Flags.Add(f);
+                foreach (var f in def.FlagsClear) Flags.Remove(f);
             }
 
             QuestStates[questId] = QuestState.RewardClaimed;
@@ -258,7 +239,8 @@ public class PlayerQuestComponent
             var data = new QuestData
             {
                 States = new Dictionary<int, QuestState>(QuestStates),
-                Progress = new Dictionary<int, List<int>>()
+                Progress = new Dictionary<int, List<int>>(),
+                Flags = new HashSet<string>(Flags)
             };
 
             foreach(var kvp in QuestProgress)
@@ -290,6 +272,12 @@ public class PlayerQuestComponent
                 {
                     QuestProgress[kvp.Key] = new List<int>(kvp.Value);
                 }
+            }
+
+            Flags.Clear();
+            if (data.Flags != null)
+            {
+                foreach(var f in data.Flags) Flags.Add(f);
             }
 
             IsDirty = false;
