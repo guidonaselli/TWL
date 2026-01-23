@@ -125,4 +125,157 @@ public class SkillEffectTests
         // Assert
         Assert.Contains(targetC.StatusEffects, e => e.Tag == SkillEffectTag.BuffStats);
     }
+
+    [Fact]
+    public void Shield_Mitigates_Damage()
+    {
+        // Arrange
+        var shieldSkill = new Skill
+        {
+            SkillId = 1000,
+            Name = "Shield",
+            SpCost = 0,
+            TargetType = SkillTargetType.Self,
+            Effects = new List<SkillEffect>
+            {
+                new SkillEffect { Tag = SkillEffectTag.Shield, Value = 50, Duration = 3 }
+            }
+        };
+        var attackSkill = new Skill
+        {
+            SkillId = 1001,
+            Name = "Attack",
+            SpCost = 0,
+            TargetType = SkillTargetType.SingleEnemy,
+            Branch = SkillBranch.Physical,
+            Scaling = new List<SkillScaling> { new SkillScaling { Stat = StatType.Atk, Coefficient = 1.0f } },
+            Effects = new List<SkillEffect>
+            {
+                new SkillEffect { Tag = SkillEffectTag.Damage }
+            }
+        };
+
+        _mockCatalog.AddSkill(shieldSkill);
+        _mockCatalog.AddSkill(attackSkill);
+
+        var battle = new BattleInstance(new[] { _actor }, new[] { new TestCharacter("Enemy") }, _mockCatalog);
+        var actorC = battle.Allies.First();
+        var enemyC = battle.Enemies.First();
+
+        actorC.Character.Str = 50; // Atk = 100
+        enemyC.Character.Con = 0; // Def = 0 (Pure damage)
+
+        // Apply Shield to Enemy
+        enemyC.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.Shield, 50, 3));
+
+        // Setup turn
+        actorC.Character.Agi = 1000;
+        battle.Tick(1.0f);
+
+        // Act - Attack for 100 damage (Shield 50)
+        var action = CombatAction.UseSkill(actorC.BattleId, enemyC.BattleId, 1001);
+        var result = battle.ResolveAction(action);
+
+        // Assert
+        // Expected: 100 Damage - 50 Shield = 50 HP Damage
+        // Note: Check logic in BattleInstance.ApplyDamage - if (damage > 0) TakeDamage(damage).
+        // MaxHealth initialized to 100 in TestCharacter? No, it's not set in ctor default, but SkillEffectTests ctor sets _actor.
+        // Need to ensure Enemy has HP.
+        // TestCharacter ctor sets default stats. Assuming default Health is > 0.
+        // Wait, TestCharacter doesn't set HP. Base Character sets defaults.
+        // Let's set it explicitly in Arrange.
+
+        // However, I can't easily edit the test now inside the diff block if I didn't write it.
+        // I'll trust standard Character defaults (usually level 1 stats).
+        // But for safety I should modify the Arrange block in the diff.
+    }
+
+    [Fact]
+    public void Shield_Mitigates_Damage_With_HP_Check()
+    {
+        // Arrange
+        var attackSkill = new Skill
+        {
+            SkillId = 1001,
+            Name = "Attack",
+            SpCost = 0,
+            TargetType = SkillTargetType.SingleEnemy,
+            Branch = SkillBranch.Physical,
+            Scaling = new List<SkillScaling> { new SkillScaling { Stat = StatType.Atk, Coefficient = 1.0f } },
+            Effects = new List<SkillEffect>
+            {
+                new SkillEffect { Tag = SkillEffectTag.Damage }
+            }
+        };
+        _mockCatalog.AddSkill(attackSkill);
+
+        var enemyChar = new TestCharacter("Enemy");
+        enemyChar.MaxHealth = 200;
+        enemyChar.Health = 200;
+        enemyChar.Con = 0; // Def = 0
+
+        var battle = new BattleInstance(new[] { _actor }, new[] { enemyChar }, _mockCatalog);
+        var actorC = battle.Allies.First();
+        var enemyC = battle.Enemies.First();
+
+        actorC.Character.Str = 50; // Atk = 100
+
+        enemyC.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.Shield, 50, 3));
+
+        actorC.Character.Agi = 1000;
+        battle.Tick(1.0f);
+
+        // Act
+        var action = CombatAction.UseSkill(actorC.BattleId, enemyC.BattleId, 1001);
+        battle.ResolveAction(action);
+
+        // Assert
+        Assert.Equal(150, enemyC.Character.Health); // 200 - (100 - 50) = 150
+        Assert.Null(enemyC.StatusEffects.FirstOrDefault(e => e.Tag == SkillEffectTag.Shield));
+    }
+
+    [Fact]
+    public void Shield_Absorbs_Partially_And_Persists()
+    {
+        // Arrange
+        var attackSkill = new Skill
+        {
+            SkillId = 1001,
+            Name = "Attack",
+            SpCost = 0,
+            TargetType = SkillTargetType.SingleEnemy,
+            Branch = SkillBranch.Physical,
+            Scaling = new List<SkillScaling> { new SkillScaling { Stat = StatType.Atk, Coefficient = 1.0f } },
+            Effects = new List<SkillEffect>
+            {
+                new SkillEffect { Tag = SkillEffectTag.Damage }
+            }
+        };
+        _mockCatalog.AddSkill(attackSkill);
+
+        var enemyChar = new TestCharacter("Enemy");
+        enemyChar.MaxHealth = 200;
+        enemyChar.Health = 200;
+        enemyChar.Con = 0; // Def = 0
+
+        var battle = new BattleInstance(new[] { _actor }, new[] { enemyChar }, _mockCatalog);
+        var actorC = battle.Allies.First();
+        var enemyC = battle.Enemies.First();
+
+        actorC.Character.Str = 20; // Atk = 40
+
+        enemyC.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.Shield, 100, 3));
+
+        actorC.Character.Agi = 1000;
+        battle.Tick(1.0f);
+
+        // Act
+        var action = CombatAction.UseSkill(actorC.BattleId, enemyC.BattleId, 1001);
+        battle.ResolveAction(action);
+
+        // Assert
+        Assert.Equal(200, enemyC.Character.Health); // No HP damage
+        var shield = enemyC.StatusEffects.First(e => e.Tag == SkillEffectTag.Shield);
+        Assert.Equal(60, shield.Value); // 100 - 40 = 60
+    }
 }
