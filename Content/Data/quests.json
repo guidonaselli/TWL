@@ -1234,5 +1234,77 @@
       "Gold": 50,
       "Items": []
     }
+  },
+  {
+    "QuestId": 3001,
+    "Title": "Ruins Discovery",
+    "Description": "The Hermit remembers another entrance. Ask him about it.",
+    "Requirements": [
+      1017
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "OldHermit",
+        "RequiredCount": 1,
+        "Description": "Talk to Old Hermit about the map."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    },
+    "FlagsSet": [
+      "RuinsMapKnown"
+    ]
+  },
+  {
+    "QuestId": 3002,
+    "Title": "Finding the Entrance",
+    "Description": "The map points to a hidden vine wall.",
+    "Requirements": [],
+    "RequiredFlags": [
+      "RuinsMapKnown"
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "HiddenVineWall",
+        "RequiredCount": 1,
+        "Description": "Find the Hidden Entrance."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": []
+    },
+    "FlagsSet": [
+      "RuinsUnlocked"
+    ]
+  },
+  {
+    "QuestId": 3003,
+    "Title": "Ruins Clean Up",
+    "Description": "Keep the entrance clear of spiders.",
+    "Requirements": [],
+    "RequiredFlags": [
+      "RuinsUnlocked"
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "RuinsSpider",
+        "RequiredCount": 5,
+        "Description": "Kill 5 Ruins Spiders."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 10,
+      "Items": []
+    },
+    "Repeatable": true
   }
 ]
