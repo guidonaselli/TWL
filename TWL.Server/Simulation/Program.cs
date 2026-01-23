@@ -3,7 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Serilog;
 using TWL.Server;
+using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
+using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -28,6 +30,8 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<ServerQuestManager>();
         svcs.AddSingleton<InteractionManager>();
         svcs.AddSingleton<CombatManager>();
+        svcs.AddSingleton<IPlayerRepository, FilePlayerRepository>();
+        svcs.AddSingleton<PlayerService>();
         svcs.AddSingleton<NetworkServer>(sp =>
         {
             var port = ctx.Configuration.GetValue<int>("Network:Port");
@@ -36,7 +40,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<DbService>(),
                 sp.GetRequiredService<ServerQuestManager>(),
                 sp.GetRequiredService<CombatManager>(),
-                sp.GetRequiredService<InteractionManager>()
+                sp.GetRequiredService<InteractionManager>(),
+                sp.GetRequiredService<PlayerService>()
             );
         });
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer

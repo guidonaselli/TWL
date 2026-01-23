@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using TWL.Server.Persistence.Database;
+using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Networking;
 
 namespace TWL.Server.Simulation;
@@ -14,20 +15,25 @@ public class ServerWorker : IHostedService
     private readonly NetworkServer _net;
     private readonly ServerQuestManager _questManager;
     private readonly InteractionManager _interactionManager;
+    private readonly PlayerService _playerService;
 
-    public ServerWorker(NetworkServer net, DbService db, ILogger<ServerWorker> log, ServerQuestManager questManager, InteractionManager interactionManager)
+    public ServerWorker(NetworkServer net, DbService db, ILogger<ServerWorker> log, ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService)
     {
         _net = net;
         _db = db;
         _log = log;
         _questManager = questManager;
         _interactionManager = interactionManager;
+        _playerService = playerService;
     }
 
     public Task StartAsync(CancellationToken ct)
     {
         _log.LogInformation("Init DB...");
         _db.InitDatabase();
+
+        _log.LogInformation("Starting persistence service...");
+        _playerService.Start();
 
         _log.LogInformation("Loading Game Data...");
         _questManager.Load("Content/Data/quests.json");
@@ -48,6 +54,7 @@ public class ServerWorker : IHostedService
     {
         _log.LogInformation("Stopping server...");
         _net.Stop();
+        _playerService.Stop();
         _log.LogInformation("Server stopped.");
         return Task.CompletedTask;
     }

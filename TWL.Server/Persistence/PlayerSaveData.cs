@@ -1,0 +1,39 @@
+using System.Collections.Generic;
+using TWL.Shared.Domain.Models;
+using TWL.Shared.Domain.Quests;
+using TWL.Shared.Domain.Requests;
+
+namespace TWL.Server.Persistence;
+
+public class PlayerSaveData
+{
+    public ServerCharacterData Character { get; set; } = new();
+    public QuestData Quests { get; set; } = new();
+    public DateTime LastSaved { get; set; }
+}
+
+public class ServerCharacterData
+{
+    public int Id { get; set; }
+    public string Name { get; set; }
+    public int Hp { get; set; }
+    public int Sp { get; set; }
+    public int Level { get; set; }
+    public int Exp { get; set; }
+    public int ExpToNextLevel { get; set; }
+    public int StatPoints { get; set; }
+    public int Str { get; set; }
+    public int Con { get; set; }
+    public int Int { get; set; }
+    public int Wis { get; set; }
+    public int Agi { get; set; }
+    public int Gold { get; set; }
+    public List<Item> Inventory { get; set; } = new();
+    public List<int> Pets { get; set; } = new();
+}
+
+public class QuestData
+{
+    public Dictionary<int, QuestState> States { get; set; } = new();
+    public Dictionary<int, List<int>> Progress { get; set; } = new();
+}
