@@ -417,5 +417,128 @@
     ],
     "RequiredQuestId": 2301,
     "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "RepairedRadioTower",
+    "Type": "Interact",
+    "RequiredItems": [],
+    "RewardItems": [],
+    "RequiredQuestId": 1401,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "NorthEastCliff",
+    "Type": "Interact",
+    "RequiredItems": [],
+    "RewardItems": [],
+    "RequiredQuestId": 1401,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "HeavyRocks",
+    "Type": "Interact",
+    "RequiredItems": [],
+    "RewardItems": [],
+    "RequiredQuestId": 1402,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "HeavyRocks",
+    "Type": "Interact",
+    "RequiredItems": [
+      {
+        "ItemId": 9003,
+        "Quantity": 1
+      }
+    ],
+    "RewardItems": [],
+    "RequiredQuestId": 1403,
+    "ConsumeRequiredItems": true
+  },
+  {
+    "TargetName": "SulfurVent",
+    "Type": "Gather",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 9001,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 1402,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "BurntTree",
+    "Type": "Gather",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 9002,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 1402,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "AlchemyTable",
+    "Type": "Craft",
+    "RequiredItems": [
+      {
+        "ItemId": 9001,
+        "Quantity": 1
+      },
+      {
+        "ItemId": 9002,
+        "Quantity": 1
+      }
+    ],
+    "RewardItems": [
+      {
+        "ItemId": 9003,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 1402,
+    "ConsumeRequiredItems": true
+  },
+  {
+    "TargetName": "HiddenDock",
+    "Type": "Interact",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 9004,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 1404,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "FishingSpot",
+    "Type": "Gather",
+    "ConsumeRequiredItems": false,
+    "RequiredItems": [
+      {
+        "ItemId": 303,
+        "Quantity": 1
+      }
+    ],
+    "RewardItems": [
+      {
+        "ItemId": 9005,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 2401
+  },
+  {
+    "TargetName": "RepairedRadioTower",
+    "Type": "Interact",
+    "RequiredItems": [],
+    "RewardItems": [],
+    "ConsumeRequiredItems": false
   }
 ]
