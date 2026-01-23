@@ -3,7 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using TWL.Server.Persistence.Database;
-using TWL.Server.Security;
+using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.DTO;
@@ -24,6 +24,7 @@ public class ClientSession
     private readonly ServerQuestManager _questManager;
     private readonly CombatManager _combatManager;
     private readonly InteractionManager _interactionManager;
+    private readonly PlayerService _playerService;
     private readonly NetworkStream _stream;
     private readonly RateLimiter _rateLimiter;
 
@@ -32,7 +33,7 @@ public class ClientSession
 
     public int UserId = -1; // se setea tras login
 
-    public ClientSession(TcpClient client, DbService db, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager)
+    public ClientSession(TcpClient client, DbService db, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService)
     {
         _client = client;
         _stream = client.GetStream();
@@ -40,6 +41,7 @@ public class ClientSession
         _questManager = questManager;
         _combatManager = combatManager;
         _interactionManager = interactionManager;
+        _playerService = playerService;
         QuestComponent = new PlayerQuestComponent(questManager);
         _rateLimiter = new RateLimiter();
     }
@@ -74,6 +76,11 @@ public class ClientSession
         }
         finally
         {
+            if (UserId > 0)
+            {
+                _playerService.SaveSession(this);
+                _playerService.UnregisterSession(UserId);
+            }
             _stream.Close();
             _client.Close();
         }
@@ -296,7 +303,21 @@ public class ClientSession
         else
         {
             UserId = uid;
-            Character = new ServerCharacter { Id = uid, Name = loginDto.Username, Hp = 100 };
+
+            var data = _playerService.LoadData(uid);
+            if (data != null)
+            {
+                Character = new ServerCharacter();
+                Character.LoadSaveData(data.Character);
+                QuestComponent.LoadSaveData(data.Quests);
+                Console.WriteLine($"Restored session for {loginDto.Username} ({UserId})");
+            }
+            else
+            {
+                Character = new ServerCharacter { Id = uid, Name = loginDto.Username, Hp = 100 };
+            }
+
+            _playerService.RegisterSession(this);
 
             // mandar una LoginResponse
             await SendAsync(new NetMessage

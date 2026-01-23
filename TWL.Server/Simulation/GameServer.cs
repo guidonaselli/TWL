@@ -1,4 +1,6 @@
+using TWL.Server.Persistence;
 ﻿using TWL.Server.Persistence.Database;
+using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 
@@ -13,6 +15,7 @@ public class GameServer
     public ServerQuestManager QuestManager { get; private set; }
     public CombatManager CombatManager { get; private set; }
     public InteractionManager InteractionManager { get; private set; }
+    public PlayerService PlayerService { get; private set; }
 
     public void Start()
     {
@@ -20,6 +23,11 @@ public class GameServer
         var connString = "Host=localhost;Port=5432;Database=wonderland;Username=postgres;Password=1234";
         DB = new DbService(connString);
         DB.Init();
+
+        // Init Player Persistence
+        var playerRepo = new FilePlayerRepository();
+        PlayerService = new PlayerService(playerRepo);
+        PlayerService.Start();
 
         // 2) Carga definiciones (items, quests, skills)
         if (System.IO.File.Exists("Content/Data/skills.json"))
@@ -43,7 +51,7 @@ public class GameServer
         PopulateTestWorld();
 
         // 3) Inicia Network
-        _netServer = new NetworkServer(9050, DB, QuestManager, CombatManager, InteractionManager);
+        _netServer = new NetworkServer(9050, DB, QuestManager, CombatManager, InteractionManager, PlayerService);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");
@@ -52,6 +60,7 @@ public class GameServer
     public void Stop()
     {
         _netServer?.Stop();
+        PlayerService?.Stop();
         DB?.Dispose();
         Console.WriteLine("GameServer stopped.");
     }

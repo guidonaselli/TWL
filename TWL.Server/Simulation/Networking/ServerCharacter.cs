@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
+using TWL.Server.Persistence;
 using TWL.Shared.Domain.Models;
 
 namespace TWL.Server.Simulation.Networking;
@@ -11,6 +12,8 @@ namespace TWL.Server.Simulation.Networking;
 /// </summary>
 public class ServerCharacter
 {
+    public bool IsDirty { get; set; }
+
     private int _hp;
     private int _sp;
 
@@ -109,6 +112,7 @@ public class ServerCharacter
             if (!_pets.Contains(petId))
             {
                 _pets.Add(petId);
+                IsDirty = true;
             }
         }
     }
@@ -125,12 +129,14 @@ public class ServerCharacter
                 ExpToNextLevel = (int)(ExpToNextLevel * 1.2);
                 StatPoints += 3;
             }
+            IsDirty = true;
         }
     }
 
     public void AddGold(int amount)
     {
         Interlocked.Add(ref _gold, amount);
+        IsDirty = true;
     }
 
     public void AddItem(int itemId, int quantity)
@@ -146,6 +152,7 @@ public class ServerCharacter
             {
                 _inventory.Add(new Item { ItemId = itemId, Quantity = quantity });
             }
+            IsDirty = true;
         }
     }
 
@@ -173,6 +180,7 @@ public class ServerCharacter
             {
                 _inventory.Remove(item);
             }
+            IsDirty = true;
             return true;
         }
     }
@@ -193,6 +201,90 @@ public class ServerCharacter
         }
         while (Interlocked.CompareExchange(ref _hp, newHp, initialHp) != initialHp);
 
+        IsDirty = true;
         return newHp;
+    }
+
+    public ServerCharacterData GetSaveData()
+    {
+        var data = new ServerCharacterData
+        {
+            Id = Id,
+            Name = Name,
+            Hp = _hp,
+            Sp = _sp,
+            Str = Str,
+            Con = Con,
+            Int = Int,
+            Wis = Wis,
+            Agi = Agi,
+            Gold = _gold
+        };
+
+        lock (_progressLock)
+        {
+            data.Exp = _exp;
+            data.Level = Level;
+            data.ExpToNextLevel = ExpToNextLevel;
+            data.StatPoints = StatPoints;
+        }
+
+        lock (_inventory)
+        {
+            data.Inventory = _inventory.Select(i => new Item
+            {
+                ItemId = i.ItemId,
+                Name = i.Name,
+                Type = i.Type,
+                MaxStack = i.MaxStack,
+                Quantity = i.Quantity,
+                ForgeSuccessRateBonus = i.ForgeSuccessRateBonus
+            }).ToList();
+        }
+
+        lock (_pets)
+        {
+            data.Pets = _pets.ToList();
+        }
+
+        return data;
+    }
+
+    public void LoadSaveData(ServerCharacterData data)
+    {
+        Id = data.Id;
+        Name = data.Name;
+        _hp = data.Hp;
+        _sp = data.Sp;
+        Str = data.Str;
+        Con = data.Con;
+        Int = data.Int;
+        Wis = data.Wis;
+        Agi = data.Agi;
+        _gold = data.Gold;
+
+        lock (_progressLock)
+        {
+            _exp = data.Exp;
+            Level = data.Level;
+            ExpToNextLevel = data.ExpToNextLevel;
+            StatPoints = data.StatPoints;
+        }
+
+        lock (_inventory)
+        {
+            _inventory.Clear();
+            if (data.Inventory != null)
+                _inventory.AddRange(data.Inventory);
+        }
+
+        lock (_pets)
+        {
+            _pets.Clear();
+            if (data.Pets != null)
+                _pets.AddRange(data.Pets);
+        }
+
+        IsDirty = false;
     }
 }
