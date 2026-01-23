@@ -36,8 +36,14 @@ public class PlayerQuestComponent
             var def = _questManager.GetDefinition(questId);
             if (def == null) return false;
 
-            if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
-                return false;
+            if (QuestStates.TryGetValue(questId, out var currentState))
+            {
+                if (currentState == QuestState.InProgress || currentState == QuestState.Completed)
+                    return false;
+
+                if (currentState == QuestState.RewardClaimed && !def.Repeatable)
+                    return false;
+            }
 
             foreach (var reqId in def.Requirements)
             {

@@ -4,6 +4,7 @@ using System.Text;
 using System.Text.Json;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Security;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.DTO;
