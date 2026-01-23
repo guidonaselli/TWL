@@ -1,35 +1,35 @@
-# Quest Roadmap
+# Quest & Progression Roadmap
 
 ## Overview
-This document outlines the progression arcs for the game, focusing on a WLO-like structure with regional hubs, gating, and interlocking systems.
+This roadmap outlines the progression flow by region, intended to guide the player from survival basics to established society, introducing mechanics and systems incrementally.
 
-## Region 1: Isla de la Brisa (Tutorial / Initial Island)
-*   **Level Range:** 1-10
-*   **Theme:** Survival, basic movement, interaction, first combat, first pet.
-*   **Key Milestones:**
-    *   Waking up (Movement tutorial)
-    *   Gathering essentials (Interaction/Collection tutorial)
-    *   First Pet (Monkey) - Unlock "Pet System"
-    *   First Combat (Crabs) - Unlock "Combat System"
-    *   Leaving the Beach (Gated by "The Bully")
-    *   Meeting the Hermit (Introduction to "Refinement" or "Crafting Lite")
+## Region 1: Crash Site (The Beach) [Lv 1-10]
+*   **Theme:** Survival, Scavenging, "Robinson Crusoe" feel.
+*   **Key Systems:** Movement, Basic Combat, Interaction/Gathering, Simple Crafting (Tools), Pet System Intro (Monkey).
+*   **Main Quest:** "Washed Ashore" -> "First Shelter" -> "Jungle Path".
+*   **Sidequests:**
+    *   Fishing (Food source).
+    *   Makeshift Weapons (Combat prep).
+    *   Basic Clothing (Defense).
 
-## Region 2: Puerto del Sol (First Town)
-*   **Level Range:** 10-20
-*   **Theme:** Social, Economy, Advanced Crafting, Teamwork.
-*   **Key Milestones:**
-    *   Town Hall Registration (Unlock "Bank" & "Global Chat")
-    *   Crafting Guilds (Unlock "Manufacturing")
-    *   The Training Grounds (Unlock "Training System" / AFK leveling)
-    *   First Dungeon (Instanced combat)
+## Region 2: Jungle Fringe [Lv 10-20]
+*   **Theme:** Exploration, Danger (Poison/Traps), Discovery.
+*   **Key Systems:** Alchemy (Potions/Antidotes), Advanced Combat (Elements), Teamwork/Party.
+*   **Main Quest:** "Into the Green" -> "Hidden Ruins" -> "Signs of Life".
+*   **Sidequests:**
+    *   Rare Herbs gathering.
+    *   Lost Expedition logs (Lore).
+    *   Hunt specific predators.
 
-## Region 3: The Whispering Woods
-*   **Level Range:** 20-30
-*   **Theme:** Mystery, Magic, Elemental Attributes.
-*   **Key Milestones:**
-    *   Elemental Trial (Unlock "Element Affinity")
-    *   Vehicle Quest (Raft/Canoe)
+## Region 3: Survivor Village [Lv 20-30]
+*   **Theme:** Society, Economy, Stability.
+*   **Key Systems:** Housing, Trading, Advanced Manufacturing, Social Hub.
+*   **Main Quest:** "Rebuilding" -> "Defense Perimeter" -> "Radio Tower".
+*   **Sidequests:**
+    *   Merchant requests.
+    *   Building upgrades.
+    *   Social/Relationship quests.
 
-## Future Regions (TBD)
-*   Volcano Ridge
-*   Sky Sanctuary
+## Future Expansions
+*   **High Seas:** Boat building and island hopping.
+*   **Deep Caverns:** Hardcore combat and mining.

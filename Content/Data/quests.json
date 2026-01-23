@@ -478,5 +478,90 @@
         }
       ]
     }
+  },
+  {
+    "QuestId": 2010,
+    "Title": "Gone Fishing",
+    "Description": "Coconuts aren't enough. The Survivalist suggests making a fishing rod.",
+    "Requirements": [
+      1004
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "BendableBranch",
+        "RequiredCount": 2,
+        "Description": "Find 2 Bendable Branches."
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "VineString",
+        "RequiredCount": 2,
+        "Description": "Find 2 Vine Strings."
+      },
+      {
+        "Type": "Craft",
+        "TargetName": "OldWorkbench",
+        "RequiredCount": 1,
+        "Description": "Craft a Simple Fishing Rod."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2011,
+    "Title": "First Catch",
+    "Description": "Now that you have a rod, catch some fish!",
+    "Requirements": [
+      2010
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "FishingSpot",
+        "RequiredCount": 3,
+        "Description": "Catch 3 Fish."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 304,
+          "Quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 2012,
+    "Title": "Grilling",
+    "Description": "Raw fish is dangerous. Cook it at a campfire.",
+    "Requirements": [
+      2011
+    ],
+    "Objectives": [
+      {
+        "Type": "Craft",
+        "TargetName": "Campfire",
+        "RequiredCount": 1,
+        "Description": "Cook a Fish."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 305,
+          "Quantity": 5
+        }
+      ]
+    }
   }
 ]

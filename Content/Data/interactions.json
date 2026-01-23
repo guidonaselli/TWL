@@ -62,5 +62,56 @@
       { "ItemId": 206, "Quantity": 1 }
     ],
     "RequiredQuestId": 2001
+  },
+  {
+    "TargetName": "BendableBranch",
+    "Type": "Gather",
+    "RewardItems": [
+      { "ItemId": 301, "Quantity": 1 }
+    ],
+    "RequiredQuestId": 2010
+  },
+  {
+    "TargetName": "VineString",
+    "Type": "Gather",
+    "RewardItems": [
+      { "ItemId": 302, "Quantity": 1 }
+    ],
+    "RequiredQuestId": 2010
+  },
+  {
+    "TargetName": "OldWorkbench",
+    "Type": "Craft",
+    "RequiredItems": [
+      { "ItemId": 301, "Quantity": 2 },
+      { "ItemId": 302, "Quantity": 2 }
+    ],
+    "RewardItems": [
+      { "ItemId": 303, "Quantity": 1 }
+    ],
+    "RequiredQuestId": 2010
+  },
+  {
+    "TargetName": "FishingSpot",
+    "Type": "Gather",
+    "ConsumeRequiredItems": false,
+    "RequiredItems": [
+      { "ItemId": 303, "Quantity": 1 }
+    ],
+    "RewardItems": [
+      { "ItemId": 304, "Quantity": 1 }
+    ],
+    "RequiredQuestId": 2011
+  },
+  {
+    "TargetName": "Campfire",
+    "Type": "Craft",
+    "RequiredItems": [
+      { "ItemId": 304, "Quantity": 1 }
+    ],
+    "RewardItems": [
+      { "ItemId": 305, "Quantity": 1 }
+    ],
+    "RequiredQuestId": 2012
   }
 ]

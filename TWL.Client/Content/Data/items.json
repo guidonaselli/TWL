@@ -56,6 +56,106 @@
   },
   "items": [
     {
+      "id": 301,
+      "name": "Bendable Branch",
+      "type": 6,
+      "category": 30,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 302,
+      "name": "Vine String",
+      "type": 6,
+      "category": 26,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 303,
+      "name": "Simple Fishing Rod",
+      "type": 3,
+      "category": 25,
+      "level": 5,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 100,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 304,
+      "name": "Raw Fish",
+      "type": 6,
+      "category": 22,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 305,
+      "name": "Cooked Fish",
+      "type": 3,
+      "category": 22,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 8,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
       "id": 1000,
       "name": "plate",
       "type": 1,

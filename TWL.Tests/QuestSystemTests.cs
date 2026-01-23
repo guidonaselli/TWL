@@ -214,4 +214,63 @@ public class QuestSystemTests
         Assert.Single(updated);
         Assert.Equal(QuestState.Completed, pq.QuestStates[1015]);
     }
+
+    [Fact]
+    public void FishingChain_ShouldWork_EndToEnd()
+    {
+        var qm = new ServerQuestManager();
+        string path = "../../../Content/Data/quests.json";
+        if (!System.IO.File.Exists(path)) path = "Content/Data/quests.json";
+        if (!System.IO.File.Exists(path)) return;
+
+        qm.Load(path);
+        var pq = new PlayerQuestComponent(qm);
+
+        // Verify dependency: Cannot start 2010 without 1004
+        Assert.False(pq.CanStartQuest(2010));
+
+        // Prerequisite: 1004
+        pq.QuestStates[1004] = QuestState.RewardClaimed;
+
+        // --- Quest 2010: Gone Fishing ---
+        Assert.True(pq.CanStartQuest(2010));
+        Assert.True(pq.StartQuest(2010));
+
+        // 1. Collect 2 Bendable Branches
+        pq.TryProgress("Collect", "BendableBranch");
+        pq.TryProgress("Collect", "BendableBranch");
+        // 2. Collect 2 Vine Strings
+        pq.TryProgress("Collect", "VineString");
+        pq.TryProgress("Collect", "VineString");
+        // 3. Craft Simple Fishing Rod
+        var updated = pq.TryProgress("Craft", "OldWorkbench");
+        Assert.Single(updated);
+
+        Assert.Equal(QuestState.Completed, pq.QuestStates[2010]);
+        pq.ClaimReward(2010);
+
+        // --- Quest 2011: First Catch ---
+        Assert.True(pq.CanStartQuest(2011));
+        Assert.True(pq.StartQuest(2011));
+
+        // Catch 3 Fish
+        pq.TryProgress("Collect", "FishingSpot");
+        pq.TryProgress("Collect", "FishingSpot");
+        updated = pq.TryProgress("Collect", "FishingSpot");
+        Assert.Single(updated);
+
+        Assert.Equal(QuestState.Completed, pq.QuestStates[2011]);
+        pq.ClaimReward(2011);
+
+        // --- Quest 2012: Grilling ---
+        Assert.True(pq.CanStartQuest(2012));
+        Assert.True(pq.StartQuest(2012));
+
+        // Cook Fish
+        updated = pq.TryProgress("Craft", "Campfire");
+        Assert.Single(updated);
+
+        Assert.Equal(QuestState.Completed, pq.QuestStates[2012]);
+        pq.ClaimReward(2012);
+    }
 }
