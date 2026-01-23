@@ -7,9 +7,11 @@ using TWL.Server.Persistence.Services;
 using TWL.Server.Security;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
+using TWL.Server.Security;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Net.Network;
+using TWL.Server.Security;
 
 namespace TWL.Server.Simulation.Networking;
 
@@ -22,6 +24,7 @@ public class ClientSession
 
     private readonly TcpClient _client;
     private readonly DbService _dbService;
+    private readonly PetManager _petManager;
     private readonly ServerQuestManager _questManager;
     private readonly CombatManager _combatManager;
     private readonly InteractionManager _interactionManager;
@@ -34,11 +37,12 @@ public class ClientSession
 
     public int UserId = -1; // se setea tras login
 
-    public ClientSession(TcpClient client, DbService db, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService)
+    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService)
     {
         _client = client;
         _stream = client.GetStream();
         _dbService = db;
+        _petManager = petManager;
         _questManager = questManager;
         _combatManager = combatManager;
         _interactionManager = interactionManager;
@@ -183,26 +187,17 @@ public class ClientSession
             interactionSuccess = _interactionManager.ProcessInteraction(Character, QuestComponent, dto.TargetName);
         }
 
-        // Try to progress "Talk" objectives
-        var updated = QuestComponent.TryProgress("Talk", dto.TargetName);
+        // Use a HashSet to avoid duplicates and multiple list allocations
+        var uniqueUpdates = new HashSet<int>();
 
-        // Also try "Collect" or "Search" if we treat interaction as searching
-        var collected = QuestComponent.TryProgress("Collect", dto.TargetName);
-        updated.AddRange(collected);
-
-        // Also try "Interact" generic objectives
-        var interacted = QuestComponent.TryProgress("Interact", dto.TargetName);
-        updated.AddRange(interacted);
+        // Try "Talk", "Collect", "Interact"
+        QuestComponent.TryProgress(uniqueUpdates, dto.TargetName, "Talk", "Collect", "Interact");
 
         // If interaction was successful (e.g. Crafting done), try "Craft" objectives
         if (interactionSuccess)
         {
-            var crafted = QuestComponent.TryProgress("Craft", dto.TargetName);
-            updated.AddRange(crafted);
+            QuestComponent.TryProgress(uniqueUpdates, dto.TargetName, "Craft");
         }
-
-        // Remove duplicates
-        var uniqueUpdates = updated.Distinct().ToList();
 
         foreach (var questId in uniqueUpdates)
         {
@@ -247,8 +242,17 @@ public class ClientSession
 
                     if (def.Rewards.PetUnlockId.HasValue)
                     {
-                        Character.AddPet(def.Rewards.PetUnlockId.Value);
-                        itemsLog += $", Pet Unlock {def.Rewards.PetUnlockId.Value}";
+                        var petDef = _petManager.GetDefinition(def.Rewards.PetUnlockId.Value);
+                        if (petDef != null)
+                        {
+                            var newPet = new ServerPet(petDef);
+                            Character.AddPet(newPet);
+                            itemsLog += $", Pet Unlock {def.Rewards.PetUnlockId.Value} ({petDef.Name})";
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Error: Pet Definition {def.Rewards.PetUnlockId.Value} not found.");
+                        }
                     }
 
                     Console.WriteLine($"Player {UserId} claimed quest {questId}, gained {def.Rewards.Exp} EXP, {def.Rewards.Gold} Gold{itemsLog}.");

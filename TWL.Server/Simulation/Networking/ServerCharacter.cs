@@ -136,8 +136,8 @@ public class ServerCharacter
         // Let's assume fresh start for simplicity of "Mastery by usage".
     }
 
-    private readonly List<int> _pets = new();
-    public IReadOnlyList<int> Pets
+    private readonly List<ServerPet> _pets = new();
+    public IReadOnlyList<ServerPet> Pets
     {
         get
         {
@@ -148,15 +148,12 @@ public class ServerCharacter
         }
     }
 
-    public void AddPet(int petId)
+    public void AddPet(ServerPet pet)
     {
         lock (_pets)
         {
-            if (!_pets.Contains(petId))
-            {
-                _pets.Add(petId);
-                IsDirty = true;
-            }
+            _pets.Add(pet);
+            IsDirty = true;
         }
     }
 
@@ -287,7 +284,7 @@ public class ServerCharacter
 
         lock (_pets)
         {
-            data.Pets = _pets.ToList();
+            data.Pets = _pets.Select(p => p.GetSaveData()).ToList();
         }
 
         return data;
@@ -325,7 +322,14 @@ public class ServerCharacter
         {
             _pets.Clear();
             if (data.Pets != null)
-                _pets.AddRange(data.Pets);
+            {
+                foreach (var petData in data.Pets)
+                {
+                    var pet = new ServerPet();
+                    pet.LoadSaveData(petData);
+                    _pets.Add(pet);
+                }
+            }
         }
 
         IsDirty = false;

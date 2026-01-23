@@ -76,5 +76,44 @@
       "Gold": 0,
       "Items": []
     }
+  },
+  {
+    "QuestId": 1010,
+    "Title": "Report In",
+    "Description": "The Captain needs a status report.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Captain",
+        "RequiredCount": 1,
+        "Description": "Talk to the Captain."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1012,
+    "Title": "A New Friend",
+    "Description": "A colorful bird is watching you.",
+    "Requirements": [1010],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Parrot",
+        "RequiredCount": 1,
+        "Description": "Approach the Parrot."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": [],
+      "PetUnlockId": 101
+    }
   }
 ]

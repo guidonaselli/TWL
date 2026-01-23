@@ -1,0 +1,36 @@
+[
+  {
+    "PetTypeId": 100,
+    "Name": "Thief Monkey",
+    "BaseHp": 50,
+    "BaseStr": 6,
+    "BaseCon": 6,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 8,
+    "Element": 0,
+    "IsUnique": false,
+    "SkillIds": [],
+    "IsCapturable": true,
+    "IsQuestUnique": false,
+    "CaptureLevelLimit": 5,
+    "CaptureChance": 0.3
+  },
+  {
+    "PetTypeId": 101,
+    "Name": "Robinson's Parrot",
+    "BaseHp": 30,
+    "BaseStr": 3,
+    "BaseCon": 4,
+    "BaseInt": 8,
+    "BaseWis": 8,
+    "BaseAgi": 10,
+    "Element": 3,
+    "IsUnique": true,
+    "SkillIds": [],
+    "IsCapturable": false,
+    "IsQuestUnique": true,
+    "RecoveryServiceEnabled": true,
+    "RebirthEligible": false
+  }
+]
