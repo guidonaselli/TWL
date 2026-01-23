@@ -936,5 +936,168 @@
       "Gold": 0,
       "Items": []
     }
+  },
+  {
+    "QuestId": 1301,
+    "Title": "Deciphering the Map",
+    "Description": "The hologram displays a map with a blinking light. Download the map data.",
+    "Requirements": [
+      1207
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "HologramConsole",
+        "RequiredCount": 1,
+        "Description": "Download Map Data from the Console."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 8110,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1302,
+    "Title": "The Signal",
+    "Description": "The map points to a high peak in the jungle. Travel there to investigate the signal.",
+    "Requirements": [
+      1301
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "SignalPeak",
+        "RequiredCount": 1,
+        "Description": "Reach the Signal Peak."
+      }
+    ],
+    "Rewards": {
+      "Exp": 250,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1303,
+    "Title": "Radio Silence",
+    "Description": "You found an old radio tower, broken and rusted. Inspect it to see if it can be repaired.",
+    "Requirements": [
+      1302
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "BrokenRadioTower",
+        "RequiredCount": 1,
+        "Description": "Inspect the Broken Radio Tower."
+      }
+    ],
+    "Rewards": {
+      "Exp": 250,
+      "Gold": 50,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1304,
+    "Title": "Repair Job",
+    "Description": "The radio needs parts. Scavenge nearby piles and find a power source (Battery Core) from local electric wildlife.",
+    "Requirements": [
+      1303
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "ScrapPile",
+        "RequiredCount": 3,
+        "Description": "Collect 3 Radio Parts from Scrap Piles."
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "DefeatedEel",
+        "RequiredCount": 1,
+        "Description": "Collect a Battery Core from a Defeated Eel."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1305,
+    "Title": "First Contact",
+    "Description": "You have the parts. Repair the radio and send a signal.",
+    "Requirements": [
+      1304
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "BrokenRadioTower",
+        "RequiredCount": 1,
+        "Description": "Repair and Use the Radio."
+      }
+    ],
+    "Rewards": {
+      "Exp": 500,
+      "Gold": 100,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2301,
+    "Title": "Scavenger Hunt",
+    "Description": "A torn logbook mentions a hidden supply cache nearby.",
+    "Requirements": [
+      1303
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "HiddenSuppliesLocation",
+        "RequiredCount": 1,
+        "Description": "Find the Hidden Supplies."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 102,
+          "Quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 2302,
+    "Title": "Battery Power",
+    "Description": "The electric eels are dangerous but their energy is useful. Clear them out.",
+    "Requirements": [
+      1303
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "ElectricEel",
+        "RequiredCount": 5,
+        "Description": "Kill 5 Electric Eels."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 50,
+      "Items": []
+    }
   }
 ]

@@ -109,5 +109,18 @@ public class GameServer
         };
         CombatManager.AddCharacter(spider);
         Console.WriteLine("Test World Populated: Added GiantSpider (9004).");
+
+        // Add Electric Eel for Quest 2302
+        var eel = new ServerCharacter
+        {
+            Id = 9005,
+            Name = "ElectricEel",
+            Hp = 60,
+            Str = 18,
+            Exp = 150,
+            Gold = 25
+        };
+        CombatManager.AddCharacter(eel);
+        Console.WriteLine("Test World Populated: Added ElectricEel (9005).");
     }
 }
