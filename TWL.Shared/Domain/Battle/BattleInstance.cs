@@ -219,6 +219,18 @@ public class BattleInstance
                      currentTarget.Character.Heal(healAmount);
                      didHeal = true;
                  }
+                 else if (effect.Tag == SkillEffectTag.Cleanse)
+                 {
+                     var negativeTags = new[] { SkillEffectTag.Burn, SkillEffectTag.DebuffStats, SkillEffectTag.Seal };
+                     foreach (var tag in negativeTags)
+                     {
+                         if (currentTarget.StatusEffects.Any(e => e.Tag == tag))
+                         {
+                             currentTarget.RemoveStatusEffect(tag);
+                             didHeal = true; // Treating cleanse as a "positive" outcome for messaging
+                         }
+                     }
+                 }
                  else if (effect.Tag == SkillEffectTag.Burn || effect.Tag == SkillEffectTag.BuffStats || effect.Tag == SkillEffectTag.DebuffStats)
                  {
                      var rng = new Random();

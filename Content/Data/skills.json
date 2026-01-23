@@ -73,5 +73,77 @@
       { "Tag": "Damage", "Value": 0, "Duration": 0 }
     ],
     "Requirements": { "Str": 10 }
+  },
+  {
+    "SkillId": 40,
+    "Name": "Water Ball",
+    "Description": "Hurls a sphere of compressed water at a single enemy.",
+    "Element": "Water",
+    "Branch": "Magical",
+    "Tier": 1,
+    "TargetType": "SingleEnemy",
+    "SpCost": 10,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Mat", "Coefficient": 1.2 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 }
+    ],
+    "Requirements": { "Int": 5 }
+  },
+  {
+    "SkillId": 41,
+    "Name": "Aqua Recover",
+    "Description": "Uses water energy to heal an ally.",
+    "Element": "Water",
+    "Branch": "Support",
+    "Tier": 1,
+    "TargetType": "SingleAlly",
+    "SpCost": 15,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Wis", "Coefficient": 2.0 },
+      { "Stat": "Int", "Coefficient": 1.0 }
+    ],
+    "Effects": [
+      { "Tag": "Heal", "Value": 0, "Duration": 0 }
+    ],
+    "Requirements": { "Wis": 5 }
+  },
+  {
+    "SkillId": 42,
+    "Name": "Purification",
+    "Description": "Cleanses the target of negative status effects.",
+    "Element": "Water",
+    "Branch": "Support",
+    "Tier": 2,
+    "TargetType": "SingleAlly",
+    "SpCost": 20,
+    "Cooldown": 2,
+    "Scaling": [],
+    "Effects": [
+      { "Tag": "Cleanse", "Value": 0, "Duration": 0 }
+    ],
+    "Requirements": { "Wis": 15 }
+  },
+  {
+    "SkillId": 43,
+    "Name": "Aqua Impact",
+    "Description": "A physical strike enhanced with water pressure.",
+    "Element": "Water",
+    "Branch": "Physical",
+    "Tier": 1,
+    "TargetType": "SingleEnemy",
+    "SpCost": 8,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Atk", "Coefficient": 1.1 },
+      { "Stat": "Str", "Coefficient": 0.5 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 }
+    ],
+    "Requirements": { "Str": 10 }
   }
 ]
