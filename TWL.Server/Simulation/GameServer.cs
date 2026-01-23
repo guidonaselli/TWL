@@ -83,5 +83,31 @@ public class GameServer
         };
         CombatManager.AddCharacter(guardian);
         Console.WriteLine("Test World Populated: Added RuinsGuardian (9002).");
+
+        // Add Ruins Bat for Quest 1205
+        var bat = new ServerCharacter
+        {
+            Id = 9003,
+            Name = "RuinsBat",
+            Hp = 30,
+            Str = 10,
+            Exp = 100,
+            Gold = 10
+        };
+        CombatManager.AddCharacter(bat);
+        Console.WriteLine("Test World Populated: Added RuinsBat (9003).");
+
+        // Add Giant Spider for Quest 1205
+        var spider = new ServerCharacter
+        {
+            Id = 9004,
+            Name = "GiantSpider",
+            Hp = 80,
+            Str = 20,
+            Exp = 200,
+            Gold = 20
+        };
+        CombatManager.AddCharacter(spider);
+        Console.WriteLine("Test World Populated: Added GiantSpider (9004).");
     }
 }

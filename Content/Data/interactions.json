@@ -265,5 +265,77 @@
     ],
     "RequiredQuestId": 2202,
     "ConsumeRequiredItems": true
+  },
+  {
+    "TargetName": "RuinsConsole",
+    "Type": "Interact",
+    "RequiredItems": [],
+    "RewardItems": [],
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "PowerCrystalSource",
+    "Type": "Gather",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 8108,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 1206,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "BatNest",
+    "Type": "Gather",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 8106,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 2203,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "StuffedBearLocation",
+    "Type": "Gather",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 8107,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 2204,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "HologramProjector",
+    "Type": "Interact",
+    "RequiredItems": [
+      {
+        "ItemId": 8109,
+        "Quantity": 0
+      }
+    ],
+    "RewardItems": [],
+    "RequiredQuestId": 1207,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "MyMonkey",
+    "Type": "Interact",
+    "RequiredItems": [
+      {
+        "ItemId": 8107,
+        "Quantity": 1
+      }
+    ],
+    "RewardItems": [],
+    "RequiredQuestId": 2204,
+    "ConsumeRequiredItems": true
   }
 ]
