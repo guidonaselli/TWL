@@ -28,6 +28,7 @@ public class ClientSession
     private readonly ServerQuestManager _questManager;
     private readonly CombatManager _combatManager;
     private readonly InteractionManager _interactionManager;
+    private readonly EconomyManager _economyManager;
     private readonly PlayerService _playerService;
     private readonly NetworkStream _stream;
     private readonly RateLimiter _rateLimiter;
@@ -37,7 +38,7 @@ public class ClientSession
 
     public int UserId = -1; // se setea tras login
 
-    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService)
+    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, EconomyManager economyManager)
     {
         _client = client;
         _stream = client.GetStream();
@@ -47,6 +48,7 @@ public class ClientSession
         _combatManager = combatManager;
         _interactionManager = interactionManager;
         _playerService = playerService;
+        _economyManager = economyManager;
         QuestComponent = new PlayerQuestComponent(questManager);
         _rateLimiter = new RateLimiter();
     }
@@ -121,8 +123,51 @@ public class ClientSession
             case Opcode.AttackRequest:
                 await HandleAttackAsync(msg.JsonPayload);
                 break;
+            case Opcode.PurchaseGemsIntent:
+                await HandlePurchaseGemsIntentAsync(msg.JsonPayload);
+                break;
+            case Opcode.PurchaseGemsVerify:
+                await HandlePurchaseGemsVerifyAsync(msg.JsonPayload);
+                break;
+            case Opcode.BuyShopItemRequest:
+                await HandleBuyShopItemAsync(msg.JsonPayload);
+                break;
             // etc.
         }
+    }
+
+    private async Task HandlePurchaseGemsIntentAsync(string payload)
+    {
+        if (UserId <= 0) return;
+        var request = JsonSerializer.Deserialize<PurchaseGemsIntentDTO>(payload, _jsonOptions);
+        if (request == null || string.IsNullOrEmpty(request.ProductId)) return;
+
+        var result = _economyManager.InitiatePurchase(UserId, request.ProductId);
+        if (result == null) return;
+
+        await SendAsync(new NetMessage { Op = Opcode.PurchaseGemsIntent, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
+    }
+
+    private async Task HandlePurchaseGemsVerifyAsync(string payload)
+    {
+        if (UserId <= 0 || Character == null) return;
+        var request = JsonSerializer.Deserialize<PurchaseGemsVerifyDTO>(payload, _jsonOptions);
+        if (request == null || string.IsNullOrEmpty(request.OrderId)) return;
+
+        var result = _economyManager.VerifyPurchase(UserId, request.OrderId, request.ReceiptToken, Character);
+
+        await SendAsync(new NetMessage { Op = Opcode.PurchaseGemsVerify, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
+    }
+
+    private async Task HandleBuyShopItemAsync(string payload)
+    {
+        if (UserId <= 0 || Character == null) return;
+        var request = JsonSerializer.Deserialize<BuyShopItemDTO>(payload, _jsonOptions);
+        if (request == null) return;
+
+        var result = _economyManager.BuyShopItem(Character, request.ShopItemId, request.Quantity);
+
+        await SendAsync(new NetMessage { Op = Opcode.BuyShopItemRequest, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
     }
 
     private async Task HandleAttackAsync(string payload)

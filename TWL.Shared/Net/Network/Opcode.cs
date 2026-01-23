@@ -24,5 +24,10 @@ public enum Opcode
     QuestUpdateBroadcast,
 
     // Interacción
-    InteractRequest
+    InteractRequest,
+
+    // Economy
+    PurchaseGemsIntent,
+    PurchaseGemsVerify,
+    BuyShopItemRequest
 }

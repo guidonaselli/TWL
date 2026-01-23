@@ -28,6 +28,7 @@ public class ServerCharacterData
     public int Wis { get; set; }
     public int Agi { get; set; }
     public int Gold { get; set; }
+    public long PremiumCurrency { get; set; }
     public List<Item> Inventory { get; set; } = new();
     public List<ServerPetData> Pets { get; set; } = new();
 }

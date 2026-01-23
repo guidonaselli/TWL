@@ -71,6 +71,11 @@ public class RateLimiter
         // Quests: Low frequency.
         SetPolicy(Opcode.StartQuestRequest, 3, 1);
         SetPolicy(Opcode.ClaimRewardRequest, 3, 1);
+
+        // Economy: Strict.
+        SetPolicy(Opcode.PurchaseGemsIntent, 2, 0.2);
+        SetPolicy(Opcode.PurchaseGemsVerify, 2, 0.2);
+        SetPolicy(Opcode.BuyShopItemRequest, 5, 1);
     }
 
     public void SetPolicy(Opcode op, double capacity, double refillRate)
