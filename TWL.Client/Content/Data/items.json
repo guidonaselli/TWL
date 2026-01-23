@@ -132851,6 +132851,86 @@
         "sell": 0
       },
       "icon": 1000
+    },
+    {
+      "id": 8110,
+      "name": "Map Data",
+      "type": 4,
+      "category": 19,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 8111,
+      "name": "Radio Part",
+      "type": 6,
+      "category": 25,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 8112,
+      "name": "Battery Core",
+      "type": 6,
+      "category": 27,
+      "level": 1,
+      "rarity": "Uncommon",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 8113,
+      "name": "Hidden Supplies",
+      "type": 3,
+      "category": 17,
+      "level": 1,
+      "rarity": "Rare",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
     }
   ],
   "meta": {

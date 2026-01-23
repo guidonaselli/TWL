@@ -337,5 +337,85 @@
     "RewardItems": [],
     "RequiredQuestId": 2204,
     "ConsumeRequiredItems": true
+  },
+  {
+    "TargetName": "HologramConsole",
+    "Type": "Interact",
+    "RequiredItems": [],
+    "RewardItems": [],
+    "RequiredQuestId": 1301,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "SignalPeak",
+    "Type": "Interact",
+    "RequiredItems": [],
+    "RewardItems": [],
+    "RequiredQuestId": 1302,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "BrokenRadioTower",
+    "Type": "Interact",
+    "RequiredItems": [],
+    "RewardItems": [],
+    "RequiredQuestId": 1303,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "ScrapPile",
+    "Type": "Gather",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 8111,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 1304,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "DefeatedEel",
+    "Type": "Gather",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 8112,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 1304,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "BrokenRadioTower",
+    "Type": "Interact",
+    "RequiredItems": [
+      {
+        "ItemId": 8111,
+        "Quantity": 3
+      },
+      {
+        "ItemId": 8112,
+        "Quantity": 1
+      }
+    ],
+    "RewardItems": [],
+    "RequiredQuestId": 1305,
+    "ConsumeRequiredItems": true
+  },
+  {
+    "TargetName": "HiddenSuppliesLocation",
+    "Type": "Gather",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 8113,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 2301,
+    "ConsumeRequiredItems": false
   }
 ]
