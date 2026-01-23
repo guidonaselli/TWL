@@ -16,6 +16,9 @@ public class PlayerQuestComponent
     // QuestId -> List of counts per objective
     public Dictionary<int, List<int>> QuestProgress { get; private set; } = new();
 
+    // Player Flags
+    public HashSet<string> Flags { get; private set; } = new();
+
     public PlayerQuestComponent(ServerQuestManager questManager)
     {
         _questManager = questManager;
@@ -26,8 +29,31 @@ public class PlayerQuestComponent
         var def = _questManager.GetDefinition(questId);
         if (def == null) return false;
 
-        if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
-            return false;
+        // Check Flags
+        if (def.RequiredFlags != null)
+        {
+            foreach (var flag in def.RequiredFlags)
+            {
+                if (!Flags.Contains(flag)) return false;
+            }
+        }
+
+        if (QuestStates.ContainsKey(questId))
+        {
+            var state = QuestStates[questId];
+            if (state != QuestState.NotStarted)
+            {
+                // If repeatable and previously claimed, we can start again
+                if (def.Repeatable && state == QuestState.RewardClaimed)
+                {
+                    // Allowed
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
 
         foreach (var reqId in def.Requirements)
         {
@@ -99,6 +125,20 @@ public class PlayerQuestComponent
             return false;
 
         QuestStates[questId] = QuestState.RewardClaimed;
+
+        var def = _questManager.GetDefinition(questId);
+        if (def != null)
+        {
+            if (def.FlagsSet != null)
+            {
+                foreach (var f in def.FlagsSet) Flags.Add(f);
+            }
+            if (def.FlagsClear != null)
+            {
+                foreach (var f in def.FlagsClear) Flags.Remove(f);
+            }
+        }
+
         return true;
     }
 
