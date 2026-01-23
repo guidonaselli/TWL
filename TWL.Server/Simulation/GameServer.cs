@@ -40,6 +40,7 @@ public class GameServer
         InteractionManager.Load("Content/Data/interactions.json");
 
         CombatManager = new CombatManager();
+        PopulateTestWorld();
 
         // 3) Inicia Network
         _netServer = new NetworkServer(9050, DB, QuestManager, CombatManager, InteractionManager);
@@ -53,5 +54,21 @@ public class GameServer
         _netServer?.Stop();
         DB?.Dispose();
         Console.WriteLine("GameServer stopped.");
+    }
+
+    private void PopulateTestWorld()
+    {
+        // Add a Jaguar for Quest 1103
+        var jaguar = new ServerCharacter
+        {
+            Id = 9001,
+            Name = "Jaguar",
+            Hp = 50,
+            Str = 15,
+            Exp = 0,
+            Gold = 0
+        };
+        CombatManager.AddCharacter(jaguar);
+        Console.WriteLine("Test World Populated: Added Jaguar (9001).");
     }
 }

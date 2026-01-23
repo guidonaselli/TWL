@@ -563,5 +563,110 @@
         }
       ]
     }
+  },
+  {
+    "QuestId": 1101,
+    "Title": "Into the Green",
+    "Description": "The path is clear. Proceed into the Jungle Fringe.",
+    "Requirements": [
+      1018
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "OldHermit",
+        "RequiredCount": 1,
+        "Description": "Path is clear?"
+      },
+      {
+        "Type": "Interact",
+        "TargetName": "JungleEntrance",
+        "RequiredCount": 1,
+        "Description": "Travel to Jungle Fringe"
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1102,
+    "Title": "Poisonous Flora",
+    "Description": "The jungle plants look dangerous. Collect samples of Poison Ivy for the Doctor to study.",
+    "Requirements": [
+      1101
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "PoisonIvyBush",
+        "RequiredCount": 3,
+        "Description": "Collect 3 Poison Ivy Samples."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": [
+        {
+          "ItemId": 7523,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1103,
+    "Title": "Jungle Predator",
+    "Description": "A Jaguar has been stalking the new path. It must be dealt with to ensure safety.",
+    "Requirements": [
+      1102
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Jaguar",
+        "RequiredCount": 1,
+        "Description": "Kill 1 Jaguar."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 100,
+      "Items": [
+        {
+          "ItemId": 8003,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 2101,
+    "Title": "Rare Herbs",
+    "Description": "The Doctor needs rare herbs found only deep in the foliage for better medicine.",
+    "Requirements": [
+      1010
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "RareHerbPatch",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Rare Jungle Herbs."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 20,
+      "Items": [
+        {
+          "ItemId": 8002,
+          "Quantity": 1
+        }
+      ]
+    }
   }
 ]

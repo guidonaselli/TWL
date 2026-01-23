@@ -113,5 +113,21 @@
       { "ItemId": 305, "Quantity": 1 }
     ],
     "RequiredQuestId": 2012
+  },
+  {
+    "TargetName": "PoisonIvyBush",
+    "Type": "Gather",
+    "RewardItems": [
+      { "ItemId": 8001, "Quantity": 1 }
+    ],
+    "RequiredQuestId": 1102
+  },
+  {
+    "TargetName": "RareHerbPatch",
+    "Type": "Gather",
+    "RewardItems": [
+      { "ItemId": 8002, "Quantity": 1 }
+    ],
+    "RequiredQuestId": 2101
   }
 ]
