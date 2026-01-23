@@ -25,8 +25,11 @@ This document outlines the planned progression for skills, organized by element 
 - **T3:**
   - *Planned:* Tidal Wave (Magical AoE), Resurrection (Support).
 
-### Earth (Planned)
-- **T1:** Rock Smash (Phys), Stone Skin (Support - Def Buff).
+### Earth (In Progress)
+- **T1:**
+  - **Rock Smash** (Physical): Basic earth damage.
+  - **Stone Bullet** (Magical): Single target earth projectile.
+  - **Earth Barrier** (Support): Defense Buff (BuffStats).
 - **T2:** Earthquake (Mag AoE), Fortify (Support - Shield).
 
 ### Wind (Planned)

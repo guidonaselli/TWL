@@ -40,6 +40,9 @@ public class Skill
     public int WisRequirement;
     public int AgiRequirement;
 
+    public int Stage { get; set; } = 1;
+    public SkillUnlockRules UnlockRules { get; set; } = new();
+
     public override string ToString()
     {
         return $"{Name} ({Element}, {Branch}-T{Tier}) [SP: {SpCost}]";
@@ -47,4 +50,12 @@ public class Skill
 
     // Placeholder for application logic if needed, but logic should move to BattleInstance/System
     public void Apply(Character src, Character tgt) { }
+}
+
+public class SkillUnlockRules
+{
+    public int Level { get; set; }
+    public int? ParentSkillId { get; set; }
+    public int? ParentSkillRank { get; set; }
+    public string? QuestId { get; set; }
 }

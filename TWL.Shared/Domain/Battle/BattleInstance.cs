@@ -77,6 +77,14 @@ public class BattleInstance
         if (CurrentTurnCombatant.BattleId != action.ActorId) return "Not your turn";
 
         var actor = CurrentTurnCombatant;
+
+        // Check for Seal/Control
+        if (actor.StatusEffects.Any(e => e.Tag == SkillEffectTag.Seal))
+        {
+            actor.Atb = 0;
+            CurrentTurnCombatant = null;
+            return $"{actor.Character.Name} is sealed and cannot act!";
+        }
         var targetCombatant = AllCombatants.FirstOrDefault(c => c.BattleId == action.TargetId);
 
         string resultMessage = "";
@@ -89,7 +97,8 @@ public class BattleInstance
                     int dmgVal = actor.Character.CalculatePhysicalDamage();
                     if (actor.AttackBuffTurns > 0) dmgVal = (int)(dmgVal * 1.5);
 
-                    int damage = Math.Max(1, dmgVal - targetCombatant.Character.CalculateDefense());
+                    int defense = GetEffectiveStat(targetCombatant, StatType.Def);
+                    int damage = Math.Max(1, dmgVal - defense);
                     if (targetCombatant.IsDefending) damage /= 2;
 
                     targetCombatant.Character.TakeDamage(damage);
@@ -200,8 +209,8 @@ public class BattleInstance
                  if (effect.Tag == SkillEffectTag.Damage)
                  {
                      int defense = (skill.Branch == SkillBranch.Magical)
-                         ? currentTarget.Character.CalculateMagicalDefense()
-                         : currentTarget.Character.CalculateDefense();
+                         ? GetEffectiveStat(currentTarget, StatType.Mdf)
+                         : GetEffectiveStat(currentTarget, StatType.Def);
 
                      int damage = Math.Max(1, (int)totalValue - defense);
                      if (currentTarget.IsDefending) damage /= 2;
@@ -219,6 +228,18 @@ public class BattleInstance
                      currentTarget.Character.Heal(healAmount);
                      didHeal = true;
                  }
+                 else if (effect.Tag == SkillEffectTag.BuffStats || effect.Tag == SkillEffectTag.DebuffStats)
+                 {
+                      var rng = new Random();
+                      if (rng.NextDouble() <= effect.Chance)
+                      {
+                          float value = effect.Value;
+                          // If value is 0 but we have scaling, use the calculated totalValue (for dynamic buffs)
+                          if (value == 0 && totalValue > 0) value = totalValue;
+
+                          currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, value, effect.Duration, effect.Param));
+                      }
+                 }
                  else if (effect.Tag == SkillEffectTag.Cleanse)
                  {
                      var negativeTags = new[] { SkillEffectTag.Burn, SkillEffectTag.DebuffStats, SkillEffectTag.Seal };
@@ -231,7 +252,7 @@ public class BattleInstance
                          }
                      }
                  }
-                 else if (effect.Tag == SkillEffectTag.Burn || effect.Tag == SkillEffectTag.BuffStats || effect.Tag == SkillEffectTag.DebuffStats)
+                 else if (effect.Tag == SkillEffectTag.Burn)
                  {
                      var rng = new Random();
                      if (rng.NextDouble() <= effect.Chance)
@@ -294,6 +315,26 @@ public class BattleInstance
             case StatType.Spd: return c.Spd;
             default: return 0;
         }
+    }
+
+    private int GetEffectiveStat(Combatant c, StatType stat)
+    {
+        float baseVal = 0;
+        // Use Character calculation for derived stats where possible to include base logic
+        if (stat == StatType.Def) baseVal = c.Character.CalculateDefense();
+        else if (stat == StatType.Mdf) baseVal = c.Character.CalculateMagicalDefense();
+        else baseVal = GetStatValue(c.Character, stat);
+
+        string statName = stat.ToString();
+
+        foreach (var effect in c.StatusEffects)
+        {
+             if (effect.Tag == SkillEffectTag.BuffStats && effect.Param == statName)
+                 baseVal += effect.Value;
+             if (effect.Tag == SkillEffectTag.DebuffStats && effect.Param == statName)
+                 baseVal -= effect.Value;
+        }
+        return (int)baseVal;
     }
 
     private string UseLegacySkill(Combatant actor, Combatant target, int skillId)

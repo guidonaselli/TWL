@@ -48,6 +48,15 @@ public class SkillRegistry : ISkillCatalog
                 WisRequirement = def.Requirements?.Wis ?? 0,
                 AgiRequirement = def.Requirements?.Agi ?? 0,
 
+                Stage = def.Stage > 0 ? def.Stage : 1,
+                UnlockRules = new SkillUnlockRules
+                {
+                    Level = def.UnlockRules?.Level ?? 0,
+                    ParentSkillId = def.UnlockRules?.ParentSkillId,
+                    ParentSkillRank = def.UnlockRules?.ParentSkillRank,
+                    QuestId = def.UnlockRules?.QuestId
+                },
+
                 // Legacy Mapping (for compatibility if needed internally)
                 Type = MapBranchToType(def.Branch, def.Effects),
                 Power = 0, // Calculated dynamically now
@@ -94,6 +103,16 @@ public class SkillRegistry : ISkillCatalog
         public List<SkillScaling>? Scaling { get; set; }
         public List<SkillEffect>? Effects { get; set; }
         public RequirementDto? Requirements { get; set; }
+        public int Stage { get; set; }
+        public UnlockRulesDto? UnlockRules { get; set; }
+    }
+
+    private class UnlockRulesDto
+    {
+        public int Level { get; set; }
+        public int? ParentSkillId { get; set; }
+        public int? ParentSkillRank { get; set; }
+        public string? QuestId { get; set; }
     }
 
     private class RequirementDto
