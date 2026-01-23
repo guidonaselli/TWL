@@ -4,12 +4,14 @@ using System.Text;
 using System.Text.Json;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Security;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Server.Security;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Net.Network;
+using TWL.Server.Security;
 
 namespace TWL.Server.Simulation.Networking;
 
@@ -185,26 +187,17 @@ public class ClientSession
             interactionSuccess = _interactionManager.ProcessInteraction(Character, QuestComponent, dto.TargetName);
         }
 
-        // Try to progress "Talk" objectives
-        var updated = QuestComponent.TryProgress("Talk", dto.TargetName);
+        // Use a HashSet to avoid duplicates and multiple list allocations
+        var uniqueUpdates = new HashSet<int>();
 
-        // Also try "Collect" or "Search" if we treat interaction as searching
-        var collected = QuestComponent.TryProgress("Collect", dto.TargetName);
-        updated.AddRange(collected);
-
-        // Also try "Interact" generic objectives
-        var interacted = QuestComponent.TryProgress("Interact", dto.TargetName);
-        updated.AddRange(interacted);
+        // Try "Talk", "Collect", "Interact"
+        QuestComponent.TryProgress(uniqueUpdates, dto.TargetName, "Talk", "Collect", "Interact");
 
         // If interaction was successful (e.g. Crafting done), try "Craft" objectives
         if (interactionSuccess)
         {
-            var crafted = QuestComponent.TryProgress("Craft", dto.TargetName);
-            updated.AddRange(crafted);
+            QuestComponent.TryProgress(uniqueUpdates, dto.TargetName, "Craft");
         }
-
-        // Remove duplicates
-        var uniqueUpdates = updated.Distinct().ToList();
 
         foreach (var questId in uniqueUpdates)
         {
