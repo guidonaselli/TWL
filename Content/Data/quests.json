@@ -1099,5 +1099,140 @@
       "Gold": 50,
       "Items": []
     }
+  },
+  {
+    "QuestId": 1401,
+    "Title": "Echoes from the Sea",
+    "Description": "The radio is picking up a signal loop from the North-East cliffs. It's not coming from off-island.",
+    "Requirements": [
+      1305
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "RepairedRadioTower",
+        "RequiredCount": 1,
+        "Description": "Get coordinates from the Radio Tower."
+      },
+      {
+        "Type": "Interact",
+        "TargetName": "NorthEastCliff",
+        "RequiredCount": 1,
+        "Description": "Travel to the North-East Cliffs."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1402,
+    "Title": "Blocked Passage",
+    "Description": "A rockfall blocks the path down to the cove. You need something explosive to clear it.",
+    "Requirements": [
+      1401
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "HeavyRocks",
+        "RequiredCount": 1,
+        "Description": "Inspect the Heavy Rocks."
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "SulfurVent",
+        "RequiredCount": 1,
+        "Description": "Collect Sulfur."
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "BurntTree",
+        "RequiredCount": 1,
+        "Description": "Collect Charcoal."
+      },
+      {
+        "Type": "Craft",
+        "TargetName": "AlchemyTable",
+        "RequiredCount": 1,
+        "Description": "Craft Black Powder."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1403,
+    "Title": "Clearing the Way",
+    "Description": "Use the Black Powder to blast the rocks.",
+    "Requirements": [
+      1402
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "HeavyRocks",
+        "RequiredCount": 1,
+        "Description": "Blast the rocks with Black Powder."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1404,
+    "Title": "The Hidden Dock",
+    "Description": "The path is clear. Investigate the cove.",
+    "Requirements": [
+      1403
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "HiddenDock",
+        "RequiredCount": 1,
+        "Description": "Investigate the Hidden Dock."
+      }
+    ],
+    "Rewards": {
+      "Exp": 500,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 9004,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 2401,
+    "Title": "Master Fisherman",
+    "Description": "The cove waters are teeming with rare life. Catch a Rare Blue Fish.",
+    "Requirements": [
+      2011,
+      1404
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "FishingSpot",
+        "RequiredCount": 1,
+        "Description": "Catch a Rare Blue Fish."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 50,
+      "Items": []
+    }
   }
 ]

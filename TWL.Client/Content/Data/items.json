@@ -132931,6 +132931,106 @@
         "sell": 0
       },
       "icon": 1000
+    },
+    {
+      "id": 9001,
+      "name": "Sulfur",
+      "type": 6,
+      "category": 27,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 9002,
+      "name": "Charcoal",
+      "type": 6,
+      "category": 30,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 9003,
+      "name": "Black Powder",
+      "type": 3,
+      "category": 20,
+      "level": 1,
+      "rarity": "Uncommon",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 9004,
+      "name": "Old Key",
+      "type": 4,
+      "category": 19,
+      "level": 1,
+      "rarity": "Rare",
+      "stats": {},
+      "flags": 4,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 9005,
+      "name": "Rare Blue Fish",
+      "type": 6,
+      "category": 22,
+      "level": 5,
+      "rarity": "Rare",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
     }
   ],
   "meta": {
