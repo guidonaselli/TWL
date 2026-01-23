@@ -37,7 +37,10 @@ public class PlayerQuestComponent
             if (def == null) return false;
 
             if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
-                return false;
+            {
+                if (!def.Repeatable || QuestStates[questId] != QuestState.RewardClaimed)
+                    return false;
+            }
 
             foreach (var reqId in def.Requirements)
             {
@@ -45,6 +48,11 @@ public class PlayerQuestComponent
                 var state = QuestStates[reqId];
                 if (state != QuestState.Completed && state != QuestState.RewardClaimed)
                     return false;
+            }
+
+            foreach (var flag in def.RequiredFlags)
+            {
+                if (!Flags.Contains(flag)) return false;
             }
 
             return true;
@@ -55,17 +63,14 @@ public class PlayerQuestComponent
     {
         lock (_lock)
         {
-            // Re-check inside lock logic if we didn't call CanStartQuest inside lock (we did but state could change if called separately)
-            // But CanStartQuest uses lock, so it's safe.
-            // However, calling CanStartQuest then StartQuest is not atomic if lock is released in between.
-            // So we should inline logic or trust single thread for now.
-            // For now, let's reuse logic carefully.
-
             var def = _questManager.GetDefinition(questId);
             if (def == null) return false;
 
             if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
-                return false;
+            {
+                if (!def.Repeatable || QuestStates[questId] != QuestState.RewardClaimed)
+                    return false;
+            }
 
             foreach (var reqId in def.Requirements)
             {
@@ -73,6 +78,11 @@ public class PlayerQuestComponent
                 var state = QuestStates[reqId];
                 if (state != QuestState.Completed && state != QuestState.RewardClaimed)
                     return false;
+            }
+
+            foreach (var flag in def.RequiredFlags)
+            {
+                if (!Flags.Contains(flag)) return false;
             }
 
             QuestStates[questId] = QuestState.InProgress;
@@ -139,6 +149,13 @@ public class PlayerQuestComponent
             if (!QuestStates.ContainsKey(questId) || QuestStates[questId] != QuestState.Completed)
                 return false;
 
+            var def = _questManager.GetDefinition(questId);
+            if (def != null)
+            {
+                foreach (var f in def.FlagsSet) Flags.Add(f);
+                foreach (var f in def.FlagsClear) Flags.Remove(f);
+            }
+
             QuestStates[questId] = QuestState.RewardClaimed;
             IsDirty = true;
             return true;
@@ -199,7 +216,8 @@ public class PlayerQuestComponent
             var data = new QuestData
             {
                 States = new Dictionary<int, QuestState>(QuestStates),
-                Progress = new Dictionary<int, List<int>>()
+                Progress = new Dictionary<int, List<int>>(),
+                Flags = new HashSet<string>(Flags)
             };
 
             foreach(var kvp in QuestProgress)
@@ -231,6 +249,12 @@ public class PlayerQuestComponent
                 {
                     QuestProgress[kvp.Key] = new List<int>(kvp.Value);
                 }
+            }
+
+            Flags.Clear();
+            if (data.Flags != null)
+            {
+                foreach(var f in data.Flags) Flags.Add(f);
             }
 
             IsDirty = false;

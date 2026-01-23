@@ -6,6 +6,7 @@ using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
+using TWL.Server.Security;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Net.Network;
@@ -21,6 +22,7 @@ public class ClientSession
 
     private readonly TcpClient _client;
     private readonly DbService _dbService;
+    private readonly PetManager _petManager;
     private readonly ServerQuestManager _questManager;
     private readonly CombatManager _combatManager;
     private readonly InteractionManager _interactionManager;
@@ -33,11 +35,12 @@ public class ClientSession
 
     public int UserId = -1; // se setea tras login
 
-    public ClientSession(TcpClient client, DbService db, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService)
+    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService)
     {
         _client = client;
         _stream = client.GetStream();
         _dbService = db;
+        _petManager = petManager;
         _questManager = questManager;
         _combatManager = combatManager;
         _interactionManager = interactionManager;
@@ -246,8 +249,17 @@ public class ClientSession
 
                     if (def.Rewards.PetUnlockId.HasValue)
                     {
-                        Character.AddPet(def.Rewards.PetUnlockId.Value);
-                        itemsLog += $", Pet Unlock {def.Rewards.PetUnlockId.Value}";
+                        var petDef = _petManager.GetDefinition(def.Rewards.PetUnlockId.Value);
+                        if (petDef != null)
+                        {
+                            var newPet = new ServerPet(petDef);
+                            Character.AddPet(newPet);
+                            itemsLog += $", Pet Unlock {def.Rewards.PetUnlockId.Value} ({petDef.Name})";
+                        }
+                        else
+                        {
+                            Console.WriteLine($"Error: Pet Definition {def.Rewards.PetUnlockId.Value} not found.");
+                        }
                     }
 
                     Console.WriteLine($"Player {UserId} claimed quest {questId}, gained {def.Rewards.Exp} EXP, {def.Rewards.Gold} Gold{itemsLog}.");

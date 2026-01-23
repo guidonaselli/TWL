@@ -29,11 +29,26 @@ public class ServerCharacterData
     public int Agi { get; set; }
     public int Gold { get; set; }
     public List<Item> Inventory { get; set; } = new();
-    public List<int> Pets { get; set; } = new();
+    public List<ServerPetData> Pets { get; set; } = new();
 }
 
 public class QuestData
 {
     public Dictionary<int, QuestState> States { get; set; } = new();
     public Dictionary<int, List<int>> Progress { get; set; } = new();
+    public HashSet<string> Flags { get; set; } = new();
+}
+
+public class ServerPetData
+{
+    public string InstanceId { get; set; }
+    public int DefinitionId { get; set; }
+    public string Name { get; set; }
+    public int Level { get; set; }
+    public int Exp { get; set; }
+    public int Amity { get; set; }
+    public bool IsDead { get; set; }
+    public bool IsLost { get; set; }
+    public bool DeathQuestCompleted { get; set; }
+    public bool HasRebirthed { get; set; }
 }

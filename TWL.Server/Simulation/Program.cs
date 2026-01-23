@@ -27,6 +27,7 @@ Host.CreateDefaultBuilder(args)
             var cs = ctx.Configuration.GetConnectionString("PostgresConn");
             return new DbService(cs);
         });
+        svcs.AddSingleton<PetManager>();
         svcs.AddSingleton<ServerQuestManager>();
         svcs.AddSingleton<InteractionManager>();
         svcs.AddSingleton<CombatManager>();
@@ -38,6 +39,7 @@ Host.CreateDefaultBuilder(args)
             return new NetworkServer(
                 port,
                 sp.GetRequiredService<DbService>(),
+                sp.GetRequiredService<PetManager>(),
                 sp.GetRequiredService<ServerQuestManager>(),
                 sp.GetRequiredService<CombatManager>(),
                 sp.GetRequiredService<InteractionManager>(),

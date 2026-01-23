@@ -13,15 +13,17 @@ public class ServerWorker : IHostedService
     private readonly DbService _db;
     private readonly ILogger<ServerWorker> _log;
     private readonly NetworkServer _net;
+    private readonly PetManager _petManager;
     private readonly ServerQuestManager _questManager;
     private readonly InteractionManager _interactionManager;
     private readonly PlayerService _playerService;
 
-    public ServerWorker(NetworkServer net, DbService db, ILogger<ServerWorker> log, ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService)
+    public ServerWorker(NetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager, ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService)
     {
         _net = net;
         _db = db;
         _log = log;
+        _petManager = petManager;
         _questManager = questManager;
         _interactionManager = interactionManager;
         _playerService = playerService;
@@ -36,6 +38,7 @@ public class ServerWorker : IHostedService
         _playerService.Start();
 
         _log.LogInformation("Loading Game Data...");
+        _petManager.Load("Content/Data/pets.json");
         _questManager.Load("Content/Data/quests.json");
         _interactionManager.Load("Content/Data/interactions.json");
 
