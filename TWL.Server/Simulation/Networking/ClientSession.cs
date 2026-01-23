@@ -293,8 +293,6 @@ public class ClientSession
 
         if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Username) || string.IsNullOrWhiteSpace(loginDto.PassHash)) return;
 
-        // Using await here instead of .Result prevents thread pool starvation
-        // and improves scalability under high load.
         var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
         if (uid < 0)
         {
