@@ -28,4 +28,13 @@ public sealed record QuestDefinition
     public string? OnStartScript    { get; init; }
     public string? OnProgressScript { get; init; }
     public string? OnCompleteScript { get; init; }
+
+    public int? ChainId { get; init; }
+    public IReadOnlyList<string> FlagsSet { get; init; } = [];
+    public IReadOnlyList<string> FlagsClear { get; init; } = [];
+    public IReadOnlyList<string> RequiredFlags { get; init; } = [];
+    public bool Repeatable { get; init; }
+    public DateTime? Expiry { get; init; }
+    public string? PartyRules { get; init; }
+    public string? GuildRules { get; init; }
 }

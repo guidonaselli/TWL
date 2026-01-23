@@ -21,6 +21,9 @@ public class PlayerQuestComponent
     // QuestId -> List of counts per objective
     public Dictionary<int, List<int>> QuestProgress { get; private set; } = new();
 
+    // Player Flags
+    public HashSet<string> Flags { get; private set; } = new();
+
     public PlayerQuestComponent(ServerQuestManager questManager)
     {
         _questManager = questManager;
