@@ -42,6 +42,7 @@ public class Skill
 
     public int Stage { get; set; } = 1;
     public SkillUnlockRules UnlockRules { get; set; } = new();
+    public StageUpgradeRules? StageUpgradeRules { get; set; }
 
     public override string ToString()
     {
@@ -58,4 +59,10 @@ public class SkillUnlockRules
     public int? ParentSkillId { get; set; }
     public int? ParentSkillRank { get; set; }
     public string? QuestId { get; set; }
+}
+
+public class StageUpgradeRules
+{
+    public int RankThreshold { get; set; }
+    public int? NextSkillId { get; set; }
 }

@@ -11,6 +11,8 @@ public class Combatant
 
     public int AttackBuffTurns { get; set; }
 
+    public Dictionary<int, int> SkillRanks { get; set; } = new();
+
     public List<StatusEffectInstance> StatusEffects { get; private set; } = new();
 
     public Combatant(Character character)
