@@ -75,6 +75,44 @@
     "Requirements": { "Str": 10 }
   },
   {
+    "SkillId": 24,
+    "Name": "Ignite Spirit",
+    "Description": "Channels fire energy to boost an ally's attack power.",
+    "Element": "Fire",
+    "Branch": "Support",
+    "Tier": 1,
+    "TargetType": "SingleAlly",
+    "SpCost": 15,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Wis", "Coefficient": 1.0 }
+    ],
+    "Effects": [
+      { "Tag": "BuffStats", "Value": 20, "Duration": 3, "Param": "Atk" }
+    ],
+    "Requirements": { "Wis": 5 }
+  },
+  {
+    "SkillId": 25,
+    "Name": "Lava Strike",
+    "Description": "A heavy weapon strike that splashes lava, causing burn.",
+    "Element": "Fire",
+    "Branch": "Physical",
+    "Tier": 2,
+    "TargetType": "SingleEnemy",
+    "SpCost": 20,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Atk", "Coefficient": 1.3 },
+      { "Stat": "Str", "Coefficient": 0.5 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 },
+      { "Tag": "Burn", "Value": 10, "Duration": 2, "Chance": 0.5 }
+    ],
+    "Requirements": { "Str": 20 }
+  },
+  {
     "SkillId": 40,
     "Name": "Water Ball",
     "Description": "Hurls a sphere of compressed water at a single enemy.",

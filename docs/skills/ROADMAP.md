@@ -11,9 +11,15 @@ This document outlines the planned progression for skills, organized by element 
 
 ## Implementation Status
 
-### Fire (Implemented)
-- **T1:** Fireball (Mag), Flame Strike (Phys)
-- **T2:** Blaze (Mag), Heat Wave (Mag AoE)
+### Fire (In Progress)
+- **T1:**
+  - Fireball (Mag) - Implemented
+  - Flame Strike (Phys) - Implemented
+  - **Ignite Spirit** (Support) - Planned
+- **T2:**
+  - Blaze (Mag) - Implemented
+  - Heat Wave (Mag AoE) - Implemented
+  - **Lava Strike** (Phys) - Planned
 
 ### Water (In Progress)
 - **T1:**
@@ -39,6 +45,8 @@ This document outlines the planned progression for skills, organized by element 
 ## Technical Requirements
 - [x] Basic Damage/Heal Support.
 - [x] DoT (Burn) Support.
-- [ ] Cleanse/Dispel Logic.
-- [ ] Shield Mechanics.
+- [x] Cleanse/Dispel Logic.
+- [x] Shield Mechanics.
+- [x] Elemental Counters (Earth > Water > Fire > Wind > Earth).
+- [x] Control Hit Chance (Int vs Wis).
 - [ ] Speed/ATB Manipulation.

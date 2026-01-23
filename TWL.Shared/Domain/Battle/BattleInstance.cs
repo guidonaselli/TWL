@@ -210,11 +210,14 @@ public class BattleInstance
             {
                  if (effect.Tag == SkillEffectTag.Damage)
                  {
+                     float elemMult = GetElementalMultiplier(skill.Element, currentTarget.Character.CharacterElement);
+                     float adjustedValue = totalValue * elemMult;
+
                      int defense = (skill.Branch == SkillBranch.Magical)
                          ? GetEffectiveStat(currentTarget, StatType.Mdf)
                          : GetEffectiveStat(currentTarget, StatType.Def);
 
-                     int damage = Math.Max(1, (int)totalValue - defense);
+                     int damage = Math.Max(1, (int)adjustedValue - defense);
                      if (currentTarget.IsDefending) damage /= 2;
 
                      damage = ApplyDamage(currentTarget, damage);
@@ -238,7 +241,7 @@ public class BattleInstance
                      currentTarget.Character.Heal(healAmount);
                      didHeal = true;
                  }
-                 else if (effect.Tag == SkillEffectTag.BuffStats || effect.Tag == SkillEffectTag.DebuffStats)
+                 else if (effect.Tag == SkillEffectTag.BuffStats)
                  {
                       var rng = new Random();
                       if (rng.NextDouble() <= effect.Chance)
@@ -248,6 +251,15 @@ public class BattleInstance
                           if (value == 0 && totalValue > 0) value = totalValue;
 
                           currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, value, effect.Duration, effect.Param));
+                      }
+                 }
+                 else if (effect.Tag == SkillEffectTag.DebuffStats)
+                 {
+                      float hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance);
+                      var rng = new Random();
+                      if (rng.NextDouble() <= hitChance)
+                      {
+                          currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param));
                       }
                  }
                  else if (effect.Tag == SkillEffectTag.Cleanse)
@@ -276,13 +288,22 @@ public class BattleInstance
                          didHeal = true; // Treating dispel as a significant event
                      }
                  }
-                 else if (effect.Tag == SkillEffectTag.Seal || effect.Tag == SkillEffectTag.Burn)
+                 else if (effect.Tag == SkillEffectTag.Seal)
+                 {
+                     float hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance);
+                     var rng = new Random();
+                     if (rng.NextDouble() <= hitChance)
+                     {
+                         currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param));
+                         didDamage = true; // Treating seal application as offensive success
+                     }
+                 }
+                 else if (effect.Tag == SkillEffectTag.Burn)
                  {
                      var rng = new Random();
                      if (rng.NextDouble() <= effect.Chance)
                      {
                          currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param));
-                         if (effect.Tag == SkillEffectTag.Seal) didDamage = true; // Treating seal application as offensive success
                      }
                  }
             }
@@ -453,5 +474,32 @@ public class BattleInstance
         }
 
         return damage;
+    }
+
+    private float GetElementalMultiplier(Element skillElement, Element targetElement)
+    {
+        if (skillElement == Element.Earth && targetElement == Element.Water) return 1.5f;
+        if (skillElement == Element.Water && targetElement == Element.Fire) return 1.5f;
+        if (skillElement == Element.Fire && targetElement == Element.Wind) return 1.5f;
+        if (skillElement == Element.Wind && targetElement == Element.Earth) return 1.5f;
+
+        if (skillElement == Element.Water && targetElement == Element.Earth) return 0.5f;
+        if (skillElement == Element.Fire && targetElement == Element.Water) return 0.5f;
+        if (skillElement == Element.Wind && targetElement == Element.Fire) return 0.5f;
+        if (skillElement == Element.Earth && targetElement == Element.Wind) return 0.5f;
+
+        return 1.0f;
+    }
+
+    private float GetControlHitChance(Character attacker, Character defender, float baseChance)
+    {
+        // INT vs WIS based chance modification
+        float chance = baseChance + (attacker.Int - defender.Wis) * 0.01f;
+
+        // Clamp between 10% and 100%
+        if (chance < 0.1f) chance = 0.1f;
+        if (chance > 1.0f) chance = 1.0f;
+
+        return chance;
     }
 }
