@@ -1,6 +1,7 @@
 using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Tests.Mocks;
 using TWL.Shared.Domain.Requests;
 using System.Threading.Tasks;
 using System.Collections.Generic;
@@ -22,7 +23,7 @@ public class CombatManagerConcurrencyTests
     [Fact]
     public void CombatManager_ConcurrentAccess_ShouldNotCrash()
     {
-        var manager = new CombatManager();
+        var manager = new CombatManager(new MockRandomService());
         bool running = true;
         var exceptions = new List<Exception>();
 

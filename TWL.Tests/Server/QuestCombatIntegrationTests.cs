@@ -4,6 +4,7 @@ using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
+using TWL.Tests.Mocks;
 using Xunit;
 
 namespace TWL.Tests.Server;
@@ -40,7 +41,7 @@ public class QuestCombatIntegrationTests
         _questManager.Load("test_combat_quests.json");
 
         // 2. Setup Combat Manager
-        _combatManager = new CombatManager();
+        _combatManager = new CombatManager(new MockRandomService());
 
         // 3. Setup Player Component
         _playerQuests = new PlayerQuestComponent(_questManager);

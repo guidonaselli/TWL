@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Services;
 
 // donde tienes CombatResult, UseSkillRequest, etc.
 
@@ -14,14 +15,12 @@ public class CombatManager
     // Supongamos que guardamos todos los personajes en un diccionario
     // (en un MMO real podrías tener combates instanciados).
     private readonly ConcurrentDictionary<int, ServerCharacter> _characters;
+    private readonly IRandomService _random;
 
-    public CombatManager()
+    public CombatManager(IRandomService random)
     {
         _characters = new ConcurrentDictionary<int, ServerCharacter>();
-
-        // Llenar con personajes de ejemplo. Ej.:
-        // _characters[101] = new ServerCharacter { Id=101, Name="Player1", Hp=100, Str=10, ... };
-        // _characters[201] = new ServerCharacter { Id=201, Name="Slime", Hp=50, Str=5, ... };
+        _random = random;
     }
 
     public void AddCharacter(ServerCharacter character)
@@ -43,15 +42,19 @@ public class CombatManager
         int newTargetHp;
         var baseDamage = attacker.Str * 2;
 
+        // Variance +/- 5%
+        float variance = _random.NextFloat(0.95f, 1.05f);
+        int finalDamage = (int)Math.Round(baseDamage * variance);
+
         // 2) Calcular daño (ejemplo muy simple).
-        newTargetHp = target.ApplyDamage(baseDamage);
+        newTargetHp = target.ApplyDamage(finalDamage);
 
         // 3) Retornar el resultado para avisar al cliente.
         var result = new CombatResult
         {
             AttackerId = attacker.Id,
             TargetId = target.Id,
-            Damage = baseDamage,
+            Damage = finalDamage,
             NewTargetHp = newTargetHp
         };
 
