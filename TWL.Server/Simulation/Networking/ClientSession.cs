@@ -33,10 +33,12 @@ public class ClientSession
     private readonly NetworkStream _stream;
     private readonly RateLimiter _rateLimiter;
 
-    public PlayerQuestComponent QuestComponent { get; private set; }
-    public ServerCharacter? Character { get; private set; }
+    public PlayerQuestComponent QuestComponent { get; protected set; }
+    public ServerCharacter? Character { get; protected set; }
 
     public int UserId = -1; // se setea tras login
+
+    protected ClientSession() { } // For testing
 
     public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, EconomyManager economyManager)
     {
