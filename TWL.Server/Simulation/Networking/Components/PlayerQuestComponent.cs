@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
+using TWL.Server.Persistence;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
@@ -9,12 +11,18 @@ namespace TWL.Server.Simulation.Networking.Components;
 public class PlayerQuestComponent
 {
     private readonly ServerQuestManager _questManager;
+    private readonly object _lock = new();
+
+    public bool IsDirty { get; set; }
 
     // QuestId -> State
     public Dictionary<int, QuestState> QuestStates { get; private set; } = new();
 
     // QuestId -> List of counts per objective
     public Dictionary<int, List<int>> QuestProgress { get; private set; } = new();
+
+    // Player Flags
+    public HashSet<string> Flags { get; private set; } = new();
 
     public PlayerQuestComponent(ServerQuestManager questManager)
     {
@@ -23,37 +31,67 @@ public class PlayerQuestComponent
 
     public bool CanStartQuest(int questId)
     {
-        var def = _questManager.GetDefinition(questId);
-        if (def == null) return false;
-
-        if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
-            return false;
-
-        foreach (var reqId in def.Requirements)
+        lock (_lock)
         {
-            if (!QuestStates.ContainsKey(reqId)) return false;
-            var state = QuestStates[reqId];
-            if (state != QuestState.Completed && state != QuestState.RewardClaimed)
-                return false;
-        }
+            var def = _questManager.GetDefinition(questId);
+            if (def == null) return false;
 
-        return true;
+            if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
+                return false;
+
+            foreach (var reqId in def.Requirements)
+            {
+                if (!QuestStates.ContainsKey(reqId)) return false;
+                var state = QuestStates[reqId];
+                if (state != QuestState.Completed && state != QuestState.RewardClaimed)
+                    return false;
+            }
+
+            return true;
+        }
     }
 
     public bool StartQuest(int questId)
     {
-        if (!CanStartQuest(questId)) return false;
+        lock (_lock)
+        {
+            // Re-check inside lock logic if we didn't call CanStartQuest inside lock (we did but state could change if called separately)
+            // But CanStartQuest uses lock, so it's safe.
+            // However, calling CanStartQuest then StartQuest is not atomic if lock is released in between.
+            // So we should inline logic or trust single thread for now.
+            // For now, let's reuse logic carefully.
 
-        var def = _questManager.GetDefinition(questId);
-        if (def == null) return false;
+            var def = _questManager.GetDefinition(questId);
+            if (def == null) return false;
 
-        QuestStates[questId] = QuestState.InProgress;
-        QuestProgress[questId] = new List<int>(new int[def.Objectives.Count]); // Init with zeros
+            if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
+                return false;
 
-        return true;
+            foreach (var reqId in def.Requirements)
+            {
+                if (!QuestStates.ContainsKey(reqId)) return false;
+                var state = QuestStates[reqId];
+                if (state != QuestState.Completed && state != QuestState.RewardClaimed)
+                    return false;
+            }
+
+            QuestStates[questId] = QuestState.InProgress;
+            QuestProgress[questId] = new List<int>(new int[def.Objectives.Count]); // Init with zeros
+
+            IsDirty = true;
+            return true;
+        }
     }
 
     public void UpdateProgress(int questId, int objectiveIndex, int amount)
+    {
+        lock (_lock)
+        {
+            UpdateProgressInternal(questId, objectiveIndex, amount);
+        }
+    }
+
+    private void UpdateProgressInternal(int questId, int objectiveIndex, int amount)
     {
         if (!QuestStates.ContainsKey(questId) || QuestStates[questId] != QuestState.InProgress) return;
 
@@ -69,6 +107,7 @@ public class PlayerQuestComponent
             currentList[objectiveIndex] = def.Objectives[objectiveIndex].RequiredCount;
 
         CheckCompletion(questId);
+        IsDirty = true;
     }
 
     private void CheckCompletion(int questId)
@@ -95,11 +134,15 @@ public class PlayerQuestComponent
 
     public bool ClaimReward(int questId)
     {
-        if (!QuestStates.ContainsKey(questId) || QuestStates[questId] != QuestState.Completed)
-            return false;
+        lock (_lock)
+        {
+            if (!QuestStates.ContainsKey(questId) || QuestStates[questId] != QuestState.Completed)
+                return false;
 
-        QuestStates[questId] = QuestState.RewardClaimed;
-        return true;
+            QuestStates[questId] = QuestState.RewardClaimed;
+            IsDirty = true;
+            return true;
+        }
     }
 
     /// <summary>
@@ -108,38 +151,89 @@ public class PlayerQuestComponent
     /// <returns>List of QuestIds that were updated.</returns>
     public List<int> TryProgress(string type, string targetName)
     {
-        var updatedQuests = new List<int>();
-
-        foreach (var kvp in QuestStates)
+        lock (_lock)
         {
-            if (kvp.Value != QuestState.InProgress) continue;
+            var updatedQuests = new List<int>();
 
-            var questId = kvp.Key;
-            var def = _questManager.GetDefinition(questId);
-            if (def == null) continue;
-
-            bool changed = false;
-            for (int i = 0; i < def.Objectives.Count; i++)
+            // Iterate over a copy of keys or ToList to avoid modification issues if CheckCompletion changes state (it doesn't remove)
+            // But if we modify QuestStates (CheckCompletion does), foreach on Dictionary might throw if it changes struct (add/remove).
+            // Changing value is fine for Dictionary, but let's be safe.
+            foreach (var kvp in QuestStates.ToList())
             {
-                var obj = def.Objectives[i];
-                // Match Type and TargetName
-                if (string.Equals(obj.Type, type, StringComparison.OrdinalIgnoreCase) &&
-                    string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase))
+                if (kvp.Value != QuestState.InProgress) continue;
+
+                var questId = kvp.Key;
+                var def = _questManager.GetDefinition(questId);
+                if (def == null) continue;
+
+                bool changed = false;
+                for (int i = 0; i < def.Objectives.Count; i++)
                 {
-                    // Check if not already complete
-                    if (QuestProgress[questId][i] < obj.RequiredCount)
+                    var obj = def.Objectives[i];
+                    // Match Type and TargetName
+                    if (string.Equals(obj.Type, type, StringComparison.OrdinalIgnoreCase) &&
+                        string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase))
                     {
-                        UpdateProgress(questId, i, 1);
-                        changed = true;
+                        // Check if not already complete
+                        if (QuestProgress[questId][i] < obj.RequiredCount)
+                        {
+                            UpdateProgressInternal(questId, i, 1);
+                            changed = true;
+                        }
                     }
+                }
+
+                if (changed)
+                {
+                    updatedQuests.Add(questId);
+                }
+            }
+            return updatedQuests;
+        }
+    }
+
+    public QuestData GetSaveData()
+    {
+        lock (_lock)
+        {
+            var data = new QuestData
+            {
+                States = new Dictionary<int, QuestState>(QuestStates),
+                Progress = new Dictionary<int, List<int>>()
+            };
+
+            foreach(var kvp in QuestProgress)
+            {
+                data.Progress[kvp.Key] = new List<int>(kvp.Value);
+            }
+
+            return data;
+        }
+    }
+
+    public void LoadSaveData(QuestData data)
+    {
+        lock (_lock)
+        {
+            QuestStates.Clear();
+            if (data.States != null)
+            {
+                foreach (var kvp in data.States)
+                {
+                    QuestStates[kvp.Key] = kvp.Value;
                 }
             }
 
-            if (changed)
+            QuestProgress.Clear();
+            if (data.Progress != null)
             {
-                updatedQuests.Add(questId);
+                foreach(var kvp in data.Progress)
+                {
+                    QuestProgress[kvp.Key] = new List<int>(kvp.Value);
+                }
             }
+
+            IsDirty = false;
         }
-        return updatedQuests;
     }
 }

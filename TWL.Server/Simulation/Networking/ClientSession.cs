@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
 using TWL.Server.Persistence.Database;
+using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.DTO;
@@ -23,14 +24,16 @@ public class ClientSession
     private readonly ServerQuestManager _questManager;
     private readonly CombatManager _combatManager;
     private readonly InteractionManager _interactionManager;
+    private readonly PlayerService _playerService;
     private readonly NetworkStream _stream;
+    private readonly RateLimiter _rateLimiter;
 
     public PlayerQuestComponent QuestComponent { get; private set; }
     public ServerCharacter? Character { get; private set; }
 
     public int UserId = -1; // se setea tras login
 
-    public ClientSession(TcpClient client, DbService db, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager)
+    public ClientSession(TcpClient client, DbService db, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService)
     {
         _client = client;
         _stream = client.GetStream();
@@ -38,7 +41,9 @@ public class ClientSession
         _questManager = questManager;
         _combatManager = combatManager;
         _interactionManager = interactionManager;
+        _playerService = playerService;
         QuestComponent = new PlayerQuestComponent(questManager);
+        _rateLimiter = new RateLimiter();
     }
 
     public void StartHandling()
@@ -71,6 +76,11 @@ public class ClientSession
         }
         finally
         {
+            if (UserId > 0)
+            {
+                _playerService.SaveSession(this);
+                _playerService.UnregisterSession(UserId);
+            }
             _stream.Close();
             _client.Close();
         }
@@ -79,6 +89,12 @@ public class ClientSession
     private async Task HandleMessageAsync(NetMessage msg)
     {
         if (msg == null) return;
+
+        if (!_rateLimiter.Check(msg.Op))
+        {
+            SecurityLogger.LogSecurityEvent("RateLimitExceeded", UserId, $"Opcode: {msg.Op}");
+            return;
+        }
 
         switch (msg.Op)
         {
@@ -143,8 +159,21 @@ public class ClientSession
 
     private async Task HandleInteractAsync(string payload)
     {
-        var dto = JsonSerializer.Deserialize<InteractDTO>(payload, _jsonOptions);
-        if (dto == null || string.IsNullOrEmpty(dto.TargetName)) return;
+        if (string.IsNullOrEmpty(payload) || payload.Length > 256) return;
+
+        InteractDTO? dto = null;
+        try
+        {
+            dto = JsonSerializer.Deserialize<InteractDTO>(payload, _jsonOptions);
+        }
+        catch (JsonException) { return; }
+
+        if (dto == null || string.IsNullOrWhiteSpace(dto.TargetName)) return;
+        if (dto.TargetName.Length > 64)
+        {
+            SecurityLogger.LogSecurityEvent("InvalidInput", UserId, "TargetName too long");
+            return;
+        }
 
         // Process Interaction Rules (Give Items, Craft, etc.)
         bool interactionSuccess = false;
@@ -182,7 +211,7 @@ public class ClientSession
 
     private async Task HandleStartQuestAsync(string payload)
     {
-        if (int.TryParse(payload, out int questId))
+        if (int.TryParse(payload, out int questId) && questId > 0)
         {
             if (QuestComponent.StartQuest(questId))
             {
@@ -193,7 +222,7 @@ public class ClientSession
 
     private async Task HandleClaimRewardAsync(string payload)
     {
-        if (int.TryParse(payload, out int questId))
+        if (int.TryParse(payload, out int questId) && questId > 0)
         {
             if (QuestComponent.ClaimReward(questId))
             {
@@ -248,8 +277,17 @@ public class ClientSession
     private async Task HandleLoginAsync(string payload)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
-        var loginDto = JsonSerializer.Deserialize<LoginDTO>(payload, _jsonOptions);
-        if (loginDto == null) return;
+        if (string.IsNullOrEmpty(payload) || payload.Length > 512) return;
+
+        LoginDTO? loginDto = null;
+        try
+        {
+            loginDto = JsonSerializer.Deserialize<LoginDTO>(payload, _jsonOptions);
+        }
+        catch (JsonException) { return; }
+
+        if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Username) || string.IsNullOrWhiteSpace(loginDto.PassHash)) return;
+
         // Using await here instead of .Result prevents thread pool starvation
         // and improves scalability under high load.
         var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
@@ -265,7 +303,21 @@ public class ClientSession
         else
         {
             UserId = uid;
-            Character = new ServerCharacter { Id = uid, Name = loginDto.Username, Hp = 100 };
+
+            var data = _playerService.LoadData(uid);
+            if (data != null)
+            {
+                Character = new ServerCharacter();
+                Character.LoadSaveData(data.Character);
+                QuestComponent.LoadSaveData(data.Quests);
+                Console.WriteLine($"Restored session for {loginDto.Username} ({UserId})");
+            }
+            else
+            {
+                Character = new ServerCharacter { Id = uid, Name = loginDto.Username, Hp = 100 };
+            }
+
+            _playerService.RegisterSession(this);
 
             // mandar una LoginResponse
             await SendAsync(new NetMessage

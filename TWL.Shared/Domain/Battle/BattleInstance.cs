@@ -27,6 +27,8 @@ public class BattleInstance
     // Dependency on Skill Catalog
     private ISkillCatalog _skillCatalog;
 
+    public event Action<int, int> OnSkillUsed;
+
     public BattleInstance(IEnumerable<Character> allies, IEnumerable<Character> enemies, ISkillCatalog? skillCatalog = null)
     {
         int idCounter = 1;
@@ -252,12 +254,27 @@ public class BattleInstance
                          }
                      }
                  }
-                 else if (effect.Tag == SkillEffectTag.Burn)
+                 else if (effect.Tag == SkillEffectTag.Dispel)
+                 {
+                     var positiveTags = new[] { SkillEffectTag.BuffStats, SkillEffectTag.Shield, SkillEffectTag.Heal };
+
+                     var toRemove = currentTarget.StatusEffects
+                         .Where(e => e.Tag == SkillEffectTag.BuffStats || e.Tag == SkillEffectTag.Shield)
+                         .ToList();
+
+                     foreach (var eff in toRemove)
+                     {
+                         currentTarget.StatusEffects.Remove(eff);
+                         didHeal = true; // Treating dispel as a significant event
+                     }
+                 }
+                 else if (effect.Tag == SkillEffectTag.Seal || effect.Tag == SkillEffectTag.Burn)
                  {
                      var rng = new Random();
                      if (rng.NextDouble() <= effect.Chance)
                      {
                          currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param));
+                         if (effect.Tag == SkillEffectTag.Seal) didDamage = true; // Treating seal application as offensive success
                      }
                  }
             }
@@ -265,12 +282,18 @@ public class BattleInstance
 
         if (didDamage)
         {
+            OnSkillUsed?.Invoke(actor.Character.Id, skill.SkillId);
             if (lastTarget != null)
                 return $"{actor.Character.Name} uses {skill.Name} on {lastTarget.Character.Name} for {lastDamage}!";
             return $"{actor.Character.Name} uses {skill.Name}!";
         }
-        if (didHeal) return $"{actor.Character.Name} uses {skill.Name} and heals!";
+        if (didHeal)
+        {
+             OnSkillUsed?.Invoke(actor.Character.Id, skill.SkillId);
+             return $"{actor.Character.Name} uses {skill.Name} and heals!";
+        }
 
+        OnSkillUsed?.Invoke(actor.Character.Id, skill.SkillId);
         return $"{actor.Character.Name} uses {skill.Name}!";
     }
 

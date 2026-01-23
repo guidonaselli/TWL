@@ -1,6 +1,7 @@
 using System.Net;
 using System.Net.Sockets;
 using TWL.Server.Persistence.Database;
+using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Net.Messages;
 
@@ -12,17 +13,19 @@ public class NetworkServer
     private readonly ServerQuestManager _questManager;
     private readonly CombatManager _combatManager;
     private readonly InteractionManager _interactionManager;
+    private readonly PlayerService _playerService;
     private readonly TcpListener _listener;
     private bool _running;
     private CancellationTokenSource _cts;
 
-    public NetworkServer(int port, DbService dbService, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager)
+    public NetworkServer(int port, DbService dbService, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService)
     {
         _listener = new TcpListener(IPAddress.Any, port);
         _dbService = dbService;
         _questManager = questManager;
         _combatManager = combatManager;
         _interactionManager = interactionManager;
+        _playerService = playerService;
     }
 
     public void Start()
@@ -49,7 +52,7 @@ public class NetworkServer
             {
                 var client = await _listener.AcceptTcpClientAsync(token);
                 Console.WriteLine("New client connected!");
-                var session = new ClientSession(client, _dbService, _questManager, _combatManager, _interactionManager);
+                var session = new ClientSession(client, _dbService, _questManager, _combatManager, _interactionManager, _playerService);
                 session.StartHandling();
             }
         }
