@@ -3,7 +3,10 @@
     "TargetName": "SharpStone",
     "Type": "Gather",
     "RewardItems": [
-      { "ItemId": 201, "Quantity": 1 }
+      {
+        "ItemId": 201,
+        "Quantity": 1
+      }
     ],
     "RequiredQuestId": 1016
   },
@@ -11,7 +14,10 @@
     "TargetName": "StrongBranch",
     "Type": "Gather",
     "RewardItems": [
-      { "ItemId": 202, "Quantity": 1 }
+      {
+        "ItemId": 202,
+        "Quantity": 1
+      }
     ],
     "RequiredQuestId": 1016
   },
@@ -19,11 +25,20 @@
     "TargetName": "OldWorkbench",
     "Type": "Craft",
     "RequiredItems": [
-      { "ItemId": 201, "Quantity": 1 },
-      { "ItemId": 202, "Quantity": 1 }
+      {
+        "ItemId": 201,
+        "Quantity": 1
+      },
+      {
+        "ItemId": 202,
+        "Quantity": 1
+      }
     ],
     "RewardItems": [
-      { "ItemId": 203, "Quantity": 1 }
+      {
+        "ItemId": 203,
+        "Quantity": 1
+      }
     ],
     "RequiredQuestId": 1016
   },
@@ -31,14 +46,20 @@
     "TargetName": "DrySticks",
     "Type": "Gather",
     "RewardItems": [
-      { "ItemId": 101, "Quantity": 1 }
+      {
+        "ItemId": 101,
+        "Quantity": 1
+      }
     ]
   },
   {
     "TargetName": "DriftwoodPile",
     "Type": "Gather",
     "RewardItems": [
-      { "ItemId": 103, "Quantity": 1 }
+      {
+        "ItemId": 103,
+        "Quantity": 1
+      }
     ]
   },
   {
@@ -46,7 +67,10 @@
     "Type": "Craft",
     "ConsumeRequiredItems": false,
     "RequiredItems": [
-      { "ItemId": 203, "Quantity": 1 }
+      {
+        "ItemId": 203,
+        "Quantity": 1
+      }
     ],
     "RewardItems": [],
     "RequiredQuestId": 1018
@@ -55,11 +79,20 @@
     "TargetName": "TrainingDummy",
     "Type": "Craft",
     "RequiredItems": [
-      { "ItemId": 101, "Quantity": 5 },
-      { "ItemId": 103, "Quantity": 2 }
+      {
+        "ItemId": 101,
+        "Quantity": 5
+      },
+      {
+        "ItemId": 103,
+        "Quantity": 2
+      }
     ],
     "RewardItems": [
-      { "ItemId": 206, "Quantity": 1 }
+      {
+        "ItemId": 206,
+        "Quantity": 1
+      }
     ],
     "RequiredQuestId": 2001
   },
@@ -67,7 +100,10 @@
     "TargetName": "BendableBranch",
     "Type": "Gather",
     "RewardItems": [
-      { "ItemId": 301, "Quantity": 1 }
+      {
+        "ItemId": 301,
+        "Quantity": 1
+      }
     ],
     "RequiredQuestId": 2010
   },
@@ -75,7 +111,10 @@
     "TargetName": "VineString",
     "Type": "Gather",
     "RewardItems": [
-      { "ItemId": 302, "Quantity": 1 }
+      {
+        "ItemId": 302,
+        "Quantity": 1
+      }
     ],
     "RequiredQuestId": 2010
   },
@@ -83,11 +122,20 @@
     "TargetName": "OldWorkbench",
     "Type": "Craft",
     "RequiredItems": [
-      { "ItemId": 301, "Quantity": 2 },
-      { "ItemId": 302, "Quantity": 2 }
+      {
+        "ItemId": 301,
+        "Quantity": 2
+      },
+      {
+        "ItemId": 302,
+        "Quantity": 2
+      }
     ],
     "RewardItems": [
-      { "ItemId": 303, "Quantity": 1 }
+      {
+        "ItemId": 303,
+        "Quantity": 1
+      }
     ],
     "RequiredQuestId": 2010
   },
@@ -96,10 +144,16 @@
     "Type": "Gather",
     "ConsumeRequiredItems": false,
     "RequiredItems": [
-      { "ItemId": 303, "Quantity": 1 }
+      {
+        "ItemId": 303,
+        "Quantity": 1
+      }
     ],
     "RewardItems": [
-      { "ItemId": 304, "Quantity": 1 }
+      {
+        "ItemId": 304,
+        "Quantity": 1
+      }
     ],
     "RequiredQuestId": 2011
   },
@@ -107,10 +161,16 @@
     "TargetName": "Campfire",
     "Type": "Craft",
     "RequiredItems": [
-      { "ItemId": 304, "Quantity": 1 }
+      {
+        "ItemId": 304,
+        "Quantity": 1
+      }
     ],
     "RewardItems": [
-      { "ItemId": 305, "Quantity": 1 }
+      {
+        "ItemId": 305,
+        "Quantity": 1
+      }
     ],
     "RequiredQuestId": 2012
   },
@@ -118,7 +178,10 @@
     "TargetName": "PoisonIvyBush",
     "Type": "Gather",
     "RewardItems": [
-      { "ItemId": 8001, "Quantity": 1 }
+      {
+        "ItemId": 8001,
+        "Quantity": 1
+      }
     ],
     "RequiredQuestId": 1102
   },
@@ -126,8 +189,81 @@
     "TargetName": "RareHerbPatch",
     "Type": "Gather",
     "RewardItems": [
-      { "ItemId": 8002, "Quantity": 1 }
+      {
+        "ItemId": 8002,
+        "Quantity": 1
+      }
     ],
     "RequiredQuestId": 2101
+  },
+  {
+    "TargetName": "StrangeStoneDebris",
+    "Type": "Gather",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 8101,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 1201,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "AncientTablet",
+    "Type": "Gather",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 8102,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 1202,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "RuinsEntrance",
+    "Type": "Interact",
+    "RequiredItems": [
+      {
+        "ItemId": 8103,
+        "Quantity": 1
+      }
+    ],
+    "RewardItems": [],
+    "RequiredQuestId": 1204,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "JournalPagePile",
+    "Type": "Gather",
+    "RequiredItems": [],
+    "RewardItems": [
+      {
+        "ItemId": 8104,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 2201,
+    "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "AlchemyTable",
+    "Type": "Craft",
+    "RequiredItems": [
+      {
+        "ItemId": 8001,
+        "Quantity": 1
+      }
+    ],
+    "RewardItems": [
+      {
+        "ItemId": 8105,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 2202,
+    "ConsumeRequiredItems": true
   }
 ]

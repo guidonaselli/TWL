@@ -112137,7 +112137,7 @@
     },
     {
       "id": 6599,
-      "name": "珍珠舞衣兌換卡",
+      "name": "\u73cd\u73e0\u821e\u8863\u514c\u63db\u5361",
       "type": 3,
       "category": 33,
       "level": 0,
@@ -132669,6 +132669,106 @@
       "pricing": {
         "buy": 0,
         "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 8101,
+      "name": "Strange Stone",
+      "type": 6,
+      "category": 26,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 8102,
+      "name": "Ancient Rubbing",
+      "type": 6,
+      "category": 26,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 8103,
+      "name": "Ruins Key",
+      "type": 6,
+      "category": 26,
+      "level": 1,
+      "rarity": "Uncommon",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 8104,
+      "name": "Journal Page",
+      "type": 6,
+      "category": 26,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 0,
+        "sell": 0
+      },
+      "icon": 1000
+    },
+    {
+      "id": 8105,
+      "name": "Antidote",
+      "type": 2,
+      "category": 10,
+      "level": 1,
+      "rarity": "Common",
+      "stats": {},
+      "flags": 0,
+      "durability": 0,
+      "effects": [],
+      "crafting_station": null,
+      "materials": [],
+      "drop_sources": [],
+      "pricing": {
+        "buy": 50,
+        "sell": 10
       },
       "icon": 1000
     }
