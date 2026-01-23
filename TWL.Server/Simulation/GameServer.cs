@@ -70,5 +70,18 @@ public class GameServer
         };
         CombatManager.AddCharacter(jaguar);
         Console.WriteLine("Test World Populated: Added Jaguar (9001).");
+
+        // Add Ruins Guardian for Quest 1203
+        var guardian = new ServerCharacter
+        {
+            Id = 9002,
+            Name = "RuinsGuardian",
+            Hp = 200,
+            Str = 25,
+            Exp = 300,
+            Gold = 50
+        };
+        CombatManager.AddCharacter(guardian);
+        Console.WriteLine("Test World Populated: Added RuinsGuardian (9002).");
     }
 }

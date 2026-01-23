@@ -286,7 +286,7 @@
       "Exp": 300,
       "Gold": 50,
       "Items": [
-         {
+        {
           "ItemId": 104,
           "Quantity": 1
         }
@@ -665,6 +665,140 @@
         {
           "ItemId": 8002,
           "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1201,
+    "Title": "Strange Symbols",
+    "Description": "I found these strange markings on some debris near the cliff. Can you bring me a sample?",
+    "Requirements": [
+      1103
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "StrangeStoneDebris",
+        "RequiredCount": 1,
+        "Description": "Collect Strange Stone."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 10,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1202,
+    "Title": "The Door is Locked",
+    "Description": "This stone matches the door to the ruins we found earlier. But it's locked. Maybe there's a clue on the nearby tablets.",
+    "Requirements": [
+      1201
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "AncientTablet",
+        "RequiredCount": 1,
+        "Description": "Collect Ancient Rubbing."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 20,
+      "Items": [
+        {
+          "ItemId": 8103,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1203,
+    "Title": "Guardians of the Past",
+    "Description": "The key opens the door, but a mechanical guardian has awakened!",
+    "Requirements": [
+      1202
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "RuinsGuardian",
+        "RequiredCount": 1,
+        "Description": "Defeat the Ruins Guardian."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 50,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1204,
+    "Title": "Inside the Ruins",
+    "Description": "The guardian is down. Use the key to enter the ruins.",
+    "Requirements": [
+      1203
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "RuinsEntrance",
+        "RequiredCount": 1,
+        "Description": "Enter the Ruins."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2201,
+    "Title": "Lost Explorer's Journal",
+    "Description": "These pages detail the flora of the jungle. Find the rest.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "JournalPagePile",
+        "RequiredCount": 3,
+        "Description": "Collect 3 Journal Pages."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2202,
+    "Title": "Jungle Survival",
+    "Description": "The jungle is full of poison. Craft an Antidote.",
+    "Requirements": [
+      1102
+    ],
+    "Objectives": [
+      {
+        "Type": "Craft",
+        "TargetName": "AlchemyTable",
+        "RequiredCount": 1,
+        "Description": "Craft an Antidote."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 8105,
+          "Quantity": 3
         }
       ]
     }
