@@ -13,6 +13,7 @@ public class GameServer
 
     // Accesores para DB o lógic
     public DbService DB { get; private set; }
+    public PetManager PetManager { get; private set; }
     public ServerQuestManager QuestManager { get; private set; }
     public CombatManager CombatManager { get; private set; }
     public InteractionManager InteractionManager { get; private set; }
@@ -42,6 +43,9 @@ public class GameServer
             Console.WriteLine("Warning: Content/Data/skills.json not found.");
         }
 
+        PetManager = new PetManager();
+        PetManager.Load("Content/Data/pets.json");
+
         QuestManager = new ServerQuestManager();
         QuestManager.Load("Content/Data/quests.json");
 
@@ -52,7 +56,7 @@ public class GameServer
         PopulateTestWorld();
 
         // 3) Inicia Network
-        _netServer = new NetworkServer(9050, DB, QuestManager, CombatManager, InteractionManager, PlayerService);
+        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");
