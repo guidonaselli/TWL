@@ -23,6 +23,7 @@ namespace TWL.Shared.Domain.Characters
         public int Level { get; private set; }
         public int Exp { get; private set; }
         public int ExpToNextLevel { get; private set; }
+        public int StatPoints { get; private set; }
 
         // Collision & Movement
         private bool[,] _collisionGrid;
@@ -139,11 +140,7 @@ namespace TWL.Shared.Domain.Characters
                 Level++;
                 ExpToNextLevel = (int)(ExpToNextLevel * 1.2);
 
-                Str++;
-                Con++;
-                Int++;
-                Wis++;
-                Agi++;
+                StatPoints += 3;
 
                 UpdateDerivedStats();
 
