@@ -1,3 +1,4 @@
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
@@ -5,6 +6,12 @@ using TWL.Server.Persistence;
 using TWL.Shared.Domain.Models;
 
 namespace TWL.Server.Simulation.Networking;
+
+public class SkillMastery
+{
+    public int Rank { get; set; } = 1;
+    public int UsageCount { get; set; } = 0;
+}
 
 /// <summary>
 ///     Representa un personaje en el lado del servidor.
@@ -31,6 +38,8 @@ public class ServerCharacter
 
     public int Id;
     public string Name;
+
+    public List<int> KnownSkills { get; set; } = new();
 
     // Stats & Progression
     public int Level { get; private set; } = 1;
@@ -91,6 +100,40 @@ public class ServerCharacter
                 }).ToArray();
             }
         }
+    }
+
+    public ConcurrentDictionary<int, SkillMastery> SkillMastery { get; private set; } = new();
+
+    public int IncrementSkillUsage(int skillId)
+    {
+        var mastery = SkillMastery.GetOrAdd(skillId, _ => new SkillMastery());
+        mastery.UsageCount++;
+
+        // Default rank up logic: every 10 uses
+        if (mastery.UsageCount % 10 == 0)
+        {
+            mastery.Rank++;
+        }
+        return mastery.Rank;
+    }
+
+    public void ReplaceSkill(int oldId, int newId)
+    {
+        lock (KnownSkills)
+        {
+            if (KnownSkills.Contains(oldId))
+            {
+                KnownSkills.Remove(oldId);
+                if (!KnownSkills.Contains(newId))
+                {
+                    KnownSkills.Add(newId);
+                }
+            }
+        }
+        // Preserve mastery? Usually stage 2 starts fresh or inherits?
+        // Prompt doesn't specify. Assuming inheritance or fresh start.
+        // If it's a new ID, it starts at Rank 1 in dictionary unless we copy.
+        // Let's assume fresh start for simplicity of "Mastery by usage".
     }
 
     private readonly List<int> _pets = new();

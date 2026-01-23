@@ -206,5 +206,64 @@
     "Requirements": { "Wis": 5 },
     "Stage": 1,
     "UnlockRules": { "Level": 1 }
+  },
+  {
+    "SkillId": 80,
+    "Name": "Wind Blade",
+    "Description": "A swift slash of compressed air.",
+    "Element": "Wind",
+    "Branch": "Physical",
+    "Tier": 1,
+    "TargetType": "SingleEnemy",
+    "SpCost": 8,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Atk", "Coefficient": 1.0 },
+      { "Stat": "Spd", "Coefficient": 0.5 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 }
+    ],
+    "Requirements": { "Str": 5, "Agi": 5 },
+    "Stage": 1,
+    "StageUpgradeRules": { "RankThreshold": 10, "NextSkillId": 83 }
+  },
+  {
+    "SkillId": 81,
+    "Name": "Gale",
+    "Description": "A sharp gust of wind that cuts the enemy.",
+    "Element": "Wind",
+    "Branch": "Magical",
+    "Tier": 1,
+    "TargetType": "SingleEnemy",
+    "SpCost": 10,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Mat", "Coefficient": 1.2 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 }
+    ],
+    "Requirements": { "Int": 5, "Agi": 5 },
+    "Stage": 1
+  },
+  {
+    "SkillId": 82,
+    "Name": "Tailwind",
+    "Description": "Increases an ally's movement speed.",
+    "Element": "Wind",
+    "Branch": "Support",
+    "Tier": 1,
+    "TargetType": "SingleAlly",
+    "SpCost": 15,
+    "Cooldown": 0,
+    "Scaling": [
+        { "Stat": "Wis", "Coefficient": 1.0 }
+    ],
+    "Effects": [
+      { "Tag": "BuffStats", "Value": 20, "Duration": 3, "Param": "Spd" }
+    ],
+    "Requirements": { "Wis": 5, "Agi": 5 },
+    "Stage": 1
   }
 ]
