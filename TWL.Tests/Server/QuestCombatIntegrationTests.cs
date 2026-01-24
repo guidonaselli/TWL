@@ -34,15 +34,31 @@ public class QuestCombatIntegrationTests
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>())
             }
         };
-        // Hack: Save and Load because ServerQuestManager doesn't expose AddQuest directly (it loads from file)
-        // Or we can use reflection if needed, but saving a temp file is safer.
+        // Hack: Save and Load because ServerQuestManager doesn't expose AddQuest directly
         string json = System.Text.Json.JsonSerializer.Serialize(quests);
         System.IO.File.WriteAllText("test_combat_quests.json", json);
         _questManager.Load("test_combat_quests.json");
 
+        // Load Skills
+        var skillsJson = @"
+[
+  {
+    ""SkillId"": 999,
+    ""Name"": ""Basic Attack"",
+    ""Element"": ""Earth"",
+    ""Branch"": ""Physical"",
+    ""Tier"": 1,
+    ""TargetType"": ""SingleEnemy"",
+    ""SpCost"": 0,
+    ""Scaling"": [ { ""Stat"": ""Str"", ""Coefficient"": 2.0 } ],
+    ""Effects"": [ { ""Tag"": ""Damage"" } ]
+  }
+]";
+        TWL.Shared.Domain.Skills.SkillRegistry.Instance.LoadSkills(skillsJson);
+
         // 2. Setup Combat Manager
         var random = new MockRandomService();
-        var resolver = new StandardCombatResolver(random);
+        var resolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
         _combatManager = new CombatManager(resolver);
 
         // 3. Setup Player Component
@@ -55,6 +71,8 @@ public class QuestCombatIntegrationTests
     {
         // Setup Characters
         var player = new ServerCharacter { Id = 1, Name = "Hero", Hp = 100, Str = 50 }; // High STR to kill
+        // Atk = 100. Skill = 200. Target Def = 16. Dmg = 184.
+
         var mob1 = new ServerCharacter { Id = 2, Name = "WeakCrab", Hp = 10 };
         var mob2 = new ServerCharacter { Id = 3, Name = "WeakCrab", Hp = 10 };
 
@@ -63,7 +81,7 @@ public class QuestCombatIntegrationTests
         _combatManager.AddCharacter(mob2);
 
         // --- Simulate Attack 1 (Kill Mob 1) ---
-        var request1 = new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 1 };
+        var request1 = new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 999 };
         var result1 = _combatManager.UseSkill(request1);
 
         Assert.NotNull(result1);
@@ -84,7 +102,7 @@ public class QuestCombatIntegrationTests
         Assert.Equal(1, _playerQuests.QuestProgress[1][0]);
 
         // --- Simulate Attack 2 (Kill Mob 2) ---
-        var request2 = new UseSkillRequest { PlayerId = 1, TargetId = 3, SkillId = 1 };
+        var request2 = new UseSkillRequest { PlayerId = 1, TargetId = 3, SkillId = 999 };
         var result2 = _combatManager.UseSkill(request2);
 
         Assert.True(result2.NewTargetHp <= 0);
@@ -103,13 +121,15 @@ public class QuestCombatIntegrationTests
     [Fact]
     public void CombatDamage_ShouldNotProgressQuest_IfTargetAlive()
     {
-        var player = new ServerCharacter { Id = 1, Name = "Hero", Hp = 100, Str = 1 }; // Low STR
+        var player = new ServerCharacter { Id = 1, Name = "Hero", Hp = 100, Str = 5 }; // Low STR
+        // Atk = 10. Skill = 20. Target Def = 16. Dmg = 4.
+
         var mob = new ServerCharacter { Id = 2, Name = "WeakCrab", Hp = 100 };
 
         _combatManager.AddCharacter(player);
         _combatManager.AddCharacter(mob);
 
-        var request = new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 1 };
+        var request = new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 999 };
         var result = _combatManager.UseSkill(request);
 
         Assert.True(result.NewTargetHp > 0);

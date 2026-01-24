@@ -54,7 +54,7 @@ public class GameServer
         InteractionManager.Load("Content/Data/interactions.json");
 
         var random = new SystemRandomService();
-        var combatResolver = new StandardCombatResolver(random);
+        var combatResolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
         CombatManager = new CombatManager(combatResolver);
         EconomyManager = new EconomyManager();
         PopulateTestWorld();

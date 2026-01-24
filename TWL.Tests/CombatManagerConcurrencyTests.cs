@@ -24,7 +24,7 @@ public class CombatManagerConcurrencyTests
     public void CombatManager_ConcurrentAccess_ShouldNotCrash()
     {
         var random = new MockRandomService();
-        var resolver = new StandardCombatResolver(random);
+        var resolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
         var manager = new CombatManager(resolver);
         bool running = true;
         var exceptions = new List<Exception>();
