@@ -360,11 +360,13 @@ public class ClientSession
                 Character = new ServerCharacter();
                 Character.LoadSaveData(data.Character);
                 QuestComponent.LoadSaveData(data.Quests);
+                QuestComponent.Character = Character;
                 Console.WriteLine($"Restored session for {loginDto.Username} ({UserId})");
             }
             else
             {
                 Character = new ServerCharacter { Id = uid, Name = loginDto.Username, Hp = 100 };
+                QuestComponent.Character = Character;
             }
 
             _playerService.RegisterSession(this);

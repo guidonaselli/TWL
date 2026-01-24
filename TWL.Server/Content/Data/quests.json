@@ -175,5 +175,53 @@
       }
     ],
     "Rewards": { "Exp": 200, "Gold": 100, "Items": [] }
+  },
+  {
+    "QuestId": 3001,
+    "Title": "El Camino del Guerrero",
+    "Description": "Demuestra tu fuerza para comenzar el entrenamiento.",
+    "Requirements": [],
+    "RequiredLevel": 2,
+    "RequiredStats": { "Str": 10 },
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Instructor de Combate",
+        "RequiredCount": 1,
+        "Description": "Habla con el Instructor."
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 3002,
+    "Title": "Materiales de Entrenamiento",
+    "Description": "Trae madera para practicar cortes.",
+    "Requirements": [3001],
+    "RequiredItems": [ { "ItemId": 7316, "Quantity": 1 } ],
+    "Objectives": [
+      {
+        "Type": "Deliver",
+        "TargetName": "Instructor de Combate",
+        "RequiredCount": 1,
+        "Description": "Entrega 1 Madera."
+      }
+    ],
+    "Rewards": { "Exp": 150, "Gold": 50, "Items": [] }
+  },
+  {
+    "QuestId": 3003,
+    "Title": "Primera Sangre",
+    "Description": "Elimina a los lobos que acechan el campamento.",
+    "Requirements": [3002],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Lobo del Bosque",
+        "RequiredCount": 3,
+        "Description": "Derrota a 3 Lobos del Bosque."
+      }
+    ],
+    "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
   }
 ]

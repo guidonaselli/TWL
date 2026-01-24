@@ -11,6 +11,8 @@ public sealed record ObjectiveDefinition(
 
 public sealed record ItemReward(int ItemId, int Quantity);
 
+public sealed record ItemRequirement(int ItemId, int Quantity);
+
 public sealed record RewardDefinition(
     int                      Exp,
     int                      Gold,
@@ -33,6 +35,11 @@ public sealed record QuestDefinition
     public IReadOnlyList<string> FlagsSet { get; init; } = [];
     public IReadOnlyList<string> FlagsClear { get; init; } = [];
     public IReadOnlyList<string> RequiredFlags { get; init; } = [];
+
+    public int RequiredLevel { get; init; }
+    public IReadOnlyDictionary<string, int> RequiredStats { get; init; } = new Dictionary<string, int>();
+    public IReadOnlyList<ItemRequirement> RequiredItems { get; init; } = [];
+
     public bool Repeatable { get; init; }
     public DateTime? Expiry { get; init; }
     public string? PartyRules { get; init; }
