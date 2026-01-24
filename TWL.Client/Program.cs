@@ -21,7 +21,6 @@ namespace TWL.Client
                 .ConfigureServices((_, services) =>
                 {
                     // Registra tus servicios
-                    // Fix: sp is already IServiceProvider, no need to Resolve it again
                     services.AddSingleton(sp => new ContentManager(sp, "Content"));
                     services.AddSingleton<IAssetLoader, AssetLoader>();
                     services.AddSingleton<ISceneManager, SceneManager>();
