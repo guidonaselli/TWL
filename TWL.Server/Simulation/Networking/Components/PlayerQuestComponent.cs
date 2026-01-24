@@ -168,10 +168,10 @@ public class PlayerQuestComponent
     /// Attempts to progress any active quest that matches the given type and target.
     /// </summary>
     /// <returns>List of QuestIds that were updated.</returns>
-    public List<int> TryProgress(string type, string targetName)
+    public List<int> TryProgress(string type, string targetName, int amount = 1)
     {
         var updatedQuests = new List<int>();
-        TryProgress(updatedQuests, targetName, type);
+        TryProgress(updatedQuests, targetName, amount, type);
         return updatedQuests;
     }
 
@@ -179,6 +179,14 @@ public class PlayerQuestComponent
     /// Optimized overload to check multiple types at once and use an existing collection.
     /// </summary>
     public void TryProgress(ICollection<int> output, string targetName, params string[] types)
+    {
+        TryProgress(output, targetName, 1, types);
+    }
+
+    /// <summary>
+    /// Optimized overload to check multiple types at once and use an existing collection with amount.
+    /// </summary>
+    public void TryProgress(ICollection<int> output, string targetName, int amount, params string[] types)
     {
         lock (_lock)
         {
@@ -218,7 +226,7 @@ public class PlayerQuestComponent
                         // Check if not already complete
                         if (QuestProgress[questId][i] < obj.RequiredCount)
                         {
-                            UpdateProgressInternal(questId, i, 1);
+                            UpdateProgressInternal(questId, i, amount);
                             changed = true;
                         }
                     }
