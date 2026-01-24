@@ -115,5 +115,65 @@
       "Items": [],
       "PetUnlockId": 101
     }
+  },
+  {
+    "QuestId": 2001,
+    "Title": "Strange Herbs",
+    "Description": "Alchemist Elara needs help gathering herbs.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Alchemist Elara",
+        "RequiredCount": 1,
+        "Description": "Talk to Alchemist Elara."
+      }
+    ],
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 2002,
+    "Title": "Gathering Ingredients",
+    "Description": "Collect green herbs for the potion.",
+    "Requirements": [2001],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Green Herb",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Green Herbs."
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 20, "Items": [] }
+  },
+  {
+    "QuestId": 2003,
+    "Title": "Basic Brew",
+    "Description": "Brew a Minor Potion using the herbs.",
+    "Requirements": [2002],
+    "Objectives": [
+      {
+        "Type": "Craft",
+        "TargetName": "Minor Potion",
+        "RequiredCount": 1,
+        "Description": "Craft 1 Minor Potion."
+      }
+    ],
+    "Rewards": { "Exp": 150, "Gold": 50, "Items": [{"ItemId": 3001, "Quantity": 1}] }
+  },
+  {
+    "QuestId": 2004,
+    "Title": "Delivery",
+    "Description": "Deliver the potion to the Guard Captain.",
+    "Requirements": [2003],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Guard Captain",
+        "RequiredCount": 1,
+        "Description": "Deliver the potion to the Guard Captain."
+      }
+    ],
+    "Rewards": { "Exp": 200, "Gold": 100, "Items": [] }
   }
 ]
