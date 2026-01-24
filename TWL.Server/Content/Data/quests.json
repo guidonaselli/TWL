@@ -223,5 +223,96 @@
       }
     ],
     "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
+  },
+  {
+    "QuestId": 1050,
+    "Title": "Rumores en la Cala",
+    "Description": "El pescador ha escuchado ruidos extraños cerca de los acantilados por la noche.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Pescador Viejo",
+        "RequiredCount": 1,
+        "Description": "Habla con el Pescador Viejo."
+      }
+    ],
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 1051,
+    "Title": "La Fuente del Ruido",
+    "Description": "Investiga la entrada de las cuevas y elimina a las bestias que bloquean el camino.",
+    "Requirements": [1050],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Cave Bat",
+        "RequiredCount": 3,
+        "Description": "Matar 3 Murciélago de Cueva."
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [{"ItemId": 3001, "Quantity": 1}] }
+  },
+  {
+    "QuestId": 1052,
+    "Title": "Inscripciones Antiguas",
+    "Description": "Hay extraños grabados en las paredes. Toma calcos para estudiarlos.",
+    "Requirements": [1051],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Grabado de Pared",
+        "RequiredCount": 3,
+        "Description": "Toma 3 Calcos de Piedra de los Grabados."
+      }
+    ],
+    "Rewards": { "Exp": 150, "Gold": 20, "Items": [{"ItemId": 7502, "Quantity": 3}] }
+  },
+  {
+    "QuestId": 1053,
+    "Title": "El Guardián de Piedra",
+    "Description": "Un gólem bloquea el altar interior. Derrótalo.",
+    "Requirements": [1052],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Stone Golem",
+        "RequiredCount": 1,
+        "Description": "Matar 1 Gólem de Piedra."
+      }
+    ],
+    "Rewards": { "Exp": 300, "Gold": 0, "Items": [{"ItemId": 7501, "Quantity": 1}] }
+  },
+  {
+    "QuestId": 1054,
+    "Title": "Un Pequeño Amigo",
+    "Description": "El fragmento brilla cerca del altar. Úsalo para despertar al espíritu.",
+    "Requirements": [1053],
+    "RequiredItems": [ { "ItemId": 7501, "Quantity": 1 } ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Ancient Altar",
+        "RequiredCount": 1,
+        "Description": "Hablar con Altar Antiguo."
+      }
+    ],
+    "Rewards": { "Exp": 0, "Gold": 0, "Items": [], "PetUnlockId": 201 }
+  },
+  {
+    "QuestId": 1060,
+    "Title": "Suministros Perdidos",
+    "Description": "Una caja cayó al mar y fue arrastrada a la orilla.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Caja a la Deriva",
+        "RequiredCount": 1,
+        "Description": "Recuperar la Caja a la Deriva."
+      }
+    ],
+    "Rewards": { "Exp": 0, "Gold": 50, "Items": [{"ItemId": 7503, "Quantity": 1}] }
   }
 ]
