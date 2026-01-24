@@ -142,7 +142,18 @@ public class ClientSession
     {
         if (UserId <= 0) return;
         var request = JsonSerializer.Deserialize<PurchaseGemsIntentDTO>(payload, _jsonOptions);
-        if (request == null || string.IsNullOrEmpty(request.ProductId)) return;
+
+        // Validation
+        if (request == null || string.IsNullOrEmpty(request.ProductId))
+        {
+             SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing ProductId");
+             return;
+        }
+        if (request.ProductId.Length > 20 || !request.ProductId.StartsWith("gems_"))
+        {
+             SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, $"Invalid ProductId format: {request.ProductId}");
+             return;
+        }
 
         var result = _economyManager.InitiatePurchase(UserId, request.ProductId);
         if (result == null) return;
@@ -154,7 +165,18 @@ public class ClientSession
     {
         if (UserId <= 0 || Character == null) return;
         var request = JsonSerializer.Deserialize<PurchaseGemsVerifyDTO>(payload, _jsonOptions);
-        if (request == null || string.IsNullOrEmpty(request.OrderId)) return;
+
+        // Validation
+        if (request == null || string.IsNullOrEmpty(request.OrderId))
+        {
+            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing OrderId");
+            return;
+        }
+        if (string.IsNullOrEmpty(request.ReceiptToken))
+        {
+            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing ReceiptToken");
+            return;
+        }
 
         var result = _economyManager.VerifyPurchase(UserId, request.OrderId, request.ReceiptToken, Character);
 
@@ -166,6 +188,13 @@ public class ClientSession
         if (UserId <= 0 || Character == null) return;
         var request = JsonSerializer.Deserialize<BuyShopItemDTO>(payload, _jsonOptions);
         if (request == null) return;
+
+        // Hardening: Quantity Check
+        if (request.Quantity <= 0 || request.Quantity > 999)
+        {
+            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, $"Invalid Shop Quantity: {request.Quantity}");
+            return;
+        }
 
         var result = _economyManager.BuyShopItem(Character, request.ShopItemId, request.Quantity);
 

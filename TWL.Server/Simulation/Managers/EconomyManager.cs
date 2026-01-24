@@ -116,10 +116,10 @@ public class EconomyManager
                 return new EconomyOperationResultDTO { Success = false, Message = "Invalid state" };
             }
 
-            // Verify receipt (Mock)
-            if (string.IsNullOrEmpty(receiptToken))
+            // Verify receipt (Mock Signature Validation)
+            if (!ValidateReceipt(receiptToken, orderId))
             {
-                return new EconomyOperationResultDTO { Success = false, Message = "Invalid receipt" };
+                return new EconomyOperationResultDTO { Success = false, Message = "Invalid receipt signature" };
             }
 
             // Credit Gems
@@ -142,7 +142,8 @@ public class EconomyManager
 
     public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity)
     {
-        if (quantity <= 0) return new EconomyOperationResultDTO { Success = false, Message = "Invalid quantity" };
+        if (quantity <= 0 || quantity > 999)
+            return new EconomyOperationResultDTO { Success = false, Message = "Invalid quantity (1-999)" };
 
         if (!_shopItems.TryGetValue(shopItemId, out var itemDef))
         {
@@ -169,6 +170,13 @@ public class EconomyManager
         };
     }
 
+    private bool ValidateReceipt(string receiptToken, string orderId)
+    {
+        // In a real app, this would verify a cryptographic signature.
+        // For this hardening task, we enforce a strict format linked to the orderId.
+        return !string.IsNullOrEmpty(receiptToken) && receiptToken == $"mock_sig_{orderId}";
+    }
+
     private void LogLedger(string type, int userId, string details, long delta, long newBalance)
     {
         var line = $"{DateTime.UtcNow:O},{type},{userId},{details},{delta},{newBalance}\n";
@@ -178,9 +186,10 @@ public class EconomyManager
             {
                 File.AppendAllText(LEDGER_FILE, line);
             }
-            catch
+            catch (Exception ex)
             {
-                // Ignore logging errors to prevent crash, but this is bad for audit.
+                // Fallback logging to console so we don't lose the audit trail completely
+                Console.Error.WriteLine($"[CRITICAL] LEDGER WRITE FAILED: {ex.Message} | Data: {line}");
             }
         }
     }

@@ -22,13 +22,13 @@ public class EconomyTests
         Assert.NotNull(intent.OrderId);
 
         // 2. Verify (First time)
-        var result1 = manager.VerifyPurchase(charId, intent.OrderId, "valid_token", character);
+        var result1 = manager.VerifyPurchase(charId, intent.OrderId, $"mock_sig_{intent.OrderId}", character);
         Assert.True(result1.Success);
         Assert.Equal(100, character.PremiumCurrency);
         Assert.Equal(100, result1.NewBalance);
 
         // 3. Verify (Second time - Idempotency)
-        var result2 = manager.VerifyPurchase(charId, intent.OrderId, "valid_token", character);
+        var result2 = manager.VerifyPurchase(charId, intent.OrderId, $"mock_sig_{intent.OrderId}", character);
         Assert.True(result2.Success);
         Assert.Equal("Already completed", result2.Message);
         Assert.Equal(100, character.PremiumCurrency); // Should still be 100
@@ -45,7 +45,7 @@ public class EconomyTests
         var intent = manager.InitiatePurchase(charId1, "gems_100");
 
         // Try verifying with wrong user ID
-        var result = manager.VerifyPurchase(charId2, intent.OrderId, "token", character);
+        var result = manager.VerifyPurchase(charId2, intent.OrderId, $"mock_sig_{intent.OrderId}", character);
         Assert.False(result.Success);
         Assert.Equal("User mismatch", result.Message);
     }
