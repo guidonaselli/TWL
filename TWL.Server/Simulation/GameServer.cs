@@ -18,7 +18,7 @@ public class GameServer
     public CombatManager CombatManager { get; private set; }
     public InteractionManager InteractionManager { get; private set; }
     public PlayerService PlayerService { get; private set; }
-    public EconomyManager EconomyManager { get; private set; }
+    public IEconomyService EconomyManager { get; private set; }
 
     public void Start()
     {

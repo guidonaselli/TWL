@@ -15,12 +15,12 @@ public class NetworkServer
     private readonly CombatManager _combatManager;
     private readonly InteractionManager _interactionManager;
     private readonly PlayerService _playerService;
-    private readonly EconomyManager _economyManager;
+    private readonly IEconomyService _economyManager;
     private readonly TcpListener _listener;
     private bool _running;
     private CancellationTokenSource _cts;
 
-    public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, EconomyManager economyManager)
+    public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager)
     {
         _listener = new TcpListener(IPAddress.Any, port);
         _dbService = dbService;

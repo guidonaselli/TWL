@@ -28,7 +28,7 @@ public class ClientSession
     private readonly ServerQuestManager _questManager;
     private readonly CombatManager _combatManager;
     private readonly InteractionManager _interactionManager;
-    private readonly EconomyManager _economyManager;
+    private readonly IEconomyService _economyManager;
     private readonly PlayerService _playerService;
     private readonly NetworkStream _stream;
     private readonly RateLimiter _rateLimiter;
@@ -40,7 +40,7 @@ public class ClientSession
 
     protected ClientSession() { } // For testing
 
-    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, EconomyManager economyManager)
+    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager)
     {
         _client = client;
         _stream = client.GetStream();
