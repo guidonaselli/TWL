@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.IO;
 using TWL.Server.Simulation.Managers;
+using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
@@ -12,6 +13,7 @@ public class AlchemistQuestTests
 {
     private readonly ServerQuestManager _questManager;
     private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerCharacter _character;
 
     public AlchemistQuestTests()
     {
@@ -29,6 +31,8 @@ public class AlchemistQuestTests
         _questManager.Load(path);
 
         _playerQuests = new PlayerQuestComponent(_questManager);
+        _character = new ServerCharacter { Id = 1, Name = "TestPlayer" };
+        _playerQuests.Character = _character;
     }
 
     [Fact]

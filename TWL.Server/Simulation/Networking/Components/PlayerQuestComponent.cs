@@ -5,6 +5,7 @@ using TWL.Server.Persistence;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
+using TWL.Server.Simulation.Networking;
 
 namespace TWL.Server.Simulation.Networking.Components;
 
@@ -24,9 +25,60 @@ public class PlayerQuestComponent
     // Player Flags
     public HashSet<string> Flags { get; private set; } = new();
 
+    public ServerCharacter? Character { get; set; }
+
     public PlayerQuestComponent(ServerQuestManager questManager)
     {
         _questManager = questManager;
+    }
+
+    private bool CheckGating(QuestDefinition def)
+    {
+        if (Character == null)
+        {
+            // If there are gating requirements but no character attached, we must fail.
+            // If there are NO requirements, we allow it (backward compatibility for tests).
+            if (def.RequiredLevel > 1 ||
+               (def.RequiredStats != null && def.RequiredStats.Count > 0) ||
+               (def.RequiredItems != null && def.RequiredItems.Count > 0))
+            {
+                return false;
+            }
+            return true;
+        }
+
+        // Level Check
+        if (Character.Level < def.RequiredLevel) return false;
+
+        // Stat Checks
+        if (def.RequiredStats != null)
+        {
+            foreach (var stat in def.RequiredStats)
+            {
+                int charStat = 0;
+                switch (stat.Key.ToLower())
+                {
+                    case "str": charStat = Character.Str; break;
+                    case "con": charStat = Character.Con; break;
+                    case "int": charStat = Character.Int; break;
+                    case "wis": charStat = Character.Wis; break;
+                    case "agi": charStat = Character.Agi; break;
+                    default: break;
+                }
+                if (charStat < stat.Value) return false;
+            }
+        }
+
+        // Item Checks
+        if (def.RequiredItems != null)
+        {
+            foreach (var itemReq in def.RequiredItems)
+            {
+                if (!Character.HasItem(itemReq.ItemId, itemReq.Quantity)) return false;
+            }
+        }
+
+        return true;
     }
 
     public bool CanStartQuest(int questId)
@@ -54,6 +106,8 @@ public class PlayerQuestComponent
             {
                 if (!Flags.Contains(flag)) return false;
             }
+
+            if (!CheckGating(def)) return false;
 
             return true;
         }
@@ -86,6 +140,8 @@ public class PlayerQuestComponent
             {
                 if (!Flags.Contains(flag)) return false;
             }
+
+            if (!CheckGating(def)) return false;
 
             QuestStates[questId] = QuestState.InProgress;
             QuestProgress[questId] = new List<int>(new int[def.Objectives.Count]); // Init with zeros
