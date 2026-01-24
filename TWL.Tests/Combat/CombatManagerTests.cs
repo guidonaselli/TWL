@@ -2,33 +2,57 @@ using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.Skills;
 using TWL.Tests.Mocks;
 
 namespace TWL.Tests.Combat;
 
 public class CombatManagerTests
 {
+    private const string TestSkillJson = @"
+[
+  {
+    ""SkillId"": 999,
+    ""Name"": ""Test Strike"",
+    ""Element"": ""Earth"",
+    ""Branch"": ""Physical"",
+    ""Tier"": 1,
+    ""TargetType"": ""SingleEnemy"",
+    ""SpCost"": 0,
+    ""Scaling"": [ { ""Stat"": ""Str"", ""Coefficient"": 2.0 } ],
+    ""Effects"": [ { ""Tag"": ""Damage"" } ]
+  }
+]
+";
+
+    public CombatManagerTests()
+    {
+        SkillRegistry.Instance.LoadSkills(TestSkillJson);
+    }
+
     [Fact]
     public void UseSkill_CalculatesDamage_WithVariance_Normal()
     {
         // Arrange
-        // MockRandomService defaults to 0.5f
-        // Variance logic: 0.95f + (1.05f - 0.95f) * NextFloat()
-        // If NextFloat is 0.5f, then variance is 0.95 + 0.10 * 0.5 = 1.00
+        // MockRandomService defaults to 0.5f -> Variance 1.0
         var mockRandom = new MockRandomService(0.5f);
-        var resolver = new StandardCombatResolver(mockRandom);
+        var resolver = new StandardCombatResolver(mockRandom, SkillRegistry.Instance);
         var manager = new CombatManager(resolver);
 
-        var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000 };
+        var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 }; // Atk=200? No, Str=100.
+        // Skill scaling: Str * 2 = 200.
+
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };
+        // Con 0 -> Def 0. To match previous test behavior where Defense was ignored.
+
         manager.AddCharacter(attacker);
         manager.AddCharacter(target);
 
         // Act
-        // Base Damage = 100 * 2 = 200
+        // Base Damage = 200
         // Variance = 1.0
-        // Final Damage = 200
-        var request = new UseSkillRequest { PlayerId = 1, TargetId = 2 };
+        // Final Damage = 200 - 0 = 200
+        var request = new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 999 };
         var result = manager.UseSkill(request);
 
         // Assert
@@ -42,18 +66,18 @@ public class CombatManagerTests
         // Arrange
         // Set Mock to 0.0 -> Variance should be 0.95
         var mockRandom = new MockRandomService(0.0f);
-        var resolver = new StandardCombatResolver(mockRandom);
+        var resolver = new StandardCombatResolver(mockRandom, SkillRegistry.Instance);
         var manager = new CombatManager(resolver);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000 };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };
         manager.AddCharacter(attacker);
         manager.AddCharacter(target);
 
         // Act
         // Base Damage = 200
         // Final Damage = 200 * 0.95 = 190
-        var request = new UseSkillRequest { PlayerId = 1, TargetId = 2 };
+        var request = new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 999 };
         var result = manager.UseSkill(request);
 
         // Assert
@@ -66,18 +90,18 @@ public class CombatManagerTests
         // Arrange
         // Set Mock to 1.0 -> Variance should be 1.05
         var mockRandom = new MockRandomService(1.0f);
-        var resolver = new StandardCombatResolver(mockRandom);
+        var resolver = new StandardCombatResolver(mockRandom, SkillRegistry.Instance);
         var manager = new CombatManager(resolver);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000 };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };
         manager.AddCharacter(attacker);
         manager.AddCharacter(target);
 
         // Act
         // Base Damage = 200
         // Final Damage = 200 * 1.05 = 210
-        var request = new UseSkillRequest { PlayerId = 1, TargetId = 2 };
+        var request = new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 999 };
         var result = manager.UseSkill(request);
 
         // Assert

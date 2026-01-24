@@ -38,6 +38,7 @@ public class ServerCharacter
 
     public int Id;
     public string Name;
+    public TWL.Shared.Domain.Characters.Element CharacterElement { get; set; }
 
     public List<int> KnownSkills { get; set; } = new();
 
@@ -203,6 +204,21 @@ public class ServerCharacter
             current = initial - amount;
         }
         while (Interlocked.CompareExchange(ref _premiumCurrency, current, initial) != initial);
+
+        IsDirty = true;
+        return true;
+    }
+
+    public bool ConsumeSp(int amount)
+    {
+        int initialSp, newSp;
+        do
+        {
+            initialSp = _sp;
+            if (initialSp < amount) return false;
+            newSp = initialSp - amount;
+        }
+        while (Interlocked.CompareExchange(ref _sp, newSp, initialSp) != initialSp);
 
         IsDirty = true;
         return true;

@@ -56,6 +56,7 @@ public class SkillRegistry : ISkillCatalog
                     ParentSkillRank = def.UnlockRules?.ParentSkillRank,
                     QuestId = def.UnlockRules?.QuestId
                 },
+                StageUpgradeRules = def.StageUpgradeRules,
 
                 // Legacy Mapping (for compatibility if needed internally)
                 Type = MapBranchToType(def.Branch, def.Effects),
@@ -105,6 +106,7 @@ public class SkillRegistry : ISkillCatalog
         public RequirementDto? Requirements { get; set; }
         public int Stage { get; set; }
         public UnlockRulesDto? UnlockRules { get; set; }
+        public StageUpgradeRules? StageUpgradeRules { get; set; }
     }
 
     private class UnlockRulesDto

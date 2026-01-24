@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.Skills;
 using TWL.Shared.Services;
 
 // donde tienes CombatResult, UseSkillRequest, etc.
@@ -39,10 +40,21 @@ public class CombatManager
             // En un caso real, podrías retornar un error o un CombatResult con "invalid target".
             return null;
 
+        var skill = SkillRegistry.Instance.GetSkillById(request.SkillId);
+        if (skill == null) return null;
+
+        if (!attacker.ConsumeSp(skill.SpCost))
+        {
+            return null;
+        }
+
         int newTargetHp;
         // 2) Calcular daño
         int finalDamage = _resolver.CalculateDamage(attacker, target, request);
         newTargetHp = target.ApplyDamage(finalDamage);
+
+        attacker.IncrementSkillUsage(skill.SkillId);
+        CheckSkillEvolution(attacker, skill);
 
         // 3) Retornar el resultado para avisar al cliente.
         var result = new CombatResult
@@ -54,6 +66,22 @@ public class CombatManager
         };
 
         return result;
+    }
+
+    private void CheckSkillEvolution(ServerCharacter character, Skill skill)
+    {
+        if (skill.StageUpgradeRules == null) return;
+
+        if (character.SkillMastery.TryGetValue(skill.SkillId, out var mastery))
+        {
+            if (mastery.Rank >= skill.StageUpgradeRules.RankThreshold)
+            {
+                if (skill.StageUpgradeRules.NextSkillId.HasValue)
+                {
+                    character.ReplaceSkill(skill.SkillId, skill.StageUpgradeRules.NextSkillId.Value);
+                }
+            }
+        }
     }
 
     // Ejemplo: Lógica de turnos (opcional). Podrías llevar un "battleId" y states.
