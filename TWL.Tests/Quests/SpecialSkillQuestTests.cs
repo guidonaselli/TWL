@@ -77,7 +77,7 @@ public class SpecialSkillQuestTests
 
         session.InvokeGrantGoddessSkills();
 
-        Assert.Contains(9003, _character.KnownSkills); // Hotfire
+        Assert.Contains(2003, _character.KnownSkills); // Hotfire
         Assert.Contains("GS_GRANTED", _playerQuests.Flags);
     }
 
@@ -89,15 +89,15 @@ public class SpecialSkillQuestTests
         session.SetComponents(_character, _playerQuests);
 
         session.InvokeGrantGoddessSkills();
-        Assert.Contains(9001, _character.KnownSkills); // Shrink
+        Assert.Contains(2001, _character.KnownSkills); // Shrink
 
         // Change element (impossible in game, but for test)
         _character.CharacterElement = Element.Wind;
 
         session.InvokeGrantGoddessSkills();
 
-        // Should NOT have Wind skill (9004) because flag is present
-        Assert.DoesNotContain(9004, _character.KnownSkills);
+        // Should NOT have Wind skill (2004) because flag is present
+        Assert.DoesNotContain(2004, _character.KnownSkills);
     }
 
     [Fact]
@@ -118,14 +118,14 @@ public class SpecialSkillQuestTests
     {
         var session = new TestClientSession();
         _character.CharacterElement = Element.Fire;
-        _character.KnownSkills.Add(9003); // Manually add Hotfire
+        _character.KnownSkills.Add(2003); // Manually add Hotfire
         session.SetComponents(_character, _playerQuests);
 
         session.InvokeGrantGoddessSkills();
 
         Assert.Contains("GS_GRANTED", _playerQuests.Flags);
         // Should not have tried to learn it again (no error, just silent success)
-        Assert.Contains(9003, _character.KnownSkills);
+        Assert.Contains(2003, _character.KnownSkills);
     }
 
     [Fact]

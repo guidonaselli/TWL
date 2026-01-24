@@ -335,13 +335,13 @@ public class ClientSession
         switch (Character.CharacterElement)
         {
             case TWL.Shared.Domain.Characters.Element.Water:
-                skillId = 9001; skillName = "Shrink"; break;
+                skillId = 2001; skillName = "Shrink"; break;
             case TWL.Shared.Domain.Characters.Element.Earth:
-                skillId = 9002; skillName = "Blockage"; break;
+                skillId = 2002; skillName = "Blockage"; break;
             case TWL.Shared.Domain.Characters.Element.Fire:
-                skillId = 9003; skillName = "Hotfire"; break;
+                skillId = 2003; skillName = "Hotfire"; break;
             case TWL.Shared.Domain.Characters.Element.Wind:
-                skillId = 9004; skillName = "Vanish"; break;
+                skillId = 2004; skillName = "Vanish"; break;
         }
 
         if (skillId > 0)
