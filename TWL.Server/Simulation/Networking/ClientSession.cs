@@ -326,6 +326,7 @@ public class ClientSession
         if (Character == null) return;
 
         const string gsFlag = "GS_GRANTED";
+        // Optimization: check flag first
         if (QuestComponent.Flags.Contains(gsFlag)) return;
 
         int skillId = 0;
@@ -345,14 +346,11 @@ public class ClientSession
 
         if (skillId > 0)
         {
-            // If already known, just ensure flag is set so we don't keep checking
+            // If already known, just set flag
             if (Character.KnownSkills.Contains(skillId))
             {
-                if (!QuestComponent.Flags.Contains(gsFlag))
-                {
-                    QuestComponent.Flags.Add(gsFlag);
-                    QuestComponent.IsDirty = true;
-                }
+                QuestComponent.Flags.Add(gsFlag);
+                QuestComponent.IsDirty = true;
                 return;
             }
 
