@@ -255,7 +255,7 @@ public class BattleInstance
                  }
                  else if (effect.Tag == SkillEffectTag.DebuffStats)
                  {
-                      float hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance);
+                      float hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance, skill.HitRules);
                       var rng = new Random();
                       if (rng.NextDouble() <= hitChance)
                       {
@@ -290,7 +290,7 @@ public class BattleInstance
                  }
                  else if (effect.Tag == SkillEffectTag.Seal)
                  {
-                     float hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance);
+                     float hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance, skill.HitRules);
                      var rng = new Random();
                      if (rng.NextDouble() <= hitChance)
                      {
@@ -491,14 +491,24 @@ public class BattleInstance
         return 1.0f;
     }
 
-    private float GetControlHitChance(Character attacker, Character defender, float baseChance)
+    private float GetControlHitChance(Character attacker, Character defender, float baseChance, SkillHitRules? hitRules = null)
     {
+        float min = 0.1f;
+        float max = 1.0f;
+
+        if (hitRules != null)
+        {
+            baseChance = hitRules.BaseChance;
+            min = hitRules.MinChance;
+            max = hitRules.MaxChance;
+        }
+
         // INT vs WIS based chance modification
         float chance = baseChance + (attacker.Int - defender.Wis) * 0.01f;
 
-        // Clamp between 10% and 100%
-        if (chance < 0.1f) chance = 0.1f;
-        if (chance > 1.0f) chance = 1.0f;
+        // Clamp between min and max
+        if (chance < min) chance = min;
+        if (chance > max) chance = max;
 
         return chance;
     }

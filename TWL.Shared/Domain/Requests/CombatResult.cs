@@ -1,4 +1,7 @@
-﻿namespace TWL.Shared.Domain.Requests;
+using System.Collections.Generic;
+using TWL.Shared.Domain.Battle;
+
+namespace TWL.Shared.Domain.Requests;
 
 public class CombatResult
 {
@@ -7,4 +10,5 @@ public class CombatResult
     public int Damage { get; set; }
     public int NewTargetHp { get; set; }
     public bool TargetDied { get; set; }
+    public List<StatusEffectInstance> AddedEffects { get; set; } = new();
 }

@@ -17,11 +17,13 @@ public class CombatManager
     // (en un MMO real podrías tener combates instanciados).
     private readonly ConcurrentDictionary<int, ServerCharacter> _characters;
     private readonly ICombatResolver _resolver;
+    private readonly IRandomService _random;
 
-    public CombatManager(ICombatResolver resolver)
+    public CombatManager(ICombatResolver resolver, IRandomService random)
     {
         _characters = new ConcurrentDictionary<int, ServerCharacter>();
         _resolver = resolver;
+        _random = random;
     }
 
     public void AddCharacter(ServerCharacter character)
@@ -49,7 +51,51 @@ public class CombatManager
         }
 
         int newTargetHp;
-        // 2) Calcular daño
+        // 2) Apply Effects & Calculate Damage
+        // Check for control hit rules if applicable
+        var appliedEffects = new List<TWL.Shared.Domain.Battle.StatusEffectInstance>();
+
+        foreach (var effect in skill.Effects)
+        {
+            // Simple logic: if chance met, apply
+            float chance = effect.Chance;
+
+            // Override chance if HitRules exist and tag is Control/Seal
+            if (skill.HitRules != null && effect.Tag == SkillEffectTag.Seal)
+            {
+                // Basic formula: Base + (Int - Wis)*0.01 (clamped)
+                // Assuming StatDependence is "Int-Wis"
+                float statDiff = (attacker.Int - target.Wis) * 0.01f;
+                chance = skill.HitRules.BaseChance + statDiff;
+                if (chance < skill.HitRules.MinChance) chance = skill.HitRules.MinChance;
+                if (chance > skill.HitRules.MaxChance) chance = skill.HitRules.MaxChance;
+            }
+
+            if (_random.NextFloat() <= chance)
+            {
+                // Apply specific logic
+                switch (effect.Tag)
+                {
+                    case SkillEffectTag.Cleanse:
+                        target.CleanseDebuffs();
+                        break;
+                    case SkillEffectTag.Dispel:
+                        target.DispelBuffs();
+                        break;
+                    case SkillEffectTag.Damage:
+                        // Handled by resolver usually, but if it's flat damage or secondary, we might do it here.
+                        // Standard resolver handles primary damage scaling.
+                        break;
+                    default:
+                        // Add status
+                        var status = new TWL.Shared.Domain.Battle.StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param);
+                        target.AddStatusEffect(status);
+                        appliedEffects.Add(status);
+                        break;
+                }
+            }
+        }
+
         int finalDamage = _resolver.CalculateDamage(attacker, target, request);
         newTargetHp = target.ApplyDamage(finalDamage);
 
@@ -62,7 +108,8 @@ public class CombatManager
             AttackerId = attacker.Id,
             TargetId = target.Id,
             Damage = finalDamage,
-            NewTargetHp = newTargetHp
+            NewTargetHp = newTargetHp,
+            AddedEffects = appliedEffects
         };
 
         return result;

@@ -112,6 +112,60 @@ public class ServerCharacter
 
     public ConcurrentDictionary<int, SkillMastery> SkillMastery { get; private set; } = new();
 
+    // Combat Status Effects
+    private readonly List<TWL.Shared.Domain.Battle.StatusEffectInstance> _statusEffects = new();
+    private readonly object _statusLock = new();
+
+    public IReadOnlyList<TWL.Shared.Domain.Battle.StatusEffectInstance> StatusEffects
+    {
+        get
+        {
+            lock (_statusLock)
+            {
+                return _statusEffects.ToArray();
+            }
+        }
+    }
+
+    public void AddStatusEffect(TWL.Shared.Domain.Battle.StatusEffectInstance effect)
+    {
+        lock (_statusLock)
+        {
+            _statusEffects.Add(effect);
+            IsDirty = true;
+        }
+    }
+
+    public void RemoveStatusEffect(TWL.Shared.Domain.Battle.StatusEffectInstance effect)
+    {
+        lock (_statusLock)
+        {
+            _statusEffects.Remove(effect);
+            IsDirty = true;
+        }
+    }
+
+    public void CleanseDebuffs()
+    {
+        lock (_statusLock)
+        {
+            _statusEffects.RemoveAll(e => e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.DebuffStats ||
+                                          e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Burn ||
+                                          e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Seal);
+            IsDirty = true;
+        }
+    }
+
+    public void DispelBuffs()
+    {
+        lock (_statusLock)
+        {
+            _statusEffects.RemoveAll(e => e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.BuffStats ||
+                                          e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Shield);
+            IsDirty = true;
+        }
+    }
+
     public int IncrementSkillUsage(int skillId)
     {
         var mastery = SkillMastery.GetOrAdd(skillId, _ => new SkillMastery());

@@ -37,7 +37,7 @@ public class CombatManagerTests
         // MockRandomService defaults to 0.5f -> Variance 1.0
         var mockRandom = new MockRandomService(0.5f);
         var resolver = new StandardCombatResolver(mockRandom, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver);
+        var manager = new CombatManager(resolver, mockRandom);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 }; // Atk=200? No, Str=100.
         // Skill scaling: Str * 2 = 200.
@@ -67,7 +67,7 @@ public class CombatManagerTests
         // Set Mock to 0.0 -> Variance should be 0.95
         var mockRandom = new MockRandomService(0.0f);
         var resolver = new StandardCombatResolver(mockRandom, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver);
+        var manager = new CombatManager(resolver, mockRandom);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };
@@ -91,7 +91,7 @@ public class CombatManagerTests
         // Set Mock to 1.0 -> Variance should be 1.05
         var mockRandom = new MockRandomService(1.0f);
         var resolver = new StandardCombatResolver(mockRandom, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver);
+        var manager = new CombatManager(resolver, mockRandom);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };

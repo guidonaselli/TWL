@@ -1,5 +1,8 @@
+using System.Text.Json.Serialization;
+
 namespace TWL.Shared.Domain.Skills;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum SkillBranch
 {
     Physical, // ATK
@@ -7,6 +10,7 @@ public enum SkillBranch
     Support   // SUPPORT
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum SkillTargetType
 {
     SingleEnemy,
@@ -18,6 +22,7 @@ public enum SkillTargetType
     RowAllies
 }
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum SkillEffectTag
 {
     None,
@@ -30,4 +35,35 @@ public enum SkillEffectTag
     Dispel, // Remove Buffs
     Seal, // Control
     Burn // DoT
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum SkillFamily
+{
+    Core,
+    Special
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum SkillCategory
+{
+    None,
+    RebirthJob,
+    ElementSpecial,
+    Fairy,
+    Dragon,
+    Griffin,
+    Goddess
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum RebirthClass
+{
+    None,
+    Champion,
+    Defender,
+    Slayer,
+    Archmage,
+    Oracle,
+    Sage
 }

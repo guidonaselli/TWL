@@ -8,7 +8,12 @@ public class Skill
     // Identifiers
     public int SkillId;
     public string Name = string.Empty;
+    public string DisplayNameKey = string.Empty; // For UI localization
     public string Description = string.Empty;
+
+    // Classification
+    public SkillFamily Family { get; set; } = SkillFamily.Core;
+    public SkillCategory Category { get; set; } = SkillCategory.None;
 
     // Core Attributes
     public Element Element;
@@ -23,6 +28,8 @@ public class Skill
     // Mechanics
     public List<SkillScaling> Scaling { get; set; } = new();
     public List<SkillEffect> Effects { get; set; } = new();
+    public SkillHitRules? HitRules { get; set; } // For control/seal skills
+    public SkillRestrictions? Restrictions { get; set; } // For special/limited skills
 
     // Legacy / Compatibility fields (Can be mapped from new structure or kept for backward compat)
     public int Id; // Redundant, same as SkillId usually
@@ -59,6 +66,7 @@ public class SkillUnlockRules
     public int? ParentSkillId { get; set; }
     public int? ParentSkillRank { get; set; }
     public string? QuestId { get; set; }
+    public string? QuestFlag { get; set; } // Required server-side flag (e.g., from quest completion)
 }
 
 public class StageUpgradeRules
