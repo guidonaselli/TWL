@@ -32,5 +32,39 @@
     "IsQuestUnique": true,
     "RecoveryServiceEnabled": true,
     "RebirthEligible": false
+  },
+  {
+    "PetTypeId": 200,
+    "Name": "Cave Bat",
+    "BaseHp": 40,
+    "BaseStr": 5,
+    "BaseCon": 5,
+    "BaseInt": 5,
+    "BaseWis": 5,
+    "BaseAgi": 12,
+    "Element": 3,
+    "IsUnique": false,
+    "SkillIds": [],
+    "IsCapturable": true,
+    "IsQuestUnique": false,
+    "CaptureLevelLimit": 10,
+    "CaptureChance": 0.4
+  },
+  {
+    "PetTypeId": 201,
+    "Name": "Stone Spirit",
+    "BaseHp": 60,
+    "BaseStr": 4,
+    "BaseCon": 10,
+    "BaseInt": 8,
+    "BaseWis": 8,
+    "BaseAgi": 2,
+    "Element": 0,
+    "IsUnique": true,
+    "SkillIds": [],
+    "IsCapturable": false,
+    "IsQuestUnique": true,
+    "RecoveryServiceEnabled": true,
+    "RebirthEligible": true
   }
 ]

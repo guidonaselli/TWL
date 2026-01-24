@@ -55,7 +55,7 @@ public class GameServer
 
         var random = new SystemRandomService();
         var combatResolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
-        CombatManager = new CombatManager(combatResolver);
+        CombatManager = new CombatManager(combatResolver, random);
         EconomyManager = new EconomyManager();
         PopulateTestWorld();
 
@@ -140,5 +140,32 @@ public class GameServer
         };
         CombatManager.AddCharacter(eel);
         Console.WriteLine("Test World Populated: Added ElectricEel (9005).");
+
+        // Add Cave Bat for Quest 1051
+        var caveBat = new ServerCharacter
+        {
+            Id = 9101,
+            Name = "Cave Bat",
+            Hp = 40,
+            Str = 12,
+            Exp = 40,
+            Gold = 5
+        };
+        CombatManager.AddCharacter(caveBat);
+        Console.WriteLine("Test World Populated: Added Cave Bat (9101).");
+
+        // Add Stone Golem for Quest 1053
+        var stoneGolem = new ServerCharacter
+        {
+            Id = 9102,
+            Name = "Stone Golem",
+            Hp = 150,
+            Str = 25,
+            Con = 20, // Higher def
+            Exp = 150,
+            Gold = 50
+        };
+        CombatManager.AddCharacter(stoneGolem);
+        Console.WriteLine("Test World Populated: Added Stone Golem (9102).");
     }
 }
