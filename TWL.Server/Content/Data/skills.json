@@ -94,5 +94,71 @@
     "UnlockRules": { "ParentSkillId": 1201, "ParentSkillRank": 10 },
     "Stage": 1,
     "StageUpgradeRules": { "RankThreshold": 10, "NextSkillId": 1203 }
+  },
+  {
+    "SkillId": 8001,
+    "Name": "Dragon Slash",
+    "Description": "A legendary physical attack derived from dragon power.",
+    "Element": "Fire",
+    "Branch": "Physical",
+    "Tier": 3,
+    "TargetType": "SingleEnemy",
+    "SpCost": 50,
+    "Cooldown": 3,
+    "Scaling": [ { "Stat": "Atk", "Coefficient": 3.5 } ],
+    "Effects": [ { "Tag": "Damage", "Value": 0 } ],
+    "Stage": 1
+  },
+  {
+    "SkillId": 9001,
+    "Name": "Shrink",
+    "Description": "Reduces target size and stats. (Water Goddess Skill)",
+    "Element": "Water",
+    "Branch": "Support",
+    "Tier": 1,
+    "TargetType": "SingleEnemy",
+    "SpCost": 30,
+    "Cooldown": 3,
+    "Effects": [ { "Tag": "DebuffStats", "Param": "All", "Value": -20, "Duration": 3, "Chance": 1.0 } ],
+    "Stage": 1
+  },
+  {
+    "SkillId": 9002,
+    "Name": "Blockage",
+    "Description": "Creates a barrier. (Earth Goddess Skill)",
+    "Element": "Earth",
+    "Branch": "Support",
+    "Tier": 1,
+    "TargetType": "SingleAlly",
+    "SpCost": 30,
+    "Cooldown": 3,
+    "Effects": [ { "Tag": "Shield", "Value": 500, "Duration": 3 } ],
+    "Stage": 1
+  },
+  {
+    "SkillId": 9003,
+    "Name": "Hotfire",
+    "Description": "Increases damage significantly. (Fire Goddess Skill)",
+    "Element": "Fire",
+    "Branch": "Support",
+    "Tier": 1,
+    "TargetType": "SingleAlly",
+    "SpCost": 30,
+    "Cooldown": 3,
+    "Effects": [ { "Tag": "BuffStats", "Param": "Atk", "Value": 50, "Duration": 3 } ],
+    "Stage": 1
+  },
+  {
+    "SkillId": 9004,
+    "Name": "Vanish",
+    "Description": "Turns invisible/untargetable. (Wind Goddess Skill)",
+    "Element": "Wind",
+    "Branch": "Support",
+    "Tier": 1,
+    "TargetType": "Self",
+    "SpCost": 30,
+    "Cooldown": 3,
+    "Effects": [ { "Tag": "BuffStats", "Param": "Eva", "Value": 100, "Duration": 2 } ],
+    "Stage": 1
   }
 ]

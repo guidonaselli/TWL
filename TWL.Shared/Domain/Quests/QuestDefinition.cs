@@ -17,7 +17,8 @@ public sealed record RewardDefinition(
     int                      Exp,
     int                      Gold,
     IReadOnlyList<ItemReward> Items,
-    int?                     PetUnlockId = null);
+    int?                     PetUnlockId = null,
+    int?                     GrantSkillId = null);
 
 public sealed record QuestDefinition
 {
@@ -44,4 +45,9 @@ public sealed record QuestDefinition
     public DateTime? Expiry { get; init; }
     public string? PartyRules { get; init; }
     public string? GuildRules { get; init; }
+
+    // Enhanced properties for Special Skill Quests
+    public string Type { get; init; } = "Regular"; // "Regular" | "SpecialSkill"
+    public string? SpecialCategory { get; init; } // "RebirthJob" | "ElementSpecial" | "Fairy" | "Dragon" | "Griffin"
+    public string? AntiAbuseRules { get; init; }
 }

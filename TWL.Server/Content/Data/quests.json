@@ -223,5 +223,31 @@
       }
     ],
     "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
+  },
+  {
+    "QuestId": 8001,
+    "Title": "Trial of the Fire Dragon",
+    "Description": "Prove your might by defeating the Guardian of the Fire Dragon to learn the legendary Dragon Slash.",
+    "Type": "SpecialSkill",
+    "SpecialCategory": "Dragon",
+    "RequiredLevel": 10,
+    "RequiredStats": { "Str": 20 },
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Fire Dragon Guardian",
+        "RequiredCount": 1,
+        "Description": "Defeat the Fire Dragon Guardian."
+      }
+    ],
+    "Rewards": {
+      "Exp": 5000,
+      "Gold": 1000,
+      "Items": [],
+      "GrantSkillId": 8001
+    },
+    "AntiAbuseRules": "UniquePerCharacter",
+    "Repeatable": false
   }
 ]

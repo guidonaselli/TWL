@@ -136,12 +136,23 @@ public class ServerCharacter
                 {
                     KnownSkills.Add(newId);
                 }
+                IsDirty = true;
             }
         }
-        // Preserve mastery? Usually stage 2 starts fresh or inherits?
-        // Prompt doesn't specify. Assuming inheritance or fresh start.
-        // If it's a new ID, it starts at Rank 1 in dictionary unless we copy.
-        // Let's assume fresh start for simplicity of "Mastery by usage".
+    }
+
+    public bool LearnSkill(int skillId)
+    {
+        lock (KnownSkills)
+        {
+            if (KnownSkills.Contains(skillId))
+            {
+                return false;
+            }
+            KnownSkills.Add(skillId);
+            IsDirty = true;
+            return true;
+        }
     }
 
     private readonly List<ServerPet> _pets = new();
