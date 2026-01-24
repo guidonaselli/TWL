@@ -302,9 +302,63 @@ public class ClientSession
                         }
                     }
 
+                    if (def.Rewards.GrantSkillId.HasValue)
+                    {
+                        if (Character.LearnSkill(def.Rewards.GrantSkillId.Value))
+                        {
+                            itemsLog += $", Skill Unlock {def.Rewards.GrantSkillId.Value}";
+                        }
+                        else
+                        {
+                            itemsLog += $", Skill {def.Rewards.GrantSkillId.Value} (Already Known)";
+                        }
+                    }
+
                     Console.WriteLine($"Player {UserId} claimed quest {questId}, gained {def.Rewards.Exp} EXP, {def.Rewards.Gold} Gold{itemsLog}.");
                 }
                 await SendQuestUpdateAsync(questId);
+            }
+        }
+    }
+
+    private void GrantGoddessSkills()
+    {
+        if (Character == null) return;
+
+        const string gsFlag = "GS_GRANTED";
+        // Optimization: check flag first
+        if (QuestComponent.Flags.Contains(gsFlag)) return;
+
+        int skillId = 0;
+        string skillName = "";
+
+        switch (Character.CharacterElement)
+        {
+            case TWL.Shared.Domain.Characters.Element.Water:
+                skillId = 9001; skillName = "Shrink"; break;
+            case TWL.Shared.Domain.Characters.Element.Earth:
+                skillId = 9002; skillName = "Blockage"; break;
+            case TWL.Shared.Domain.Characters.Element.Fire:
+                skillId = 9003; skillName = "Hotfire"; break;
+            case TWL.Shared.Domain.Characters.Element.Wind:
+                skillId = 9004; skillName = "Vanish"; break;
+        }
+
+        if (skillId > 0)
+        {
+            // If already known, just set flag
+            if (Character.KnownSkills.Contains(skillId))
+            {
+                QuestComponent.Flags.Add(gsFlag);
+                QuestComponent.IsDirty = true;
+                return;
+            }
+
+            if (Character.LearnSkill(skillId))
+            {
+                QuestComponent.Flags.Add(gsFlag);
+                QuestComponent.IsDirty = true;
+                Console.WriteLine($"[GS] Granted {skillName} ({skillId}) to {Character.Name} ({Character.Id}).");
             }
         }
     }
@@ -370,6 +424,8 @@ public class ClientSession
             }
 
             _playerService.RegisterSession(this);
+
+            GrantGoddessSkills();
 
             // mandar una LoginResponse
             await SendAsync(new NetMessage

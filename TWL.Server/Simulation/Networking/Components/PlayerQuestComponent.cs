@@ -107,6 +107,14 @@ public class PlayerQuestComponent
                 if (!Flags.Contains(flag)) return false;
             }
 
+            if (!string.IsNullOrEmpty(def.AntiAbuseRules))
+            {
+                if (def.AntiAbuseRules.Contains("UniquePerCharacter"))
+                {
+                    if (QuestStates.ContainsKey(questId)) return false;
+                }
+            }
+
             if (!CheckGating(def)) return false;
 
             return true;
