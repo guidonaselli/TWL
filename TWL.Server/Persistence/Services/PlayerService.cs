@@ -1,10 +1,21 @@
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using TWL.Server.Simulation.Networking;
 
 namespace TWL.Server.Persistence.Services;
 
+public class PersistenceMetrics
+{
+    public long LastFlushDurationMs { get; set; }
+    public int SessionsSavedInLastFlush { get; set; }
+    public int TotalSaveErrors { get; set; }
+    public int TotalSessionsSaved { get; set; }
+}
+
 public class PlayerService
 {
+    public PersistenceMetrics Metrics { get; } = new();
+
     private readonly IPlayerRepository _repo;
     private readonly ConcurrentDictionary<int, ClientSession> _sessions = new();
     private CancellationTokenSource _cts;
@@ -54,6 +65,10 @@ public class PlayerService
 
     public void FlushAllDirty()
     {
+        var sw = Stopwatch.StartNew();
+        int savedCount = 0;
+        int errorCount = 0;
+
         foreach (var session in _sessions.Values)
         {
             try
@@ -61,12 +76,26 @@ public class PlayerService
                 if (session.Character != null && (session.Character.IsDirty || session.QuestComponent.IsDirty))
                 {
                     SaveSession(session);
+                    savedCount++;
                 }
             }
             catch (Exception ex)
             {
+                errorCount++;
+                Metrics.TotalSaveErrors++;
                 Console.WriteLine($"Error saving session {session.UserId}: {ex}");
             }
+        }
+
+        sw.Stop();
+
+        if (savedCount > 0 || errorCount > 0)
+        {
+            Metrics.LastFlushDurationMs = sw.ElapsedMilliseconds;
+            Metrics.SessionsSavedInLastFlush = savedCount;
+            Metrics.TotalSessionsSaved += savedCount;
+
+            Console.WriteLine($"[Persistence] Flush completed in {sw.ElapsedMilliseconds}ms. Saved: {savedCount}, Errors: {errorCount}.");
         }
     }
 

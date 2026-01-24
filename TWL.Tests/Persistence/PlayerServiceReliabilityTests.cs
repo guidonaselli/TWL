@@ -1,0 +1,130 @@
+using System;
+using System.Diagnostics;
+using System.Threading;
+using TWL.Server.Persistence;
+using TWL.Server.Persistence.Services;
+using TWL.Server.Simulation.Managers;
+using TWL.Server.Simulation.Networking;
+using TWL.Server.Simulation.Networking.Components;
+using TWL.Shared.Domain.DTO;
+using Xunit;
+
+namespace TWL.Tests.Persistence;
+
+public class TestClientSession : ClientSession
+{
+    public TestClientSession(int userId) : base()
+    {
+        UserId = userId;
+    }
+
+    public void SetCharacter(ServerCharacter character)
+    {
+        base.Character = character;
+    }
+
+    public void SetQuestComponent(PlayerQuestComponent component)
+    {
+        base.QuestComponent = component;
+    }
+}
+
+public class MockPlayerRepository : IPlayerRepository
+{
+    public int SaveCallCount { get; private set; }
+    public bool ShouldThrow { get; set; }
+
+    public void Save(int userId, PlayerSaveData data)
+    {
+        if (ShouldThrow) throw new Exception("Simulated disk failure");
+
+        // Mimic I/O delay
+        Thread.Sleep(5);
+        SaveCallCount++;
+    }
+
+    public PlayerSaveData? Load(int userId) => null;
+}
+
+public class PlayerServiceReliabilityTests
+{
+    [Fact]
+    public void Flush_SavesOnlyDirtySessions()
+    {
+        var repo = new MockPlayerRepository();
+        var service = new PlayerService(repo);
+
+        // Dirty session
+        var s1 = new TestClientSession(1);
+        var c1 = new ServerCharacter { Id = 1, Name = "Dirty" };
+        c1.AddGold(10); // Makes it dirty
+        s1.SetCharacter(c1);
+        s1.SetQuestComponent(new PlayerQuestComponent(null));
+
+        service.RegisterSession(s1);
+
+        // Clean session
+        var s2 = new TestClientSession(2);
+        var c2 = new ServerCharacter { Id = 2, Name = "Clean" };
+        // Not dirty
+        s2.SetCharacter(c2);
+        s2.SetQuestComponent(new PlayerQuestComponent(null));
+        service.RegisterSession(s2);
+
+        service.FlushAllDirty();
+
+        Assert.Equal(1, repo.SaveCallCount);
+        Assert.False(c1.IsDirty); // Should be cleared
+    }
+
+    [Fact]
+    public void Flush_RetainsDirtyFlag_OnFailure()
+    {
+        var repo = new MockPlayerRepository { ShouldThrow = true };
+        var service = new PlayerService(repo);
+
+        var s1 = new TestClientSession(1);
+        var c1 = new ServerCharacter { Id = 1, Name = "Dirty" };
+        c1.AddGold(10);
+        s1.SetCharacter(c1);
+        s1.SetQuestComponent(new PlayerQuestComponent(null));
+        service.RegisterSession(s1);
+
+        service.FlushAllDirty();
+
+        Assert.Equal(0, repo.SaveCallCount); // Save threw exception
+        Assert.True(c1.IsDirty); // Should still be dirty
+        Assert.Equal(1, service.Metrics.TotalSaveErrors);
+    }
+
+    [Fact]
+    public void Benchmark_Flush_Performance()
+    {
+        var repo = new MockPlayerRepository();
+        var service = new PlayerService(repo);
+        int count = 100;
+
+        for (int i = 0; i < count; i++)
+        {
+            var s = new TestClientSession(i + 100);
+            var c = new ServerCharacter { Id = i + 100, Name = $"Bencher_{i}" };
+            c.AddGold(1);
+            s.SetCharacter(c);
+            s.SetQuestComponent(new PlayerQuestComponent(null));
+            service.RegisterSession(s);
+        }
+
+        var sw = Stopwatch.StartNew();
+        service.FlushAllDirty();
+        sw.Stop();
+
+        Assert.Equal(count, repo.SaveCallCount);
+        Assert.Equal(count, service.Metrics.SessionsSavedInLastFlush);
+
+        // Assert that metrics captured duration correctly (within margin)
+        // Since repo sleeps 5ms per save, total should be at least 500ms
+        Assert.True(service.Metrics.LastFlushDurationMs >= 450); // Allow some margin
+
+        Console.WriteLine($"Benchmark: Flushed {count} sessions in {sw.ElapsedMilliseconds}ms (Metrics: {service.Metrics.LastFlushDurationMs}ms)");
+    }
+}
