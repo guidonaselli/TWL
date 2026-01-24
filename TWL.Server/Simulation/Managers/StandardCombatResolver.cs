@@ -30,6 +30,8 @@ public class StandardCombatResolver : ICombatResolver
             return (int)Math.Round(baseDamage * variance);
         }
 
+        if (skill.Branch == SkillBranch.Support) return 0;
+
         float totalValue = 0;
 
         // Sum up scaling values
@@ -54,6 +56,27 @@ public class StandardCombatResolver : ICombatResolver
         int damage = Math.Max(1, (int)Math.Round(totalValue) - defense);
 
         return damage;
+    }
+
+    public int CalculateHeal(ServerCharacter healer, ServerCharacter target, UseSkillRequest request)
+    {
+        var skill = _skills.GetSkillById(request.SkillId);
+        if (skill == null) return 0;
+
+        float totalValue = 0;
+
+        // Sum up scaling values
+        foreach (var scaling in skill.Scaling)
+        {
+            float statValue = GetStatValue(healer, scaling.Stat);
+            totalValue += statValue * scaling.Coefficient;
+        }
+
+        // Variance +/- 5%
+        float rnd = _random.NextFloat(0.95f, 1.05f);
+        totalValue *= rnd;
+
+        return Math.Max(0, (int)Math.Round(totalValue));
     }
 
     private float GetStatValue(ServerCharacter c, StatType stat)

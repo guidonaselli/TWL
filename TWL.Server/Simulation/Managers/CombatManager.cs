@@ -86,6 +86,11 @@ public class CombatManager
                         // Handled by resolver usually, but if it's flat damage or secondary, we might do it here.
                         // Standard resolver handles primary damage scaling.
                         break;
+                    case SkillEffectTag.Heal:
+                        int healAmount = _resolver.CalculateHeal(attacker, target, request);
+                        healAmount += (int)effect.Value;
+                        target.Heal(healAmount);
+                        break;
                     default:
                         // Add status
                         var status = new TWL.Shared.Domain.Battle.StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param);

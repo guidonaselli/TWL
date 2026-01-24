@@ -355,6 +355,22 @@ public class ServerCharacter
         return newHp;
     }
 
+    public int Heal(int amount)
+    {
+        if (amount <= 0) return _hp;
+        int initialHp, newHp;
+        do
+        {
+            initialHp = _hp;
+            newHp = initialHp + amount;
+            if (newHp > MaxHealth) newHp = MaxHealth;
+        }
+        while (Interlocked.CompareExchange(ref _hp, newHp, initialHp) != initialHp);
+
+        IsDirty = true;
+        return newHp;
+    }
+
     public ServerCharacterData GetSaveData()
     {
         var data = new ServerCharacterData
