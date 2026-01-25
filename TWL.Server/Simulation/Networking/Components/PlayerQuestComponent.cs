@@ -123,7 +123,8 @@ public class PlayerQuestComponent
                     if (kvp.Value == QuestState.InProgress)
                     {
                         var otherDef = _questManager.GetDefinition(kvp.Key);
-                        if (otherDef != null && !string.IsNullOrEmpty(otherDef.SpecialCategory))
+                        // Enforce exclusivity only within the same category (e.g. can't do 2 Dragon quests, but can do Dragon + Fairy)
+                        if (otherDef != null && string.Equals(otherDef.SpecialCategory, def.SpecialCategory, StringComparison.OrdinalIgnoreCase))
                         {
                             return false;
                         }
@@ -158,7 +159,8 @@ public class PlayerQuestComponent
                     if (kvp.Value == QuestState.InProgress)
                     {
                         var otherDef = _questManager.GetDefinition(kvp.Key);
-                        if (otherDef != null && !string.IsNullOrEmpty(otherDef.SpecialCategory))
+                        // Enforce exclusivity only within the same category
+                        if (otherDef != null && string.Equals(otherDef.SpecialCategory, def.SpecialCategory, StringComparison.OrdinalIgnoreCase))
                         {
                             return false;
                         }

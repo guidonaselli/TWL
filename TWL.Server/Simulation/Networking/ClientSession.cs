@@ -350,7 +350,7 @@ public class ClientSession
         }
     }
 
-    private void GrantGoddessSkills()
+    protected virtual void GrantGoddessSkills()
     {
         if (Character == null) return;
 
@@ -486,5 +486,20 @@ public class ClientSession
     {
         var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
+    }
+
+    public void HandleInstanceCompletion(string instanceName)
+    {
+        if (Character == null) return;
+
+        // Use a HashSet to avoid duplicates
+        var uniqueUpdates = new HashSet<int>();
+        QuestComponent.TryProgress(uniqueUpdates, instanceName, "Instance", "InstanceComplete");
+
+        // Fire and forget updates (in real scenario we'd await or queue this)
+        foreach (var questId in uniqueUpdates)
+        {
+            _ = SendQuestUpdateAsync(questId);
+        }
     }
 }
