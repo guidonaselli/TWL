@@ -21,6 +21,7 @@ public class BuyShopItemDTO
 {
     public int ShopItemId { get; set; }
     public int Quantity { get; set; }
+    public string OperationId { get; set; }
 }
 
 public class EconomyOperationResultDTO

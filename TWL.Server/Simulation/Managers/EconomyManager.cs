@@ -44,6 +44,9 @@ public class EconomyManager
 
     private readonly ConcurrentDictionary<string, Transaction> _transactions = new();
     private readonly object _ledgerLock = new();
+    private int _cleanupCounter = 0;
+    private const int CLEANUP_INTERVAL = 100;
+    private const double EXPIRATION_MINUTES = 10.0;
 
     public EconomyManager()
     {
@@ -140,13 +143,59 @@ public class EconomyManager
         }
     }
 
-    public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity)
+    public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity, string operationId = null)
     {
         if (quantity <= 0 || quantity > 999)
             return new EconomyOperationResultDTO { Success = false, Message = "Invalid quantity (1-999)" };
 
+        // Idempotency Check
+        Transaction? tx = null;
+        if (!string.IsNullOrEmpty(operationId))
+        {
+            if (_transactions.TryGetValue(operationId, out tx))
+            {
+                lock (tx!)
+                {
+                    if (tx.State == TransactionState.Completed)
+                    {
+                        return new EconomyOperationResultDTO
+                        {
+                            Success = true,
+                            Message = "Already completed",
+                            NewBalance = character.PremiumCurrency,
+                            OrderId = operationId
+                        };
+                    }
+                    else if (tx.State == TransactionState.Pending)
+                    {
+                        return new EconomyOperationResultDTO { Success = false, Message = "Transaction in progress" };
+                    }
+                    // If Failed, allow retry (fall through)
+                }
+            }
+            else
+            {
+                // Register Pending Transaction
+                tx = new Transaction
+                {
+                    OrderId = operationId,
+                    UserId = character.Id,
+                    ProductId = $"shop_{shopItemId}",
+                    State = TransactionState.Pending,
+                    Timestamp = DateTime.UtcNow
+                };
+                if (!_transactions.TryAdd(operationId, tx))
+                {
+                    // If we failed to add, it means someone else added it concurrently.
+                    // Recursively retry to hit the TryGetValue path.
+                    return BuyShopItem(character, shopItemId, quantity, operationId);
+                }
+            }
+        }
+
         if (!_shopItems.TryGetValue(shopItemId, out var itemDef))
         {
+            if (tx != null) { lock (tx) tx.State = TransactionState.Failed; }
             return new EconomyOperationResultDTO { Success = false, Message = "Item not found" };
         }
 
@@ -154,19 +203,33 @@ public class EconomyManager
 
         if (!character.TryConsumePremiumCurrency(totalCost))
         {
+            if (tx != null) { lock (tx) tx.State = TransactionState.Failed; }
             return new EconomyOperationResultDTO { Success = false, Message = "Insufficient funds" };
         }
 
         // Add Item
         character.AddItem(itemDef.ItemId, quantity);
 
-        LogLedger("ShopBuy", character.Id, $"ShopItem:{shopItemId}, Item:{itemDef.ItemId} x{quantity}", -totalCost, character.PremiumCurrency);
+        // Mark Transaction as Completed
+        if (tx != null)
+        {
+            lock (tx)
+            {
+                tx.State = TransactionState.Completed;
+            }
+        }
+
+        var details = $"ShopItem:{shopItemId}, Item:{itemDef.ItemId} x{quantity}";
+        if (!string.IsNullOrEmpty(operationId)) details += $", OrderId:{operationId}";
+
+        LogLedger("ShopBuy", character.Id, details, -totalCost, character.PremiumCurrency);
 
         return new EconomyOperationResultDTO
         {
             Success = true,
             Message = "Purchase successful",
-            NewBalance = character.PremiumCurrency
+            NewBalance = character.PremiumCurrency,
+            OrderId = operationId
         };
     }
 
@@ -190,6 +253,23 @@ public class EconomyManager
             {
                 // Fallback logging to console so we don't lose the audit trail completely
                 Console.Error.WriteLine($"[CRITICAL] LEDGER WRITE FAILED: {ex.Message} | Data: {line}");
+            }
+        }
+    }
+
+    private void TryCleanup()
+    {
+        if (System.Threading.Interlocked.Increment(ref _cleanupCounter) % CLEANUP_INTERVAL == 0)
+        {
+            // Simple cleanup: fire and forget or run inline? Inline is safer for now.
+            // Using Task.Run might be better for latency but let's keep it simple.
+            var now = DateTime.UtcNow;
+            foreach (var kvp in _transactions)
+            {
+                if ((now - kvp.Value.Timestamp).TotalMinutes > EXPIRATION_MINUTES)
+                {
+                    _transactions.TryRemove(kvp.Key, out _);
+                }
             }
         }
     }
