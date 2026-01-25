@@ -238,6 +238,24 @@
     "Restrictions": { "UniquePerCharacter": true, "BindOnAcquire": true, "NotTradeable": true, "NotDropable": true }
   },
   {
+    "SkillId": 6001,
+    "Name": "Fairy Light",
+    "DisplayNameKey": "Skill_FairyLight",
+    "Description": "Fairy Skill. Lights up the path and heals allies.",
+    "Family": "Special",
+    "Category": "Fairy",
+    "Element": "Earth",
+    "Branch": "Support",
+    "Tier": 1,
+    "TargetType": "SingleAlly",
+    "SpCost": 30,
+    "Cooldown": 3,
+    "Scaling": [ { "Stat": "Wis", "Coefficient": 3.0 } ],
+    "Effects": [ { "Tag": "Heal", "Value": 0, "Chance": 1.0 }, { "Tag": "BuffStats", "Param": "Def", "Value": 10, "Duration": 3, "Chance": 1.0 } ],
+    "UnlockRules": { "QuestFlag": "Unlock_FairyLight" },
+    "Restrictions": { "UniquePerCharacter": true, "BindOnAcquire": true, "NotTradeable": true, "NotDropable": true }
+  },
+  {
     "SkillId": 8001,
     "Name": "Dragon Slash",
     "DisplayNameKey": "Skill_DragonSlash",

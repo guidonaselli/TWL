@@ -144,7 +144,12 @@ public class EconomyManager : IEconomyService
         }
     }
 
-    public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity, string? operationId = null)
+    public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity)
+    {
+        return BuyShopItem(character, shopItemId, quantity, null);
+    }
+
+    public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity, string? operationId)
     {
         if (quantity <= 0 || quantity > 999)
             return new EconomyOperationResultDTO { Success = false, Message = "Invalid quantity (1-999)" };

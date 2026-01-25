@@ -31,7 +31,10 @@ public class SkillRegistry : ISkillCatalog
                 SkillId = def.SkillId,
                 Id = def.SkillId,
                 Name = def.Name,
+                DisplayNameKey = def.DisplayNameKey,
                 Description = def.Description,
+                Family = def.Family,
+                Category = def.Category,
                 Element = def.Element,
                 Branch = def.Branch,
                 Tier = def.Tier,
@@ -40,6 +43,8 @@ public class SkillRegistry : ISkillCatalog
                 Cooldown = def.Cooldown,
                 Scaling = def.Scaling ?? new List<SkillScaling>(),
                 Effects = def.Effects ?? new List<SkillEffect>(),
+                HitRules = def.HitRules,
+                Restrictions = def.Restrictions,
 
                 // Requirements
                 StrRequirement = def.Requirements?.Str ?? 0,
@@ -54,7 +59,8 @@ public class SkillRegistry : ISkillCatalog
                     Level = def.UnlockRules?.Level ?? 0,
                     ParentSkillId = def.UnlockRules?.ParentSkillId,
                     ParentSkillRank = def.UnlockRules?.ParentSkillRank,
-                    QuestId = def.UnlockRules?.QuestId
+                    QuestId = def.UnlockRules?.QuestId,
+                    QuestFlag = def.UnlockRules?.QuestFlag
                 },
                 StageUpgradeRules = def.StageUpgradeRules,
 
@@ -94,7 +100,10 @@ public class SkillRegistry : ISkillCatalog
     {
         public int SkillId { get; set; }
         public string Name { get; set; }
+        public string DisplayNameKey { get; set; }
         public string Description { get; set; }
+        public SkillFamily Family { get; set; }
+        public SkillCategory Category { get; set; }
         public Element Element { get; set; }
         public SkillBranch Branch { get; set; }
         public int Tier { get; set; }
@@ -103,6 +112,8 @@ public class SkillRegistry : ISkillCatalog
         public int Cooldown { get; set; }
         public List<SkillScaling>? Scaling { get; set; }
         public List<SkillEffect>? Effects { get; set; }
+        public SkillHitRules? HitRules { get; set; }
+        public SkillRestrictions? Restrictions { get; set; }
         public RequirementDto? Requirements { get; set; }
         public int Stage { get; set; }
         public UnlockRulesDto? UnlockRules { get; set; }
@@ -115,6 +126,7 @@ public class SkillRegistry : ISkillCatalog
         public int? ParentSkillId { get; set; }
         public int? ParentSkillRank { get; set; }
         public string? QuestId { get; set; }
+        public string? QuestFlag { get; set; }
     }
 
     private class RequirementDto
