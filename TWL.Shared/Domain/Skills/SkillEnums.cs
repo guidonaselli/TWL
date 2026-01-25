@@ -35,7 +35,7 @@ public enum SkillEffectTag
     Dispel, // Remove Buffs
     Seal, // Control
     Burn, // DoT
-    RestoreSp
+    RestoreSp // Instant SP Restore
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
