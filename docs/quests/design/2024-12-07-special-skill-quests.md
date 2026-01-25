@@ -12,10 +12,10 @@ GS are granted automatically upon character creation or first login, ensuring id
 - **Trigger:** Login / Character Creation.
 - **Mechanism:** Server checks `GS_GRANTED` flag in `PlayerQuestComponent`.
 - **Assignment:**
-  - Water -> Shrink (2001)
-  - Earth -> Blockage (2002)
-  - Fire -> Hotfire (2003)
-  - Wind -> Vanish (2004)
+  - Water -> Diminution (2001)
+  - Earth -> Support Seal (2002)
+  - Fire -> Ember Surge (2003)
+  - Wind -> Untouchable Veil (2004)
 - **Idempotency:**
   - If flag exists -> Skip.
   - If skill known -> Set flag, Skip.

@@ -34,7 +34,8 @@ public enum SkillEffectTag
     Cleanse, // Remove Debuffs
     Dispel, // Remove Buffs
     Seal, // Control
-    Burn // DoT
+    Burn, // DoT
+    RestoreSp
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]

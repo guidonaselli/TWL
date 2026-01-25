@@ -364,13 +364,13 @@ public class ClientSession
         switch (Character.CharacterElement)
         {
             case TWL.Shared.Domain.Characters.Element.Water:
-                skillId = 2001; skillName = "Shrink"; break;
+                skillId = TWL.Shared.Constants.SkillIds.GS_WATER_DIMINUTION; skillName = "Diminution"; break;
             case TWL.Shared.Domain.Characters.Element.Earth:
-                skillId = 2002; skillName = "Blockage"; break;
+                skillId = TWL.Shared.Constants.SkillIds.GS_EARTH_SUPPORT_SEAL; skillName = "Support Seal"; break;
             case TWL.Shared.Domain.Characters.Element.Fire:
-                skillId = 2003; skillName = "Hotfire"; break;
+                skillId = TWL.Shared.Constants.SkillIds.GS_FIRE_EMBER_SURGE; skillName = "Ember Surge"; break;
             case TWL.Shared.Domain.Characters.Element.Wind:
-                skillId = 2004; skillName = "Vanish"; break;
+                skillId = TWL.Shared.Constants.SkillIds.GS_WIND_UNTOUCHABLE_VEIL; skillName = "Untouchable Veil"; break;
         }
 
         if (skillId > 0)
