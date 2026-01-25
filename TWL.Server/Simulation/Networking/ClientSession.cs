@@ -167,7 +167,13 @@ public class ClientSession
         var request = JsonSerializer.Deserialize<BuyShopItemDTO>(payload, _jsonOptions);
         if (request == null) return;
 
-        var result = _economyManager.BuyShopItem(Character, request.ShopItemId, request.Quantity);
+        string opId = request.OperationId;
+        if (string.IsNullOrEmpty(opId))
+        {
+            opId = Guid.NewGuid().ToString("N");
+        }
+
+        var result = _economyManager.BuyShopItem(Character, request.ShopItemId, request.Quantity, opId);
 
         await SendAsync(new NetMessage { Op = Opcode.BuyShopItemRequest, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
     }
