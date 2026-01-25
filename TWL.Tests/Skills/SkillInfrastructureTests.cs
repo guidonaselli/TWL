@@ -68,7 +68,7 @@ public class SkillInfrastructureTests
         session.TriggerGrantGoddessSkills();
 
         // After grant
-        Assert.Contains(2001, charData.KnownSkills); // Shrink
+        Assert.Contains(2001, charData.KnownSkills); // Diminution
         Assert.Contains("GS_GRANTED", session.QuestComponent.Flags);
     }
 
@@ -80,7 +80,7 @@ public class SkillInfrastructureTests
 
         session.TriggerGrantGoddessSkills();
 
-        Assert.Contains(2003, charData.KnownSkills); // Hotfire
+        Assert.Contains(2003, charData.KnownSkills); // Ember Surge
         Assert.Contains("GS_GRANTED", session.QuestComponent.Flags);
     }
 

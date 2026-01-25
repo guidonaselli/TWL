@@ -126,7 +126,7 @@ public class SpecialSkillQuestTests : IDisposable
     }
 
     [Fact]
-    public void GrantGoddessSkills_FireElement_GrantsHotfire()
+    public void GrantGoddessSkills_FireElement_GrantsEmberSurge()
     {
         // Act
         _session.GrantGoddessSkills();
@@ -155,7 +155,7 @@ public class SpecialSkillQuestTests : IDisposable
     }
 
     [Fact]
-    public void GrantGoddessSkills_WindElement_GrantsVanish()
+    public void GrantGoddessSkills_WindElement_GrantsUntouchableVeil()
     {
         _character.CharacterElement = Element.Wind;
         // Need to clear flags if re-using character, but here we run in isolation per test class instance usually.

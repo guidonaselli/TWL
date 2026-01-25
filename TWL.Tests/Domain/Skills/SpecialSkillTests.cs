@@ -17,7 +17,7 @@ public class SpecialSkillTests
         [
           {
             ""SkillId"": 2001,
-            ""Name"": ""Shrink"",
+            ""Name"": ""Diminution"",
             ""Family"": ""Special"",
             ""Category"": ""Goddess"",
             ""Restrictions"": { ""UniquePerCharacter"": true, ""BindOnAcquire"": true }
