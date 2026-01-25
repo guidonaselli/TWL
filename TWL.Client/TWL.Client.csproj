@@ -33,6 +33,10 @@
     </ItemGroup>
 
     <ItemGroup>
+        <EmbeddedResource Include="Resources\Strings.resx" />
+    </ItemGroup>
+
+    <ItemGroup>
         <Content Include="Content\Data\**">
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>

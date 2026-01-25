@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Input;
 using System.Text.Json;
 using TWL.Client.Presentation.Managers;
 using TWL.Client.Presentation.Networking;
+using TWL.Client.Presentation.Services;
 using TWL.Shared.Net.Abstractions;
 using TWL.Shared.Net.Messages;
 using TWL.Shared.Net.Payloads;
@@ -29,14 +30,14 @@ namespace TWL.Client.Presentation.UI
         private Texture2D? _background;
 
         // --- Estado del Menú Principal ---
-        private readonly List<string> _options = new() { "Login", "Load Game", "Exit" };
+        private readonly List<string> _options = new() { Loc.T("UI_Login"), Loc.T("UI_LoadGame"), Loc.T("UI_Exit") };
         private int _mainMenuSelectedIndex;
 
         // --- Estado del Formulario de Login ---
         private string _username = "";
         private string _password = "";
         private ActiveField _activeField = ActiveField.Username;
-        private readonly List<string> _loginOptions = new() { "Login", "Back" };
+        private readonly List<string> _loginOptions = new() { Loc.T("UI_Login"), Loc.T("UI_Back") };
         private int _loginSelectedIndex = 0;
 
 
@@ -70,7 +71,7 @@ namespace TWL.Client.Presentation.UI
             catch { _background = null; }
 
             var vp = _graphicsDevice.Viewport;
-            const string titleText = "The Wonderland";
+            var titleText = Loc.T("UI_Title");
             var titleSize = _titleFont.MeasureString(titleText);
             _titlePosition = new Vector2((vp.Width - titleSize.X) / 2, vp.Height * 0.1f);
             _optionsStart = new Vector2(vp.Width / 2, vp.Height * 0.4f);
@@ -147,7 +148,7 @@ namespace TWL.Client.Presentation.UI
                     else
                     {
                         // Optional: Show "No save game found" feedback
-                        Console.WriteLine("No save game found.");
+                        Console.WriteLine(Loc.T("UI_NoSave"));
                     }
                     break;
                 case 2: // Exit
@@ -221,7 +222,7 @@ namespace TWL.Client.Presentation.UI
             if (_background != null)
                 sb.Draw(_background, new Rectangle(0, 0, _graphicsDevice.Viewport.Width, _graphicsDevice.Viewport.Height), Color.White);
 
-            const string titleText = "The Wonderland";
+            var titleText = Loc.T("UI_Title");
             sb.DrawString(_titleFont, titleText, _titlePosition, Color.CornflowerBlue);
 
             switch (_currentState)
@@ -252,13 +253,13 @@ namespace TWL.Client.Presentation.UI
             float yPos = _optionsStart.Y;
 
             // Username
-            string userText = "Username: " + _username + (_activeField == ActiveField.Username ? "_" : "");
+            string userText = Loc.T("UI_Username") + _username + (_activeField == ActiveField.Username ? "_" : "");
             Vector2 userPos = new Vector2(_graphicsDevice.Viewport.Width / 2 - _optionFont.MeasureString(userText).X / 2, yPos);
             sb.DrawString(_optionFont, userText, userPos, Color.White);
             yPos += _optionSpacing;
 
             // Password
-            string passText = "Password: " + new string('*', _password.Length) + (_activeField == ActiveField.Password ? "_" : "");
+            string passText = Loc.T("UI_Password") + new string('*', _password.Length) + (_activeField == ActiveField.Password ? "_" : "");
             Vector2 passPos = new Vector2(_graphicsDevice.Viewport.Width / 2 - _optionFont.MeasureString(passText).X / 2, yPos);
             sb.DrawString(_optionFont, passText, passPos, Color.White);
             yPos += _optionSpacing * 1.5f;
