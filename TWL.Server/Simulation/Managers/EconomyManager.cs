@@ -48,6 +48,14 @@ public class EconomyManager : IEconomyService
     private const int CLEANUP_INTERVAL = 100;
     private const double EXPIRATION_MINUTES = 10.0;
 
+    public class EconomyMetrics
+    {
+        public int ReplayedTransactionCount { get; set; }
+        public long ReplayDurationMs { get; set; }
+    }
+
+    public EconomyMetrics Metrics { get; } = new();
+
     public EconomyManager(string ledgerFile = "economy_ledger.log")
     {
         _ledgerFile = ledgerFile;
@@ -56,6 +64,117 @@ public class EconomyManager : IEconomyService
         {
             File.WriteAllText(_ledgerFile, "Timestamp,Type,UserId,Details,Delta,NewBalance\n");
         }
+        else
+        {
+            ReplayLedger();
+        }
+    }
+
+    private void ReplayLedger()
+    {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        int count = 0;
+        try
+        {
+            var lines = File.ReadAllLines(_ledgerFile);
+            var regex = new System.Text.RegularExpressions.Regex(@"^([^,]+),([^,]+),([^,]+),(.+),([^,]+),([^,]+)$");
+
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("Timestamp")) continue;
+
+                var match = regex.Match(line);
+                if (!match.Success) continue;
+
+                var timestampStr = match.Groups[1].Value;
+                var type = match.Groups[2].Value;
+                var userIdStr = match.Groups[3].Value;
+                var details = match.Groups[4].Value;
+
+                DateTime timestamp = DateTime.TryParse(timestampStr, null, System.Globalization.DateTimeStyles.RoundtripKind, out var ts) ? ts : DateTime.UtcNow;
+
+                string? orderId = null;
+                string? productId = null;
+
+                if (type == "ShopBuy")
+                {
+                    // Details: ShopItem:X, Item:Y xZ, OrderId:ABC
+                    var split = details.Split(", OrderId:");
+                    if (split.Length > 1)
+                    {
+                        orderId = split[1].Trim();
+                    }
+                }
+                else if (type == "PurchaseIntent" || type == "PurchaseVerify")
+                {
+                    // Details: Order:ABC, Product:XYZ
+                    var orderSplit = details.Split(", Product:");
+                    if (orderSplit.Length > 0)
+                    {
+                         var firstPart = orderSplit[0]; // Order:ABC
+                         if (firstPart.StartsWith("Order:"))
+                         {
+                             orderId = firstPart.Substring(6).Trim();
+                         }
+                    }
+                    if (orderSplit.Length > 1)
+                    {
+                        productId = orderSplit[1].Trim();
+                    }
+                }
+
+                if (!string.IsNullOrEmpty(orderId))
+                {
+                    int userId = int.TryParse(userIdStr, out var uid) ? uid : 0;
+
+                    if (type == "PurchaseIntent")
+                    {
+                        if (!_transactions.ContainsKey(orderId!))
+                        {
+                            var tx = new Transaction
+                            {
+                                OrderId = orderId!,
+                                UserId = userId,
+                                ProductId = productId ?? "unknown",
+                                State = TransactionState.Pending,
+                                Timestamp = timestamp
+                            };
+                            _transactions[orderId!] = tx;
+                        }
+                    }
+                    else if (type == "PurchaseVerify" || type == "ShopBuy")
+                    {
+                         // Mark as Completed
+                         if (_transactions.TryGetValue(orderId!, out var tx))
+                         {
+                             tx.State = TransactionState.Completed;
+                         }
+                         else
+                         {
+                             tx = new Transaction
+                             {
+                                 OrderId = orderId!,
+                                 UserId = userId,
+                                 ProductId = productId ?? "unknown",
+                                 State = TransactionState.Completed,
+                                 Timestamp = timestamp
+                             };
+                             _transactions[orderId!] = tx;
+                         }
+                         count++;
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[EconomyManager] Error replaying ledger: {ex.Message}");
+        }
+
+        sw.Stop();
+        Metrics.ReplayedTransactionCount = count;
+        Metrics.ReplayDurationMs = sw.ElapsedMilliseconds;
+        Console.WriteLine($"[EconomyManager] Replayed {count} transactions in {sw.ElapsedMilliseconds}ms.");
     }
 
     public PurchaseGemsIntentResponseDTO InitiatePurchase(int userId, string productId)
