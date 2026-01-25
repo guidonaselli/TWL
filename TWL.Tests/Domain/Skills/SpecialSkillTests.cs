@@ -117,7 +117,7 @@ public class SpecialSkillTests
         // 2. Setup Combat
         var mockRandom = new MockRandomService(0.0f); // 0.0 -> variance 0.95, random check 0.0 (Success)
         var resolver = new StandardCombatResolver(mockRandom, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRandom);
+        var manager = new CombatManager(resolver, mockRandom, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
 
         var attacker = new ServerCharacter { Id = 1, Int = 100, Wis = 50 }; // Int - Wis = 50. StatDiff = 0.5.
         // Base 0.5 + 0.5 = 1.0. Clamped to MaxChance 0.9.

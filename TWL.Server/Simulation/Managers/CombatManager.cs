@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Domain.Skills;
 using TWL.Shared.Services;
@@ -18,12 +19,14 @@ public class CombatManager
     private readonly ConcurrentDictionary<int, ServerCharacter> _characters;
     private readonly ICombatResolver _resolver;
     private readonly IRandomService _random;
+    private readonly ISkillCatalog _skills;
 
-    public CombatManager(ICombatResolver resolver, IRandomService random)
+    public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills)
     {
         _characters = new ConcurrentDictionary<int, ServerCharacter>();
         _resolver = resolver;
         _random = random;
+        _skills = skills;
     }
 
     public void AddCharacter(ServerCharacter character)
@@ -42,7 +45,7 @@ public class CombatManager
             // En un caso real, podrías retornar un error o un CombatResult con "invalid target".
             return null;
 
-        var skill = SkillRegistry.Instance.GetSkillById(request.SkillId);
+        var skill = _skills.GetSkillById(request.SkillId);
         if (skill == null) return null;
 
         if (!attacker.ConsumeSp(skill.SpCost))

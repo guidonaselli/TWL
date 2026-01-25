@@ -34,7 +34,7 @@ public class ServerWaterSkillTests
         var mockRngMean = new MockRandomService(0.5f);
 
         var resolver = new StandardCombatResolver(mockRngMean, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRngMean);
+        var manager = new CombatManager(resolver, mockRngMean, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Str = 20, CharacterElement = TWL.Shared.Domain.Characters.Element.Water };
         // Atk = 40.
@@ -64,7 +64,7 @@ public class ServerWaterSkillTests
 
         var mockRngMean = new MockRandomService(0.5f);
         var resolver = new StandardCombatResolver(mockRngMean, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRngMean);
+        var manager = new CombatManager(resolver, mockRngMean, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
 
         var healer = new ServerCharacter { Id = 1, Name = "Healer", Sp = 100, Wis = 20, CharacterElement = TWL.Shared.Domain.Characters.Element.Water };
         // Wis = 20.
