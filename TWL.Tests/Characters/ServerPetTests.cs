@@ -48,9 +48,10 @@ public class ServerPetTests
 
         Assert.Equal(2, pet.Level);
         Assert.Equal(50, pet.Exp); // 150 - 100
-        // Check dynamic stat growth logic (MaxHp += 5 in current impl)
-        Assert.Equal(15, pet.MaxHp);
-        Assert.Equal(15, pet.Hp);
+        // Check dynamic stat growth logic. Default HpGrowthPerLevel is 10.
+        // Base 10 + 10 * 1 = 20.
+        Assert.Equal(20, pet.MaxHp);
+        Assert.Equal(20, pet.Hp);
     }
 
     [Fact]

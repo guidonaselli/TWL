@@ -112,6 +112,12 @@ public class PlayerService
         _sessions.TryRemove(userId, out _);
     }
 
+    public ClientSession? GetSession(int userId)
+    {
+        _sessions.TryGetValue(userId, out var session);
+        return session;
+    }
+
     public PlayerSaveData? LoadData(int userId)
     {
         return _repo.Load(userId);

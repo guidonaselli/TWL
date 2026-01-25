@@ -31,6 +31,7 @@ public class ServerCharacterData
     public long PremiumCurrency { get; set; }
     public List<Item> Inventory { get; set; } = new();
     public List<ServerPetData> Pets { get; set; } = new();
+    public string ActivePetInstanceId { get; set; }
 }
 
 public class QuestData
@@ -52,4 +53,5 @@ public class ServerPetData
     public bool IsLost { get; set; }
     public bool DeathQuestCompleted { get; set; }
     public bool HasRebirthed { get; set; }
+    public List<int> UnlockedSkillIds { get; set; } = new();
 }
