@@ -236,5 +236,22 @@
     "Cooldown": 3,
     "Effects": [ { "Tag": "BuffStats", "Param": "Spd", "Value": 30, "Duration": 3, "Chance": 1.0 } ],
     "Restrictions": { "UniquePerCharacter": true, "BindOnAcquire": true, "NotTradeable": true, "NotDropable": true }
+  },
+  {
+    "SkillId": 8001,
+    "Name": "Dragon Slash",
+    "DisplayNameKey": "Skill_DragonSlash",
+    "Description": "Legendary Skill. Strikes with the power of a fire dragon.",
+    "Family": "Special",
+    "Category": "Dragon",
+    "Element": "Fire",
+    "Branch": "Physical",
+    "Tier": 3,
+    "TargetType": "SingleEnemy",
+    "SpCost": 50,
+    "Cooldown": 5,
+    "Scaling": [ { "Stat": "Atk", "Coefficient": 3.0 } ],
+    "Effects": [ { "Tag": "Damage", "Value": 0 } ],
+    "Restrictions": { "UniquePerCharacter": true, "BindOnAcquire": true, "NotTradeable": true, "NotDropable": true }
   }
 ]

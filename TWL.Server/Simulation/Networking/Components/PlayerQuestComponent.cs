@@ -115,6 +115,22 @@ public class PlayerQuestComponent
                 }
             }
 
+            // Exclusivity: Special Category
+            if (!string.IsNullOrEmpty(def.SpecialCategory))
+            {
+                foreach (var kvp in QuestStates)
+                {
+                    if (kvp.Value == QuestState.InProgress)
+                    {
+                        var otherDef = _questManager.GetDefinition(kvp.Key);
+                        if (otherDef != null && !string.IsNullOrEmpty(otherDef.SpecialCategory))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
             if (!CheckGating(def)) return false;
 
             return true;
@@ -127,6 +143,28 @@ public class PlayerQuestComponent
         {
             var def = _questManager.GetDefinition(questId);
             if (def == null) return false;
+
+            // Anti-Abuse: UniquePerCharacter
+            if (!string.IsNullOrEmpty(def.AntiAbuseRules) && def.AntiAbuseRules.Contains("UniquePerCharacter"))
+            {
+                if (QuestStates.ContainsKey(questId)) return false;
+            }
+
+            // Exclusivity: Special Category
+            if (!string.IsNullOrEmpty(def.SpecialCategory))
+            {
+                foreach (var kvp in QuestStates)
+                {
+                    if (kvp.Value == QuestState.InProgress)
+                    {
+                        var otherDef = _questManager.GetDefinition(kvp.Key);
+                        if (otherDef != null && !string.IsNullOrEmpty(otherDef.SpecialCategory))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
 
             // Check if already started/completed, unless Repeatable
             if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
