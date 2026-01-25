@@ -49,7 +49,7 @@ public class SkillEvolutionTests
     {
         var mockRng = new MockRandomService(1.0f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng);
+        var manager = new CombatManager(resolver, mockRng, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Str = 10 };
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Con = 5 };
@@ -70,7 +70,7 @@ public class SkillEvolutionTests
     {
         var mockRng = new MockRandomService(1.0f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng);
+        var manager = new CombatManager(resolver, mockRng, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Str = 10 };
 
@@ -94,7 +94,7 @@ public class SkillEvolutionTests
     {
         var mockRng = new MockRandomService(1.0f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng);
+        var manager = new CombatManager(resolver, mockRng, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 10, Str = 10 }; // SP 10
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Con = 5 };

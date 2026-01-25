@@ -55,7 +55,7 @@ public class GameServer
 
         var random = new SystemRandomService();
         var combatResolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
-        CombatManager = new CombatManager(combatResolver, random);
+        CombatManager = new CombatManager(combatResolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
         EconomyManager = new EconomyManager();
         PopulateTestWorld();
 
@@ -167,5 +167,83 @@ public class GameServer
         };
         CombatManager.AddCharacter(stoneGolem);
         Console.WriteLine("Test World Populated: Added Stone Golem (9102).");
+
+        // Add Bandido del Camino for Quest 1102
+        var bandido = new ServerCharacter
+        {
+            Id = 9200,
+            Name = "Bandido del Camino",
+            Hp = 80,
+            Str = 15,
+            Exp = 80,
+            Gold = 20
+        };
+        CombatManager.AddCharacter(bandido);
+        Console.WriteLine("Test World Populated: Added Bandido del Camino (9200).");
+
+        // Add Lobo del Bosque for Quest 3003
+        var lobo = new ServerCharacter
+        {
+            Id = 9202,
+            Name = "Lobo del Bosque",
+            Hp = 60,
+            Str = 12,
+            Exp = 60,
+            Gold = 10
+        };
+        CombatManager.AddCharacter(lobo);
+        Console.WriteLine("Test World Populated: Added Lobo del Bosque (9202).");
+
+        // Add Caravan Leader for Quest 1100
+        var caravanLeader = new ServerCharacter
+        {
+            Id = 9301,
+            Name = "Caravan Leader",
+            Hp = 100,
+            Str = 10,
+            Exp = 0,
+            Gold = 0
+        };
+        CombatManager.AddCharacter(caravanLeader);
+        Console.WriteLine("Test World Populated: Added Caravan Leader (9301).");
+
+        // Add Sendero Norte for Quest 1101
+        var sendero = new ServerCharacter
+        {
+            Id = 9302,
+            Name = "Sendero Norte",
+            Hp = 1000,
+            Str = 0,
+            Exp = 0,
+            Gold = 0
+        };
+        CombatManager.AddCharacter(sendero);
+        Console.WriteLine("Test World Populated: Added Sendero Norte (9302).");
+
+        // Add Puerta de la Ciudad for Quest 1103
+        var puerta = new ServerCharacter
+        {
+            Id = 9303,
+            Name = "Puerta de la Ciudad",
+            Hp = 1000,
+            Str = 0,
+            Exp = 0,
+            Gold = 0
+        };
+        CombatManager.AddCharacter(puerta);
+        Console.WriteLine("Test World Populated: Added Puerta de la Ciudad (9303).");
+
+        // Add Funcionario de Registro for Quest 1104
+        var funcionario = new ServerCharacter
+        {
+            Id = 9304,
+            Name = "Funcionario de Registro",
+            Hp = 50,
+            Str = 5,
+            Exp = 0,
+            Gold = 0
+        };
+        CombatManager.AddCharacter(funcionario);
+        Console.WriteLine("Test World Populated: Added Funcionario de Registro (9304).");
     }
 }
