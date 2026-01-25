@@ -9,6 +9,7 @@ public class Skill
     public int SkillId;
     public string Name = string.Empty;
     public string DisplayNameKey = string.Empty; // For UI localization
+    public string DescriptionKey = string.Empty;
     public string Description = string.Empty;
 
     // Classification
