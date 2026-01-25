@@ -24,7 +24,9 @@ public sealed record QuestDefinition
 {
     public required int QuestId                     { get; init; }
     public required string Title                    { get; init; }
+    public string? TitleKey                         { get; init; }
     public required string Description              { get; init; }
+    public string? DescriptionKey                   { get; init; }
     public IReadOnlyList<int> Requirements          { get; init; } = [];
     public required IReadOnlyList<ObjectiveDefinition> Objectives { get; init; }
     public required RewardDefinition Rewards        { get; init; }
