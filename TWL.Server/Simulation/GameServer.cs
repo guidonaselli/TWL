@@ -55,7 +55,7 @@ public class GameServer
 
         var random = new SystemRandomService();
         var combatResolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
-        CombatManager = new CombatManager(combatResolver, random);
+        CombatManager = new CombatManager(combatResolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
         EconomyManager = new EconomyManager();
         PopulateTestWorld();
 

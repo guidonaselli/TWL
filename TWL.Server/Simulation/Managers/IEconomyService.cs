@@ -7,5 +7,5 @@ public interface IEconomyService
 {
     PurchaseGemsIntentResponseDTO InitiatePurchase(int userId, string productId);
     EconomyOperationResultDTO VerifyPurchase(int userId, string orderId, string receiptToken, ServerCharacter character);
-    EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity);
+    EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity, string? operationId = null);
 }
