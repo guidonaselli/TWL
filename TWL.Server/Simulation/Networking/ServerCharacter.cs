@@ -60,6 +60,8 @@ public class ServerCharacter
     public int Mdf => (Wis * 2) + GetStatModifier("Mdf");
     public int Spd => Agi + GetStatModifier("Spd");
 
+    public string ActivePetInstanceId { get; private set; }
+
     private int GetStatModifier(string stat)
     {
         int modifier = 0;
@@ -249,6 +251,35 @@ public class ServerCharacter
         }
     }
 
+    public bool SetActivePet(string instanceId)
+    {
+        lock (_pets)
+        {
+            if (string.IsNullOrEmpty(instanceId))
+            {
+                ActivePetInstanceId = null;
+                IsDirty = true;
+                return true;
+            }
+
+            var pet = _pets.Find(p => p.InstanceId == instanceId);
+            if (pet == null) return false; // Pet not owned
+
+            ActivePetInstanceId = instanceId;
+            IsDirty = true;
+            return true;
+        }
+    }
+
+    public ServerPet? GetActivePet()
+    {
+        lock (_pets)
+        {
+            if (string.IsNullOrEmpty(ActivePetInstanceId)) return null;
+            return _pets.Find(p => p.InstanceId == ActivePetInstanceId);
+        }
+    }
+
     public void AddExp(int amount)
     {
         lock (_progressLock)
@@ -404,7 +435,8 @@ public class ServerCharacter
             Wis = Wis,
             Agi = Agi,
             Gold = _gold,
-            PremiumCurrency = _premiumCurrency
+            PremiumCurrency = _premiumCurrency,
+            ActivePetInstanceId = ActivePetInstanceId
         };
 
         lock (_progressLock)
@@ -449,6 +481,7 @@ public class ServerCharacter
         Agi = data.Agi;
         _gold = data.Gold;
         _premiumCurrency = data.PremiumCurrency;
+        ActivePetInstanceId = data.ActivePetInstanceId;
 
         lock (_progressLock)
         {

@@ -2,6 +2,8 @@
   {
     "PetTypeId": 100,
     "Name": "Thief Monkey",
+    "Type": 0,
+    "Rarity": 0,
     "BaseHp": 50,
     "BaseStr": 6,
     "BaseCon": 6,
@@ -10,6 +12,16 @@
     "BaseAgi": 8,
     "Element": 0,
     "IsUnique": false,
+    "GrowthModel": {
+        "HpGrowthPerLevel": 10,
+        "SpGrowthPerLevel": 2,
+        "StrWeight": 30,
+        "ConWeight": 20,
+        "IntWeight": 10,
+        "WisWeight": 10,
+        "AgiWeight": 30
+    },
+    "SkillSet": [],
     "SkillIds": [],
     "IsCapturable": true,
     "IsQuestUnique": false,
@@ -19,6 +31,8 @@
   {
     "PetTypeId": 101,
     "Name": "Robinson's Parrot",
+    "Type": 1,
+    "Rarity": 1,
     "BaseHp": 30,
     "BaseStr": 3,
     "BaseCon": 4,
@@ -27,6 +41,16 @@
     "BaseAgi": 10,
     "Element": 3,
     "IsUnique": true,
+    "GrowthModel": {
+        "HpGrowthPerLevel": 8,
+        "SpGrowthPerLevel": 10,
+        "StrWeight": 10,
+        "ConWeight": 10,
+        "IntWeight": 30,
+        "WisWeight": 20,
+        "AgiWeight": 30
+    },
+    "SkillSet": [],
     "SkillIds": [],
     "IsCapturable": false,
     "IsQuestUnique": true,
@@ -36,6 +60,8 @@
   {
     "PetTypeId": 200,
     "Name": "Cave Bat",
+    "Type": 0,
+    "Rarity": 0,
     "BaseHp": 40,
     "BaseStr": 5,
     "BaseCon": 5,
@@ -44,6 +70,16 @@
     "BaseAgi": 12,
     "Element": 3,
     "IsUnique": false,
+    "GrowthModel": {
+        "HpGrowthPerLevel": 9,
+        "SpGrowthPerLevel": 5,
+        "StrWeight": 20,
+        "ConWeight": 10,
+        "IntWeight": 20,
+        "WisWeight": 10,
+        "AgiWeight": 40
+    },
+    "SkillSet": [],
     "SkillIds": [],
     "IsCapturable": true,
     "IsQuestUnique": false,
@@ -53,6 +89,8 @@
   {
     "PetTypeId": 201,
     "Name": "Stone Spirit",
+    "Type": 1,
+    "Rarity": 1,
     "BaseHp": 60,
     "BaseStr": 4,
     "BaseCon": 10,
@@ -61,6 +99,16 @@
     "BaseAgi": 2,
     "Element": 0,
     "IsUnique": true,
+    "GrowthModel": {
+        "HpGrowthPerLevel": 15,
+        "SpGrowthPerLevel": 5,
+        "StrWeight": 20,
+        "ConWeight": 40,
+        "IntWeight": 20,
+        "WisWeight": 15,
+        "AgiWeight": 5
+    },
+    "SkillSet": [],
     "SkillIds": [],
     "IsCapturable": false,
     "IsQuestUnique": true,
