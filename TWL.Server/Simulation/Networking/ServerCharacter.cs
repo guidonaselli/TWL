@@ -54,11 +54,30 @@ public class ServerCharacter
     public int Agi { get; set; } = 8;
 
     // Derived Battle Stats
-    public int Atk => Str * 2;
-    public int Def => Con * 2;
-    public int Mat => Int * 2;
-    public int Mdf => Wis * 2;
-    public int Spd => Agi;
+    public int Atk => (Str * 2) + GetStatModifier("Atk");
+    public int Def => (Con * 2) + GetStatModifier("Def");
+    public int Mat => (Int * 2) + GetStatModifier("Mat");
+    public int Mdf => (Wis * 2) + GetStatModifier("Mdf");
+    public int Spd => Agi + GetStatModifier("Spd");
+
+    private int GetStatModifier(string stat)
+    {
+        int modifier = 0;
+        lock (_statusLock)
+        {
+            foreach (var effect in _statusEffects)
+            {
+                if (string.Equals(effect.Param, stat, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    if (effect.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.BuffStats)
+                        modifier += (int)effect.Value;
+                    else if (effect.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.DebuffStats)
+                        modifier -= (int)effect.Value;
+                }
+            }
+        }
+        return modifier;
+    }
 
     public int MaxHealth => Con * 10;
     public int MaxSp => Int * 5;
