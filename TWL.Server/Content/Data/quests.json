@@ -366,6 +366,8 @@
     },
     "AntiAbuseRules": "UniquePerCharacter",
     "Repeatable": false
+  },
+  {
     "QuestId": 1100,
     "Title": "Partida Inminente",
     "Description": "La caravana está lista para partir. Habla con el Líder de la Caravana.",
