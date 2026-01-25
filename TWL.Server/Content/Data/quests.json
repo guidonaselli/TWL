@@ -340,5 +340,80 @@
       }
     ],
     "Rewards": { "Exp": 0, "Gold": 50, "Items": [{"ItemId": 7503, "Quantity": 1}] }
+  },
+  {
+    "QuestId": 1100,
+    "Title": "Partida Inminente",
+    "Description": "La caravana está lista para partir. Habla con el Líder de la Caravana.",
+    "Requirements": [1004],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Caravan Leader",
+        "RequiredCount": 1,
+        "Description": "Habla con el Líder de la Caravana."
+      }
+    ],
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [{"ItemId": 3001, "Quantity": 3}] }
+  },
+  {
+    "QuestId": 1101,
+    "Title": "El Camino del Bosque",
+    "Description": "Sigue el sendero hacia el Bosque del Norte.",
+    "Requirements": [1100],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Sendero Norte",
+        "RequiredCount": 1,
+        "Description": "Interactúa con el Sendero Norte."
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 1102,
+    "Title": "Peligros del Camino",
+    "Description": "Bandidos acechan el camino. Despeja la ruta.",
+    "Requirements": [1101],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Bandido del Camino",
+        "RequiredCount": 2,
+        "Description": "Derrota a 2 Bandidos del Camino."
+      }
+    ],
+    "Rewards": { "Exp": 200, "Gold": 50, "Items": [] }
+  },
+  {
+    "QuestId": 1103,
+    "Title": "Llegada a Puerto Roca",
+    "Description": "Has llegado a las puertas de la ciudad. Entra.",
+    "Requirements": [1102],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Puerta de la Ciudad",
+        "RequiredCount": 1,
+        "Description": "Interactúa con la Puerta de la Ciudad."
+      }
+    ],
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 1104,
+    "Title": "Ciudadano Nuevo",
+    "Description": "Regístrate en el Ayuntamiento para obtener acceso a la ciudad.",
+    "Requirements": [1103],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Funcionario de Registro",
+        "RequiredCount": 1,
+        "Description": "Habla con el Funcionario de Registro."
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 100, "Items": [] }
   }
 ]
