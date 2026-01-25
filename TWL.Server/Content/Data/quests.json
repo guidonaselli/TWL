@@ -249,6 +249,8 @@
     },
     "AntiAbuseRules": "UniquePerCharacter",
     "Repeatable": false
+  },
+  {
     "QuestId": 1050,
     "Title": "Rumores en la Cala",
     "Description": "El pescador ha escuchado ruidos extraños cerca de los acantilados por la noche.",

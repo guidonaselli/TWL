@@ -7,9 +7,9 @@ using TWL.Shared.Domain.DTO;
 
 namespace TWL.Server.Simulation.Managers;
 
-public class EconomyManager
+public class EconomyManager : IEconomyService
 {
-    private const string LEDGER_FILE = "economy_ledger.log";
+    private readonly string _ledgerFile;
 
     // Mock Data
     private readonly Dictionary<string, long> _productPrices = new()
@@ -48,12 +48,13 @@ public class EconomyManager
     private const int CLEANUP_INTERVAL = 100;
     private const double EXPIRATION_MINUTES = 10.0;
 
-    public EconomyManager()
+    public EconomyManager(string ledgerFile = "economy_ledger.log")
     {
+        _ledgerFile = ledgerFile;
         // Ensure ledger exists
-        if (!File.Exists(LEDGER_FILE))
+        if (!File.Exists(_ledgerFile))
         {
-            File.WriteAllText(LEDGER_FILE, "Timestamp,Type,UserId,Details,Delta,NewBalance\n");
+            File.WriteAllText(_ledgerFile, "Timestamp,Type,UserId,Details,Delta,NewBalance\n");
         }
     }
 
@@ -247,7 +248,7 @@ public class EconomyManager
         {
             try
             {
-                File.AppendAllText(LEDGER_FILE, line);
+                File.AppendAllText(_ledgerFile, line);
             }
             catch (Exception ex)
             {

@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using System.IO;
 using System.Threading.Tasks;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -12,7 +13,7 @@ public class EconomyTests
     [Fact]
     public void PurchaseFlow_Success_And_Idempotency()
     {
-        var manager = new EconomyManager();
+        var manager = new EconomyManager(Path.GetTempFileName());
         var charId = 1;
         var character = new ServerCharacter { Id = charId, PremiumCurrency = 0 };
 
@@ -37,7 +38,7 @@ public class EconomyTests
     [Fact]
     public void VerifyPurchase_Fails_UserMismatch()
     {
-        var manager = new EconomyManager();
+        var manager = new EconomyManager(Path.GetTempFileName());
         var charId1 = 1;
         var charId2 = 2;
         var character = new ServerCharacter { Id = charId1 };
@@ -53,7 +54,7 @@ public class EconomyTests
     [Fact]
     public void BuyShopItem_Success()
     {
-        var manager = new EconomyManager();
+        var manager = new EconomyManager(Path.GetTempFileName());
         var character = new ServerCharacter { Id = 1, PremiumCurrency = 20 }; // Start with 20
 
         // Shop Item 1: Cost 10, ItemId 101
@@ -67,7 +68,7 @@ public class EconomyTests
     [Fact]
     public void BuyShopItem_InsufficientFunds()
     {
-        var manager = new EconomyManager();
+        var manager = new EconomyManager(Path.GetTempFileName());
         var character = new ServerCharacter { Id = 1, PremiumCurrency = 5 }; // Only 5
 
         // Shop Item 1: Cost 10
@@ -82,7 +83,7 @@ public class EconomyTests
     [Fact]
     public async Task BuyShopItem_Concurrency_NoDoubleSpend()
     {
-        var manager = new EconomyManager();
+        var manager = new EconomyManager(Path.GetTempFileName());
         var character = new ServerCharacter { Id = 1, PremiumCurrency = 15 }; // Enough for 1 item (Cost 10), but not 2
 
         // Try to buy 2 items in parallel
