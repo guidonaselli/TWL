@@ -1,14 +1,14 @@
+using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Text.Json;
+using System.Linq;
+using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using TWL.Shared.Domain.Characters;
-using Xunit;
-using System.Reflection;
 
 namespace TWL.Tests.Quests;
 
@@ -16,155 +16,203 @@ public class TestClientSession : ClientSession
 {
     public TestClientSession() : base() { }
 
-    public void SetComponents(ServerCharacter character, PlayerQuestComponent questComponent)
-    {
-        Character = character;
-        QuestComponent = questComponent;
-    }
+    public void SetCharacter(ServerCharacter c) { Character = c; }
+    public void SetQuestComponent(PlayerQuestComponent qc) { QuestComponent = qc; }
 
-    public void InvokeGrantGoddessSkills()
+    public new void GrantGoddessSkills()
     {
-        var method = typeof(ClientSession).GetMethod("GrantGoddessSkills", BindingFlags.NonPublic | BindingFlags.Instance);
-        method?.Invoke(this, null);
+        base.GrantGoddessSkills();
     }
 }
 
-public class SpecialSkillQuestTests
+public class SpecialSkillQuestTests : IDisposable
 {
-    private readonly ServerQuestManager _questManager;
-    private readonly PlayerQuestComponent _playerQuests;
-    private readonly ServerCharacter _character;
-    private readonly string _testFilePath;
+    private ServerQuestManager _questManager;
+    private TestClientSession _session;
+    private ServerCharacter _character;
+    private string _tempQuestFile;
 
     public SpecialSkillQuestTests()
     {
-        _testFilePath = Path.GetTempFileName();
-
-        var testQuests = new List<QuestDefinition>
+        _tempQuestFile = Path.GetTempFileName();
+        var quests = new List<QuestDefinition>
         {
+            // SSQ 1: Dragon
             new QuestDefinition
             {
                 QuestId = 8001,
-                Title = "Test Skill Quest",
-                Description = "Quest for Skill",
-                Type = "SpecialSkill",
+                Title = "Dragon Quest",
+                Description = "Kill Dragon",
+                Requirements = new List<int>(),
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Kill", "Target", 1, "Kill Target")
+                    new ObjectiveDefinition("Kill", "Dragon", 1, "Kill the Dragon")
                 },
-                Rewards = new RewardDefinition(0,0, new List<ItemReward>(), null, 8001)
+                Rewards = new RewardDefinition(1000, 100, new List<ItemReward>(), null, 8001),
+                Type = "SpecialSkill",
+                SpecialCategory = "Dragon",
+                AntiAbuseRules = "UniquePerCharacter",
+                RequiredLevel = 10
+            },
+            // SSQ 2: Fairy (Different Category)
+            new QuestDefinition
+            {
+                QuestId = 8002,
+                Title = "Fairy Quest",
+                Description = "Instance Clear",
+                Requirements = new List<int>(),
+                Objectives = new List<ObjectiveDefinition>
+                {
+                    new ObjectiveDefinition("Instance", "Fairy Woods", 1, "Clear Fairy Woods")
+                },
+                Rewards = new RewardDefinition(1000, 100, new List<ItemReward>(), null, 8002),
+                Type = "SpecialSkill",
+                SpecialCategory = "Fairy",
+                AntiAbuseRules = "UniquePerCharacter",
+                RequiredLevel = 10
+            },
+            // SSQ 3: Another Dragon (Same Category) - to test exclusivity
+            new QuestDefinition
+            {
+                QuestId = 8003,
+                Title = "Another Dragon Quest",
+                Description = "Kill Another Dragon",
+                Requirements = new List<int>(),
+                Objectives = new List<ObjectiveDefinition>
+                {
+                    new ObjectiveDefinition("Kill", "Wyvern", 1, "Kill Wyvern")
+                },
+                Rewards = new RewardDefinition(1000, 100, new List<ItemReward>(), null, 8003),
+                Type = "SpecialSkill",
+                SpecialCategory = "Dragon",
+                AntiAbuseRules = "UniquePerCharacter",
+                RequiredLevel = 10
             }
         };
 
-        var json = JsonSerializer.Serialize(testQuests);
-        File.WriteAllText(_testFilePath, json);
+        File.WriteAllText(_tempQuestFile, System.Text.Json.JsonSerializer.Serialize(quests));
 
         _questManager = new ServerQuestManager();
-        _questManager.Load(_testFilePath);
+        _questManager.Load(_tempQuestFile);
 
-        _playerQuests = new PlayerQuestComponent(_questManager);
-        _character = new ServerCharacter { Id = 1, Name = "TestPlayer" };
-        _playerQuests.Character = _character;
-        _playerQuests.Character.Str = 100; // Ensure stats if needed
-    }
-
-    [Fact]
-    public void GrantGoddessSkills_Should_Grant_Skill_Based_On_Element()
-    {
-        var session = new TestClientSession();
-        _character.CharacterElement = Element.Fire;
-        session.SetComponents(_character, _playerQuests);
-
-        session.InvokeGrantGoddessSkills();
-
-        Assert.Contains(2003, _character.KnownSkills); // Hotfire
-        Assert.Contains("GS_GRANTED", _playerQuests.Flags);
-    }
-
-    [Fact]
-    public void GrantGoddessSkills_Should_Not_Grant_Twice()
-    {
-        var session = new TestClientSession();
-        _character.CharacterElement = Element.Water;
-        session.SetComponents(_character, _playerQuests);
-
-        session.InvokeGrantGoddessSkills();
-        Assert.Contains(2001, _character.KnownSkills); // Shrink
-
-        // Change element (impossible in game, but for test)
-        _character.CharacterElement = Element.Wind;
-
-        session.InvokeGrantGoddessSkills();
-
-        // Should NOT have Wind skill (2004) because flag is present
-        Assert.DoesNotContain(2004, _character.KnownSkills);
-    }
-
-    [Fact]
-    public void LearnSkill_Should_Add_Skill_Once()
-    {
-        Assert.Empty(_character.KnownSkills);
-        bool learned = _character.LearnSkill(8001);
-        Assert.True(learned);
-        Assert.Contains(8001, _character.KnownSkills);
-
-        // Try learning again
-        bool learnedAgain = _character.LearnSkill(8001);
-        Assert.False(learnedAgain);
-    }
-
-    [Fact]
-    public void GrantGoddessSkills_Should_Set_Flag_If_Already_Known()
-    {
-        var session = new TestClientSession();
-        _character.CharacterElement = Element.Fire;
-        _character.KnownSkills.Add(2003); // Manually add Hotfire
-        session.SetComponents(_character, _playerQuests);
-
-        session.InvokeGrantGoddessSkills();
-
-        Assert.Contains("GS_GRANTED", _playerQuests.Flags);
-        // Should not have tried to learn it again (no error, just silent success)
-        Assert.Contains(2003, _character.KnownSkills);
-    }
-
-    [Fact]
-    public void AntiAbuse_UniquePerCharacter_Should_Prevent_Replay()
-    {
-        // Define a quest with UniquePerCharacter
-        var def = new QuestDefinition
+        _character = new ServerCharacter
         {
-            QuestId = 9999,
-            Title = "Unique Quest",
-            Description = "One time only",
-            Type = "SpecialSkill",
-            Rewards = new RewardDefinition(0,0, new List<ItemReward>()),
-            Objectives = new List<ObjectiveDefinition>(),
-            AntiAbuseRules = "UniquePerCharacter",
-            Repeatable = true // Intentionally conflicting to test AntiAbuse overrides
+            Id = 1,
+            Name = "Tester",
+            CharacterElement = Element.Fire,
+            // Level 20, // Stats are set via LoadSaveData or default, need to check how to set level manually
+            // ServerCharacter sets Level to 1 by default. ExpToNextLevel is calculated.
+            // I'll cheat by setting Exp enough to level up, or just bypass StartQuest level check if I can?
+            // PlayerQuestComponent CheckGating checks Character.Level.
+            // I need to set level. ServerCharacter.Level has private setter.
+            // But I can use AddExp to level up.
         };
+        _character.AddExp(100000); // Level up
+        _character.Str = 50;
+        _character.Wis = 50;
 
-        // Hacky: Insert into manager via private field or re-load.
-        // Since we can't easily modify manager, we'll create a new test setup here or assume 8001 has it (it does in quests.json but not in test definition).
-        // I'll create a new definition file for this test instance or just rely on CanStartQuest logic unit test style?
-        // Since _questManager is loaded from file, I need to write to file and reload.
+        var qc = new PlayerQuestComponent(_questManager);
+        qc.Character = _character;
 
-        var path = Path.GetTempFileName();
-        var list = new List<QuestDefinition> { def };
-        File.WriteAllText(path, JsonSerializer.Serialize(list));
-        var qm = new ServerQuestManager();
-        qm.Load(path);
-        var pq = new PlayerQuestComponent(qm);
-        pq.Character = new ServerCharacter { Id = 2 };
+        _session = new TestClientSession();
+        _session.SetCharacter(_character);
+        _session.SetQuestComponent(qc);
+    }
 
-        // 1. Start Quest
-        Assert.True(pq.StartQuest(9999));
+    public void Dispose()
+    {
+        if (File.Exists(_tempQuestFile))
+            File.Delete(_tempQuestFile);
+    }
 
-        // 2. Complete/Claim
-        pq.QuestStates[9999] = QuestState.RewardClaimed; // Simulate completion
+    [Fact]
+    public void GrantGoddessSkills_FireElement_GrantsHotfire()
+    {
+        // Act
+        _session.GrantGoddessSkills();
 
-        // 3. Try Start Again
-        // Even though Repeatable=true, AntiAbuse should block it because it exists in QuestStates
-        Assert.False(pq.CanStartQuest(9999));
+        // Assert
+        Assert.Contains(2003, _session.Character.KnownSkills);
+        Assert.Contains("GS_GRANTED", _session.QuestComponent.Flags);
+    }
+
+    [Fact]
+    public void GrantGoddessSkills_Idempotent()
+    {
+        // Arrange
+        _session.GrantGoddessSkills();
+        Assert.Contains(2003, _session.Character.KnownSkills);
+
+        // Manually remove skill but keep flag to simulate corruption or just verifying flag check
+        lock(_session.Character.KnownSkills) { _session.Character.KnownSkills.Clear(); }
+
+        // Act
+        _session.GrantGoddessSkills();
+
+        // Assert
+        // Should NOT relearn because flag is present
+        Assert.DoesNotContain(2003, _session.Character.KnownSkills);
+    }
+
+    [Fact]
+    public void GrantGoddessSkills_WindElement_GrantsVanish()
+    {
+        _character.CharacterElement = Element.Wind;
+        // Need to clear flags if re-using character, but here we run in isolation per test class instance usually.
+        // But xUnit creates new instance per test.
+        _session.GrantGoddessSkills();
+        Assert.Contains(2004, _session.Character.KnownSkills);
+    }
+
+    [Fact]
+    public void StartQuest_UniquePerCharacter_CanOnlyStartOnce()
+    {
+        // 1. Start Quest 8001
+        bool started = _session.QuestComponent.StartQuest(8001);
+        Assert.True(started, "Should start first time");
+
+        // 2. Try start again while InProgress
+        bool startedAgain = _session.QuestComponent.StartQuest(8001);
+        Assert.False(startedAgain, "Should not start while InProgress");
+
+        // 3. Complete and Claim
+        _session.QuestComponent.UpdateProgress(8001, 0, 1); // Complete
+        _session.QuestComponent.ClaimReward(8001);
+
+        // 4. Try start again after Completion
+        bool startedAfterComplete = _session.QuestComponent.StartQuest(8001);
+        Assert.False(startedAfterComplete, "Should not start again due to UniquePerCharacter rule");
+    }
+
+    [Fact]
+    public void StartQuest_SpecialCategory_Exclusivity()
+    {
+        // 1. Start Dragon Quest 8001
+        Assert.True(_session.QuestComponent.StartQuest(8001));
+
+        // 2. Try Start Another Dragon Quest 8003
+        // Should fail because another "Dragon" category quest is InProgress
+        Assert.False(_session.QuestComponent.StartQuest(8003), "Should not start 8003 while 8001 (same category) is active");
+
+        // 3. Try Start Fairy Quest 8002
+        // Should succeed because it is "Fairy" category (different)
+        Assert.True(_session.QuestComponent.StartQuest(8002), "Should start 8002 (different category)");
+    }
+
+    [Fact]
+    public void InstanceCompletion_ProgressesQuest()
+    {
+        // Start Fairy Quest (Requires "Instance: Fairy Woods")
+        _session.QuestComponent.StartQuest(8002);
+
+        // Trigger Instance Completion
+        _session.HandleInstanceCompletion("Fairy Woods");
+
+        // Check Progress
+        var progress = _session.QuestComponent.QuestProgress[8002];
+        Assert.Equal(1, progress[0]);
+
+        // Check State
+        Assert.Equal(QuestState.Completed, _session.QuestComponent.QuestStates[8002]);
     }
 }

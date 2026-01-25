@@ -340,5 +340,31 @@
       }
     ],
     "Rewards": { "Exp": 0, "Gold": 50, "Items": [{"ItemId": 7503, "Quantity": 1}] }
+  },
+  {
+    "QuestId": 8002,
+    "Title": "Trial of the Fairy Queen",
+    "Description": "Prove your purity by clearing the Fairy Woods to learn the Fairy's Blessing.",
+    "Type": "SpecialSkill",
+    "SpecialCategory": "Fairy",
+    "RequiredLevel": 10,
+    "RequiredStats": { "Wis": 20 },
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Instance",
+        "TargetName": "Fairy Woods",
+        "RequiredCount": 1,
+        "Description": "Clear the Fairy Woods Instance."
+      }
+    ],
+    "Rewards": {
+      "Exp": 5000,
+      "Gold": 1000,
+      "Items": [],
+      "GrantSkillId": 8002
+    },
+    "AntiAbuseRules": "UniquePerCharacter",
+    "Repeatable": false
   }
 ]
