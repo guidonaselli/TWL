@@ -55,8 +55,13 @@ public class GameServer
 
         var random = new SystemRandomService();
         var combatResolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
-        CombatManager = new CombatManager(combatResolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
+        var statusEngine = new StatusEngine();
+        CombatManager = new CombatManager(combatResolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance, statusEngine);
         EconomyManager = new EconomyManager();
+
+        var scheduler = new WorldScheduler(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldScheduler>.Instance);
+        scheduler.Start();
+
         PopulateTestWorld();
 
         // 3) Inicia Network

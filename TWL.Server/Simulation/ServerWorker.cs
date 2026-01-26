@@ -17,8 +17,9 @@ public class ServerWorker : IHostedService
     private readonly ServerQuestManager _questManager;
     private readonly InteractionManager _interactionManager;
     private readonly PlayerService _playerService;
+    private readonly TWL.Shared.Services.IWorldScheduler _worldScheduler;
 
-    public ServerWorker(NetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager, ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService)
+    public ServerWorker(NetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager, ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService, TWL.Shared.Services.IWorldScheduler worldScheduler)
     {
         _net = net;
         _db = db;
@@ -27,12 +28,16 @@ public class ServerWorker : IHostedService
         _questManager = questManager;
         _interactionManager = interactionManager;
         _playerService = playerService;
+        _worldScheduler = worldScheduler;
     }
 
     public Task StartAsync(CancellationToken ct)
     {
         _log.LogInformation("Init DB...");
         _db.InitDatabase();
+
+        _log.LogInformation("Starting World Scheduler...");
+        _worldScheduler.Start();
 
         _log.LogInformation("Starting persistence service...");
         _playerService.Start();
@@ -57,6 +62,7 @@ public class ServerWorker : IHostedService
     {
         _log.LogInformation("Stopping server...");
         _net.Stop();
+        _worldScheduler.Stop();
         _playerService.Stop();
         _log.LogInformation("Server stopped.");
         return Task.CompletedTask;

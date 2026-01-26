@@ -20,13 +20,15 @@ public class CombatManager
     private readonly ICombatResolver _resolver;
     private readonly IRandomService _random;
     private readonly ISkillCatalog _skills;
+    private readonly IStatusEngine _statusEngine;
 
-    public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills)
+    public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills, IStatusEngine statusEngine)
     {
         _characters = new ConcurrentDictionary<int, ServerCharacter>();
         _resolver = resolver;
         _random = random;
         _skills = skills;
+        _statusEngine = statusEngine;
     }
 
     public void AddCharacter(ServerCharacter character)
@@ -113,10 +115,10 @@ public class CombatManager
                 switch (effect.Tag)
                 {
                     case SkillEffectTag.Cleanse:
-                        target.CleanseDebuffs();
+                        target.CleanseDebuffs(_statusEngine);
                         break;
                     case SkillEffectTag.Dispel:
-                        target.DispelBuffs();
+                        target.DispelBuffs(_statusEngine);
                         break;
                     case SkillEffectTag.Damage:
                         // Handled by resolver usually, but if it's flat damage or secondary, we might do it here.
@@ -137,7 +139,7 @@ public class CombatManager
                             Priority = effect.Priority,
                             ConflictGroup = effect.ConflictGroup
                         };
-                        target.AddStatusEffect(status);
+                        target.AddStatusEffect(status, _statusEngine);
                         appliedEffects.Add(status);
                         break;
                 }

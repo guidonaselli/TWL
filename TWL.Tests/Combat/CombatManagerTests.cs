@@ -63,7 +63,7 @@ public class CombatManagerTests
         var mockRandom = new MockRandomService(0.5f);
         var catalog = CreateMockCatalog();
         var resolver = new StandardCombatResolver(mockRandom, catalog);
-        var manager = new CombatManager(resolver, mockRandom, catalog);
+        var manager = new CombatManager(resolver, mockRandom, catalog, new TWL.Server.Simulation.Managers.StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 }; // Atk=200? No, Str=100.
         // Skill scaling: Str * 2 = 200.
@@ -94,7 +94,7 @@ public class CombatManagerTests
         var mockRandom = new MockRandomService(0.0f);
         var catalog = CreateMockCatalog();
         var resolver = new StandardCombatResolver(mockRandom, catalog);
-        var manager = new CombatManager(resolver, mockRandom, catalog);
+        var manager = new CombatManager(resolver, mockRandom, catalog, new TWL.Server.Simulation.Managers.StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };
@@ -119,7 +119,7 @@ public class CombatManagerTests
         var mockRandom = new MockRandomService(1.0f);
         var catalog = CreateMockCatalog();
         var resolver = new StandardCombatResolver(mockRandom, catalog);
-        var manager = new CombatManager(resolver, mockRandom, catalog);
+        var manager = new CombatManager(resolver, mockRandom, catalog, new TWL.Server.Simulation.Managers.StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };
