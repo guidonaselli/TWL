@@ -146,6 +146,31 @@ public class ServerPet
         }
     }
 
+    public void Die()
+    {
+        if (IsDead) return;
+
+        IsDead = true;
+        Hp = 0;
+        Sp = 0;
+
+        // Amity Penalty
+        ChangeAmity(-10);
+
+        IsDirty = true;
+    }
+
+    public void Revive()
+    {
+        if (!IsDead) return;
+
+        IsDead = false;
+        Hp = MaxHp;
+        Sp = MaxSp;
+
+        IsDirty = true;
+    }
+
     public bool TryRebirth()
     {
         if (_definition == null || !(_definition.RebirthEligible || _definition.RebirthSkillId > 0))
