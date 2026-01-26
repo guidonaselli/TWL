@@ -74,7 +74,40 @@ public class CombatManager
                 if (chance > skill.HitRules.MaxChance) chance = skill.HitRules.MaxChance;
             }
 
-            if (_random.NextFloat() <= chance)
+            // Resistance check
+            bool resist = false;
+            int finalDuration = effect.Duration;
+            float finalValue = effect.Value;
+
+            if (effect.ResistanceTags != null && effect.ResistanceTags.Count > 0)
+            {
+                foreach (var tag in effect.ResistanceTags)
+                {
+                    float resistance = target.GetResistance(tag);
+                    if (resistance >= 1.0f) // Immunity
+                    {
+                        resist = true;
+                        break;
+                    }
+                    if (_random.NextFloat() < resistance)
+                    {
+                        if (effect.Outcome == OutcomeModel.Partial)
+                        {
+                            // Partial effect: Reduce duration by half (min 1)
+                            finalDuration = System.Math.Max(1, finalDuration / 2);
+                            // Reduce magnitude
+                            finalValue *= 0.5f;
+                        }
+                        else
+                        {
+                            resist = true;
+                            break;
+                        }
+                    }
+                }
+            }
+
+            if (!resist && _random.NextFloat() <= chance)
             {
                 // Apply specific logic
                 switch (effect.Tag)
@@ -91,12 +124,19 @@ public class CombatManager
                         break;
                     case SkillEffectTag.Heal:
                         int healAmount = _resolver.CalculateHeal(attacker, target, request);
-                        healAmount += (int)effect.Value;
+                        healAmount += (int)finalValue;
                         target.Heal(healAmount);
                         break;
                     default:
                         // Add status
-                        var status = new TWL.Shared.Domain.Battle.StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param);
+                        var status = new TWL.Shared.Domain.Battle.StatusEffectInstance(effect.Tag, finalValue, finalDuration, effect.Param)
+                        {
+                            SourceSkillId = skill.SkillId,
+                            StackingPolicy = effect.StackingPolicy,
+                            MaxStacks = effect.MaxStacks,
+                            Priority = effect.Priority,
+                            ConflictGroup = effect.ConflictGroup
+                        };
                         target.AddStatusEffect(status);
                         appliedEffects.Add(status);
                         break;
