@@ -36,17 +36,17 @@
   <data name="Skill_AquaRecover" xml:space="preserve">
     <value>Aqua Recover</value>
   </data>
-  <data name="Skill_Diminution" xml:space="preserve">
-    <value>Diminution</value>
+  <data name="Skill_Shrink" xml:space="preserve">
+    <value>Shrink</value>
   </data>
-  <data name="Skill_SupportSeal" xml:space="preserve">
-    <value>Support Seal</value>
+  <data name="Skill_Blockage" xml:space="preserve">
+    <value>Blockage</value>
   </data>
-  <data name="Skill_EmberSurge" xml:space="preserve">
-    <value>Ember Surge</value>
+  <data name="Skill_Hotfire" xml:space="preserve">
+    <value>Hotfire</value>
   </data>
-  <data name="Skill_UntouchableVeil" xml:space="preserve">
-    <value>Untouchable Veil</value>
+  <data name="Skill_Vanish" xml:space="preserve">
+    <value>Vanish</value>
   </data>
   <data name="Skill_FairyLight" xml:space="preserve">
     <value>Fairy Light</value>

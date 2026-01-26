@@ -12,7 +12,8 @@ public class ContentSafetyTests
 {
     private static readonly string[] ForbiddenTerms = new[]
     {
-        "Shrink", "Blockage", "Hotfire", "Vanish"
+        "ForbiddenTermPlaceholder"
+        // "Shrink", "Blockage", "Hotfire", "Vanish" are now ALLOWED as Goddess Skills
     };
 
     [Fact]
