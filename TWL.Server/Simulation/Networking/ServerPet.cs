@@ -13,6 +13,8 @@ public class ServerPet
     public int DefinitionId { get; set; }
     public string Name { get; set; }
 
+    public bool IsDirty { get; set; }
+
     public int Level { get; set; } = 1;
     public int Exp { get; set; }
     public int ExpToNextLevel { get; set; } = 100;
@@ -79,6 +81,7 @@ public class ServerPet
         if (_definition == null) return; // Cannot grow without definition
 
         Exp += amount;
+        IsDirty = true;
         bool leveledUp = false;
 
         while (Exp >= ExpToNextLevel)
@@ -138,6 +141,7 @@ public class ServerPet
 
         if (oldAmity != Amity)
         {
+            IsDirty = true;
             CheckSkillUnlocks();
         }
     }
@@ -160,6 +164,8 @@ public class ServerPet
         RecalculateStats();
         Hp = MaxHp;
         Sp = MaxSp;
+
+        IsDirty = true;
 
         // Unlock Rebirth Skill
         if (_definition.RebirthSkillId > 0 && !UnlockedSkillIds.Contains(_definition.RebirthSkillId))
@@ -223,6 +229,8 @@ public class ServerPet
         {
             UnlockedSkillIds = new List<int>(data.UnlockedSkillIds);
         }
+
+        IsDirty = false;
 
         // Definition must be set externally to calc stats
     }
