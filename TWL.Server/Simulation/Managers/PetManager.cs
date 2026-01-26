@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using TWL.Shared.Domain.Characters;
 
 namespace TWL.Server.Simulation.Managers;
@@ -11,7 +12,8 @@ public class PetManager
     private readonly Dictionary<int, PetDefinition> _definitions = new();
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
-        PropertyNameCaseInsensitive = true
+        PropertyNameCaseInsensitive = true,
+        Converters = { new JsonStringEnumConverter() }
     };
 
     public void Load(string path)

@@ -31,49 +31,48 @@ public static class PetGrowthCalculator
 
         int totalPoints = levelsGained * STAT_POINTS_PER_LEVEL;
 
-        // We use floating point intermediate to avoid losing points due to rounding errors early on,
-        // but for deterministic integer stats we usually floor.
-        // To be fairer, we could use a bucket distribution, but simple ratio is fine for "Core" implementation.
-
-        str = def.BaseStr + (totalPoints * model.StrWeight / totalWeight);
-        con = def.BaseCon + (totalPoints * model.ConWeight / totalWeight);
-        int_ = def.BaseInt + (totalPoints * model.IntWeight / totalWeight);
-        wis = def.BaseWis + (totalPoints * model.WisWeight / totalWeight);
-        agi = def.BaseAgi + (totalPoints * model.AgiWeight / totalWeight);
-
         // Curve adjustments (Bonus points based on curve type)
         // Standard: No change
         // EarlyPeaker: +20% stats in first 30 levels?
         // LateBloomer: +20% stats after level 50?
         // Keeping it simple for now as requested "GrowthModel: curvas por tipo".
 
-        if (model.CurveType == GrowthCurveType.EarlyPeaker && level <= 30)
+        // Curve Logic
+        float multiplier = 1.0f;
+        if (model.CurveType == GrowthCurveType.EarlyPeaker)
         {
-             // Simple boost for example
-             int boost = levelsGained / 5;
-             str += boost; con += boost; int_ += boost; wis += boost; agi += boost;
+            // Stronger early, weaker late
+            if (level <= 40) multiplier = 1.2f;
+            else multiplier = 0.8f;
         }
-        else if (model.CurveType == GrowthCurveType.LateBloomer && level > 50)
+        else if (model.CurveType == GrowthCurveType.LateBloomer)
         {
-             int boost = (level - 50) / 2;
-             str += boost; con += boost; int_ += boost; wis += boost; agi += boost;
+             // Weaker early, stronger late
+             if (level <= 40) multiplier = 0.8f;
+             else multiplier = 1.3f;
         }
 
-        // Re-calculate HP/SP based on Con/Int if we want that synergy
-        // But the model has HpGrowthPerLevel. Let's use that as specific pet growth.
-        // If we want consistency with players: MaxHp = Con * 10.
-        // But pets often have different ratios.
-        // Let's add Con contribution to the base growth.
+        // Apply multiplier to points gained
+        int adjustedPoints = (int)(totalPoints * multiplier);
 
-        maxHp += (con - def.BaseCon) * 5; // Extra HP from CON growth
+        str = def.BaseStr + (adjustedPoints * model.StrWeight / totalWeight);
+        con = def.BaseCon + (adjustedPoints * model.ConWeight / totalWeight);
+        int_ = def.BaseInt + (adjustedPoints * model.IntWeight / totalWeight);
+        wis = def.BaseWis + (adjustedPoints * model.WisWeight / totalWeight);
+        agi = def.BaseAgi + (adjustedPoints * model.AgiWeight / totalWeight);
 
-        // SP
-        maxSp = (def.BaseInt * 5) + (int)(model.SpGrowthPerLevel * levelsGained); // Initial SP is roughly BaseInt*5 ?
-        // Or just trust the model completely?
-        // Let's say Base SP is not in definition, usually derived.
-        // If BaseInt is 0, SP might be 0.
-        // Let's assume SP = Int * 5 + Growth.
-        maxSp = (int_ * 5) + (int)(model.SpGrowthPerLevel * levelsGained);
+        // HP/SP Calculation
+        // Base HP + (Con Contribution) + (Growth Per Level)
+        // Con Contribution: (Con - BaseCon) * 5
+        int conBonus = (con - def.BaseCon) * 5;
+        maxHp = def.BaseHp + conBonus + (int)(model.HpGrowthPerLevel * levelsGained);
+
+        // Base SP is derived from Int usually, let's assume BaseInt * 5 is the starting SP if not defined
+        // We don't have BaseSp in definition, so we derive from Int.
+        int intBonus = (int_ - def.BaseInt) * 5;
+        // Let's assume initial SP is roughly BaseInt * 5
+        int baseSp = def.BaseInt * 5;
+        maxSp = baseSp + intBonus + (int)(model.SpGrowthPerLevel * levelsGained);
     }
 
     public static int GetExpForLevel(int level)

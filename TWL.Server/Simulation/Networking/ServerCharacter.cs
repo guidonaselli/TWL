@@ -283,6 +283,25 @@ public class ServerCharacter
         }
     }
 
+    public bool RemovePet(string instanceId)
+    {
+        lock (_pets)
+        {
+            var pet = _pets.Find(p => p.InstanceId == instanceId);
+            if (pet == null) return false;
+
+            _pets.Remove(pet);
+
+            if (ActivePetInstanceId == instanceId)
+            {
+                ActivePetInstanceId = null;
+            }
+
+            IsDirty = true;
+            return true;
+        }
+    }
+
     public bool SetActivePet(string instanceId)
     {
         lock (_pets)
