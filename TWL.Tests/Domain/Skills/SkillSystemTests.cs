@@ -77,11 +77,13 @@ public class SkillSystemTests
         // 4. Verification
         // Damage = (Mat * 2.0) - Mdf
         // Mat = 20 * 2 = 40. Scaling = 40 * 2.0 = 80.
+        // Element Multiplier (Fire vs Wind) = 1.5x
+        // Adjusted Value = 80 * 1.5 = 120.
         // Target Wis = 5 (default). Mdf = 5 * 2 = 10.
-        // Expected Damage = 80 - 10 = 70.
+        // Expected Damage = 120 - 10 = 110.
 
-        Assert.Contains("uses Test Fireball on Target for 70", result);
-        Assert.Equal(30, target.Health); // 100 - 70 = 30
+        Assert.Contains("uses Test Fireball on Target for 110", result);
+        Assert.Equal(0, target.Health); // Clamped to 0
         Assert.Equal(40, caster.Sp); // 50 - 10
     }
 

@@ -68,3 +68,21 @@ public enum RebirthClass
     Oracle,
     Sage
 }
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum StackingPolicy
+{
+    NoStackOverwrite, // Default: New overwrites old
+    RefreshDuration,  // Refresh duration only
+    StackUpToN,       // Increment stack count up to N
+    SeparateInstances // Allow multiple instances
+}
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum OutcomeModel
+{
+    Full,     // Standard application
+    Partial,  // Duration/Magnitude reduced
+    Resist,   // Failed application due to resistance
+    Immunity  // Hard immunity
+}

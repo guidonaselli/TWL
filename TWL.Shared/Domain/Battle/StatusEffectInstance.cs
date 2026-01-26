@@ -9,6 +9,14 @@ public class StatusEffectInstance
     public int TurnsRemaining { get; set; }
     public string? Param { get; set; }
 
+    // Metadata for Stacking/Logic
+    public int SourceSkillId { get; set; }
+    public int StackCount { get; set; } = 1;
+    public int MaxStacks { get; set; } = 1;
+    public StackingPolicy StackingPolicy { get; set; }
+    public string? ConflictGroup { get; set; }
+    public int Priority { get; set; }
+
     public StatusEffectInstance(SkillEffectTag tag, float value, int duration, string? param = null)
     {
         Tag = tag;
