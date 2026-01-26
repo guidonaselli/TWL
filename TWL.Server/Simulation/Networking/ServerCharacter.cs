@@ -125,7 +125,9 @@ public class ServerCharacter
                     Type = i.Type,
                     MaxStack = i.MaxStack,
                     Quantity = i.Quantity,
-                    ForgeSuccessRateBonus = i.ForgeSuccessRateBonus
+                    ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
+                    Policy = i.Policy,
+                    BoundToId = i.BoundToId
                 }).ToArray();
             }
         }
@@ -346,18 +348,19 @@ public class ServerCharacter
         return true;
     }
 
-    public void AddItem(int itemId, int quantity)
+    public void AddItem(int itemId, int quantity, BindPolicy policy = BindPolicy.Unbound, int? boundToId = null)
     {
         lock (_inventory)
         {
-            var existing = _inventory.Find(i => i.ItemId == itemId);
+            // Only stack if ID, Policy and BoundToId match
+            var existing = _inventory.Find(i => i.ItemId == itemId && i.Policy == policy && i.BoundToId == boundToId);
             if (existing != null)
             {
                 existing.Quantity += quantity;
             }
             else
             {
-                _inventory.Add(new Item { ItemId = itemId, Quantity = quantity });
+                _inventory.Add(new Item { ItemId = itemId, Quantity = quantity, Policy = policy, BoundToId = boundToId });
             }
             IsDirty = true;
         }
@@ -367,28 +370,87 @@ public class ServerCharacter
     {
         lock (_inventory)
         {
-            var item = _inventory.Find(i => i.ItemId == itemId);
-            return item != null && item.Quantity >= quantity;
+            long total = 0;
+            foreach (var item in _inventory)
+            {
+                if (item.ItemId == itemId)
+                {
+                    total += item.Quantity;
+                }
+            }
+            return total >= quantity;
         }
     }
 
     public bool RemoveItem(int itemId, int quantity)
     {
+        return RemoveItem(itemId, quantity, null);
+    }
+
+    public bool RemoveItem(int itemId, int quantity, BindPolicy? policyFilter)
+    {
         lock (_inventory)
         {
-            var item = _inventory.Find(i => i.ItemId == itemId);
-            if (item == null || item.Quantity < quantity)
+            // Calculate total available first to ensure atomicity
+            long total = 0;
+            var candidates = new List<Item>();
+            foreach (var item in _inventory)
             {
-                return false;
+                if (item.ItemId == itemId)
+                {
+                    if (policyFilter.HasValue && item.Policy != policyFilter.Value) continue;
+                    total += item.Quantity;
+                    candidates.Add(item);
+                }
             }
 
-            item.Quantity -= quantity;
-            if (item.Quantity <= 0)
+            if (total < quantity) return false;
+
+            // Remove from candidates (prioritizing logic could go here, e.g. Unbound first?)
+            // For now, just remove from the found order
+            int remainingToRemove = quantity;
+            foreach (var item in candidates)
             {
-                _inventory.Remove(item);
+                if (remainingToRemove <= 0) break;
+
+                int toTake = System.Math.Min(item.Quantity, remainingToRemove);
+                item.Quantity -= toTake;
+                remainingToRemove -= toTake;
+
+                if (item.Quantity <= 0)
+                {
+                    _inventory.Remove(item);
+                }
             }
             IsDirty = true;
             return true;
+        }
+    }
+
+    public List<Item> GetItems(int itemId, BindPolicy? policyFilter = null)
+    {
+        lock (_inventory)
+        {
+            var results = new List<Item>();
+            foreach (var item in _inventory)
+            {
+                if (item.ItemId == itemId)
+                {
+                    if (policyFilter.HasValue && item.Policy != policyFilter.Value) continue;
+                    // Return copies
+                    results.Add(new Item
+                    {
+                        ItemId = item.ItemId,
+                        Name = item.Name,
+                        Type = item.Type,
+                        MaxStack = item.MaxStack,
+                        Quantity = item.Quantity,
+                        Policy = item.Policy,
+                        BoundToId = item.BoundToId
+                    });
+                }
+            }
+            return results;
         }
     }
 
@@ -463,7 +525,9 @@ public class ServerCharacter
                 Type = i.Type,
                 MaxStack = i.MaxStack,
                 Quantity = i.Quantity,
-                ForgeSuccessRateBonus = i.ForgeSuccessRateBonus
+                ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
+                Policy = i.Policy,
+                BoundToId = i.BoundToId
             }).ToList();
         }
 
