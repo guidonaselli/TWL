@@ -5,5 +5,6 @@ public enum QuestState
     NotStarted,
     InProgress,
     Completed,
-    RewardClaimed
+    RewardClaimed,
+    Failed
 }

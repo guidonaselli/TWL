@@ -43,7 +43,8 @@ public sealed record QuestDefinition
     public IReadOnlyDictionary<string, int> RequiredStats { get; init; } = new Dictionary<string, int>();
     public IReadOnlyList<ItemRequirement> RequiredItems { get; init; } = [];
 
-    public bool Repeatable { get; init; }
+    public QuestRepeatability Repeatability { get; init; } = QuestRepeatability.None;
+    public TimeSpan? RepeatCooldown { get; init; }
     public DateTime? Expiry { get; init; }
     public string? PartyRules { get; init; }
     public string? GuildRules { get; init; }
@@ -51,5 +52,9 @@ public sealed record QuestDefinition
     // Enhanced properties for Special Skill Quests
     public string Type { get; init; } = "Regular"; // "Regular" | "SpecialSkill"
     public string? SpecialCategory { get; init; } // "RebirthJob" | "ElementSpecial" | "Fairy" | "Dragon" | "Griffin"
+    public string? MutualExclusionGroup { get; init; }
     public string? AntiAbuseRules { get; init; }
+
+    public IReadOnlyList<QuestFailCondition> FailConditions { get; init; } = [];
+    public IReadOnlyList<string> BranchingRules { get; init; } = [];
 }

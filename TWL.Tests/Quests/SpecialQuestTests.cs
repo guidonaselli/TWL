@@ -40,7 +40,7 @@ public class SpecialQuestTests
                 Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Npc", 1, "Talk") },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 AntiAbuseRules = "UniquePerCharacter",
-                Repeatable = false
+                Repeatability = QuestRepeatability.None
             },
             // Quest 201: Special Category Dragon A
             new QuestDefinition
@@ -52,7 +52,8 @@ public class SpecialQuestTests
                 Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Dragon", 1, "Talk") },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 Type = "SpecialSkill",
-                SpecialCategory = "Dragon"
+                SpecialCategory = "Dragon",
+                MutualExclusionGroup = "GlobalSpecial"
             },
             // Quest 202: Special Category Dragon B
             new QuestDefinition
@@ -64,7 +65,8 @@ public class SpecialQuestTests
                 Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Dragon", 1, "Talk") },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 Type = "SpecialSkill",
-                SpecialCategory = "Dragon"
+                SpecialCategory = "Dragon",
+                MutualExclusionGroup = "GlobalSpecial"
             },
             // Quest 301: Special Category Rebirth
             new QuestDefinition
@@ -76,7 +78,8 @@ public class SpecialQuestTests
                 Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Angel", 1, "Talk") },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 Type = "SpecialSkill",
-                SpecialCategory = "Rebirth"
+                SpecialCategory = "Rebirth",
+                MutualExclusionGroup = "GlobalSpecial"
             }
         };
 

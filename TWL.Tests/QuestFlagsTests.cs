@@ -57,7 +57,7 @@ public class QuestFlagsTests
                     new ObjectiveDefinition("Kill", "Rat", 1, "Kill")
                 },
                 Rewards = new RewardDefinition(5, 0, new List<ItemReward>()),
-                Repeatable = true
+                Repeatability = QuestRepeatability.Unlimited
             }
         };
 
