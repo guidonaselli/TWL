@@ -1,0 +1,43 @@
+{
+  "AllowedHardcodedLiterals": [
+    "Pending",
+    "Completed",
+    "Failed",
+    "mock_sig_",
+    "Bearer ",
+    "application/json",
+    "POST",
+    "GET",
+    "PUT",
+    "DELETE",
+    "text/plain",
+    "utf-8",
+    "MainMenu",
+    "Gameplay",
+    "up",
+    "down",
+    "left",
+    "right",
+    "#888888"
+  ],
+  "AllowedFolders": [
+    "bin",
+    "obj",
+    "Tests",
+    "Properties",
+    ".git",
+    ".vs",
+    "artifacts",
+    "reports",
+    "config"
+  ],
+  "RequiredLanguages": [
+    "base",
+    "en"
+  ],
+  "UiScanRoots": [
+    "TWL.Client/Presentation/UI",
+    "TWL.Client/Presentation/Views",
+    "TWL.Client/Presentation/Components"
+  ]
+}

@@ -90,4 +90,40 @@
   <data name="UI_NoSave" xml:space="preserve">
     <value>No save game found.</value>
   </data>
+  <data name="UI_OPTIONS_TITLE" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="UI_OPTIONS_MASTER_VOLUME" xml:space="preserve">
+    <value>Master Volume: {0:0}%</value>
+  </data>
+  <data name="UI_OPTIONS_MUSIC_VOLUME" xml:space="preserve">
+    <value>Music Volume: {0:0}%</value>
+  </data>
+  <data name="UI_OPTIONS_SFX_VOLUME" xml:space="preserve">
+    <value>SFX Volume: {0:0}%</value>
+  </data>
+  <data name="UI_OPTIONS_TEXT_SPEED" xml:space="preserve">
+    <value>Text Speed: {0}</value>
+  </data>
+  <data name="UI_OPTIONS_MUTE_UNFOCUS" xml:space="preserve">
+    <value>Mute on Unfocus: {0}</value>
+  </data>
+  <data name="UI_COMMON_BACK" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="UI_SPEED_SLOW" xml:space="preserve">
+    <value>Slow</value>
+  </data>
+  <data name="UI_SPEED_NORMAL" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="UI_SPEED_FAST" xml:space="preserve">
+    <value>Fast</value>
+  </data>
+  <data name="UI_COMMON_ON" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="UI_COMMON_OFF" xml:space="preserve">
+    <value>Off</value>
+  </data>
 </root>

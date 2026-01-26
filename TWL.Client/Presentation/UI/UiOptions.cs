@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TWL.Client.Presentation.Managers;
+using TWL.Client.Presentation.Services;
 using TWL.Shared.Net.Abstractions;
 
 namespace TWL.Client.Presentation.UI
@@ -56,7 +57,7 @@ namespace TWL.Client.Presentation.UI
             catch { _background = null; }
 
             var vp = _graphicsDevice.Viewport;
-            const string titleText = "Options";
+            var titleText = Loc.T("UI_OPTIONS_TITLE");
             var titleSize = _titleFont.MeasureString(titleText);
             _titlePosition = new Vector2((vp.Width - titleSize.X) / 2, vp.Height * 0.1f);
 
@@ -176,7 +177,7 @@ namespace TWL.Client.Presentation.UI
                         new Rectangle(0, 0, _graphicsDevice.Viewport.Width, _graphicsDevice.Viewport.Height),
                         Color.White);
 
-            const string titleText = "Options";
+            var titleText = Loc.T("UI_OPTIONS_TITLE");
             sb.DrawString(_titleFont, titleText, _titlePosition, Color.CornflowerBlue);
 
             for (int i = 0; i < _menuItems.Count; i++)
@@ -197,16 +198,16 @@ namespace TWL.Client.Presentation.UI
         {
             return item switch
             {
-                OptionType.MasterVolume => $"Master Volume: {(_settings.MasterVolume * 100):0}%",
-                OptionType.MusicVolume  => $"Music Volume: {(_settings.MusicVolume * 100):0}%",
-                OptionType.SfxVolume    => $"SFX Volume: {(_settings.SfxVolume * 100):0}%",
-                OptionType.TextSpeed    => $"Text Speed: {GetTextSpeedLabel(_settings.TextSpeed)}",
-                OptionType.MuteOnUnfocus=> $"Mute on Unfocus: {(_settings.MuteOnUnfocus ? "On" : "Off")}",
-                OptionType.Back         => "Back",
+                OptionType.MasterVolume => Loc.TF("UI_OPTIONS_MASTER_VOLUME", _settings.MasterVolume * 100),
+                OptionType.MusicVolume  => Loc.TF("UI_OPTIONS_MUSIC_VOLUME", _settings.MusicVolume * 100),
+                OptionType.SfxVolume    => Loc.TF("UI_OPTIONS_SFX_VOLUME", _settings.SfxVolume * 100),
+                OptionType.TextSpeed    => Loc.TF("UI_OPTIONS_TEXT_SPEED", GetTextSpeedLabel(_settings.TextSpeed)),
+                OptionType.MuteOnUnfocus=> Loc.TF("UI_OPTIONS_MUTE_UNFOCUS", _settings.MuteOnUnfocus ? Loc.T("UI_COMMON_ON") : Loc.T("UI_COMMON_OFF")),
+                OptionType.Back         => Loc.T("UI_COMMON_BACK"),
                 _ => ""
             };
         }
 
-        private string GetTextSpeedLabel(int speed) => speed switch { 0 => "Slow", 1 => "Normal", 2 => "Fast", _ => "Normal" };
+        private string GetTextSpeedLabel(int speed) => speed switch { 0 => Loc.T("UI_SPEED_SLOW"), 1 => Loc.T("UI_SPEED_NORMAL"), 2 => Loc.T("UI_SPEED_FAST"), _ => Loc.T("UI_SPEED_NORMAL") };
     }
 }

@@ -14,6 +14,7 @@ namespace TWL.Tests.Localization.Audit
     {
         public List<string> FromContent { get; set; } = new();
         public List<string> FromCode { get; set; } = new();
+        public Dictionary<string, List<int>> TfArgCounts { get; set; } = new();
     }
 
     public class HardcodedString
