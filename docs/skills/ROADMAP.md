@@ -21,4 +21,4 @@
 - [ ] **SKL-008**: Pack T1 — Wind (3 ramas) + tests.
 - [ ] **SKL-009**: Packs T2 (rotación por elemento) + evolución stage 2/3 donde aplique.
 - [x] **SKL-010**: Counters avanzados (Stacking Policies, Priority, Resistance logic).
-- [ ] **SKL-011**: Goddess Skills. Implementar habilidades de Diosa (Shrink, Blockage, Hotfire, Vanish) con IDs 2001-2004, asegurando su asignación por elemento.
+- [ ] **SKL-011**: Goddess Skills. Implementar habilidades de Diosa (Shrink, Blockage, Hotfire, Vanish) con IDs separados al resto y evitando que esten duplicados, asegurando también su asignación por elemento.
