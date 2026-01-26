@@ -13,14 +13,50 @@ namespace TWL.Tests.Localization.Audit
         private readonly string _solutionRoot;
         private readonly string _clientPath;
         private readonly string _serverPath;
-        private readonly List<string> _requiredLanguages = new() { "base", "en" }; // Default required
+        private AuditConfig _config;
+        private Dictionary<string, string> _baseResourceValues = new();
 
         public LocalizationAuditor(string solutionRoot, string clientPath, string serverPath)
         {
             _solutionRoot = solutionRoot;
             _clientPath = clientPath;
             _serverPath = serverPath;
+            LoadConfig();
         }
+
+        private void LoadConfig()
+        {
+            var configPath = Path.Combine(_solutionRoot, "config", "localization-audit-allowlist.json");
+            if (File.Exists(configPath))
+            {
+                try
+                {
+                    var json = File.ReadAllText(configPath);
+                    _config = JsonSerializer.Deserialize<AuditConfig>(json);
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine($"Error loading config: {ex.Message}");
+                }
+            }
+
+            // Defaults if load failed or file missing
+            if (_config == null)
+            {
+                _config = new AuditConfig
+                {
+                    RequiredLanguages = new List<string> { "base", "en" }
+                };
+            }
+        }
+
+    public class AuditConfig
+    {
+        public List<string> AllowedHardcodedLiterals { get; set; } = new();
+        public List<string> AllowedFolders { get; set; } = new();
+        public List<string> RequiredLanguages { get; set; } = new();
+        public List<string> UiScanRoots { get; set; } = new();
+    }
 
         public AuditResults RunAudit()
         {
@@ -58,9 +94,14 @@ namespace TWL.Tests.Localization.Audit
                     foreach (var data in doc.Descendants("data"))
                     {
                         var key = data.Attribute("name")?.Value;
+                        var value = data.Element("value")?.Value;
                         if (!string.IsNullOrEmpty(key))
                         {
                             keys.Add(key);
+                            if (lang == "base" && value != null)
+                            {
+                                _baseResourceValues[key] = value;
+                            }
                         }
                     }
                 }
@@ -127,7 +168,9 @@ namespace TWL.Tests.Localization.Audit
             var sourceFiles = Directory.EnumerateFiles(_solutionRoot, "*.cs", SearchOption.AllDirectories)
                 .Where(f => !f.Contains("bin") && !f.Contains("obj") && !f.Contains("Tests"));
 
-            var regex = new Regex(@"Loc\.T(?:F)?\(\s*""([^""]+)""");
+            // Regex to find Loc.T("...") or Loc.TF("..."
+            // Groups: 1=Method (T or TF), 2=Key
+            var regex = new Regex(@"Loc\.(T|TF)\s*\(\s*""([^""]+)""");
 
             foreach (var file in sourceFiles)
             {
@@ -135,23 +178,99 @@ namespace TWL.Tests.Localization.Audit
                 var matches = regex.Matches(content);
                 foreach (Match match in matches)
                 {
-                    results.UsedKeys.FromCode.Add(match.Groups[1].Value);
+                    var method = match.Groups[1].Value;
+                    var key = match.Groups[2].Value;
+
+                    results.UsedKeys.FromCode.Add(key);
+
+                    if (method == "TF")
+                    {
+                        // Estimate arg count
+                        int startIndex = match.Index + match.Length;
+                        int argCount = CountArgs(content, startIndex);
+
+                        if (!results.UsedKeys.TfArgCounts.ContainsKey(key))
+                        {
+                            results.UsedKeys.TfArgCounts[key] = new List<int>();
+                        }
+                        results.UsedKeys.TfArgCounts[key].Add(argCount);
+                    }
                 }
             }
             results.UsedKeys.FromCode = results.UsedKeys.FromCode.Distinct().ToList();
         }
 
+        private int CountArgs(string content, int startIndex)
+        {
+            int i = startIndex;
+            bool insideString = false;
+
+            // Check if immediate close or comma
+            // Skip whitespace
+            while(i < content.Length && char.IsWhiteSpace(content[i])) i++;
+
+            if (i >= content.Length || content[i] == ')') return 0; // No extra args
+            if (content[i] == ',')
+            {
+                i++; // Skip first comma
+            }
+            else
+            {
+                // Should be a comma if there are args
+                return 0;
+            }
+
+            int args = 1;
+            int parensLevel = 0;
+
+            for (; i < content.Length; i++)
+            {
+                char c = content[i];
+
+                if (c == '"' && (i == 0 || content[i-1] != '\\'))
+                {
+                    insideString = !insideString;
+                    continue;
+                }
+
+                if (insideString) continue;
+
+                if (c == '(') parensLevel++;
+                else if (c == ')')
+                {
+                    if (parensLevel == 0) return args; // End of Loc.TF call
+                    parensLevel--;
+                }
+                else if (c == ',' && parensLevel == 0)
+                {
+                    args++;
+                }
+            }
+            return args;
+        }
+
         private void ScanHardcodedStrings(AuditResults results)
         {
-            var uiDir = Path.Combine(_clientPath, "Presentation", "UI");
-            if (!Directory.Exists(uiDir)) return;
+            var roots = _config.UiScanRoots.Count > 0
+                ? _config.UiScanRoots
+                : new List<string> { Path.Combine("TWL.Client", "Presentation", "UI") };
 
-            var files = Directory.GetFiles(uiDir, "*.cs", SearchOption.AllDirectories);
+            var files = new List<string>();
+            foreach(var root in roots)
+            {
+                 var fullPath = Path.Combine(_solutionRoot, root);
+                 if(Directory.Exists(fullPath))
+                    files.AddRange(Directory.GetFiles(fullPath, "*.cs", SearchOption.AllDirectories));
+            }
+
             // Simple heuristic regex for finding strings
             var stringRegex = new Regex(@"""([^""]+)""");
 
             foreach (var file in files)
             {
+                // Check allowed folders
+                if (_config.AllowedFolders.Any(ignored => file.Contains(Path.DirectorySeparatorChar + ignored + Path.DirectorySeparatorChar))) continue;
+
                 var lines = File.ReadAllLines(file);
                 for (int i = 0; i < lines.Length; i++)
                 {
@@ -166,6 +285,9 @@ namespace TWL.Tests.Localization.Audit
                         if (string.IsNullOrWhiteSpace(val)) continue;
                         if (val.Length < 2) continue; // Skip single chars usually
                         if (val.Contains(".json") || val.Contains(".png") || val.Contains("/")) continue; // likely paths
+
+                        // Check allowlist literals
+                        if (_config.AllowedHardcodedLiterals.Contains(val)) continue;
 
                         // Ignore if it's wrapped in Loc.T(...) or Loc.TF(...)
                         // This is a simple heuristic and might miss complex cases, but reduces noise.
@@ -252,6 +374,63 @@ namespace TWL.Tests.Localization.Audit
                      });
                  }
              }
+
+            // 4. Key Naming Convention
+            var validPrefixes = new[] { "UI_", "ERR_", "QUEST_", "SKILL_", "ITEM_", "TUTORIAL_" };
+            foreach (var key in allUsedKeys)
+            {
+                 if (!validPrefixes.Any(p => key.StartsWith(p)))
+                 {
+                     results.Findings.Add(new AuditFinding
+                     {
+                         Code = "WARN_NAMING_CONVENTION",
+                         Severity = "WARN",
+                         File = "N/A",
+                         Location = key,
+                         Message = $"Key '{key}' does not follow naming convention (prefixes: {string.Join(", ", validPrefixes)})",
+                         SuggestedFix = "Rename key with valid prefix."
+                     });
+                 }
+            }
+
+            // 5. Format Safety
+            foreach (var kvp in results.UsedKeys.TfArgCounts)
+            {
+                var key = kvp.Key;
+                var argCounts = kvp.Value;
+
+                if (_baseResourceValues.TryGetValue(key, out var resourceValue))
+                {
+                    // Count unique placeholders like {0}, {1}, {0:0.00}
+                    // Regex matches {n} or {n:format}
+                    var matches = Regex.Matches(resourceValue, @"\{(\d+)(?::[^}]+)?\}");
+                    var maxPlaceholderIndex = -1;
+                    foreach(Match m in matches)
+                    {
+                        if (int.TryParse(m.Groups[1].Value, out int idx))
+                        {
+                            if (idx > maxPlaceholderIndex) maxPlaceholderIndex = idx;
+                        }
+                    }
+                    var expectedArgs = maxPlaceholderIndex + 1; // e.g. {0} needs 1 arg.
+
+                    foreach(var count in argCounts)
+                    {
+                        if (count != expectedArgs)
+                        {
+                            results.Findings.Add(new AuditFinding
+                            {
+                                Code = "ERR_FORMAT_MISMATCH",
+                                Severity = "ERROR",
+                                File = "Resources/Strings.resx",
+                                Location = key,
+                                Message = $"Format mismatch for '{key}': Resource has {expectedArgs} placeholders, code supplies {count} arguments.",
+                                SuggestedFix = "Fix code arguments or resource string."
+                            });
+                        }
+                    }
+                }
+            }
         }
     }
 }
