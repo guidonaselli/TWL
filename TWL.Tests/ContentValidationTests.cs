@@ -62,6 +62,28 @@ namespace TWL.Tests
         }
 
         [Fact]
+        public void ValidateGoddessSkills()
+        {
+            var skills = LoadSkills();
+            var goddessMap = new Dictionary<int, string>
+            {
+                { 2001, "Shrink" },
+                { 2002, "Blockage" },
+                { 2003, "Hotfire" },
+                { 2004, "Vanish" }
+            };
+
+            foreach (var kvp in goddessMap)
+            {
+                var skill = skills.FirstOrDefault(s => s.SkillId == kvp.Key);
+                Assert.NotNull(skill); // Must exist
+                Assert.Equal(kvp.Value, skill.Name); // Must have exact name
+                Assert.Equal(SkillFamily.Special, skill.Family);
+                Assert.Equal(SkillCategory.Goddess, skill.Category);
+            }
+        }
+
+        [Fact]
         public void ValidateContentIntegrity()
         {
             var skills = LoadSkills();
