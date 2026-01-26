@@ -39,6 +39,7 @@ public class QuestData
     public Dictionary<int, QuestState> States { get; set; } = new();
     public Dictionary<int, List<int>> Progress { get; set; } = new();
     public HashSet<string> Flags { get; set; } = new();
+    public Dictionary<int, DateTime> CompletionTimes { get; set; } = new();
 }
 
 public class ServerPetData

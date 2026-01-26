@@ -25,6 +25,8 @@ public class PlayerQuestComponent
     // Player Flags
     public HashSet<string> Flags { get; private set; } = new();
 
+    public Dictionary<int, DateTime> QuestCompletionTimes { get; private set; } = new();
+
     public ServerCharacter? Character { get; set; }
 
     public PlayerQuestComponent(ServerQuestManager questManager)
@@ -88,10 +90,45 @@ public class PlayerQuestComponent
             var def = _questManager.GetDefinition(questId);
             if (def == null) return false;
 
+            // Repeatability Checks
             if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
             {
-                if (!def.Repeatable || QuestStates[questId] != QuestState.RewardClaimed)
-                    return false;
+                if (QuestStates[questId] == QuestState.Failed)
+                {
+                     // Failed quests can be retried immediately (or we could add cooldown here)
+                }
+                else if (QuestStates[questId] != QuestState.RewardClaimed)
+                {
+                     // Still in progress or just completed but not claimed
+                     return false;
+                }
+                else
+                {
+                    // Reward Claimed - Check Repeatability
+                    if (def.Repeatability == QuestRepeatability.None) return false;
+
+                    if (QuestCompletionTimes.TryGetValue(questId, out var completionTime))
+                    {
+                         if (def.Repeatability == QuestRepeatability.Daily)
+                         {
+                             if (completionTime.Date == DateTime.UtcNow.Date) return false;
+                         }
+                         else if (def.Repeatability == QuestRepeatability.Weekly)
+                         {
+                             var cal = System.Globalization.CultureInfo.InvariantCulture.Calendar;
+                             var week1 = cal.GetWeekOfYear(completionTime, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                             var week2 = cal.GetWeekOfYear(DateTime.UtcNow, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                             if (week1 == week2 && completionTime.Year == DateTime.UtcNow.Year) return false;
+                         }
+                         else if (def.Repeatability == QuestRepeatability.Cooldown)
+                         {
+                             if (def.RepeatCooldown.HasValue)
+                             {
+                                 if (DateTime.UtcNow < completionTime + def.RepeatCooldown.Value) return false;
+                             }
+                         }
+                    }
+                }
             }
 
             foreach (var reqId in def.Requirements)
@@ -114,6 +151,41 @@ public class PlayerQuestComponent
                     if (QuestStates.ContainsKey(questId)) return false;
                 }
             }
+
+            // Exclusivity: Mutual Exclusion Group
+            if (!string.IsNullOrEmpty(def.MutualExclusionGroup))
+            {
+                foreach (var kvp in QuestStates)
+                {
+                    if (kvp.Value == QuestState.InProgress)
+                    {
+                        var otherDef = _questManager.GetDefinition(kvp.Key);
+                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+            // Exclusivity: Mutual Exclusion Group
+            if (!string.IsNullOrEmpty(def.MutualExclusionGroup))
+            {
+                foreach (var kvp in QuestStates)
+                {
+                    if (kvp.Value == QuestState.InProgress)
+                    {
+                        var otherDef = _questManager.GetDefinition(kvp.Key);
+                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+
+
 
             // Exclusivity: Special Category
             if (!string.IsNullOrEmpty(def.SpecialCategory))
@@ -151,6 +223,23 @@ public class PlayerQuestComponent
                 if (QuestStates.ContainsKey(questId)) return false;
             }
 
+            // Exclusivity: Mutual Exclusion Group
+            if (!string.IsNullOrEmpty(def.MutualExclusionGroup))
+            {
+                foreach (var kvp in QuestStates)
+                {
+                    if (kvp.Value == QuestState.InProgress)
+                    {
+                        var otherDef = _questManager.GetDefinition(kvp.Key);
+                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup, StringComparison.OrdinalIgnoreCase))
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+
             // Exclusivity: Special Category
             if (!string.IsNullOrEmpty(def.SpecialCategory))
             {
@@ -171,8 +260,40 @@ public class PlayerQuestComponent
             // Check if already started/completed, unless Repeatable
             if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
             {
-                if (!def.Repeatable || QuestStates[questId] != QuestState.RewardClaimed)
+                if (QuestStates[questId] == QuestState.Failed)
+                {
+                     // Failed quests can be retried
+                }
+                else if (QuestStates[questId] != QuestState.RewardClaimed)
+                {
                     return false;
+                }
+                else
+                {
+                    if (def.Repeatability == QuestRepeatability.None) return false;
+
+                    if (QuestCompletionTimes.TryGetValue(questId, out var completionTime))
+                    {
+                         if (def.Repeatability == QuestRepeatability.Daily)
+                         {
+                             if (completionTime.Date == DateTime.UtcNow.Date) return false;
+                         }
+                         else if (def.Repeatability == QuestRepeatability.Weekly)
+                         {
+                             var cal = System.Globalization.CultureInfo.InvariantCulture.Calendar;
+                             var week1 = cal.GetWeekOfYear(completionTime, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                             var week2 = cal.GetWeekOfYear(DateTime.UtcNow, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
+                             if (week1 == week2 && completionTime.Year == DateTime.UtcNow.Year) return false;
+                         }
+                         else if (def.Repeatability == QuestRepeatability.Cooldown)
+                         {
+                             if (def.RepeatCooldown.HasValue)
+                             {
+                                 if (DateTime.UtcNow < completionTime + def.RepeatCooldown.Value) return false;
+                             }
+                         }
+                    }
+                }
             }
 
             // Check Requirements (Quest Chains)
@@ -263,6 +384,20 @@ public class PlayerQuestComponent
             }
 
             QuestStates[questId] = QuestState.RewardClaimed;
+            QuestCompletionTimes[questId] = DateTime.UtcNow;
+            IsDirty = true;
+            return true;
+        }
+    }
+
+    public bool FailQuest(int questId)
+    {
+        lock (_lock)
+        {
+            if (!QuestStates.ContainsKey(questId) || QuestStates[questId] != QuestState.InProgress)
+                return false;
+
+            QuestStates[questId] = QuestState.Failed;
             IsDirty = true;
             return true;
         }
@@ -352,7 +487,8 @@ public class PlayerQuestComponent
             {
                 States = new Dictionary<int, QuestState>(QuestStates),
                 Progress = new Dictionary<int, List<int>>(),
-                Flags = new HashSet<string>(Flags)
+                Flags = new HashSet<string>(Flags),
+                CompletionTimes = new Dictionary<int, DateTime>(QuestCompletionTimes)
             };
 
             foreach(var kvp in QuestProgress)
@@ -390,6 +526,15 @@ public class PlayerQuestComponent
             if (data.Flags != null)
             {
                 foreach(var f in data.Flags) Flags.Add(f);
+            }
+
+            QuestCompletionTimes.Clear();
+            if (data.CompletionTimes != null)
+            {
+                foreach (var kvp in data.CompletionTimes)
+                {
+                    QuestCompletionTimes[kvp.Key] = kvp.Value;
+                }
             }
 
             IsDirty = false;

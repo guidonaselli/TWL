@@ -1305,6 +1305,6 @@
       "Gold": 10,
       "Items": []
     },
-    "Repeatable": true
+    "Repeatability": 4
   }
 ]

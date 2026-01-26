@@ -248,7 +248,7 @@
       "GrantSkillId": 8001
     },
     "AntiAbuseRules": "UniquePerCharacter",
-    "Repeatable": false
+    "Repeatability": 0
   },
   {
     "QuestId": 1050,
@@ -365,7 +365,7 @@
       "GrantSkillId": 8002
     },
     "AntiAbuseRules": "UniquePerCharacter",
-    "Repeatable": false
+    "Repeatability": 0
   },
   {
     "QuestId": 1100,
