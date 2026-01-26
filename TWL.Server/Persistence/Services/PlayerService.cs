@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using TWL.Server.Persistence;
 using TWL.Server.Simulation.Networking;
 
 namespace TWL.Server.Persistence.Services;
@@ -30,7 +31,7 @@ public class PlayerService
     {
         _cts = new CancellationTokenSource();
         _backgroundTask = Task.Run(async () => await FlushLoopAsync(_cts.Token));
-        Console.WriteLine("PlayerService started (persistence).");
+        PersistenceLogger.LogEvent("ServiceStart", "PlayerService started (persistence).");
     }
 
     public void Stop()
@@ -43,7 +44,7 @@ public class PlayerService
         catch { }
 
         FlushAllDirty();
-        Console.WriteLine("PlayerService stopped and flushed.");
+        PersistenceLogger.LogEvent("ServiceStop", "PlayerService stopped and flushed.");
     }
 
     private async Task FlushLoopAsync(CancellationToken token)
@@ -58,7 +59,7 @@ public class PlayerService
             catch (OperationCanceledException) { }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error in flush loop: {ex}");
+                PersistenceLogger.LogEvent("FlushLoopError", ex.Message, errors: 1);
             }
         }
     }
@@ -83,7 +84,7 @@ public class PlayerService
             {
                 errorCount++;
                 Metrics.TotalSaveErrors++;
-                Console.WriteLine($"Error saving session {session.UserId}: {ex}");
+                PersistenceLogger.LogEvent("SaveError", $"UserId:{session.UserId} {ex.Message}", errors: 1);
             }
         }
 
@@ -95,7 +96,7 @@ public class PlayerService
             Metrics.SessionsSavedInLastFlush = savedCount;
             Metrics.TotalSessionsSaved += savedCount;
 
-            Console.WriteLine($"[Persistence] Flush completed in {sw.ElapsedMilliseconds}ms. Saved: {savedCount}, Errors: {errorCount}.");
+            PersistenceLogger.LogEvent("FlushComplete", "Batch flush finished", count: savedCount, durationMs: sw.ElapsedMilliseconds, errors: errorCount);
         }
     }
 

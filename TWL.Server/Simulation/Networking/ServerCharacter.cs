@@ -19,7 +19,29 @@ public class SkillMastery
 /// </summary>
 public class ServerCharacter
 {
-    public bool IsDirty { get; set; }
+    private bool _isDirty;
+    public bool IsDirty
+    {
+        get
+        {
+            if (_isDirty) return true;
+            lock (_pets)
+            {
+                return _pets.Any(p => p.IsDirty);
+            }
+        }
+        set
+        {
+            _isDirty = value;
+            if (!value)
+            {
+                lock (_pets)
+                {
+                    foreach (var p in _pets) p.IsDirty = false;
+                }
+            }
+        }
+    }
 
     private int _hp;
     private int _sp;
@@ -206,6 +228,7 @@ public class ServerCharacter
         {
             mastery.Rank++;
         }
+        IsDirty = true;
         return mastery.Rank;
     }
 
