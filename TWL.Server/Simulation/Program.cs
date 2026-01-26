@@ -6,9 +6,13 @@ using TWL.Server;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Services;
 using TWL.Server.Simulation;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.Skills;
+using TWL.Shared.Services;
 
 Host.CreateDefaultBuilder(args)
     // 1) Config: appsettings + ServerConfig.json + SerilogSettings.json
@@ -27,11 +31,22 @@ Host.CreateDefaultBuilder(args)
             var cs = ctx.Configuration.GetConnectionString("PostgresConn");
             return new DbService(cs);
         });
+
+        // Base Services
+        svcs.AddSingleton<IRandomService, SystemRandomService>();
+        svcs.AddSingleton<ISkillCatalog>(_ => SkillRegistry.Instance);
+        svcs.AddSingleton<IWorldScheduler, WorldScheduler>();
+        svcs.AddSingleton<IStatusEngine, StatusEngine>();
+        svcs.AddSingleton<IEconomyService, EconomyManager>(); // Use Interface
+        svcs.AddSingleton<EconomyManager>(sp => (EconomyManager)sp.GetRequiredService<IEconomyService>()); // Forward implementation if needed as concrete
+
+        // Domain Managers
         svcs.AddSingleton<PetManager>();
         svcs.AddSingleton<ServerQuestManager>();
         svcs.AddSingleton<InteractionManager>();
+        svcs.AddSingleton<ICombatResolver, StandardCombatResolver>();
         svcs.AddSingleton<CombatManager>();
-        svcs.AddSingleton<EconomyManager>();
+
         svcs.AddSingleton<IPlayerRepository, FilePlayerRepository>();
         svcs.AddSingleton<PlayerService>();
         svcs.AddSingleton<NetworkServer>(sp =>

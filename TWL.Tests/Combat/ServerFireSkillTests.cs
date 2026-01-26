@@ -42,7 +42,7 @@ public class ServerFireSkillTests
         // Use 0.5f to get exactly 1.0 multiplier from NextFloat(0.95, 1.05)
         var mockRng = new MockRandomService(0.5f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance);
+        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Str = 20, Agi = 10, CharacterElement = Element.Fire };
         // Atk = 40.
@@ -76,7 +76,7 @@ public class ServerFireSkillTests
 
         var mockRng = new MockRandomService(1.0f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance);
+        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
 
         var caster = new ServerCharacter { Id = 1, Name = "Caster", Sp = 100, Int = 20, Str = 10 };
         // Base Atk = Str * 2 = 20.

@@ -148,84 +148,11 @@ public class ServerCharacter
         }
     }
 
-    public void AddStatusEffect(TWL.Shared.Domain.Battle.StatusEffectInstance effect)
+    public void AddStatusEffect(TWL.Shared.Domain.Battle.StatusEffectInstance effect, TWL.Shared.Services.IStatusEngine engine)
     {
         lock (_statusLock)
         {
-            // 1. Check Conflicts (Priority)
-            if (!string.IsNullOrEmpty(effect.ConflictGroup))
-            {
-                var conflicts = _statusEffects.Where(e => e.ConflictGroup == effect.ConflictGroup).ToList();
-                foreach (var conflict in conflicts)
-                {
-                    if (effect.Priority > conflict.Priority)
-                    {
-                        // New effect is stronger, remove old
-                        _statusEffects.Remove(conflict);
-                    }
-                    else if (effect.Priority < conflict.Priority)
-                    {
-                        // Existing effect is stronger, ignore new
-                        return;
-                    }
-                    // If Priority is equal, we usually apply normal stacking rules if they are the same tag,
-                    // or overwrite if different tags in same group?
-                    // For WLO-like, usually last applied wins if priority equal, OR they coexist if not mutually exclusive.
-                    // But ConflictGroup implies mutual exclusivity.
-                    else
-                    {
-                         // Equal priority conflict: Overwrite logic
-                         _statusEffects.Remove(conflict);
-                    }
-                }
-            }
-
-            // 2. Check Existing for Stacking
-            var existing = _statusEffects.FirstOrDefault(e =>
-                e.Tag == effect.Tag &&
-                string.Equals(e.Param, effect.Param, System.StringComparison.OrdinalIgnoreCase) &&
-                effect.StackingPolicy != TWL.Shared.Domain.Skills.StackingPolicy.SeparateInstances
-            );
-
-            if (existing != null)
-            {
-                switch (effect.StackingPolicy)
-                {
-                    case TWL.Shared.Domain.Skills.StackingPolicy.NoStackOverwrite:
-                        _statusEffects.Remove(existing);
-                        _statusEffects.Add(effect);
-                        break;
-
-                    case TWL.Shared.Domain.Skills.StackingPolicy.RefreshDuration:
-                        existing.TurnsRemaining = System.Math.Max(existing.TurnsRemaining, effect.TurnsRemaining);
-                        break;
-
-                    case TWL.Shared.Domain.Skills.StackingPolicy.StackUpToN:
-                        if (existing.StackCount < effect.MaxStacks) // Use effect.MaxStacks as limit
-                        {
-                            existing.StackCount++;
-                            existing.Value += effect.Value;
-                            // Refresh duration on stack
-                            existing.TurnsRemaining = System.Math.Max(existing.TurnsRemaining, effect.TurnsRemaining);
-                        }
-                        else
-                        {
-                             // Just refresh if max stack reached
-                             existing.TurnsRemaining = System.Math.Max(existing.TurnsRemaining, effect.TurnsRemaining);
-                        }
-                        break;
-
-                    case TWL.Shared.Domain.Skills.StackingPolicy.SeparateInstances:
-                        // Should not be reachable due to FirstOrDefault predicate
-                        _statusEffects.Add(effect);
-                        break;
-                }
-            }
-            else
-            {
-                _statusEffects.Add(effect);
-            }
-
+            engine.Apply(_statusEffects, effect);
             IsDirty = true;
         }
     }
@@ -246,23 +173,23 @@ public class ServerCharacter
         }
     }
 
-    public void CleanseDebuffs()
+    public void CleanseDebuffs(TWL.Shared.Services.IStatusEngine engine)
     {
         lock (_statusLock)
         {
-            _statusEffects.RemoveAll(e => e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.DebuffStats ||
-                                          e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Burn ||
-                                          e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Seal);
+            engine.RemoveAll(_statusEffects, e => e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.DebuffStats ||
+                                                  e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Burn ||
+                                                  e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Seal);
             IsDirty = true;
         }
     }
 
-    public void DispelBuffs()
+    public void DispelBuffs(TWL.Shared.Services.IStatusEngine engine)
     {
         lock (_statusLock)
         {
-            _statusEffects.RemoveAll(e => e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.BuffStats ||
-                                          e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Shield);
+            engine.RemoveAll(_statusEffects, e => e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.BuffStats ||
+                                                  e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Shield);
             IsDirty = true;
         }
     }

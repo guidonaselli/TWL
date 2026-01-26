@@ -33,7 +33,7 @@ public class ServerEarthSkillTests
 
         var mockRng = new MockRandomService(1.0f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
+        var manager = new CombatManager(resolver, mockRng, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Str = 20, Agi = 10 };
         // Atk = 40.

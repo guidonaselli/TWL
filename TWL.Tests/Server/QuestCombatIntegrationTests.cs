@@ -59,7 +59,7 @@ public class QuestCombatIntegrationTests
         // 2. Setup Combat Manager
         var random = new MockRandomService();
         var resolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
-        _combatManager = new CombatManager(resolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
+        _combatManager = new CombatManager(resolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
 
         // 3. Setup Player Component
         _playerQuests = new PlayerQuestComponent(_questManager);

@@ -1,4 +1,5 @@
 using Xunit;
+using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Skills;
@@ -8,6 +9,7 @@ namespace TWL.Tests.Domain.Skills;
 public class SkillStackingTests
 {
     private ServerCharacter _character;
+    private StatusEngine _engine;
 
     public SkillStackingTests()
     {
@@ -18,6 +20,7 @@ public class SkillStackingTests
             Con = 10,
             Int = 10
         };
+        _engine = new StatusEngine();
     }
 
     [Fact]
@@ -32,11 +35,11 @@ public class SkillStackingTests
             StackingPolicy = StackingPolicy.NoStackOverwrite
         };
 
-        _character.AddStatusEffect(effect1);
+        _character.AddStatusEffect(effect1, _engine);
         Assert.Single(_character.StatusEffects);
         Assert.Equal(10, _character.StatusEffects[0].Value);
 
-        _character.AddStatusEffect(effect2);
+        _character.AddStatusEffect(effect2, _engine);
         Assert.Single(_character.StatusEffects);
         Assert.Equal(20, _character.StatusEffects[0].Value);
         Assert.Equal(2, _character.StatusEffects[0].TurnsRemaining);
@@ -54,8 +57,8 @@ public class SkillStackingTests
             StackingPolicy = StackingPolicy.RefreshDuration
         };
 
-        _character.AddStatusEffect(effect1);
-        _character.AddStatusEffect(effect2);
+        _character.AddStatusEffect(effect1, _engine);
+        _character.AddStatusEffect(effect2, _engine);
 
         Assert.Single(_character.StatusEffects);
         Assert.Equal(10, _character.StatusEffects[0].Value);
@@ -70,7 +73,7 @@ public class SkillStackingTests
         {
             StackingPolicy = StackingPolicy.StackUpToN,
             MaxStacks = 3
-        });
+        }, _engine);
         Assert.Equal(1, _character.StatusEffects[0].StackCount);
         Assert.Equal(50, _character.StatusEffects[0].Value);
 
@@ -78,7 +81,7 @@ public class SkillStackingTests
         {
             StackingPolicy = StackingPolicy.StackUpToN,
             MaxStacks = 3
-        });
+        }, _engine);
         Assert.Equal(2, _character.StatusEffects[0].StackCount);
         Assert.Equal(100, _character.StatusEffects[0].Value);
 
@@ -86,7 +89,7 @@ public class SkillStackingTests
         {
             StackingPolicy = StackingPolicy.StackUpToN,
             MaxStacks = 3
-        });
+        }, _engine);
         Assert.Equal(3, _character.StatusEffects[0].StackCount);
         Assert.Equal(150, _character.StatusEffects[0].Value);
 
@@ -95,7 +98,7 @@ public class SkillStackingTests
         {
             StackingPolicy = StackingPolicy.StackUpToN,
             MaxStacks = 3
-        });
+        }, _engine);
         Assert.Equal(3, _character.StatusEffects[0].StackCount);
         Assert.Equal(150, _character.StatusEffects[0].Value);
     }
@@ -115,11 +118,11 @@ public class SkillStackingTests
             Priority = 10
         };
 
-        _character.AddStatusEffect(weakStun);
+        _character.AddStatusEffect(weakStun, _engine);
         Assert.Single(_character.StatusEffects);
         Assert.Equal("Stun", _character.StatusEffects[0].Param);
 
-        _character.AddStatusEffect(strongFreeze);
+        _character.AddStatusEffect(strongFreeze, _engine);
         Assert.Single(_character.StatusEffects);
         Assert.Equal("Freeze", _character.StatusEffects[0].Param);
     }
@@ -139,8 +142,8 @@ public class SkillStackingTests
             Priority = 1
         };
 
-        _character.AddStatusEffect(strongFreeze);
-        _character.AddStatusEffect(weakStun);
+        _character.AddStatusEffect(strongFreeze, _engine);
+        _character.AddStatusEffect(weakStun, _engine);
 
         Assert.Single(_character.StatusEffects);
         Assert.Equal("Freeze", _character.StatusEffects[0].Param);
