@@ -5,7 +5,29 @@
       "name": "Puerto Roca City",
       "region": "PuertoRoca",
       "type": "City"
+    },
+    {
+      "id": 1001,
+      "name": "Puerto Roca Port",
+      "region": "PuertoRoca",
+      "type": "Town"
+    },
+    {
+      "id": 1002,
+      "name": "Sendero Norte",
+      "region": "PuertoRoca",
+      "type": "Field"
+    },
+    {
+      "id": 1003,
+      "name": "Old Mines Entrance",
+      "region": "PuertoRoca",
+      "type": "Dungeon"
     }
   ],
-  "edges": []
+  "edges": [
+    { "from": 1000, "to": 1001, "bidirectional": true },
+    { "from": 1000, "to": 1002, "bidirectional": true },
+    { "from": 1000, "to": 1003, "bidirectional": true }
+  ]
 }
