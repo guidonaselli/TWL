@@ -72,6 +72,62 @@ public class AutoBattleTests
         Assert.Equal(action1.TargetId, action2.TargetId);
     }
 
+    [Fact]
+    public void SelectAction_ConservesSp_WhenBelowThreshold()
+    {
+        // Arrange
+        // Threshold = 10 (default).
+        // Actor SP = 15. Skill Cost = 10.
+        // Remaining SP would be 5, which is < 10.
+        // Expectation: Should NOT use skill, should Attack.
+
+        // Reset actor
+        _actor = new ServerCharacter { Id = 1, Name = "Actor", Sp = 15, Str = 10 };
+
+        var damageSkillId = 30;
+        _actor.KnownSkills.Add(damageSkillId);
+        _fakeSkills.AddSkill(new Skill
+        {
+            SkillId = damageSkillId,
+            SpCost = 10,
+            TargetType = SkillTargetType.SingleEnemy,
+            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }
+        });
+
+        // Act
+        var action = _service.SelectAction(_actor, new List<ServerCharacter> { _actor }, new List<ServerCharacter> { _enemy }, 12345);
+
+        // Assert
+        Assert.Equal(CombatActionType.Attack, action.Type); // Fallback to Attack
+    }
+
+    [Fact]
+    public void SelectAction_UsesSkill_WhenAboveThreshold()
+    {
+        // Arrange
+        // Threshold = 10.
+        // Actor SP = 25. Skill Cost = 10.
+        // Remaining SP = 15 >= 10.
+        // Expectation: Use Skill.
+
+        _actor = new ServerCharacter { Id = 1, Name = "Actor", Sp = 25, Str = 10 };
+
+        var damageSkillId = 30;
+        _actor.KnownSkills.Add(damageSkillId);
+        _fakeSkills.AddSkill(new Skill
+        {
+            SkillId = damageSkillId,
+            SpCost = 10,
+            TargetType = SkillTargetType.SingleEnemy,
+            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }
+        });
+
+        var action = _service.SelectAction(_actor, new List<ServerCharacter> { _actor }, new List<ServerCharacter> { _enemy }, 12345);
+
+        Assert.Equal(CombatActionType.Skill, action.Type);
+        Assert.Equal(damageSkillId, action.SkillId);
+    }
+
     // Fake Implementation
     class FakeSkillCatalog : ISkillCatalog
     {
