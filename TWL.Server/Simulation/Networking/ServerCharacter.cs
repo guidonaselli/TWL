@@ -183,9 +183,21 @@ public class ServerCharacter
 
     public float GetResistance(string resistanceTag)
     {
-        // Return resistance value from stats/buffs
-        // E.g. "SealResist" might be a stat modifier
-        return GetStatModifier(resistanceTag);
+        float modifier = 0f;
+        lock (_statusLock)
+        {
+            foreach (var effect in _statusEffects)
+            {
+                if (string.Equals(effect.Param, resistanceTag, System.StringComparison.OrdinalIgnoreCase))
+                {
+                    if (effect.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.BuffStats)
+                        modifier += effect.Value;
+                    else if (effect.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.DebuffStats)
+                        modifier -= effect.Value;
+                }
+            }
+        }
+        return modifier;
     }
 
     public void RemoveStatusEffect(TWL.Shared.Domain.Battle.StatusEffectInstance effect)

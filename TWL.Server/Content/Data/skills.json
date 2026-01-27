@@ -13,7 +13,7 @@
     "SpCost": 5,
     "Cooldown": 0,
     "Scaling": [ { "Stat": "Atk", "Coefficient": 1.2 } ],
-    "Effects": [ { "Tag": "Damage", "Value": 0 } ],
+    "Effects": [ { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" } ],
     "Requirements": { "Str": 5 },
     "Stage": 1,
     "StageUpgradeRules": { "RankThreshold": 10, "NextSkillId": 1002 }
@@ -32,7 +32,7 @@
     "SpCost": 15,
     "Cooldown": 1,
     "Scaling": [ { "Stat": "Atk", "Coefficient": 1.8 } ],
-    "Effects": [ { "Tag": "Damage", "Value": 0 } ],
+    "Effects": [ { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" } ],
     "UnlockRules": { "ParentSkillId": 1001, "ParentSkillRank": 10 },
     "Stage": 1,
     "StageUpgradeRules": { "RankThreshold": 10, "NextSkillId": 1003 }
@@ -51,7 +51,7 @@
     "SpCost": 8,
     "Cooldown": 0,
     "Scaling": [ { "Stat": "Mat", "Coefficient": 1.2 } ],
-    "Effects": [ { "Tag": "Damage", "Value": 0 } ],
+    "Effects": [ { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" } ],
     "Requirements": { "Int": 5 },
     "Stage": 1,
     "StageUpgradeRules": { "RankThreshold": 10, "NextSkillId": 1102 }
@@ -70,7 +70,7 @@
     "SpCost": 20,
     "Cooldown": 2,
     "Scaling": [ { "Stat": "Mat", "Coefficient": 1.5 } ],
-    "Effects": [ { "Tag": "Damage", "Value": 0 } ],
+    "Effects": [ { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" } ],
     "UnlockRules": { "ParentSkillId": 1101, "ParentSkillRank": 10 },
     "Stage": 1,
     "StageUpgradeRules": { "RankThreshold": 10, "NextSkillId": 1103 }
@@ -89,7 +89,7 @@
     "SpCost": 12,
     "Cooldown": 2,
     "Scaling": [ { "Stat": "Mdf", "Coefficient": 0.5 } ],
-    "Effects": [ { "Tag": "BuffStats", "Param": "Def", "Value": 0, "Duration": 3, "Chance": 1.0 } ],
+    "Effects": [ { "Tag": "BuffStats", "Param": "Def", "Value": 0, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Def", "Priority": 1 } ],
     "Requirements": { "Wis": 5 },
     "Stage": 1,
     "StageUpgradeRules": { "RankThreshold": 10, "NextSkillId": 1202 }
@@ -108,7 +108,7 @@
     "SpCost": 25,
     "Cooldown": 3,
     "Scaling": [],
-    "Effects": [ { "Tag": "Seal", "Value": 0, "Duration": 2, "Chance": 0.7 } ],
+    "Effects": [ { "Tag": "Seal", "Value": 0, "Duration": 2, "Chance": 0.7, "StackingPolicy": "RefreshDuration", "ConflictGroup": "HardControl", "Outcome": "Resist", "ResistanceTags": [ "SealResist" ] } ],
     "UnlockRules": { "ParentSkillId": 1201, "ParentSkillRank": 10 },
     "HitRules": { "BaseChance": 0.7, "StatDependence": "Int-Wis", "MinChance": 0.1, "MaxChance": 1.0 },
     "Stage": 1,
