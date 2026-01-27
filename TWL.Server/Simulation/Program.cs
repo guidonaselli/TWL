@@ -13,6 +13,10 @@ using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
 using TWL.Shared.Services;
+using TWL.Server.Architecture.Pipeline;
+using TWL.Server.Features.Combat;
+using TWL.Server.Features.Interactions;
+using TWL.Shared.Domain.Requests;
 
 Host.CreateDefaultBuilder(args)
     // 1) Config: appsettings + ServerConfig.json + SerilogSettings.json
@@ -49,6 +53,16 @@ Host.CreateDefaultBuilder(args)
 
         svcs.AddSingleton<IPlayerRepository, FilePlayerRepository>();
         svcs.AddSingleton<PlayerService>();
+
+        // Pipeline / Mediator
+        svcs.AddSingleton<IMediator>(sp => {
+            var mediator = new Mediator();
+            // Manual registration of handlers for now
+            mediator.Register<UseSkillCommand, CombatResult>(new UseSkillHandler(sp.GetRequiredService<CombatManager>()));
+            mediator.Register<InteractCommand, InteractResult>(new InteractHandler(sp.GetRequiredService<InteractionManager>()));
+            return mediator;
+        });
+
         svcs.AddSingleton<NetworkServer>(sp =>
         {
             var port = ctx.Configuration.GetValue<int>("Network:Port");
@@ -60,7 +74,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<CombatManager>(),
                 sp.GetRequiredService<InteractionManager>(),
                 sp.GetRequiredService<PlayerService>(),
-                sp.GetRequiredService<EconomyManager>()
+                sp.GetRequiredService<EconomyManager>(),
+                sp.GetRequiredService<IMediator>()
             );
         });
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer

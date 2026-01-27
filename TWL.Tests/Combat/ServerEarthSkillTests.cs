@@ -31,7 +31,7 @@ public class ServerEarthSkillTests
     {
         if (SkillRegistry.Instance.GetSkillById(1001) == null) return;
 
-        var mockRng = new MockRandomService(1.0f);
+        var mockRng = new MockRandomService(0.5f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
         var manager = new CombatManager(resolver, mockRng, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
 
