@@ -18,8 +18,9 @@ public class ServerWorker : IHostedService
     private readonly InteractionManager _interactionManager;
     private readonly PlayerService _playerService;
     private readonly TWL.Shared.Services.IWorldScheduler _worldScheduler;
+    private readonly ServerMetrics _metrics;
 
-    public ServerWorker(NetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager, ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService, TWL.Shared.Services.IWorldScheduler worldScheduler)
+    public ServerWorker(NetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager, ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService, TWL.Shared.Services.IWorldScheduler worldScheduler, ServerMetrics metrics)
     {
         _net = net;
         _db = db;
@@ -29,6 +30,7 @@ public class ServerWorker : IHostedService
         _interactionManager = interactionManager;
         _playerService = playerService;
         _worldScheduler = worldScheduler;
+        _metrics = metrics;
     }
 
     public Task StartAsync(CancellationToken ct)
@@ -38,6 +40,13 @@ public class ServerWorker : IHostedService
 
         _log.LogInformation("Starting World Scheduler...");
         _worldScheduler.Start();
+
+        // Metrics Reporter (1 min interval)
+        _worldScheduler.ScheduleRepeating(() =>
+        {
+            var snap = _metrics.GetSnapshot();
+            _log.LogInformation(snap.ToString());
+        }, TimeSpan.FromMinutes(1));
 
         _log.LogInformation("Starting persistence service...");
         _playerService.Start();

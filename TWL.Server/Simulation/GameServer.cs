@@ -23,9 +23,13 @@ public class GameServer
     public InteractionManager InteractionManager { get; private set; }
     public PlayerService PlayerService { get; private set; }
     public IEconomyService EconomyManager { get; private set; }
+    public ServerMetrics Metrics { get; private set; }
 
     public void Start()
     {
+        // Init Metrics
+        Metrics = new ServerMetrics();
+
         // 1) Inicia DB
         var connString = "Host=localhost;Port=5432;Database=wonderland;Username=postgres;Password=1234";
         DB = new DbService(connString);
@@ -33,7 +37,7 @@ public class GameServer
 
         // Init Player Persistence
         var playerRepo = new FilePlayerRepository();
-        PlayerService = new PlayerService(playerRepo);
+        PlayerService = new PlayerService(playerRepo, Metrics);
         PlayerService.Start();
 
         // 2) Carga definiciones (items, quests, skills)
@@ -74,7 +78,7 @@ public class GameServer
         mediator.Register<InteractCommand, InteractResult>(new InteractHandler(InteractionManager));
 
         // 3) Inicia Network
-        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService, EconomyManager, mediator);
+        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService, EconomyManager, Metrics);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");

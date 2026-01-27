@@ -37,6 +37,7 @@ Host.CreateDefaultBuilder(args)
         });
 
         // Base Services
+        svcs.AddSingleton<ServerMetrics>();
         svcs.AddSingleton<IRandomService, SystemRandomService>();
         svcs.AddSingleton<ISkillCatalog>(_ => SkillRegistry.Instance);
         svcs.AddSingleton<IWorldScheduler, WorldScheduler>();
@@ -75,7 +76,7 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<InteractionManager>(),
                 sp.GetRequiredService<PlayerService>(),
                 sp.GetRequiredService<EconomyManager>(),
-                sp.GetRequiredService<IMediator>()
+                sp.GetRequiredService<ServerMetrics>()
             );
         });
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer
