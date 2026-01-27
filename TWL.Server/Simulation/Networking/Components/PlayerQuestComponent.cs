@@ -87,8 +87,16 @@ public class PlayerQuestComponent
     {
         lock (_lock)
         {
+            CheckFailures();
+
             var def = _questManager.GetDefinition(questId);
             if (def == null) return false;
+
+            // Blocked By Flags
+            foreach (var blockedFlag in def.BlockedByFlags)
+            {
+                if (Flags.Contains(blockedFlag)) return false;
+            }
 
             // Repeatability Checks
             if (QuestStates.ContainsKey(questId) && QuestStates[questId] != QuestState.NotStarted)
@@ -214,8 +222,16 @@ public class PlayerQuestComponent
     {
         lock (_lock)
         {
+            CheckFailures();
+
             var def = _questManager.GetDefinition(questId);
             if (def == null) return false;
+
+            // Blocked By Flags
+            foreach (var blockedFlag in def.BlockedByFlags)
+            {
+                if (Flags.Contains(blockedFlag)) return false;
+            }
 
             // Anti-Abuse: UniquePerCharacter
             if (!string.IsNullOrEmpty(def.AntiAbuseRules) && def.AntiAbuseRules.Contains("UniquePerCharacter"))
@@ -324,6 +340,7 @@ public class PlayerQuestComponent
     {
         lock (_lock)
         {
+            CheckFailures();
             UpdateProgressInternal(questId, objectiveIndex, amount);
         }
     }
@@ -373,6 +390,8 @@ public class PlayerQuestComponent
     {
         lock (_lock)
         {
+            CheckFailures();
+
             if (!QuestStates.ContainsKey(questId) || QuestStates[questId] != QuestState.Completed)
                 return false;
 
@@ -403,6 +422,31 @@ public class PlayerQuestComponent
         }
     }
 
+    private void CheckFailures()
+    {
+        var now = DateTime.UtcNow;
+        var failedIds = new List<int>();
+
+        foreach (var kvp in QuestStates)
+        {
+            if (kvp.Value != QuestState.InProgress) continue;
+
+            var def = _questManager.GetDefinition(kvp.Key);
+            if (def == null) continue;
+
+            if (def.Expiry.HasValue && now > def.Expiry.Value)
+            {
+                failedIds.Add(kvp.Key);
+            }
+        }
+
+        foreach (var id in failedIds)
+        {
+            QuestStates[id] = QuestState.Failed;
+            IsDirty = true;
+        }
+    }
+
     /// <summary>
     /// Attempts to progress any active quest that matches the given type and target.
     /// </summary>
@@ -429,6 +473,8 @@ public class PlayerQuestComponent
     {
         lock (_lock)
         {
+            CheckFailures();
+
             // Iterate directly over QuestStates.
             // CheckCompletion only modifies values (states), does not add/remove keys.
             // Dictionary enumeration is safe against value modifications in .NET Core+.
@@ -484,6 +530,8 @@ public class PlayerQuestComponent
         var updatedQuests = new List<int>();
         lock (_lock)
         {
+            CheckFailures();
+
             if (Character == null) return updatedQuests;
 
             foreach (var kvp in QuestStates)
