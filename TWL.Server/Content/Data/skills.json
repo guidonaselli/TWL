@@ -2,7 +2,7 @@
   {
     "SkillId": 1001,
     "Name": "Rock Smash",
-    "DisplayNameKey": "Skill_RockSmash",
+    "DisplayNameKey": "SKILL_RockSmash",
     "Description": "A basic earth physical attack.",
     "Family": "Core",
     "Category": "None",
@@ -21,7 +21,7 @@
   {
     "SkillId": 1002,
     "Name": "Boulder Crush",
-    "DisplayNameKey": "Skill_BoulderCrush",
+    "DisplayNameKey": "SKILL_BoulderCrush",
     "Description": "A heavy earth physical attack.",
     "Family": "Core",
     "Category": "None",
@@ -40,7 +40,7 @@
   {
     "SkillId": 1101,
     "Name": "Stone Bullet",
-    "DisplayNameKey": "Skill_StoneBullet",
+    "DisplayNameKey": "SKILL_StoneBullet",
     "Description": "A basic earth magic attack.",
     "Family": "Core",
     "Category": "None",
@@ -59,7 +59,7 @@
   {
     "SkillId": 1102,
     "Name": "Rolling Stone",
-    "DisplayNameKey": "Skill_RollingStone",
+    "DisplayNameKey": "SKILL_RollingStone",
     "Description": "Hits a row of enemies.",
     "Family": "Core",
     "Category": "None",
@@ -78,7 +78,7 @@
   {
     "SkillId": 1201,
     "Name": "Gaia's Protection",
-    "DisplayNameKey": "Skill_GaiasProtection",
+    "DisplayNameKey": "SKILL_GaiasProtection",
     "Description": "Buffs defense of an ally.",
     "Family": "Core",
     "Category": "None",
@@ -97,7 +97,7 @@
   {
     "SkillId": 1202,
     "Name": "Entangle",
-    "DisplayNameKey": "Skill_Entangle",
+    "DisplayNameKey": "SKILL_Entangle",
     "Description": "Seals an enemy preventing action.",
     "Family": "Core",
     "Category": "None",
@@ -117,7 +117,7 @@
   {
     "SkillId": 3001,
     "Name": "Aqua Impact",
-    "DisplayNameKey": "Skill_AquaImpact",
+    "DisplayNameKey": "SKILL_AquaImpact",
     "Description": "A basic water physical attack.",
     "Family": "Core",
     "Category": "None",
@@ -136,7 +136,7 @@
   {
     "SkillId": 3101,
     "Name": "Water Ball",
-    "DisplayNameKey": "Skill_WaterBall",
+    "DisplayNameKey": "SKILL_WaterBall",
     "Description": "A basic water magic attack.",
     "Family": "Core",
     "Category": "None",
@@ -155,7 +155,7 @@
   {
     "SkillId": 3201,
     "Name": "Aqua Recover",
-    "DisplayNameKey": "Skill_AquaRecover",
+    "DisplayNameKey": "SKILL_AquaRecover",
     "Description": "Restores HP to an ally.",
     "Family": "Core",
     "Category": "None",
@@ -174,7 +174,7 @@
   {
     "SkillId": 2001,
     "Name": "Shrink",
-    "DisplayNameKey": "Skill_Shrink",
+    "DisplayNameKey": "SKILL_Shrink",
     "Description": "Goddess Skill. Shrinks the enemy, reducing their size and power.",
     "Family": "Special",
     "Category": "Goddess",
@@ -190,7 +190,7 @@
   {
     "SkillId": 2002,
     "Name": "Blockage",
-    "DisplayNameKey": "Skill_Blockage",
+    "DisplayNameKey": "SKILL_Blockage",
     "Description": "Goddess Skill. Creates a blockade preventing movement/attacks.",
     "Family": "Special",
     "Category": "Goddess",
@@ -207,7 +207,7 @@
   {
     "SkillId": 2003,
     "Name": "Hotfire",
-    "DisplayNameKey": "Skill_Hotfire",
+    "DisplayNameKey": "SKILL_Hotfire",
     "Description": "Goddess Skill. Unleashes a burst of intense heat.",
     "Family": "Special",
     "Category": "Goddess",
@@ -224,7 +224,7 @@
   {
     "SkillId": 2004,
     "Name": "Vanish",
-    "DisplayNameKey": "Skill_Vanish",
+    "DisplayNameKey": "SKILL_Vanish",
     "Description": "Goddess Skill. Hides the user from sight, increasing speed/evasion.",
     "Family": "Special",
     "Category": "Goddess",
@@ -240,7 +240,7 @@
   {
     "SkillId": 6001,
     "Name": "Fairy Light",
-    "DisplayNameKey": "Skill_FairyLight",
+    "DisplayNameKey": "SKILL_FairyLight",
     "Description": "Fairy Skill. Lights up the path and heals allies.",
     "Family": "Special",
     "Category": "Fairy",
@@ -258,7 +258,7 @@
   {
     "SkillId": 8001,
     "Name": "Dragon Slash",
-    "DisplayNameKey": "Skill_DragonSlash",
+    "DisplayNameKey": "SKILL_DragonSlash",
     "Description": "Legendary Skill. Strikes with the power of a fire dragon.",
     "Family": "Special",
     "Category": "Dragon",
@@ -275,7 +275,7 @@
   {
     "SkillId": 8002,
     "Name": "Fairy's Blessing",
-    "DisplayNameKey": "Skill_FairyBlessing",
+    "DisplayNameKey": "SKILL_FairyBlessing",
     "Description": "Legendary Skill. Restores HP and SP to all allies.",
     "Family": "Special",
     "Category": "Fairy",
@@ -292,7 +292,7 @@
   {
     "SkillId": 4001,
     "Name": "Flame Smash",
-    "DisplayNameKey": "Skill_FlameSmash",
+    "DisplayNameKey": "SKILL_FlameSmash",
     "Description": "A basic fire physical attack.",
     "Family": "Core",
     "Category": "None",
@@ -311,7 +311,7 @@
   {
     "SkillId": 4101,
     "Name": "Fireball",
-    "DisplayNameKey": "Skill_Fireball",
+    "DisplayNameKey": "SKILL_Fireball",
     "Description": "A basic fire magic attack.",
     "Family": "Core",
     "Category": "None",
@@ -330,7 +330,7 @@
   {
     "SkillId": 4201,
     "Name": "Fiery Will",
-    "DisplayNameKey": "Skill_FieryWill",
+    "DisplayNameKey": "SKILL_FieryWill",
     "Description": "Increases Attack power of an ally.",
     "Family": "Core",
     "Category": "None",

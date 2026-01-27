@@ -9,61 +9,61 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="Skill_RockSmash" xml:space="preserve">
+  <data name="SKILL_RockSmash" xml:space="preserve">
     <value>Rock Smash</value>
   </data>
-  <data name="Skill_BoulderCrush" xml:space="preserve">
+  <data name="SKILL_BoulderCrush" xml:space="preserve">
     <value>Boulder Crush</value>
   </data>
-  <data name="Skill_StoneBullet" xml:space="preserve">
+  <data name="SKILL_StoneBullet" xml:space="preserve">
     <value>Stone Bullet</value>
   </data>
-  <data name="Skill_RollingStone" xml:space="preserve">
+  <data name="SKILL_RollingStone" xml:space="preserve">
     <value>Rolling Stone</value>
   </data>
-  <data name="Skill_GaiasProtection" xml:space="preserve">
+  <data name="SKILL_GaiasProtection" xml:space="preserve">
     <value>Gaia's Protection</value>
   </data>
-  <data name="Skill_Entangle" xml:space="preserve">
+  <data name="SKILL_Entangle" xml:space="preserve">
     <value>Entangle</value>
   </data>
-  <data name="Skill_AquaImpact" xml:space="preserve">
+  <data name="SKILL_AquaImpact" xml:space="preserve">
     <value>Aqua Impact</value>
   </data>
-  <data name="Skill_WaterBall" xml:space="preserve">
+  <data name="SKILL_WaterBall" xml:space="preserve">
     <value>Water Ball</value>
   </data>
-  <data name="Skill_AquaRecover" xml:space="preserve">
+  <data name="SKILL_AquaRecover" xml:space="preserve">
     <value>Aqua Recover</value>
   </data>
-  <data name="Skill_Shrink" xml:space="preserve">
+  <data name="SKILL_Shrink" xml:space="preserve">
     <value>Shrink</value>
   </data>
-  <data name="Skill_Blockage" xml:space="preserve">
+  <data name="SKILL_Blockage" xml:space="preserve">
     <value>Blockage</value>
   </data>
-  <data name="Skill_Hotfire" xml:space="preserve">
+  <data name="SKILL_Hotfire" xml:space="preserve">
     <value>Hotfire</value>
   </data>
-  <data name="Skill_Vanish" xml:space="preserve">
+  <data name="SKILL_Vanish" xml:space="preserve">
     <value>Vanish</value>
   </data>
-  <data name="Skill_FairyLight" xml:space="preserve">
+  <data name="SKILL_FairyLight" xml:space="preserve">
     <value>Fairy Light</value>
   </data>
-  <data name="Skill_DragonSlash" xml:space="preserve">
+  <data name="SKILL_DragonSlash" xml:space="preserve">
     <value>Dragon Slash</value>
   </data>
-  <data name="Skill_FairyBlessing" xml:space="preserve">
+  <data name="SKILL_FairyBlessing" xml:space="preserve">
     <value>Fairy's Blessing</value>
   </data>
-  <data name="Skill_FlameSmash" xml:space="preserve">
+  <data name="SKILL_FlameSmash" xml:space="preserve">
     <value>Flame Smash</value>
   </data>
-  <data name="Skill_Fireball" xml:space="preserve">
+  <data name="SKILL_Fireball" xml:space="preserve">
     <value>Fireball</value>
   </data>
-  <data name="Skill_FieryWill" xml:space="preserve">
+  <data name="SKILL_FieryWill" xml:space="preserve">
     <value>Fiery Will</value>
   </data>
   <data name="UI_Login" xml:space="preserve">
@@ -125,5 +125,26 @@
   </data>
   <data name="UI_COMMON_OFF" xml:space="preserve">
     <value>Off</value>
+  </data>
+  <data name="UI_Icon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="UI_LevelFormat" xml:space="preserve">
+    <value>Lv.{0}</value>
+  </data>
+  <data name="UI_HpFormat" xml:space="preserve">
+    <value>HP: {0}/{1}</value>
+  </data>
+  <data name="UI_SpFormat" xml:space="preserve">
+    <value>SP: {0}/{1}</value>
+  </data>
+  <data name="UI_XpFormat" xml:space="preserve">
+    <value>XP: {0}/{1}</value>
+  </data>
+  <data name="UI_Minimap" xml:space="preserve">
+    <value>Minimap</value>
+  </data>
+  <data name="UI_MarketplaceListingFormat" xml:space="preserve">
+    <value>[{0}] Item {1} x{2} Price:{3}</value>
   </data>
 </root>
