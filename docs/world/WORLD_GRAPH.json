@@ -1,0 +1,11 @@
+{
+  "nodes": [
+    {
+      "id": 1000,
+      "name": "Puerto Roca City",
+      "region": "PuertoRoca",
+      "type": "City"
+    }
+  ],
+  "edges": []
+}

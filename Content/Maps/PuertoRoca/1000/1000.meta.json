@@ -1,0 +1,17 @@
+{
+  "MapId": 1000,
+  "RegionId": "PuertoRoca",
+  "Biome": "Tropical",
+  "RecommendedLevelMin": 1,
+  "RecommendedLevelMax": 5,
+  "EntryPoints": [ 1 ],
+  "Exits": [],
+  "AmbientProfile": {
+    "MusicKey": "BGM_TOWN_01",
+    "AmbienceKey": "AMB_SEASIDE",
+    "PaletteHintKey": "DAY_CYCLE"
+  },
+  "WorldFlagsSet": [],
+  "WorldFlagsCleared": [],
+  "Notes": "Initial skeleton for Puerto Roca City."
+}
