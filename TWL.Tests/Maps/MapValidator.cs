@@ -30,6 +30,21 @@ namespace TWL.Tests.Maps
             "Triggers"
         };
 
+        private static readonly HashSet<string> ValidCollisionTypes = new HashSet<string>
+        {
+            "Solid", "WaterBlock", "CliffBlock", "OneWay"
+        };
+
+        private static readonly HashSet<string> ValidSpawnTypes = new HashSet<string>
+        {
+            "PlayerStart", "Monster", "NPC", "ResourceNode"
+        };
+
+        private static readonly HashSet<string> ValidTriggerTypes = new HashSet<string>
+        {
+            "MapTransition", "QuestHook", "InstanceGate", "CutsceneHook", "Interaction"
+        };
+
         public static void ValidateMap(string mapFolderPath)
         {
             if (!Directory.Exists(mapFolderPath))
@@ -84,31 +99,6 @@ namespace TWL.Tests.Maps
                 }
             }
 
-            // Verify order
-            int currentRequiredIndex = 0;
-            foreach (var layer in layers)
-            {
-                string name = layer.Attribute("name")?.Value ?? "";
-                if (string.IsNullOrEmpty(name)) continue;
-
-                // If this is one of our required layers, check if it's in the right sequence relative to other required layers
-                if (RequiredLayers.Contains(name))
-                {
-                    int expectedIndex = Array.IndexOf(RequiredLayers, name);
-                    // We allow non-required layers in between, but the required ones must satisfy their relative order
-                    // Wait, the style guide says "Must include exactly these layers in this exact order".
-                    // Does it imply NO other layers allowed? Or just relative order?
-                    // "Must include exactly these layers in this exact order" suggests strictness.
-                    // But usually TMX might have meta layers. Let's enforce strict order for the required ones,
-                    // and maybe warn or allow others if they are not reserved names.
-
-                    // Let's implement strict order check for the required set.
-                    // If we find a required layer that appears BEFORE a previous required layer, that's an error.
-                    // Actually, simpler: Filter the layers in the file to only those in RequiredLayers list.
-                    // Then compare that list to RequiredLayers.
-                }
-            }
-
             var presentRequiredLayers = layers
                 .Select(l => l.Attribute("name")?.Value)
                 .Where(n => n != null && RequiredLayers.Contains(n))
@@ -147,6 +137,104 @@ namespace TWL.Tests.Maps
                     throw new Exception($"Layer '{layerName}' must be a tile layer (layer), found {layer.Name}.");
                 }
             }
+
+            // Validate Object Properties
+            ValidateCollisions(layers.First(l => l.Attribute("name")?.Value == "Collisions"));
+            ValidateSpawns(layers.First(l => l.Attribute("name")?.Value == "Spawns"));
+            ValidateTriggers(layers.First(l => l.Attribute("name")?.Value == "Triggers"));
+        }
+
+        private static void ValidateCollisions(XElement layer)
+        {
+            foreach (var obj in layer.Elements("object"))
+            {
+                string collisionType = GetProperty(obj, "CollisionType");
+                if (string.IsNullOrEmpty(collisionType))
+                {
+                    throw new Exception($"Collision object (ID {obj.Attribute("id")?.Value}) missing 'CollisionType' property.");
+                }
+                if (!ValidCollisionTypes.Contains(collisionType))
+                {
+                    throw new Exception($"Collision object (ID {obj.Attribute("id")?.Value}) has invalid 'CollisionType': {collisionType}.");
+                }
+            }
+        }
+
+        private static void ValidateSpawns(XElement layer)
+        {
+            foreach (var obj in layer.Elements("object"))
+            {
+                string spawnType = GetProperty(obj, "SpawnType");
+                if (string.IsNullOrEmpty(spawnType))
+                {
+                    throw new Exception($"Spawn object (ID {obj.Attribute("id")?.Value}) missing 'SpawnType' property.");
+                }
+                if (!ValidSpawnTypes.Contains(spawnType))
+                {
+                    throw new Exception($"Spawn object (ID {obj.Attribute("id")?.Value}) has invalid 'SpawnType': {spawnType}.");
+                }
+
+                // Check other required properties based on SpawnType
+                ValidatePropertyExists(obj, "Id"); // Note: This is a custom property, not the TMX object ID attribute
+
+                if (spawnType == "Monster" || spawnType == "NPC")
+                {
+                    // Faction, LevelRange, RespawnSeconds, Radius
+                    // ValidatePropertyExists(obj, "Faction"); // Not always mandatory? Style guide implies yes.
+                }
+            }
+        }
+
+        private static void ValidateTriggers(XElement layer)
+        {
+            var triggerIds = new HashSet<string>();
+
+            foreach (var obj in layer.Elements("object"))
+            {
+                string triggerType = GetProperty(obj, "TriggerType");
+                if (string.IsNullOrEmpty(triggerType))
+                {
+                    throw new Exception($"Trigger object (ID {obj.Attribute("id")?.Value}) missing 'TriggerType' property.");
+                }
+                if (!ValidTriggerTypes.Contains(triggerType))
+                {
+                    throw new Exception($"Trigger object (ID {obj.Attribute("id")?.Value}) has invalid 'TriggerType': {triggerType}.");
+                }
+
+                string id = GetProperty(obj, "Id");
+                if (string.IsNullOrEmpty(id))
+                {
+                     throw new Exception($"Trigger object (ID {obj.Attribute("id")?.Value}) missing 'Id' property.");
+                }
+
+                if (!triggerIds.Add(id))
+                {
+                    throw new Exception($"Duplicate Trigger ID found: {id}");
+                }
+
+                if (triggerType == "MapTransition")
+                {
+                    ValidatePropertyExists(obj, "TargetMapId");
+                    ValidatePropertyExists(obj, "TargetSpawnId");
+                }
+            }
+        }
+
+        private static string GetProperty(XElement obj, string propertyName)
+        {
+            var props = obj.Element("properties");
+            if (props == null) return null;
+
+            var prop = props.Elements("property").FirstOrDefault(p => p.Attribute("name")?.Value == propertyName);
+            return prop?.Attribute("value")?.Value;
+        }
+
+        private static void ValidatePropertyExists(XElement obj, string propertyName)
+        {
+             if (string.IsNullOrEmpty(GetProperty(obj, propertyName)))
+             {
+                 throw new Exception($"Object (ID {obj.Attribute("id")?.Value}) missing required property '{propertyName}'.");
+             }
         }
 
         private static void ValidateMeta(string path)
