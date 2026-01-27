@@ -21,6 +21,12 @@ public sealed record RewardDefinition(
     int?                     PetUnlockId = null,
     int?                     GrantSkillId = null);
 
+public sealed record InstanceRules(
+    string InstanceId,
+    int DifficultyLevel,
+    int TimeLimitSeconds,
+    string CompletionCriteria);
+
 public sealed record QuestDefinition
 {
     public required int QuestId                     { get; init; }
@@ -39,6 +45,7 @@ public sealed record QuestDefinition
     public IReadOnlyList<string> FlagsSet { get; init; } = [];
     public IReadOnlyList<string> FlagsClear { get; init; } = [];
     public IReadOnlyList<string> RequiredFlags { get; init; } = [];
+    public IReadOnlyList<string> BlockedByFlags { get; init; } = [];
 
     public int RequiredLevel { get; init; }
     public IReadOnlyDictionary<string, int> RequiredStats { get; init; } = new Dictionary<string, int>();
@@ -49,6 +56,7 @@ public sealed record QuestDefinition
     public DateTime? Expiry { get; init; }
     public string? PartyRules { get; init; }
     public string? GuildRules { get; init; }
+    public InstanceRules? InstanceRules { get; init; }
 
     // Enhanced properties for Special Skill Quests
     public string Type { get; init; } = "Regular"; // "Regular" | "SpecialSkill"
