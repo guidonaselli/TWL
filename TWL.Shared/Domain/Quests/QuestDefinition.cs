@@ -7,7 +7,8 @@ public sealed record ObjectiveDefinition(
     string Type,
     string TargetName,
     int    RequiredCount,
-    string Description);
+    string Description,
+    int?   DataId = null);
 
 public sealed record ItemReward(int ItemId, int Quantity);
 
