@@ -52,7 +52,7 @@ public class PlayerServiceReliabilityTests
     public void Flush_SavesOnlyDirtySessions()
     {
         var repo = new MockPlayerRepository();
-        var service = new PlayerService(repo);
+        var service = new PlayerService(repo, new ServerMetrics());
 
         // Dirty session
         var s1 = new TestClientSession(1);
@@ -81,7 +81,7 @@ public class PlayerServiceReliabilityTests
     public void Flush_RetainsDirtyFlag_OnFailure()
     {
         var repo = new MockPlayerRepository { ShouldThrow = true };
-        var service = new PlayerService(repo);
+        var service = new PlayerService(repo, new ServerMetrics());
 
         var s1 = new TestClientSession(1);
         var c1 = new ServerCharacter { Id = 1, Name = "Dirty" };
@@ -101,7 +101,7 @@ public class PlayerServiceReliabilityTests
     public void Benchmark_Flush_Performance()
     {
         var repo = new MockPlayerRepository();
-        var service = new PlayerService(repo);
+        var service = new PlayerService(repo, new ServerMetrics());
         int count = 100;
 
         for (int i = 0; i < count; i++)

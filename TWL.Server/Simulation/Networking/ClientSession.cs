@@ -32,6 +32,7 @@ public class ClientSession
     private readonly PlayerService _playerService;
     private readonly NetworkStream _stream;
     private readonly RateLimiter _rateLimiter;
+    private readonly ServerMetrics _metrics;
 
     public PlayerQuestComponent QuestComponent { get; protected set; }
     public ServerCharacter? Character { get; protected set; }
@@ -40,7 +41,7 @@ public class ClientSession
 
     protected ClientSession() { } // For testing
 
-    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager)
+    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics)
     {
         _client = client;
         _stream = client.GetStream();
@@ -51,6 +52,7 @@ public class ClientSession
         _interactionManager = interactionManager;
         _playerService = playerService;
         _economyManager = economyManager;
+        _metrics = metrics;
         QuestComponent = new PlayerQuestComponent(questManager);
         _rateLimiter = new RateLimiter();
     }
@@ -71,16 +73,27 @@ public class ClientSession
                 var read = await _stream.ReadAsync(buffer, 0, buffer.Length);
                 if (read <= 0) break;
 
+                _metrics?.RecordNetBytesReceived(read);
+
                 var netMsg = NetMessage.Deserialize(buffer, read);
 
                 if (netMsg != null)
                 {
+                    _metrics?.RecordNetMessageProcessed();
+                    var sw = System.Diagnostics.Stopwatch.StartNew();
                     await HandleMessageAsync(netMsg);
+                    sw.Stop();
+                    _metrics?.RecordMessageProcessingTime(sw.ElapsedTicks);
+                }
+                else
+                {
+                    _metrics?.RecordValidationError();
                 }
             }
         }
         catch (Exception ex)
         {
+            _metrics?.RecordNetError();
             Console.WriteLine("Client disconnected: " + ex.Message);
         }
         finally
@@ -101,6 +114,7 @@ public class ClientSession
 
         if (!_rateLimiter.Check(msg.Op))
         {
+            _metrics?.RecordValidationError();
             SecurityLogger.LogSecurityEvent("RateLimitExceeded", UserId, $"Opcode: {msg.Op}");
             return;
         }
@@ -490,6 +504,7 @@ public class ClientSession
     {
         var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
+        _metrics?.RecordNetBytesSent(bytes.Length);
     }
 
     public void HandleInstanceCompletion(string instanceName)

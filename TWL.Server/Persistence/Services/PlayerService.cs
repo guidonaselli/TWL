@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using TWL.Server.Persistence;
+using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 
 namespace TWL.Server.Persistence.Services;
@@ -18,13 +19,15 @@ public class PlayerService
     public PersistenceMetrics Metrics { get; } = new();
 
     private readonly IPlayerRepository _repo;
+    private readonly ServerMetrics _serverMetrics;
     private readonly ConcurrentDictionary<int, ClientSession> _sessions = new();
     private CancellationTokenSource _cts;
     private Task _backgroundTask;
 
-    public PlayerService(IPlayerRepository repo)
+    public PlayerService(IPlayerRepository repo, ServerMetrics serverMetrics)
     {
         _repo = repo;
+        _serverMetrics = serverMetrics;
     }
 
     public void Start()
@@ -95,6 +98,8 @@ public class PlayerService
             Metrics.LastFlushDurationMs = sw.ElapsedMilliseconds;
             Metrics.SessionsSavedInLastFlush = savedCount;
             Metrics.TotalSessionsSaved += savedCount;
+
+            _serverMetrics?.RecordPersistenceFlush(sw.ElapsedMilliseconds, errorCount);
 
             PersistenceLogger.LogEvent("FlushComplete", "Batch flush finished", count: savedCount, durationMs: sw.ElapsedMilliseconds, errors: errorCount);
         }
