@@ -190,6 +190,7 @@
   <object id="3" name="To_North" x="288" y="0" width="64" height="32">
    <properties>
     <property name="TriggerType" value="MapTransition"/>
+    <property name="Id" type="int" value="1"/>
     <property name="TargetMapId" type="int" value="1002"/>
     <property name="TargetSpawnId" type="int" value="1"/>
    </properties>
@@ -197,6 +198,7 @@
   <object id="4" name="To_Port" x="0" y="288" width="32" height="64">
    <properties>
     <property name="TriggerType" value="MapTransition"/>
+    <property name="Id" type="int" value="2"/>
     <property name="TargetMapId" type="int" value="1001"/>
     <property name="TargetSpawnId" type="int" value="1"/>
    </properties>
@@ -204,6 +206,7 @@
   <object id="5" name="To_Mines" x="608" y="288" width="32" height="64">
    <properties>
     <property name="TriggerType" value="MapTransition"/>
+    <property name="Id" type="int" value="3"/>
     <property name="TargetMapId" type="int" value="1003"/>
     <property name="TargetSpawnId" type="int" value="1"/>
    </properties>
