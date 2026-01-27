@@ -5,7 +5,23 @@
   "RecommendedLevelMin": 1,
   "RecommendedLevelMax": 5,
   "EntryPoints": [ 1 ],
-  "Exits": [],
+  "Exits": [
+    {
+      "TargetMapId": 1001,
+      "SpawnId": 1,
+      "Gating": { "MinLevel": 1 }
+    },
+    {
+      "TargetMapId": 1002,
+      "SpawnId": 1,
+      "Gating": { "MinLevel": 1 }
+    },
+    {
+      "TargetMapId": 1003,
+      "SpawnId": 1,
+      "Gating": { "MinLevel": 1 }
+    }
+  ],
   "AmbientProfile": {
     "MusicKey": "BGM_TOWN_01",
     "AmbienceKey": "AMB_SEASIDE",
