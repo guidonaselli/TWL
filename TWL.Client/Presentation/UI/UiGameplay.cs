@@ -5,6 +5,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using TWL.Client.UI;
+using TWL.Client.Presentation.Services;
 using TWL.Shared.Domain.Characters;
 
 namespace TWL.Client.Presentation.UI
@@ -82,19 +83,19 @@ namespace TWL.Client.Presentation.UI
 
             // Icono del personaje (placeholder)
             sb.DrawRectangle(new Rectangle(20, 20, 60, 60), Color.Gray, 2);
-            sb.DrawString(_font, "Icon", new Vector2(25, 40), Color.Gray);
+            sb.DrawString(_font, Loc.T("UI_Icon"), new Vector2(25, 40), Color.Gray);
 
             int statsX = 90;
 
             // Nivel
             sb.DrawString(_font, 
-                $"Lv.{_player.Level}",
+                Loc.TF("UI_LevelFormat", _player.Level),
                 new Vector2(statsX, 20), Color.Yellow);
 
             // HP
             var hpPct = (float)_player.Health / _player.MaxHealth;
             sb.DrawString(_font,
-                $"HP: {_player.Health}/{_player.MaxHealth}",
+                Loc.TF("UI_HpFormat", _player.Health, _player.MaxHealth),
                 new Vector2(statsX, 40), Color.Red);
             sb.FillRectangle(
                 new Rectangle(statsX, 60, (int)(200 * hpPct), 10),
@@ -105,7 +106,7 @@ namespace TWL.Client.Presentation.UI
             // SP
             var spPct = (float)_player.Sp / _player.MaxSp;
             sb.DrawString(_font,
-                $"SP: {_player.Sp}/{_player.MaxSp}",
+                Loc.TF("UI_SpFormat", _player.Sp, _player.MaxSp),
                 new Vector2(statsX, 75), Color.CornflowerBlue);
             sb.FillRectangle(
                 new Rectangle(statsX, 95, (int)(200 * spPct), 10),
@@ -116,7 +117,7 @@ namespace TWL.Client.Presentation.UI
             // XP
             var xpPct = (float)_player.Exp / _player.ExpToNextLevel;
             sb.DrawString(_font,
-                $"XP: {_player.Exp}/{_player.ExpToNextLevel}",
+                Loc.TF("UI_XpFormat", _player.Exp, _player.ExpToNextLevel),
                 new Vector2(statsX, 110), Color.LightGreen);
             sb.FillRectangle(
                 new Rectangle(statsX, 130, (int)(200 * xpPct), 6),
@@ -130,7 +131,7 @@ namespace TWL.Client.Presentation.UI
             sb.Draw(_miniMapBg,
                     new Rectangle((int)mmPos.X, (int)mmPos.Y, 150, 150),
                     Color.White);
-            sb.DrawString(_font, "Minimap", mmPos + new Vector2(10,10),
+            sb.DrawString(_font, Loc.T("UI_Minimap"), mmPos + new Vector2(10,10),
                           Color.White);
 
             // *** Inventario y ventanas ***

@@ -61,8 +61,8 @@ namespace TWL.Client.Presentation.Views
 
         private Texture2D GetSwappedTexture(ContentManager content, GraphicsDevice gd, string path, PlayerColors colors)
         {
-            string colorKey = $"{colors.Skin.PackedValue}_{colors.Hair.PackedValue}_{colors.Eye.PackedValue}_{colors.Cloth.PackedValue}";
-            string cacheKey = $"{path}_{colorKey}";
+            string colorKey = $"{colors.Skin.PackedValue}_{colors.Hair.PackedValue}_{colors.Eye.PackedValue}_{colors.Cloth.PackedValue}"; // loc: ignore
+            string cacheKey = $"{path}_{colorKey}"; // loc: ignore
 
             var cached = PaletteTextureCache.Get(cacheKey);
             if (cached != null) return cached;
@@ -85,7 +85,7 @@ namespace TWL.Client.Presentation.Views
                  // TODO: If we want to palette swap items (e.g. dyed armor), we would use GetSwappedTexture here too.
                  // For now, we assume items are pre-colored or fixed.
 
-                 string key = $"{part.AssetId}_{dir}";
+                 string key = $"{part.AssetId}_{dir}"; // loc: ignore
                  _equipmentTextures[key] = tex;
              }
              catch
@@ -117,7 +117,7 @@ namespace TWL.Client.Presentation.Views
 
             foreach (var part in _player.Appearance.EquipmentVisuals)
             {
-                string key = $"{part.AssetId}_{dirStr}";
+                string key = $"{part.AssetId}_{dirStr}"; // loc: ignore
                 if (_equipmentTextures.TryGetValue(key, out var tex))
                 {
                     _currentFrameOverlays.Add(tex);

@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TWL.Client.Presentation.Managers;
 using TWL.Client.UI;
+using TWL.Client.Presentation.Services;
 using TWL.Shared.Domain.Characters;
 
 namespace TWL.Client.Presentation.UI;
@@ -65,7 +66,7 @@ public class UiMarketplace : UiWindow
         for (var i = 0; i < listings.Count; i++)
         {
             var lst = listings[i];
-            var text = $"[{lst.ListingId}] Item {lst.ItemId} x{lst.Quantity} Price:{lst.Price}";
+            var text = Loc.TF("UI_MarketplaceListingFormat", lst.ListingId, lst.ItemId, lst.Quantity, lst.Price);
             spriteBatch.DrawString(_font, text, new Vector2(x, y),
                 lst.ListingId == _selectedListingId ? Color.Yellow : Color.White);
             y += 20;

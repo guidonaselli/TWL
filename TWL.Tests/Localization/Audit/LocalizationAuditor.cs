@@ -275,7 +275,7 @@ namespace TWL.Tests.Localization.Audit
                 for (int i = 0; i < lines.Length; i++)
                 {
                     var line = lines[i].Trim();
-                    if (line.StartsWith("//") || line.StartsWith("using ") || line.Contains("Log(") || line.Contains("Console.Write"))
+                    if (line.StartsWith("//") || line.StartsWith("using ") || line.Contains("Log(") || line.Contains("Console.Write") || line.Contains("// loc: ignore"))
                         continue;
 
                     var matches = stringRegex.Matches(line);
