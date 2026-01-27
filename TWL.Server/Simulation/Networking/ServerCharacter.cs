@@ -132,6 +132,8 @@ public class ServerCharacter
         init => _premiumCurrency = value;
     }
 
+    public int MaxInventorySlots { get; set; } = 100;
+
     private readonly List<Item> _inventory = new();
     public IReadOnlyList<Item> Inventory
     {
@@ -402,7 +404,7 @@ public class ServerCharacter
         return true;
     }
 
-    public void AddItem(int itemId, int quantity, BindPolicy policy = BindPolicy.Unbound, int? boundToId = null)
+    public bool AddItem(int itemId, int quantity, BindPolicy policy = BindPolicy.Unbound, int? boundToId = null)
     {
         lock (_inventory)
         {
@@ -411,12 +413,16 @@ public class ServerCharacter
             if (existing != null)
             {
                 existing.Quantity += quantity;
+                IsDirty = true;
+                return true;
             }
             else
             {
+                if (_inventory.Count >= MaxInventorySlots) return false;
                 _inventory.Add(new Item { ItemId = itemId, Quantity = quantity, Policy = policy, BoundToId = boundToId });
+                IsDirty = true;
+                return true;
             }
-            IsDirty = true;
         }
     }
 
