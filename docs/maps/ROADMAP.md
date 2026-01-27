@@ -16,8 +16,8 @@
     - **Connections:** 1001 (Port), 1002 (North Gate), 1003 (Mines Entrance)
     - **Entities:** Banker, Merchant, Quest Givers.
 
-- [ ] **1001 - Puerto Roca Port**
-    - **Status:** Planned
+- [x] **1001 - Puerto Roca Port**
+    - **Status:** Implemented
     - **Type:** Safe Zone / Transition
     - **Connections:** 1000
     - **Entities:** Ship Captain, Sailors.

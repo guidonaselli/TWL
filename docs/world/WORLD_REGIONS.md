@@ -6,7 +6,7 @@ A bustling port city built on the ruins of an ancient colonial settlement. It se
 - **Theme:** Tropical, Colonial, Stone & Wood.
 - **Key Locations:**
     - The Grand Plaza (Map 1000)
-    - The Docks (Map 1001)
+    - The Docks (Map 1001) - *Main transport hub.*
     - The Old Mines (Map 1003+)
 
 ## North Island
