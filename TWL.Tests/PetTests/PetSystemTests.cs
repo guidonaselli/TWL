@@ -1,0 +1,145 @@
+using System;
+using System.Collections.Generic;
+using Moq;
+using Xunit;
+using TWL.Server.Persistence;
+using TWL.Server.Persistence.Services;
+using TWL.Server.Services;
+using TWL.Server.Simulation.Managers;
+using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.Requests;
+using TWL.Shared.Services;
+
+namespace TWL.Tests.PetTests;
+
+public class PetSystemTests : IDisposable
+{
+    private Mock<IPlayerRepository> _mockRepo;
+    private Mock<IStatusEngine> _mockStatusEngine;
+    private Mock<ICombatResolver> _mockResolver;
+    private Mock<ISkillCatalog> _mockSkills;
+    private Mock<IRandomService> _mockRandom;
+
+    private PlayerService _playerService;
+    private PetManager _petManager;
+    private CombatManager _combatManager;
+    private PetService _petService;
+    private ServerMetrics _metrics;
+
+    public PetSystemTests()
+    {
+        _mockRepo = new Mock<IPlayerRepository>();
+        _metrics = new ServerMetrics();
+        _playerService = new PlayerService(_mockRepo.Object, _metrics);
+
+        _petManager = new PetManager();
+        System.IO.Directory.CreateDirectory("Content/Data");
+        System.IO.File.WriteAllText("Content/Data/pets_test.json", @"
+[
+  {
+    ""PetTypeId"": 9999,
+    ""Name"": ""Test Wolf"",
+    ""Type"": ""Capture"",
+    ""Element"": ""Earth"",
+    ""BaseHp"": 100,
+    ""BaseStr"": 10,
+    ""BaseCon"": 10,
+    ""BaseInt"": 5,
+    ""BaseWis"": 5,
+    ""BaseAgi"": 10,
+    ""IsCapturable"": true,
+    ""CaptureLevelLimit"": 1,
+    ""CaptureChance"": 0.5,
+    ""GrowthModel"": {
+      ""HpGrowthPerLevel"": 10.0,
+      ""SpGrowthPerLevel"": 5.0
+    }
+  }
+]");
+        _petManager.Load("Content/Data/pets_test.json");
+
+        _mockStatusEngine = new Mock<IStatusEngine>();
+        _mockResolver = new Mock<ICombatResolver>();
+        _mockSkills = new Mock<ISkillCatalog>();
+        _mockRandom = new Mock<IRandomService>();
+
+        _combatManager = new CombatManager(_mockResolver.Object, _mockRandom.Object, _mockSkills.Object, _mockStatusEngine.Object);
+        _petService = new PetService(_playerService, _petManager, _combatManager);
+    }
+
+    public void Dispose()
+    {
+        if (System.IO.File.Exists("Content/Data/pets_test.json"))
+            System.IO.File.Delete("Content/Data/pets_test.json");
+    }
+
+    [Fact]
+    public void CapturePet_Success()
+    {
+        // Setup Session
+        var session = new ClientSessionForTest();
+        session.SetCharacter(new ServerCharacter { Id = 1, Name = "Trainer" });
+        _playerService.RegisterSession(session);
+
+        // Act
+        var petId = _petService.CapturePet(1, 9999, 0.1f);
+
+        // Assert
+        Assert.NotNull(petId);
+        var pet = session.Character.Pets[0];
+        Assert.Equal(9999, pet.DefinitionId);
+        Assert.Equal(40, pet.Amity); // Default capture amity
+    }
+
+    [Fact]
+    public void PetGrowth_RecalculateStats()
+    {
+        // Act
+        var def = _petManager.GetDefinition(9999);
+        var pet = new ServerPet(def);
+
+        int hpLvl1 = pet.MaxHp;
+
+        pet.AddExp(200); // Level up -> 2
+
+        // Assert
+        Assert.Equal(2, pet.Level);
+        Assert.True(pet.MaxHp > hpLvl1);
+    }
+
+    [Fact]
+    public void Combat_PetCanBeTarget()
+    {
+        // Setup
+        var petDef = _petManager.GetDefinition(9999);
+        var pet = new ServerPet(petDef) { Id = -100 }; // Runtime ID
+        _combatManager.RegisterCombatant(pet);
+
+        var attacker = new ServerCharacter { Id = 1, Str = 50 };
+        _combatManager.RegisterCombatant(attacker);
+
+        _mockSkills.Setup(s => s.GetSkillById(1)).Returns(new TWL.Shared.Domain.Skills.Skill { SkillId = 1, SpCost = 0, Effects = new List<TWL.Shared.Domain.Skills.SkillEffect>() });
+        _mockResolver.Setup(r => r.CalculateDamage(It.IsAny<ServerCombatant>(), It.IsAny<ServerCombatant>(), It.IsAny<UseSkillRequest>()))
+                     .Returns(50);
+
+        // Act
+        var result = _combatManager.UseSkill(new UseSkillRequest { PlayerId = 1, TargetId = -100, SkillId = 1 });
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(-100, result.TargetId);
+        Assert.Equal(50, result.Damage);
+        // Verify pet took damage
+        Assert.True(pet.Hp < pet.MaxHp);
+    }
+}
+
+// Helper to expose setting Character
+public class ClientSessionForTest : ClientSession
+{
+    public ClientSessionForTest() : base() {
+        UserId = 1;
+    }
+    public void SetCharacter(ServerCharacter c) { Character = c; }
+}

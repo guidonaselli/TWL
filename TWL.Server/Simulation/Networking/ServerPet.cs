@@ -7,13 +7,16 @@ using TWL.Shared.Domain.Characters;
 
 namespace TWL.Server.Simulation.Networking;
 
-public class ServerPet
+public class ServerPet : ServerCombatant
 {
     public string InstanceId { get; set; } = Guid.NewGuid().ToString();
     public int DefinitionId { get; set; }
-    public string Name { get; set; }
 
-    public bool IsDirty { get; set; }
+    // ServerCombatant has Name, Id, Hp, Sp, Stats, StatusEffects
+
+    // Runtime ID for Combat (separate from InstanceId which is persistent GUID)
+    // ServerCombatant.Id is used as the Combat ID.
+    // It should be assigned when entering combat or session load.
 
     public int Level { get; set; } = 1;
     public int Exp { get; set; }
@@ -26,30 +29,17 @@ public class ServerPet
     public bool DeathQuestCompleted { get; set; }
     public bool HasRebirthed { get; set; }
 
-    // Stats
-    public int Str { get; private set; }
-    public int Con { get; private set; }
-    public int Int { get; private set; }
-    public int Wis { get; private set; }
-    public int Agi { get; private set; }
-
-    public int Hp { get; set; }
-    public int Sp { get; set; }
-    public int MaxHp { get; private set; }
-    public int MaxSp { get; private set; }
-
-    // Derived Battle Stats (Simplified for now, can be expanded)
-    public int Atk => (Str * 2);
-    public int Def => (Con * 2);
-    public int Mat => (Int * 2);
-    public int Mdf => (Wis * 2);
-    public int Spd => Agi;
-
     public List<int> UnlockedSkillIds { get; private set; } = new();
 
     // Transient
     private PetDefinition _definition;
-    public bool IsRebellious => Amity < 20; // Example threshold
+    public bool IsRebellious => Amity < 20;
+
+    private int _maxHp;
+    private int _maxSp;
+
+    public override int MaxHp => _maxHp;
+    public override int MaxSp => _maxSp;
 
     public ServerPet() { }
 
@@ -57,11 +47,13 @@ public class ServerPet
     {
         DefinitionId = def.PetTypeId;
         Name = def.Name;
-        _definition = def;
+        CharacterElement = def.Element;
+
+        Hydrate(def);
 
         Level = 1;
         Exp = 0;
-        Amity = 50; // Default amity
+        Amity = 50;
 
         RecalculateStats();
         Hp = MaxHp;
@@ -69,16 +61,24 @@ public class ServerPet
         ExpToNextLevel = PetGrowthCalculator.GetExpForLevel(Level);
     }
 
-    public void SetDefinition(PetDefinition def)
+    public void Hydrate(PetDefinition def)
     {
         _definition = def;
-        // Verify stats match definition/level, if not recalcing, at least update max stats
+        CharacterElement = def.Element;
+        // Ensure Name is set if missing (e.g. from old save)
+        if (string.IsNullOrEmpty(Name)) Name = def.Name;
+
         RecalculateStats();
+    }
+
+    public void SetDefinition(PetDefinition def)
+    {
+        Hydrate(def);
     }
 
     public void AddExp(int amount)
     {
-        if (_definition == null) return; // Cannot grow without definition
+        if (_definition == null) return;
 
         Exp += amount;
         IsDirty = true;
@@ -89,15 +89,12 @@ public class ServerPet
             Exp -= ExpToNextLevel;
             Level++;
             leveledUp = true;
-
-            // Recalculate Exp Requirement
             ExpToNextLevel = PetGrowthCalculator.GetExpForLevel(Level);
         }
 
         if (leveledUp)
         {
             RecalculateStats();
-            // Heal on level up? Usually full heal.
             Hp = MaxHp;
             Sp = MaxSp;
             CheckSkillUnlocks();
@@ -112,20 +109,18 @@ public class ServerPet
             out int maxHp, out int maxSp,
             out int str, out int con, out int int_, out int wis, out int agi);
 
-        MaxHp = maxHp;
-        MaxSp = maxSp;
+        _maxHp = maxHp;
+        _maxSp = maxSp;
         Str = str;
         Con = con;
         Int = int_;
         Wis = wis;
         Agi = agi;
 
-        // Apply Rebirth Bonus if implemented
         if (HasRebirthed)
         {
-            // Simple bonus: +10% all stats
-            MaxHp = (int)(MaxHp * 1.1);
-            MaxSp = (int)(MaxSp * 1.1);
+            _maxHp = (int)(_maxHp * 1.1);
+            _maxSp = (int)(_maxSp * 1.1);
             Str = (int)(Str * 1.1);
             Con = (int)(Con * 1.1);
             Int = (int)(Int * 1.1);
@@ -154,7 +149,6 @@ public class ServerPet
         Hp = 0;
         Sp = 0;
 
-        // Amity Penalty
         ChangeAmity(-10);
 
         IsDirty = true;
@@ -176,15 +170,13 @@ public class ServerPet
         if (_definition == null || !(_definition.RebirthEligible || _definition.RebirthSkillId > 0))
             return false;
 
-        if (Level < 100) return false; // Hardcoded req for now
-        if (HasRebirthed) return false; // One rebirth limit for now?
+        if (Level < 100) return false;
+        if (HasRebirthed) return false;
 
         HasRebirthed = true;
         Level = 1;
         Exp = 0;
         ExpToNextLevel = PetGrowthCalculator.GetExpForLevel(Level);
-
-        // Rebirth resets Amity? Usually no.
 
         RecalculateStats();
         Hp = MaxHp;
@@ -192,7 +184,6 @@ public class ServerPet
 
         IsDirty = true;
 
-        // Unlock Rebirth Skill
         if (_definition.RebirthSkillId > 0 && !UnlockedSkillIds.Contains(_definition.RebirthSkillId))
         {
             UnlockedSkillIds.Add(_definition.RebirthSkillId);
@@ -216,8 +207,36 @@ public class ServerPet
             if (levelMet && amityMet && rebirthMet)
             {
                 UnlockedSkillIds.Add(skillSet.SkillId);
+                // Also add to Combatant SkillMastery for use
+                IncrementSkillUsage(skillSet.SkillId); // Initialize mastery
             }
         }
+    }
+
+    public override void ReplaceSkill(int oldId, int newId)
+    {
+        // For pets, this might just swap the ID in UnlockedSkillIds if we wanted to support it
+        if (UnlockedSkillIds.Contains(oldId))
+        {
+            UnlockedSkillIds.Remove(oldId);
+            UnlockedSkillIds.Add(newId);
+
+            // Sync with SkillMastery if needed
+            // But SkillMastery is a Dictionary<int, SkillMastery>, so we don't need to "remove" unless we want to clear history
+        }
+        IsDirty = true;
+    }
+
+    public float GetUtilityValue(PetUtilityType type)
+    {
+        if (_definition == null || _definition.Utilities == null) return 0f;
+
+        var utility = _definition.Utilities.FirstOrDefault(u => u.Type == type);
+        if (utility == null) return 0f;
+
+        if (Level < utility.RequiredLevel || Amity < utility.RequiredAmity) return 0f;
+
+        return utility.Value;
     }
 
     public ServerPetData GetSaveData()
@@ -256,7 +275,5 @@ public class ServerPet
         }
 
         IsDirty = false;
-
-        // Definition must be set externally to calc stats
     }
 }

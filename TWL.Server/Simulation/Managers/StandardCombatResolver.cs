@@ -18,7 +18,7 @@ public class StandardCombatResolver : ICombatResolver
         _skills = skills;
     }
 
-    public int CalculateDamage(ServerCharacter attacker, ServerCharacter target, UseSkillRequest request)
+    public int CalculateDamage(ServerCombatant attacker, ServerCombatant target, UseSkillRequest request)
     {
         var skill = _skills.GetSkillById(request.SkillId);
 
@@ -58,7 +58,7 @@ public class StandardCombatResolver : ICombatResolver
         return damage;
     }
 
-    public int CalculateHeal(ServerCharacter healer, ServerCharacter target, UseSkillRequest request)
+    public int CalculateHeal(ServerCombatant healer, ServerCombatant target, UseSkillRequest request)
     {
         var skill = _skills.GetSkillById(request.SkillId);
         if (skill == null) return 0;
@@ -79,7 +79,7 @@ public class StandardCombatResolver : ICombatResolver
         return Math.Max(0, (int)Math.Round(totalValue));
     }
 
-    private float GetStatValue(ServerCharacter c, StatType stat)
+    private float GetStatValue(ServerCombatant c, StatType stat)
     {
         switch (stat)
         {

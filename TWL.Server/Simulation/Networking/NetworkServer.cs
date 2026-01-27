@@ -18,11 +18,12 @@ public class NetworkServer
     private readonly PlayerService _playerService;
     private readonly IEconomyService _economyManager;
     private readonly ServerMetrics _metrics;
+    private readonly TWL.Server.Services.PetService _petService;
     private readonly TcpListener _listener;
     private bool _running;
     private CancellationTokenSource _cts;
 
-    public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics)
+    public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService)
     {
         _listener = new TcpListener(IPAddress.Any, port);
         _dbService = dbService;
@@ -33,6 +34,7 @@ public class NetworkServer
         _playerService = playerService;
         _economyManager = economyManager;
         _metrics = metrics;
+        _petService = petService;
     }
 
     public void Start()
@@ -59,7 +61,7 @@ public class NetworkServer
             {
                 var client = await _listener.AcceptTcpClientAsync(token);
                 Console.WriteLine("New client connected!");
-                var session = new ClientSession(client, _dbService, _petManager, _questManager, _combatManager, _interactionManager, _playerService, _economyManager, _metrics);
+                var session = new ClientSession(client, _dbService, _petManager, _questManager, _combatManager, _interactionManager, _playerService, _economyManager, _metrics, _petService);
                 session.StartHandling();
             }
         }

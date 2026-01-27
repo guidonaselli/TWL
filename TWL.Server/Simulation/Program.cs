@@ -54,6 +54,7 @@ Host.CreateDefaultBuilder(args)
 
         svcs.AddSingleton<IPlayerRepository, FilePlayerRepository>();
         svcs.AddSingleton<PlayerService>();
+        svcs.AddSingleton<PetService>();
 
         // Pipeline / Mediator
         svcs.AddSingleton<IMediator>(sp => {
@@ -76,7 +77,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<InteractionManager>(),
                 sp.GetRequiredService<PlayerService>(),
                 sp.GetRequiredService<EconomyManager>(),
-                sp.GetRequiredService<ServerMetrics>()
+                sp.GetRequiredService<ServerMetrics>(),
+                sp.GetRequiredService<PetService>()
             );
         });
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer
