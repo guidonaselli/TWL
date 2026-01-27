@@ -479,6 +479,60 @@ public class PlayerQuestComponent
         }
     }
 
+    public List<int> TryDeliver(string targetName)
+    {
+        var updatedQuests = new List<int>();
+        lock (_lock)
+        {
+            if (Character == null) return updatedQuests;
+
+            foreach (var kvp in QuestStates)
+            {
+                if (kvp.Value != QuestState.InProgress) continue;
+
+                var questId = kvp.Key;
+                var def = _questManager.GetDefinition(questId);
+                if (def == null) continue;
+
+                bool changed = false;
+                for (int i = 0; i < def.Objectives.Count; i++)
+                {
+                    var obj = def.Objectives[i];
+                    if (!string.Equals(obj.Type, "Deliver", StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase)) continue;
+                    if (!obj.DataId.HasValue) continue;
+
+                    var required = obj.RequiredCount;
+                    var current = QuestProgress[questId][i];
+                    if (current >= required) continue;
+
+                    var needed = required - current;
+                    var itemId = obj.DataId.Value;
+
+                    // Check if player has the item
+                    var invItems = Character.GetItems(itemId);
+                    var totalInv = invItems.Sum(x => x.Quantity);
+
+                    if (totalInv > 0)
+                    {
+                        var toRemove = Math.Min(needed, (int)totalInv);
+                        if (Character.RemoveItem(itemId, toRemove))
+                        {
+                            UpdateProgressInternal(questId, i, toRemove);
+                            changed = true;
+                        }
+                    }
+                }
+
+                if (changed)
+                {
+                    updatedQuests.Add(questId);
+                }
+            }
+        }
+        return updatedQuests;
+    }
+
     public QuestData GetSaveData()
     {
         lock (_lock)

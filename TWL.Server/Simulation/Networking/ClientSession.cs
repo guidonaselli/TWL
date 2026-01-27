@@ -269,6 +269,10 @@ public class ClientSession
         // Try "Talk", "Collect", "Interact"
         QuestComponent.TryProgress(uniqueUpdates, dto.TargetName, "Talk", "Collect", "Interact");
 
+        // Try "Deliver" objectives (requires checking and removing items)
+        var deliveredQuests = QuestComponent.TryDeliver(dto.TargetName);
+        foreach(var qid in deliveredQuests) uniqueUpdates.Add(qid);
+
         // If interaction was successful (e.g. Crafting done), try "Craft" objectives
         if (interactionSuccess)
         {

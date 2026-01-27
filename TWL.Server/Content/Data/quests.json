@@ -198,13 +198,13 @@
     "Title": "Materiales de Entrenamiento",
     "Description": "Trae madera para practicar cortes.",
     "Requirements": [3001],
-    "RequiredItems": [ { "ItemId": 7316, "Quantity": 1 } ],
     "Objectives": [
       {
         "Type": "Deliver",
         "TargetName": "Instructor de Combate",
         "RequiredCount": 1,
-        "Description": "Entrega 1 Madera."
+        "Description": "Entrega 1 Madera.",
+        "DataId": 7316
       }
     ],
     "Rewards": { "Exp": 150, "Gold": 50, "Items": [] }
