@@ -1,11 +1,12 @@
 using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.Linq;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Domain.Skills;
 using TWL.Shared.Services;
-
-// donde tienes CombatResult, UseSkillRequest, etc.
 
 namespace TWL.Server.Simulation.Managers;
 
@@ -14,9 +15,7 @@ namespace TWL.Server.Simulation.Managers;
 /// </summary>
 public class CombatManager
 {
-    // Supongamos que guardamos todos los personajes en un diccionario
-    // (en un MMO real podrías tener combates instanciados).
-    private readonly ConcurrentDictionary<int, ServerCharacter> _characters;
+    private readonly ConcurrentDictionary<int, ServerCombatant> _combatants;
     private readonly ICombatResolver _resolver;
     private readonly IRandomService _random;
     private readonly ISkillCatalog _skills;
@@ -24,17 +23,34 @@ public class CombatManager
 
     public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills, IStatusEngine statusEngine)
     {
-        _characters = new ConcurrentDictionary<int, ServerCharacter>();
+        _combatants = new ConcurrentDictionary<int, ServerCombatant>();
         _resolver = resolver;
         _random = random;
         _skills = skills;
         _statusEngine = statusEngine;
     }
 
-    public void AddCharacter(ServerCharacter character)
+    public void RegisterCombatant(ServerCombatant combatant)
     {
-        _characters[character.Id] = character;
+        _combatants[combatant.Id] = combatant;
     }
+
+    public void UnregisterCombatant(int id)
+    {
+        _combatants.TryRemove(id, out _);
+    }
+
+    public ServerCombatant? GetCombatant(int id)
+    {
+        _combatants.TryGetValue(id, out var combatant);
+        return combatant;
+    }
+
+    // Legacy / Convenience
+    public void AddCharacter(ServerCharacter character) => RegisterCombatant(character);
+    public void RemoveCharacter(int id) => UnregisterCombatant(id);
+    public ServerCharacter? GetCharacter(int id) => GetCombatant(id) as ServerCharacter;
+    public List<ServerCharacter> GetAllCharacters() => _combatants.Values.OfType<ServerCharacter>().ToList();
 
     /// <summary>
     ///     Usa una skill (basado en la petición del cliente).
@@ -42,9 +58,8 @@ public class CombatManager
     public CombatResult UseSkill(UseSkillRequest request)
     {
         // 1) Obtenemos los objetos server-side
-        if (!_characters.TryGetValue(request.PlayerId, out var attacker) ||
-            !_characters.TryGetValue(request.TargetId, out var target))
-            // En un caso real, podrías retornar un error o un CombatResult con "invalid target".
+        if (!_combatants.TryGetValue(request.PlayerId, out var attacker) ||
+            !_combatants.TryGetValue(request.TargetId, out var target))
             return null;
 
         var skill = _skills.GetSkillById(request.SkillId);
@@ -57,26 +72,21 @@ public class CombatManager
 
         int newTargetHp;
         // 2) Apply Effects & Calculate Damage
-        // Check for control hit rules if applicable
-        var appliedEffects = new List<TWL.Shared.Domain.Battle.StatusEffectInstance>();
+        var appliedEffects = new List<StatusEffectInstance>();
 
         foreach (var effect in skill.Effects)
         {
-            // Simple logic: if chance met, apply
             float chance = effect.Chance;
 
-            // Override chance if HitRules exist and tag is Control/Seal
             if (skill.HitRules != null && effect.Tag == SkillEffectTag.Seal)
             {
                 // Basic formula: Base + (Int - Wis)*0.01 (clamped)
-                // Assuming StatDependence is "Int-Wis"
                 float statDiff = (attacker.Int - target.Wis) * 0.01f;
                 chance = skill.HitRules.BaseChance + statDiff;
                 if (chance < skill.HitRules.MinChance) chance = skill.HitRules.MinChance;
                 if (chance > skill.HitRules.MaxChance) chance = skill.HitRules.MaxChance;
             }
 
-            // Resistance check
             bool resist = false;
             int finalDuration = effect.Duration;
             float finalValue = effect.Value;
@@ -86,7 +96,7 @@ public class CombatManager
                 foreach (var tag in effect.ResistanceTags)
                 {
                     float resistance = target.GetResistance(tag);
-                    if (resistance >= 1.0f) // Immunity
+                    if (resistance >= 1.0f)
                     {
                         resist = true;
                         break;
@@ -95,9 +105,7 @@ public class CombatManager
                     {
                         if (effect.Outcome == OutcomeModel.Partial)
                         {
-                            // Partial effect: Reduce duration by half (min 1)
                             finalDuration = System.Math.Max(1, finalDuration / 2);
-                            // Reduce magnitude
                             finalValue *= 0.5f;
                         }
                         else
@@ -111,7 +119,6 @@ public class CombatManager
 
             if (!resist && _random.NextFloat() <= chance)
             {
-                // Apply specific logic
                 switch (effect.Tag)
                 {
                     case SkillEffectTag.Cleanse:
@@ -121,8 +128,6 @@ public class CombatManager
                         target.DispelBuffs(_statusEngine);
                         break;
                     case SkillEffectTag.Damage:
-                        // Handled by resolver usually, but if it's flat damage or secondary, we might do it here.
-                        // Standard resolver handles primary damage scaling.
                         break;
                     case SkillEffectTag.Heal:
                         int healAmount = _resolver.CalculateHeal(attacker, target, request);
@@ -130,8 +135,7 @@ public class CombatManager
                         target.Heal(healAmount);
                         break;
                     default:
-                        // Add status
-                        var status = new TWL.Shared.Domain.Battle.StatusEffectInstance(effect.Tag, finalValue, finalDuration, effect.Param)
+                        var status = new StatusEffectInstance(effect.Tag, finalValue, finalDuration, effect.Param)
                         {
                             SourceSkillId = skill.SkillId,
                             StackingPolicy = effect.StackingPolicy,
@@ -165,40 +169,24 @@ public class CombatManager
         return result;
     }
 
-    private void CheckSkillEvolution(ServerCharacter character, Skill skill)
+    private void CheckSkillEvolution(ServerCombatant combatant, Skill skill)
     {
         if (skill.StageUpgradeRules == null) return;
 
-        if (character.SkillMastery.TryGetValue(skill.SkillId, out var mastery))
+        if (combatant.SkillMastery.TryGetValue(skill.SkillId, out var mastery))
         {
             if (mastery.Rank >= skill.StageUpgradeRules.RankThreshold)
             {
                 if (skill.StageUpgradeRules.NextSkillId.HasValue)
                 {
-                    character.ReplaceSkill(skill.SkillId, skill.StageUpgradeRules.NextSkillId.Value);
+                    combatant.ReplaceSkill(skill.SkillId, skill.StageUpgradeRules.NextSkillId.Value);
                 }
             }
         }
     }
 
-    // Ejemplo: Lógica de turnos (opcional). Podrías llevar un "battleId" y states.
-    // public void NextTurn(int battleId) { ... }
-
-    // Podrías agregar más métodos: Revive, ApplyBuff, etc.
-
-    public void RemoveCharacter(int id)
+    public List<ServerCombatant> GetAllCombatants()
     {
-        _characters.TryRemove(id, out _);
-    }
-
-    public ServerCharacter? GetCharacter(int id)
-    {
-        _characters.TryGetValue(id, out var character);
-        return character;
-    }
-
-    public List<ServerCharacter> GetAllCharacters()
-    {
-        return _characters.Values.ToList();
+        return _combatants.Values.ToList();
     }
 }

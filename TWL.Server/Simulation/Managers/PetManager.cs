@@ -13,6 +13,7 @@ public class PetManager
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
+        IncludeFields = true,
         Converters = { new JsonStringEnumConverter() }
     };
 

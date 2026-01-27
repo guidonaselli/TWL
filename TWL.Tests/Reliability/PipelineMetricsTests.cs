@@ -43,8 +43,10 @@ public class PipelineMetricsTests
 
         var mockEconomy = new Mock<IEconomyService>();
 
+        var petService = new TWL.Server.Services.PetService(playerService, mockPet.Object, combatManager);
+
         int port = 9123;
-        var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object, playerService, mockEconomy.Object, metrics);
+        var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object, playerService, mockEconomy.Object, metrics, petService);
 
         server.Start();
 

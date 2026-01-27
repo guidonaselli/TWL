@@ -33,6 +33,7 @@ public class ClientSession
     private readonly InteractionManager _interactionManager;
     private readonly IEconomyService _economyManager;
     private readonly PlayerService _playerService;
+    private readonly TWL.Server.Services.PetService _petService;
     private readonly IMediator _mediator;
     private readonly NetworkStream _stream;
     private readonly RateLimiter _rateLimiter;
@@ -45,7 +46,7 @@ public class ClientSession
 
     protected ClientSession() { } // For testing
 
-    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics)
+    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService)
     {
         _client = client;
         _stream = client.GetStream();
@@ -57,6 +58,7 @@ public class ClientSession
         _playerService = playerService;
         _economyManager = economyManager;
         _metrics = metrics;
+        _petService = petService;
         QuestComponent = new PlayerQuestComponent(questManager);
         _rateLimiter = new RateLimiter();
     }
@@ -152,8 +154,36 @@ public class ClientSession
             case Opcode.BuyShopItemRequest:
                 await HandleBuyShopItemAsync(msg.JsonPayload);
                 break;
+            case Opcode.PetActionRequest:
+                await HandlePetActionAsync(msg.JsonPayload);
+                break;
             // etc.
         }
+    }
+
+    private async Task HandlePetActionAsync(string payload)
+    {
+        if (UserId <= 0) return;
+        var request = JsonSerializer.Deserialize<PetActionRequest>(payload, _jsonOptions);
+        if (request == null) return;
+
+        bool success = false;
+        switch (request.Action)
+        {
+            case PetActionType.Switch:
+                success = _petService.SwitchPet(UserId, request.PetInstanceId);
+                break;
+            case PetActionType.Dismiss:
+                success = _petService.DismissPet(UserId, request.PetInstanceId);
+                break;
+            // Utility etc.
+        }
+
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.PetActionResponse,
+            JsonPayload = JsonSerializer.Serialize(new { success }, _jsonOptions)
+        });
     }
 
     private async Task HandlePurchaseGemsIntentAsync(string payload)
@@ -447,6 +477,25 @@ public class ClientSession
             {
                 Character = new ServerCharacter();
                 Character.LoadSaveData(data.Character);
+
+                // Hydrate Pets
+                if (Character.Pets != null)
+                {
+                    foreach (var pet in Character.Pets)
+                    {
+                        var def = _petManager.GetDefinition(pet.DefinitionId);
+                        if (def != null) pet.Hydrate(def);
+                    }
+
+                    // Register Active Pet
+                    var activePet = Character.GetActivePet();
+                    if (activePet != null)
+                    {
+                        activePet.Id = -Character.Id;
+                        _combatManager.RegisterCombatant(activePet);
+                    }
+                }
+
                 QuestComponent.LoadSaveData(data.Quests);
                 QuestComponent.Character = Character;
                 Console.WriteLine($"Restored session for {loginDto.Username} ({UserId})");

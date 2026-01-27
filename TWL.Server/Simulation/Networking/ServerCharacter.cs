@@ -7,24 +7,18 @@ using TWL.Shared.Domain.Models;
 
 namespace TWL.Server.Simulation.Networking;
 
-public class SkillMastery
-{
-    public int Rank { get; set; } = 1;
-    public int UsageCount { get; set; } = 0;
-}
-
 /// <summary>
 ///     Representa un personaje en el lado del servidor.
-///     Podrías tener stats completos, estado de combate, etc.
 /// </summary>
-public class ServerCharacter
+public class ServerCharacter : ServerCombatant
 {
+    // Override IsDirty to include pets
     private bool _isDirty;
-    public bool IsDirty
+    public new bool IsDirty
     {
         get
         {
-            if (_isDirty) return true;
+            if (_isDirty || base.IsDirty) return true;
             lock (_pets)
             {
                 return _pets.Any(p => p.IsDirty);
@@ -33,6 +27,7 @@ public class ServerCharacter
         set
         {
             _isDirty = value;
+            base.IsDirty = value;
             if (!value)
             {
                 lock (_pets)
@@ -43,68 +38,16 @@ public class ServerCharacter
         }
     }
 
-    private int _hp;
-    private int _sp;
-
-    public int Hp
-    {
-        get => _hp;
-        init => _hp = value;
-    }
-
-    public int Sp
-    {
-        get => _sp;
-        init => _sp = value;
-    }
-
-    public int Id;
-    public string Name;
-    public TWL.Shared.Domain.Characters.Element CharacterElement { get; set; }
-
-    public List<int> KnownSkills { get; set; } = new();
-
     // Stats & Progression
+    public List<int> KnownSkills { get; set; } = new();
     public int Level { get; private set; } = 1;
     public int ExpToNextLevel { get; private set; } = 100;
     public int StatPoints { get; private set; } = 0;
 
-    public int Str { get; set; } = 8;
-    public int Con { get; set; } = 8;
-    public int Int { get; set; } = 8;
-    public int Wis { get; set; } = 8;
-    public int Agi { get; set; } = 8;
-
-    // Derived Battle Stats
-    public int Atk => (Str * 2) + GetStatModifier("Atk");
-    public int Def => (Con * 2) + GetStatModifier("Def");
-    public int Mat => (Int * 2) + GetStatModifier("Mat");
-    public int Mdf => (Wis * 2) + GetStatModifier("Mdf");
-    public int Spd => Agi + GetStatModifier("Spd");
-
     public string ActivePetInstanceId { get; private set; }
 
-    private int GetStatModifier(string stat)
-    {
-        int modifier = 0;
-        lock (_statusLock)
-        {
-            foreach (var effect in _statusEffects)
-            {
-                if (string.Equals(effect.Param, stat, System.StringComparison.OrdinalIgnoreCase))
-                {
-                    if (effect.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.BuffStats)
-                        modifier += (int)effect.Value;
-                    else if (effect.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.DebuffStats)
-                        modifier -= (int)effect.Value;
-                }
-            }
-        }
-        return modifier;
-    }
-
-    public int MaxHealth => Con * 10;
-    public int MaxSp => Int * 5;
+    // Legacy/Alias support if needed, but preferable to use MaxHp from base
+    public int MaxHealth => MaxHp;
 
     private int _exp;
     private readonly object _progressLock = new();
@@ -157,96 +100,7 @@ public class ServerCharacter
         }
     }
 
-    public ConcurrentDictionary<int, SkillMastery> SkillMastery { get; private set; } = new();
-
-    // Combat Status Effects
-    private readonly List<TWL.Shared.Domain.Battle.StatusEffectInstance> _statusEffects = new();
-    private readonly object _statusLock = new();
-
-    public IReadOnlyList<TWL.Shared.Domain.Battle.StatusEffectInstance> StatusEffects
-    {
-        get
-        {
-            lock (_statusLock)
-            {
-                return _statusEffects.ToArray();
-            }
-        }
-    }
-
-    public void AddStatusEffect(TWL.Shared.Domain.Battle.StatusEffectInstance effect, TWL.Shared.Services.IStatusEngine engine)
-    {
-        lock (_statusLock)
-        {
-            engine.Apply(_statusEffects, effect);
-            IsDirty = true;
-        }
-    }
-
-    public float GetResistance(string resistanceTag)
-    {
-        float modifier = 0f;
-        lock (_statusLock)
-        {
-            foreach (var effect in _statusEffects)
-            {
-                if (string.Equals(effect.Param, resistanceTag, System.StringComparison.OrdinalIgnoreCase))
-                {
-                    if (effect.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.BuffStats)
-                        modifier += effect.Value;
-                    else if (effect.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.DebuffStats)
-                        modifier -= effect.Value;
-                }
-            }
-        }
-        return modifier;
-    }
-
-    public void RemoveStatusEffect(TWL.Shared.Domain.Battle.StatusEffectInstance effect)
-    {
-        lock (_statusLock)
-        {
-            _statusEffects.Remove(effect);
-            IsDirty = true;
-        }
-    }
-
-    public void CleanseDebuffs(TWL.Shared.Services.IStatusEngine engine)
-    {
-        lock (_statusLock)
-        {
-            engine.RemoveAll(_statusEffects, e => e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.DebuffStats ||
-                                                  e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Burn ||
-                                                  e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Seal);
-            IsDirty = true;
-        }
-    }
-
-    public void DispelBuffs(TWL.Shared.Services.IStatusEngine engine)
-    {
-        lock (_statusLock)
-        {
-            engine.RemoveAll(_statusEffects, e => e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.BuffStats ||
-                                                  e.Tag == TWL.Shared.Domain.Skills.SkillEffectTag.Shield);
-            IsDirty = true;
-        }
-    }
-
-    public int IncrementSkillUsage(int skillId)
-    {
-        var mastery = SkillMastery.GetOrAdd(skillId, _ => new SkillMastery());
-        mastery.UsageCount++;
-
-        // Default rank up logic: every 10 uses
-        if (mastery.UsageCount % 10 == 0)
-        {
-            mastery.Rank++;
-        }
-        IsDirty = true;
-        return mastery.Rank;
-    }
-
-    public void ReplaceSkill(int oldId, int newId)
+    public override void ReplaceSkill(int oldId, int newId)
     {
         lock (KnownSkills)
         {
@@ -389,20 +243,7 @@ public class ServerCharacter
         return true;
     }
 
-    public bool ConsumeSp(int amount)
-    {
-        int initialSp, newSp;
-        do
-        {
-            initialSp = _sp;
-            if (initialSp < amount) return false;
-            newSp = initialSp - amount;
-        }
-        while (Interlocked.CompareExchange(ref _sp, newSp, initialSp) != initialSp);
-
-        IsDirty = true;
-        return true;
-    }
+    // ConsumeSp is inherited from ServerCombatant
 
     public bool AddItem(int itemId, int quantity, BindPolicy policy = BindPolicy.Unbound, int? boundToId = null)
     {
@@ -466,8 +307,7 @@ public class ServerCharacter
 
             if (total < quantity) return false;
 
-            // Remove from candidates (prioritizing logic could go here, e.g. Unbound first?)
-            // For now, just remove from the found order
+            // Remove from candidates
             int remainingToRemove = quantity;
             foreach (var item in candidates)
             {
@@ -514,41 +354,7 @@ public class ServerCharacter
         }
     }
 
-    /// <summary>
-    /// Applies damage to the character in a thread-safe manner.
-    /// </summary>
-    /// <param name="damage">Amount of damage to apply.</param>
-    /// <returns>The new HP value.</returns>
-    public int ApplyDamage(int damage)
-    {
-        int initialHp, newHp;
-        do
-        {
-            initialHp = _hp;
-            newHp = initialHp - damage;
-            if (newHp < 0) newHp = 0;
-        }
-        while (Interlocked.CompareExchange(ref _hp, newHp, initialHp) != initialHp);
-
-        IsDirty = true;
-        return newHp;
-    }
-
-    public int Heal(int amount)
-    {
-        if (amount <= 0) return _hp;
-        int initialHp, newHp;
-        do
-        {
-            initialHp = _hp;
-            newHp = initialHp + amount;
-            if (newHp > MaxHealth) newHp = MaxHealth;
-        }
-        while (Interlocked.CompareExchange(ref _hp, newHp, initialHp) != initialHp);
-
-        IsDirty = true;
-        return newHp;
-    }
+    // ApplyDamage, Heal are inherited
 
     public ServerCharacterData GetSaveData()
     {

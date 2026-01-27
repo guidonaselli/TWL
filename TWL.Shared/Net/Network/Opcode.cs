@@ -29,5 +29,9 @@ public enum Opcode
     // Economy
     PurchaseGemsIntent,
     PurchaseGemsVerify,
-    BuyShopItemRequest
+    BuyShopItemRequest,
+
+    // Pet
+    PetActionRequest,
+    PetActionResponse
 }

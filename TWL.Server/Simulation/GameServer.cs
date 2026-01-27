@@ -22,6 +22,7 @@ public class GameServer
     public CombatManager CombatManager { get; private set; }
     public InteractionManager InteractionManager { get; private set; }
     public PlayerService PlayerService { get; private set; }
+    public PetService PetService { get; private set; }
     public IEconomyService EconomyManager { get; private set; }
     public ServerMetrics Metrics { get; private set; }
 
@@ -65,6 +66,8 @@ public class GameServer
         var combatResolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
         var statusEngine = new StatusEngine();
         CombatManager = new CombatManager(combatResolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance, statusEngine);
+
+        PetService = new PetService(PlayerService, PetManager, CombatManager);
         EconomyManager = new EconomyManager();
 
         var scheduler = new WorldScheduler(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldScheduler>.Instance);
@@ -78,7 +81,7 @@ public class GameServer
         mediator.Register<InteractCommand, InteractResult>(new InteractHandler(InteractionManager));
 
         // 3) Inicia Network
-        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService, EconomyManager, Metrics);
+        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService, EconomyManager, Metrics, PetService);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");
