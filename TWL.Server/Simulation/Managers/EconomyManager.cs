@@ -43,6 +43,14 @@ public class EconomyManager : IEconomyService
     }
 
     private readonly ConcurrentDictionary<string, Transaction> _transactions = new();
+    private readonly ConcurrentDictionary<int, RateLimitTracker> _rateLimits = new();
+
+    private class RateLimitTracker
+    {
+        public int Count { get; set; }
+        public DateTime WindowStart { get; set; }
+    }
+
     private readonly object _ledgerLock = new();
     private int _cleanupCounter = 0;
     private const int CLEANUP_INTERVAL = 100;
@@ -67,6 +75,29 @@ public class EconomyManager : IEconomyService
         else
         {
             ReplayLedger();
+        }
+    }
+
+    private bool CheckRateLimit(int userId, int limit = 10, int windowSeconds = 60)
+    {
+        var now = DateTime.UtcNow;
+        var tracker = _rateLimits.GetOrAdd(userId, _ => new RateLimitTracker { WindowStart = now, Count = 0 });
+
+        lock (tracker)
+        {
+            if ((now - tracker.WindowStart).TotalSeconds > windowSeconds)
+            {
+                tracker.WindowStart = now;
+                tracker.Count = 0;
+            }
+
+            if (tracker.Count >= limit)
+            {
+                return false;
+            }
+
+            tracker.Count++;
+            return true;
         }
     }
 
@@ -179,6 +210,8 @@ public class EconomyManager : IEconomyService
 
     public PurchaseGemsIntentResponseDTO InitiatePurchase(int userId, string productId)
     {
+        if (!CheckRateLimit(userId)) return null;
+
         if (!_productPrices.ContainsKey(productId))
         {
             return null;
@@ -207,6 +240,8 @@ public class EconomyManager : IEconomyService
 
     public EconomyOperationResultDTO VerifyPurchase(int userId, string orderId, string receiptToken, ServerCharacter character)
     {
+        if (!CheckRateLimit(userId)) return new EconomyOperationResultDTO { Success = false, Message = "Rate limit exceeded" };
+
         if (!_transactions.TryGetValue(orderId, out var tx))
         {
              // Idempotency check: if it was completed and removed?
@@ -332,8 +367,26 @@ public class EconomyManager : IEconomyService
             return new EconomyOperationResultDTO { Success = false, Message = "Insufficient funds" };
         }
 
+        var details = $"ShopItem:{shopItemId}, Item:{itemDef.ItemId} x{quantity}";
+        if (!string.IsNullOrEmpty(operationId)) details += $", OrderId:{operationId}";
+
         // Add Item
-        character.AddItem(itemDef.ItemId, quantity);
+        bool added = character.AddItem(itemDef.ItemId, quantity);
+
+        if (!added)
+        {
+            // Compensation: Refund
+            character.AddPremiumCurrency(totalCost);
+
+            if (tx != null)
+            {
+                lock (tx) tx.State = TransactionState.Failed;
+            }
+
+            LogLedger("ShopBuyFailed", character.Id, details + ", Reason:InventoryFull", 0, character.PremiumCurrency);
+
+            return new EconomyOperationResultDTO { Success = false, Message = "Inventory full" };
+        }
 
         // Mark Transaction as Completed
         if (tx != null)
@@ -343,9 +396,6 @@ public class EconomyManager : IEconomyService
                 tx.State = TransactionState.Completed;
             }
         }
-
-        var details = $"ShopItem:{shopItemId}, Item:{itemDef.ItemId} x{quantity}";
-        if (!string.IsNullOrEmpty(operationId)) details += $", OrderId:{operationId}";
 
         LogLedger("ShopBuy", character.Id, details, -totalCost, character.PremiumCurrency);
 
@@ -362,7 +412,10 @@ public class EconomyManager : IEconomyService
     {
         // In a real app, this would verify a cryptographic signature.
         // For this hardening task, we enforce a strict format linked to the orderId.
-        return !string.IsNullOrEmpty(receiptToken) && receiptToken == $"mock_sig_{orderId}";
+        // FAIL CLOSED: Strict validation
+        if (string.IsNullOrWhiteSpace(receiptToken) || string.IsNullOrWhiteSpace(orderId)) return false;
+
+        return receiptToken == $"mock_sig_{orderId}";
     }
 
     private void LogLedger(string type, int userId, string details, long delta, long newBalance)

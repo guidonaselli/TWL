@@ -4,6 +4,10 @@ using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Server.Architecture.Pipeline;
+using TWL.Server.Features.Combat;
+using TWL.Server.Features.Interactions;
+using TWL.Shared.Domain.Requests;
 
 namespace TWL.Server.Simulation;
 
@@ -67,6 +71,11 @@ public class GameServer
         scheduler.Start();
 
         PopulateTestWorld();
+
+        // Setup Mediator
+        var mediator = new Mediator();
+        mediator.Register<UseSkillCommand, CombatResult>(new UseSkillHandler(CombatManager));
+        mediator.Register<InteractCommand, InteractResult>(new InteractHandler(InteractionManager));
 
         // 3) Inicia Network
         _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService, EconomyManager, Metrics);

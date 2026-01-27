@@ -2,6 +2,9 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using TWL.Server.Architecture.Pipeline;
+using TWL.Server.Features.Combat;
+using TWL.Server.Features.Interactions;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Security;
@@ -30,6 +33,7 @@ public class ClientSession
     private readonly InteractionManager _interactionManager;
     private readonly IEconomyService _economyManager;
     private readonly PlayerService _playerService;
+    private readonly IMediator _mediator;
     private readonly NetworkStream _stream;
     private readonly RateLimiter _rateLimiter;
     private readonly ServerMetrics _metrics;
@@ -223,7 +227,8 @@ public class ClientSession
         // Ensure the request comes from this player
         if (request.PlayerId != UserId && Character != null) request.PlayerId = Character.Id;
 
-        var result = _combatManager.UseSkill(request);
+        // Use Mediator
+        var result = await _mediator.Send(new UseSkillCommand(request));
 
         if (result != null)
         {
@@ -270,32 +275,14 @@ public class ClientSession
             return;
         }
 
-        // Process Interaction Rules (Give Items, Craft, etc.)
-        bool interactionSuccess = false;
         if (Character != null)
         {
-            interactionSuccess = _interactionManager.ProcessInteraction(Character, QuestComponent, dto.TargetName);
-        }
+             var result = await _mediator.Send(new InteractCommand(Character, QuestComponent, dto.TargetName));
 
-        // Use a HashSet to avoid duplicates and multiple list allocations
-        var uniqueUpdates = new HashSet<int>();
-
-        // Try "Talk", "Collect", "Interact"
-        QuestComponent.TryProgress(uniqueUpdates, dto.TargetName, "Talk", "Collect", "Interact");
-
-        // Try "Deliver" objectives (requires checking and removing items)
-        var deliveredQuests = QuestComponent.TryDeliver(dto.TargetName);
-        foreach(var qid in deliveredQuests) uniqueUpdates.Add(qid);
-
-        // If interaction was successful (e.g. Crafting done), try "Craft" objectives
-        if (interactionSuccess)
-        {
-            QuestComponent.TryProgress(uniqueUpdates, dto.TargetName, "Craft");
-        }
-
-        foreach (var questId in uniqueUpdates)
-        {
-            await SendQuestUpdateAsync(questId);
+             foreach (var questId in result.UpdatedQuestIds)
+             {
+                 await SendQuestUpdateAsync(questId);
+             }
         }
     }
 

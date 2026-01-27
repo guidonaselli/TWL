@@ -33,11 +33,8 @@
     </ItemGroup>
 
     <ItemGroup>
-        <EmbeddedResource Include="Resources\Strings.resx" />
-    </ItemGroup>
-
-    <ItemGroup>
-        <Content Include="Content\Data\**">
+        <Content Include="..\Content\Data\**">
+            <Link>Content\Data\%(RecursiveDir)%(Filename)%(Extension)</Link>
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
         </Content>
     </ItemGroup>
