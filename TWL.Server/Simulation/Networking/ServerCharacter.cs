@@ -39,6 +39,8 @@ public class ServerCharacter : ServerCombatant
     }
 
     // Stats & Progression
+    public event Action<Item, int>? OnItemAdded;
+
     public List<int> KnownSkills { get; set; } = new();
     public int Level { get; private set; } = 1;
     public int ExpToNextLevel { get; private set; } = 100;
@@ -255,13 +257,16 @@ public class ServerCharacter : ServerCombatant
             {
                 existing.Quantity += quantity;
                 IsDirty = true;
+                OnItemAdded?.Invoke(existing, quantity);
                 return true;
             }
             else
             {
                 if (_inventory.Count >= MaxInventorySlots) return false;
-                _inventory.Add(new Item { ItemId = itemId, Quantity = quantity, Policy = policy, BoundToId = boundToId });
+                var newItem = new Item { ItemId = itemId, Quantity = quantity, Policy = policy, BoundToId = boundToId };
+                _inventory.Add(newItem);
                 IsDirty = true;
+                OnItemAdded?.Invoke(newItem, quantity);
                 return true;
             }
         }

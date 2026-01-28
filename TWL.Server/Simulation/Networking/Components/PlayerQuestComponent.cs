@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using TWL.Server.Persistence;
 using TWL.Server.Simulation.Managers;
+using TWL.Shared.Domain.Models;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
 using TWL.Server.Simulation.Networking;
@@ -28,7 +29,23 @@ public class PlayerQuestComponent
 
     public Dictionary<int, DateTime> QuestCompletionTimes { get; private set; } = new();
 
-    public ServerCharacter? Character { get; set; }
+    private ServerCharacter? _character;
+    public ServerCharacter? Character
+    {
+        get => _character;
+        set
+        {
+            if (_character != null)
+            {
+                _character.OnItemAdded -= HandleItemAdded;
+            }
+            _character = value;
+            if (_character != null)
+            {
+                _character.OnItemAdded += HandleItemAdded;
+            }
+        }
+    }
 
     public PlayerQuestComponent(ServerQuestManager questManager, PetManager? petManager = null)
     {
@@ -552,6 +569,51 @@ public class PlayerQuestComponent
                 if (changed)
                 {
                     output.Add(questId);
+                }
+            }
+        }
+    }
+
+    private void HandleItemAdded(Item item, int quantity)
+    {
+        lock (_lock)
+        {
+            CheckFailures();
+
+            foreach (var kvp in QuestStates)
+            {
+                if (kvp.Value != QuestState.InProgress) continue;
+
+                var questId = kvp.Key;
+                var def = _questManager.GetDefinition(questId);
+                if (def == null) continue;
+
+                for (int i = 0; i < def.Objectives.Count; i++)
+                {
+                    var obj = def.Objectives[i];
+                    if (!string.Equals(obj.Type, "Collect", StringComparison.OrdinalIgnoreCase) &&
+                        !string.Equals(obj.Type, "CollectItem", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    bool match = false;
+                    if (obj.DataId.HasValue)
+                    {
+                        if (obj.DataId.Value == item.ItemId) match = true;
+                    }
+                    else
+                    {
+                        // Fallback to Name match if DataId not specified
+                        if (string.Equals(obj.TargetName, item.Name, StringComparison.OrdinalIgnoreCase)) match = true;
+                    }
+
+                    if (match)
+                    {
+                        // Check if we need more
+                        if (QuestProgress[questId][i] < obj.RequiredCount)
+                        {
+                            UpdateProgressInternal(questId, i, quantity);
+                        }
+                    }
                 }
             }
         }
