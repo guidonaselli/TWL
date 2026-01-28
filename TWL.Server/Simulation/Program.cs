@@ -7,6 +7,7 @@ using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
+using TWL.Server.Services.World;
 using TWL.Server.Simulation;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -45,6 +46,13 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<IEconomyService, EconomyManager>(); // Use Interface
         svcs.AddSingleton<EconomyManager>(sp => (EconomyManager)sp.GetRequiredService<IEconomyService>()); // Forward implementation if needed as concrete
 
+        // World Services
+        svcs.AddSingleton<MapLoader>();
+        svcs.AddSingleton<IWorldTriggerService, WorldTriggerService>();
+        // Register Handlers? Maybe manually in WorldTriggerService constructor or here?
+        // For now WorldTriggerService has RegisterHandler. I'll do it in ServerWorker or WorldTriggerService ctor.
+        // Actually WorldTriggerService ctor could check for handlers in DI, but easier to do manual registration for now.
+
         // Domain Managers
         svcs.AddSingleton<PetManager>();
         svcs.AddSingleton<ServerQuestManager>();
@@ -78,7 +86,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<PlayerService>(),
                 sp.GetRequiredService<EconomyManager>(),
                 sp.GetRequiredService<ServerMetrics>(),
-                sp.GetRequiredService<PetService>()
+                sp.GetRequiredService<PetService>(),
+                sp.GetRequiredService<IWorldTriggerService>()
             );
         });
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer

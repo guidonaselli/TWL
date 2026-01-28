@@ -75,6 +75,11 @@ public class ServerCharacter : ServerCombatant
         init => _premiumCurrency = value;
     }
 
+    // World Position
+    public int MapId { get; set; }
+    public float X { get; set; }
+    public float Y { get; set; }
+
     public int MaxInventorySlots { get; set; } = 100;
 
     private readonly List<Item> _inventory = new();
@@ -371,7 +376,10 @@ public class ServerCharacter : ServerCombatant
             Agi = Agi,
             Gold = _gold,
             PremiumCurrency = _premiumCurrency,
-            ActivePetInstanceId = ActivePetInstanceId
+            ActivePetInstanceId = ActivePetInstanceId,
+            MapId = MapId,
+            X = X,
+            Y = Y
         };
 
         lock (_progressLock)
@@ -419,6 +427,9 @@ public class ServerCharacter : ServerCombatant
         _gold = data.Gold;
         _premiumCurrency = data.PremiumCurrency;
         ActivePetInstanceId = data.ActivePetInstanceId;
+        MapId = data.MapId;
+        X = data.X;
+        Y = data.Y;
 
         lock (_progressLock)
         {

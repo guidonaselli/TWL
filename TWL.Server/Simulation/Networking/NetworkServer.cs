@@ -3,6 +3,7 @@ using System.Net.Sockets;
 using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Services.World;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Net.Messages;
 
@@ -19,11 +20,12 @@ public class NetworkServer
     private readonly IEconomyService _economyManager;
     private readonly ServerMetrics _metrics;
     private readonly TWL.Server.Services.PetService _petService;
+    private readonly IWorldTriggerService _worldTriggerService;
     private readonly TcpListener _listener;
     private bool _running;
     private CancellationTokenSource _cts;
 
-    public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService)
+    public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService, IWorldTriggerService worldTriggerService)
     {
         _listener = new TcpListener(IPAddress.Any, port);
         _dbService = dbService;
@@ -35,6 +37,7 @@ public class NetworkServer
         _economyManager = economyManager;
         _metrics = metrics;
         _petService = petService;
+        _worldTriggerService = worldTriggerService;
     }
 
     public void Start()
@@ -61,7 +64,7 @@ public class NetworkServer
             {
                 var client = await _listener.AcceptTcpClientAsync(token);
                 Console.WriteLine("New client connected!");
-                var session = new ClientSession(client, _dbService, _petManager, _questManager, _combatManager, _interactionManager, _playerService, _economyManager, _metrics, _petService);
+                var session = new ClientSession(client, _dbService, _petManager, _questManager, _combatManager, _interactionManager, _playerService, _economyManager, _metrics, _petService, _worldTriggerService);
                 session.StartHandling();
             }
         }

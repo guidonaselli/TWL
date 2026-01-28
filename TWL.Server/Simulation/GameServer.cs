@@ -2,6 +2,8 @@ using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
+using TWL.Server.Services.World;
+using TWL.Server.Domain.World;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Architecture.Pipeline;
@@ -70,6 +72,36 @@ public class GameServer
         PetService = new PetService(PlayerService, PetManager, CombatManager);
         EconomyManager = new EconomyManager();
 
+        // Init World System
+        var mapLoader = new MapLoader(Microsoft.Extensions.Logging.Abstractions.NullLogger<MapLoader>.Instance);
+        var worldTriggerService = new WorldTriggerService(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldTriggerService>.Instance);
+        worldTriggerService.RegisterHandler(new TWL.Server.Services.World.Handlers.MapTransitionHandler());
+
+        // Load Maps
+        if (System.IO.Directory.Exists("Content/Maps"))
+        {
+            var mapFiles = System.IO.Directory.GetFiles("Content/Maps", "*.tmx", System.IO.SearchOption.AllDirectories);
+            var loadedMaps = new List<ServerMap>();
+            foreach (var file in mapFiles)
+            {
+                try
+                {
+                    var map = mapLoader.LoadMap(file);
+                    loadedMaps.Add(map);
+                }
+                catch (System.Exception ex)
+                {
+                    System.Console.WriteLine($"Failed to load map {file}: {ex.Message}");
+                }
+            }
+            worldTriggerService.LoadMaps(loadedMaps);
+            System.Console.WriteLine($"Loaded {loadedMaps.Count} maps.");
+        }
+        else
+        {
+             System.Console.WriteLine("Warning: Content/Maps not found.");
+        }
+
         var scheduler = new WorldScheduler(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldScheduler>.Instance);
         scheduler.Start();
 
@@ -81,7 +113,7 @@ public class GameServer
         mediator.Register<InteractCommand, InteractResult>(new InteractHandler(InteractionManager));
 
         // 3) Inicia Network
-        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService, EconomyManager, Metrics, PetService);
+        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService, EconomyManager, Metrics, PetService, worldTriggerService);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");

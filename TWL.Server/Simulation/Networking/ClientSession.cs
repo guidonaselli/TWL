@@ -11,6 +11,7 @@ using TWL.Server.Security;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Server.Security;
+using TWL.Server.Services.World;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Net.Network;
@@ -34,6 +35,7 @@ public class ClientSession
     private readonly IEconomyService _economyManager;
     private readonly PlayerService _playerService;
     private readonly TWL.Server.Services.PetService _petService;
+    private readonly IWorldTriggerService _worldTriggerService;
     private readonly IMediator _mediator;
     private readonly NetworkStream _stream;
     private readonly RateLimiter _rateLimiter;
@@ -46,7 +48,7 @@ public class ClientSession
 
     protected ClientSession() { } // For testing
 
-    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService)
+    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService, IWorldTriggerService worldTriggerService)
     {
         _client = client;
         _stream = client.GetStream();
@@ -59,6 +61,7 @@ public class ClientSession
         _economyManager = economyManager;
         _metrics = metrics;
         _petService = petService;
+        _worldTriggerService = worldTriggerService;
         QuestComponent = new PlayerQuestComponent(questManager, petManager);
         _rateLimiter = new RateLimiter();
     }
@@ -476,16 +479,19 @@ public class ClientSession
     private async Task HandleMoveAsync(string payload)
     {
         // EJ: {"dx":1,"dy":0}
-        if (UserId < 0) return; // no logueado
+        if (UserId < 0 || Character == null) return; // no logueado
 
         var moveDto = JsonSerializer.Deserialize<MoveDTO>(payload, _jsonOptions);
 
         if (moveDto == null) return;
 
         // Actualizar la pos en el server side:
-        // PlayerData data = ...
-        // data.X += moveDto.dx * speed
-        // etc.
+        Character.X += moveDto.dx;
+        Character.Y += moveDto.dy;
+
+        // Check for triggers
+        _worldTriggerService.CheckTriggers(Character);
+
         // Broadcast a otros en la misma zona
         await Task.CompletedTask; // Placeholder for async broadcast
     }
