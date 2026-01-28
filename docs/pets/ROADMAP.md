@@ -13,6 +13,8 @@
 
 - [ ] **PET-001**: Modelo persistente de pet (ownership, stats, element, level).
 - [ ] **PET-002**: Pet en combate (turns/AI simple) + sincronización server-side.
-- [ ] **PET-003**: Captura/obtención (sin copiar mecánicas exactas; diseño original WLO-like).
+- [ ] **PET-003**: Captura System: Mecánica de combate para capturar enemigos (HP threshold + Level check).
 - [ ] **PET-004**: Reglas especiales (quest pets / revive rules) como flags data-driven.
 - [ ] **PET-005**: Anti-dupe y trading constraints (si se permite).
+- [ ] **PET-006**: Pet Riding: Sistema para montar pets (stats boost + visual change).
+- [ ] **PET-007**: Pet Rebirth/Evolution: Mecánica para evolucionar pets (reset level + stat boost).

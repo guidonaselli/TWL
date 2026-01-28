@@ -19,3 +19,5 @@
 - [ ] **QST-006**: 1 questline “starter island” (3–7 quests) sin copiar contenido original.
 - [ ] **QST-007**: Questlines regionales (1 por región) + gating por flags.
 - [ ] **QST-008**: Puerto Roca Questline (IDs 1100-1104). Implementar la línea de misiones de Puerto Roca, asegurando instanciación de entidades (Bandido, Lobo, Caravan Leader, etc.) y lógica de interacción.
+- [ ] **QST-009**: Critical Progression: Tent Quest. Implementar quest para obtener el item "Tent" (Bloquea Housing).
+- [ ] **QST-010**: Critical Progression: Vehicles (Canoe/Raft). Implementar quests para obtener vehículos de agua (Bloquea World Exploration).

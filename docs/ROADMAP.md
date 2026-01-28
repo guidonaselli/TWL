@@ -18,6 +18,10 @@ El roadmap del proyecto ha sido dividido en dominios específicos para facilitar
 **Archivo:** [docs/pets/ROADMAP.md](pets/ROADMAP.md)
 *   Contiene: Sistema de Mascotas, IA, Captura.
 
+## 5. Housing & Manufacturing
+**Archivo:** [docs/housing/ROADMAP.md](housing/ROADMAP.md)
+*   Contiene: Sistema de Tent (Casa), Muebles, Almacenamiento, Manufactura.
+
 ---
 
 > **Nota:** Para agregar nuevos ítems, hazlo en el archivo correspondiente al dominio. Si es un cambio arquitectónico o transversal, usa `docs/core/ROADMAP.md`.
