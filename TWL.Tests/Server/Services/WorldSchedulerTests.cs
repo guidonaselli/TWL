@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using TWL.Server.Services;
+using TWL.Server.Simulation.Managers;
 using Xunit;
 
 namespace TWL.Tests.Server.Services;
@@ -12,7 +13,7 @@ public class WorldSchedulerTests
     [Fact]
     public async Task Schedule_ExecutesActionAfterDelay()
     {
-        using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance);
+        using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, new ServerMetrics());
         scheduler.Start();
 
         bool executed = false;
@@ -32,7 +33,7 @@ public class WorldSchedulerTests
     [Fact]
     public async Task ScheduleRepeating_ExecutesRepeatedly()
     {
-        using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance);
+        using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, new ServerMetrics());
         scheduler.Start();
 
         int count = 0;
