@@ -66,7 +66,7 @@ public class SkillUnlockRules
     public int Level { get; set; }
     public int? ParentSkillId { get; set; }
     public int? ParentSkillRank { get; set; }
-    public string? QuestId { get; set; }
+    public int? QuestId { get; set; }
     public string? QuestFlag { get; set; } // Required server-side flag (e.g., from quest completion)
 }
 

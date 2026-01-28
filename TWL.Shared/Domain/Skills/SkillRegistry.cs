@@ -125,7 +125,7 @@ public class SkillRegistry : ISkillCatalog
         public int Level { get; set; }
         public int? ParentSkillId { get; set; }
         public int? ParentSkillRank { get; set; }
-        public string? QuestId { get; set; }
+        public int? QuestId { get; set; }
         public string? QuestFlag { get; set; }
     }
 

@@ -1,1561 +1,487 @@
 [
   {
     "QuestId": 1001,
-    "Title": "Washed Ashore",
-    "Description": "You just woke up on the beach. Talk to the Captain.",
+    "Title": "El Despertar",
+    "Description": "Has despertado en la playa de una isla desconocida. Habla con el Anciano para entender dónde estás.",
     "Requirements": [],
     "Objectives": [
       {
         "Type": "Talk",
-        "TargetName": "Captain",
+        "TargetName": "Anciano Varado",
         "RequiredCount": 1,
-        "Description": "Speak with the Captain."
+        "Description": "Habla con el Anciano Varado."
       }
     ],
     "Rewards": {
-      "Exp": 10,
-      "Gold": 5,
+      "Exp": 50,
+      "Gold": 0,
       "Items": []
     }
   },
   {
     "QuestId": 1002,
-    "Title": "First Meal",
-    "Description": "Collect 3 Coconuts for the survivors.",
-    "Requirements": [
-      1001
-    ],
+    "Title": "Supervivencia Básica",
+    "Description": "Necesitas fuego para sobrevivir la noche. Recoge madera a la deriva en la playa.",
+    "Requirements": [1001],
     "Objectives": [
       {
         "Type": "Collect",
-        "TargetName": "Coconut",
-        "RequiredCount": 3,
-        "Description": "Find 3 Coconuts on the beach."
+        "TargetName": "Madera",
+        "RequiredCount": 5,
+        "Description": "Recoge 5 trozos de madera."
       }
     ],
     "Rewards": {
-      "Exp": 20,
-      "Gold": 0,
+      "Exp": 100,
+      "Gold": 10,
       "Items": [
-        {
-          "ItemId": 101,
-          "Quantity": 1
-        }
+        { "ItemId": 7316, "Quantity": 1 }
       ]
     }
   },
   {
     "QuestId": 1003,
-    "Title": "Reporting In",
-    "Description": "Report to the Doctor.",
-    "Requirements": [
-      1002
-    ],
+    "Title": "El Cangrejo Molesto",
+    "Description": "Un cangrejo gigante está asustando a la niña en la orilla.",
+    "Requirements": [1001],
     "Objectives": [
       {
-        "Type": "Talk",
-        "TargetName": "Doctor",
+        "Type": "Kill",
+        "TargetName": "Cangrejo de Playa",
         "RequiredCount": 1,
-        "Description": "Find the Doctor."
+        "Description": "Derrota al Cangrejo de Playa."
       }
     ],
     "Rewards": {
-      "Exp": 30,
-      "Gold": 10,
-      "Items": [
-        {
-          "ItemId": 102,
-          "Quantity": 2
-        }
-      ]
+      "Exp": 150,
+      "Gold": 50,
+      "Items": []
     }
   },
   {
     "QuestId": 1004,
-    "Title": "Improvised Defense",
-    "Description": "The wilds are dangerous. Ask the Blacksmith about a weapon.",
-    "Requirements": [
-      1003
-    ],
+    "Title": "Compañero Fiel",
+    "Description": "Aprende a capturar una mascota para que te acompañe.",
+    "Requirements": [1002],
     "Objectives": [
       {
-        "Type": "Talk",
-        "TargetName": "Blacksmith",
+        "Type": "Capture",
+        "TargetName": "Cangrejo Pequeño",
         "RequiredCount": 1,
-        "Description": "Speak with the Blacksmith."
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "DriftwoodPile",
-        "RequiredCount": 1,
-        "Description": "Find suitable wood on the beach."
-      },
-      {
-        "Type": "Talk",
-        "TargetName": "Blacksmith",
-        "RequiredCount": 1,
-        "Description": "Return to the Blacksmith."
+        "Description": "Captura un Cangrejo Pequeño."
       }
     ],
     "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 103,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1005,
-    "Title": "Water Source",
-    "Description": "The survivors are dehydrated. Find a source of fresh water inland.",
-    "Requirements": [
-      1004
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "FreshWater",
-        "RequiredCount": 1,
-        "Description": "Find a freshwater spring."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 10,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1006,
-    "Title": "Fire Starter",
-    "Description": "We need to boil the water. Ask the Survivalist for help starting a fire.",
-    "Requirements": [
-      1005
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Survivalist",
-        "RequiredCount": 1,
-        "Description": "Talk to the Survivalist."
-      }
-    ],
-    "Rewards": {
-      "Exp": 20,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1007,
-    "Title": "Kindling",
-    "Description": "I can start a fire, but I need dry wood. The driftwood isn't enough.",
-    "Requirements": [
-      1006
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "DrySticks",
-        "RequiredCount": 5,
-        "Description": "Collect Dry Sticks from dead trees."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 20,
-      "Items": [
-        {
-          "ItemId": 101,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1008,
-    "Title": "Strange Noises",
-    "Description": "Ive been hearing strange noises coming from the bushes near the wreck. It sounds... distressed. Can you investigate?",
-    "Requirements": [
-      1007
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Survivalist",
-        "RequiredCount": 1,
-        "Description": "Speak with the Survivalist."
-      },
-      {
-        "Type": "Interact",
-        "TargetName": "RustlingBushes",
-        "RequiredCount": 1,
-        "Description": "Investigate the rustling bushes."
-      }
-    ],
-    "Rewards": {
-      "Exp": 20,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1009,
-    "Title": "A New Friend?",
-    "Description": "Its a small monkey! It looks hurt and scared. It needs medicine. The Survivalist mentioned seeing medicinal herbs inland.",
-    "Requirements": [
-      1008
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "MedicinalHerb",
-        "RequiredCount": 2,
-        "Description": "Find Medicinal Herbs."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
+      "Exp": 200,
       "Gold": 0,
       "Items": []
     }
   },
   {
     "QuestId": 1010,
-    "Title": "Nursing to Health",
-    "Description": "You have the herbs. Apply them gently to the monkeys wounds.",
-    "Requirements": [
-      1009
-    ],
+    "Title": "Report In",
+    "Description": "The Captain needs a status report.",
+    "Requirements": [],
     "Objectives": [
       {
-        "Type": "Interact",
-        "TargetName": "WoundedMonkey",
+        "Type": "Talk",
+        "TargetName": "Captain",
         "RequiredCount": 1,
-        "Description": "Tend to the Wounded Monkey."
+        "Description": "Talk to the Captain."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1012,
+    "Title": "A New Friend",
+    "Description": "A colorful bird is watching you.",
+    "Requirements": [1010],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Parrot",
+        "RequiredCount": 1,
+        "Description": "Approach the Parrot."
       }
     ],
     "Rewards": {
       "Exp": 100,
       "Gold": 0,
       "Items": [],
-      "PetUnlockId": 1
-    }
-  },
-  {
-    "QuestId": 1011,
-    "Title": "First Spar",
-    "Description": "Now that you have a companion, test your strength against the wildlife.",
-    "Requirements": [
-      1010
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "WeakCrab",
-        "RequiredCount": 3,
-        "Description": "Defeat 3 Weak Crabs."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 10,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1012,
-    "Title": "The Bully",
-    "Description": "A large crab is blocking the path inland. Defeat it!",
-    "Requirements": [
-      1011
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "GiantCrab",
-        "RequiredCount": 1,
-        "Description": "Defeat the Giant Crab."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 50,
-      "Items": [
-        {
-          "ItemId": 104,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1013,
-    "Title": "Monkey's Favorite Snack",
-    "Description": "The monkey seems restless. The Survivalist suggests feeding it its favorite fruit found in the palm groves.",
-    "Requirements": [
-      1010
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "BananaCluster",
-        "RequiredCount": 5,
-        "Description": "Collect 5 Bananas."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 105,
-          "Quantity": 2
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1014,
-    "Title": "Playtime",
-    "Description": "The monkey is full and happy. Now it wants to play!",
-    "Requirements": [
-      1013
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "MyMonkey",
-        "RequiredCount": 1,
-        "Description": "Play with your Monkey."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1015,
-    "Title": "The Old Hermit",
-    "Description": "With the Giant Crab defeated, seek out the Old Hermit inland.",
-    "Requirements": [
-      1012
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "OldHermit",
-        "RequiredCount": 1,
-        "Description": "Talk to the Old Hermit."
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1016,
-    "Title": "Primitive Tools",
-    "Description": "You need tools to survive. Collect a Sharp Stone and a Strong Branch, then use the Old Workbench to make a Stone Axe.",
-    "Requirements": [
-      1015
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "SharpStone",
-        "RequiredCount": 1,
-        "Description": "Find a Sharp Stone."
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "StrongBranch",
-        "RequiredCount": 1,
-        "Description": "Find a Strong Branch."
-      },
-      {
-        "Type": "Craft",
-        "TargetName": "OldWorkbench",
-        "RequiredCount": 1,
-        "Description": "Craft a Stone Axe at the Old Workbench."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1017,
-    "Title": "The Way Out",
-    "Description": "The Hermit says the path to the jungle is blocked by thick overgrowth. He suggests using your new Stone Axe to clear a path.",
-    "Requirements": [
-      1016
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "OldHermit",
-        "RequiredCount": 1,
-        "Description": "Speak with the Old Hermit."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1018,
-    "Title": "Cutting the Path",
-    "Description": "Cut the Thick Vines blocking the path inland.",
-    "Requirements": [
-      1017
-    ],
-    "Objectives": [
-      {
-        "Type": "Craft",
-        "TargetName": "ThickVines",
-        "RequiredCount": 1,
-        "Description": "Cut the Thick Vines with your Stone Axe."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 204,
-          "Quantity": 1
-        }
-      ]
+      "PetUnlockId": 101
     }
   },
   {
     "QuestId": 2001,
-    "Title": "Training Basics",
-    "Description": "You need to keep your skills sharp. The Survivalist suggests building a Training Dummy.",
-    "Requirements": [
-      1016
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "DrySticks",
-        "RequiredCount": 5,
-        "Description": "Collect 5 Dry Sticks."
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "DriftwoodPile",
-        "RequiredCount": 2,
-        "Description": "Collect 2 Driftwood."
-      },
-      {
-        "Type": "Craft",
-        "TargetName": "TrainingDummy",
-        "RequiredCount": 1,
-        "Description": "Craft a Training Dummy."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 10,
-      "Items": [
-        {
-          "ItemId": 205,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 2010,
-    "Title": "Gone Fishing",
-    "Description": "Coconuts aren't enough. The Survivalist suggests making a fishing rod.",
-    "Requirements": [
-      1004
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "BendableBranch",
-        "RequiredCount": 2,
-        "Description": "Find 2 Bendable Branches."
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "VineString",
-        "RequiredCount": 2,
-        "Description": "Find 2 Vine Strings."
-      },
-      {
-        "Type": "Craft",
-        "TargetName": "OldWorkbench",
-        "RequiredCount": 1,
-        "Description": "Craft a Simple Fishing Rod."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 2011,
-    "Title": "First Catch",
-    "Description": "Now that you have a rod, catch some fish!",
-    "Requirements": [
-      2010
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "FishingSpot",
-        "RequiredCount": 3,
-        "Description": "Catch 3 Fish."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 304,
-          "Quantity": 2
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 2012,
-    "Title": "Grilling",
-    "Description": "Raw fish is dangerous. Cook it at a campfire.",
-    "Requirements": [
-      2011
-    ],
-    "Objectives": [
-      {
-        "Type": "Craft",
-        "TargetName": "Campfire",
-        "RequiredCount": 1,
-        "Description": "Cook a Fish."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 305,
-          "Quantity": 5
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1101,
-    "Title": "Into the Green",
-    "Description": "The path is clear. Proceed into the Jungle Fringe.",
-    "Requirements": [
-      1018
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "OldHermit",
-        "RequiredCount": 1,
-        "Description": "Path is clear?"
-      },
-      {
-        "Type": "Interact",
-        "TargetName": "JungleEntrance",
-        "RequiredCount": 1,
-        "Description": "Travel to Jungle Fringe"
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1102,
-    "Title": "Poisonous Flora",
-    "Description": "The jungle plants look dangerous. Collect samples of Poison Ivy for the Doctor to study.",
-    "Requirements": [
-      1101
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "PoisonIvyBush",
-        "RequiredCount": 3,
-        "Description": "Collect 3 Poison Ivy Samples."
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 50,
-      "Items": [
-        {
-          "ItemId": 7523,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1103,
-    "Title": "Jungle Predator",
-    "Description": "A Jaguar has been stalking the new path. It must be dealt with to ensure safety.",
-    "Requirements": [
-      1102
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "Jaguar",
-        "RequiredCount": 1,
-        "Description": "Kill 1 Jaguar."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 100,
-      "Items": [
-        {
-          "ItemId": 8003,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 2101,
-    "Title": "Rare Herbs",
-    "Description": "The Doctor needs rare herbs found only deep in the foliage for better medicine.",
-    "Requirements": [
-      1010
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "RareHerbPatch",
-        "RequiredCount": 5,
-        "Description": "Collect 5 Rare Jungle Herbs."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 20,
-      "Items": [
-        {
-          "ItemId": 8002,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1201,
-    "Title": "Strange Symbols",
-    "Description": "I found these strange markings on some debris near the cliff. Can you bring me a sample?",
-    "Requirements": [
-      1103
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "StrangeStoneDebris",
-        "RequiredCount": 1,
-        "Description": "Collect Strange Stone."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 10,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1202,
-    "Title": "The Door is Locked",
-    "Description": "This stone matches the door to the ruins we found earlier. But it's locked. Maybe there's a clue on the nearby tablets.",
-    "Requirements": [
-      1201
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "AncientTablet",
-        "RequiredCount": 1,
-        "Description": "Collect Ancient Rubbing."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 20,
-      "Items": [
-        {
-          "ItemId": 8103,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1203,
-    "Title": "Guardians of the Past",
-    "Description": "The key opens the door, but a mechanical guardian has awakened!",
-    "Requirements": [
-      1202
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "RuinsGuardian",
-        "RequiredCount": 1,
-        "Description": "Defeat the Ruins Guardian."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1204,
-    "Title": "Inside the Ruins",
-    "Description": "The guardian is down. Use the key to enter the ruins.",
-    "Requirements": [
-      1203
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "RuinsEntrance",
-        "RequiredCount": 1,
-        "Description": "Enter the Ruins."
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 2201,
-    "Title": "Lost Explorer's Journal",
-    "Description": "These pages detail the flora of the jungle. Find the rest.",
+    "Title": "Strange Herbs",
+    "Description": "Alchemist Elara needs help gathering herbs.",
     "Requirements": [],
     "Objectives": [
       {
-        "Type": "Collect",
-        "TargetName": "JournalPagePile",
-        "RequiredCount": 3,
-        "Description": "Collect 3 Journal Pages."
+        "Type": "Talk",
+        "TargetName": "Alchemist Elara",
+        "RequiredCount": 1,
+        "Description": "Talk to Alchemist Elara."
       }
     ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 0,
-      "Items": []
-    }
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
   },
   {
-    "QuestId": 2202,
-    "Title": "Jungle Survival",
-    "Description": "The jungle is full of poison. Craft an Antidote.",
-    "Requirements": [
-      1102
+    "QuestId": 2002,
+    "Title": "Gathering Ingredients",
+    "Description": "Collect green herbs for the potion.",
+    "Requirements": [2001],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Green Herb",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Green Herbs."
+      }
     ],
+    "Rewards": { "Exp": 100, "Gold": 20, "Items": [] }
+  },
+  {
+    "QuestId": 2003,
+    "Title": "Basic Brew",
+    "Description": "Brew a Minor Potion using the herbs.",
+    "Requirements": [2002],
     "Objectives": [
       {
         "Type": "Craft",
-        "TargetName": "AlchemyTable",
+        "TargetName": "Minor Potion",
         "RequiredCount": 1,
-        "Description": "Craft an Antidote."
+        "Description": "Craft 1 Minor Potion."
       }
     ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 8105,
-          "Quantity": 3
-        }
-      ]
-    }
+    "Rewards": { "Exp": 150, "Gold": 50, "Items": [{"ItemId": 3001, "Quantity": 1}] }
   },
   {
-    "QuestId": 1205,
-    "Title": "Dark Corridors",
-    "Description": "The console flickers and points to threats in the darkness. Clear the path.",
-    "Requirements": [
-      1204
-    ],
+    "QuestId": 2004,
+    "Title": "Delivery",
+    "Description": "Deliver the potion to the Guard Captain.",
+    "Requirements": [2003],
     "Objectives": [
       {
         "Type": "Talk",
-        "TargetName": "RuinsConsole",
+        "TargetName": "Guard Captain",
         "RequiredCount": 1,
-        "Description": "Check the Console."
-      },
-      {
-        "Type": "Kill",
-        "TargetName": "RuinsBat",
-        "RequiredCount": 3,
-        "Description": "Defeat 3 Ruins Bats."
-      },
-      {
-        "Type": "Kill",
-        "TargetName": "GiantSpider",
-        "RequiredCount": 1,
-        "Description": "Defeat the Giant Spider."
+        "Description": "Deliver the potion to the Guard Captain."
       }
     ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1206,
-    "Title": "Ancient Power",
-    "Description": "The console needs power. Find a Power Crystal deep in the ruins.",
-    "Requirements": [
-      1205
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "PowerCrystalSource",
-        "RequiredCount": 1,
-        "Description": "Collect a Power Crystal."
-      },
-      {
-        "Type": "Talk",
-        "TargetName": "RuinsConsole",
-        "RequiredCount": 1,
-        "Description": "Return to the Console."
-      }
-    ],
-    "Rewards": {
-      "Exp": 350,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1207,
-    "Title": "The Hologram",
-    "Description": "The system is online. Activate the main projector.",
-    "Requirements": [
-      1206
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HologramProjector",
-        "RequiredCount": 1,
-        "Description": "Activate the Projector."
-      }
-    ],
-    "Rewards": {
-      "Exp": 500,
-      "Gold": 100,
-      "Items": [
-        {
-          "ItemId": 8109,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 2203,
-    "Title": "Bat Wings",
-    "Description": "The Doctor needs samples from the ruins bats.",
-    "Requirements": [
-      1205
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "BatNest",
-        "RequiredCount": 5,
-        "Description": "Collect 5 Bat Wings from nests."
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 20,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 2204,
-    "Title": "Lost Toy",
-    "Description": "You saw a stuffed bear. Maybe your monkey would like it?",
-    "Requirements": [
-      1010
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "StuffedBearLocation",
-        "RequiredCount": 1,
-        "Description": "Find the Stuffed Bear."
-      },
-      {
-        "Type": "Interact",
-        "TargetName": "MyMonkey",
-        "RequiredCount": 1,
-        "Description": "Give the toy to your Monkey."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1301,
-    "Title": "Deciphering the Map",
-    "Description": "The hologram displays a map with a blinking light. Download the map data.",
-    "Requirements": [
-      1207
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HologramConsole",
-        "RequiredCount": 1,
-        "Description": "Download Map Data from the Console."
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 8110,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1302,
-    "Title": "The Signal",
-    "Description": "The map points to a high peak in the jungle. Travel there to investigate the signal.",
-    "Requirements": [
-      1301
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "SignalPeak",
-        "RequiredCount": 1,
-        "Description": "Reach the Signal Peak."
-      }
-    ],
-    "Rewards": {
-      "Exp": 250,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1303,
-    "Title": "Radio Silence",
-    "Description": "You found an old radio tower, broken and rusted. Inspect it to see if it can be repaired.",
-    "Requirements": [
-      1302
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "BrokenRadioTower",
-        "RequiredCount": 1,
-        "Description": "Inspect the Broken Radio Tower."
-      }
-    ],
-    "Rewards": {
-      "Exp": 250,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1304,
-    "Title": "Repair Job",
-    "Description": "The radio needs parts. Scavenge nearby piles and find a power source (Battery Core) from local electric wildlife.",
-    "Requirements": [
-      1303
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "ScrapPile",
-        "RequiredCount": 3,
-        "Description": "Collect 3 Radio Parts from Scrap Piles."
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "DefeatedEel",
-        "RequiredCount": 1,
-        "Description": "Collect a Battery Core from a Defeated Eel."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1305,
-    "Title": "First Contact",
-    "Description": "You have the parts. Repair the radio and send a signal.",
-    "Requirements": [
-      1304
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "BrokenRadioTower",
-        "RequiredCount": 1,
-        "Description": "Repair and Use the Radio."
-      }
-    ],
-    "Rewards": {
-      "Exp": 500,
-      "Gold": 100,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 2301,
-    "Title": "Scavenger Hunt",
-    "Description": "A torn logbook mentions a hidden supply cache nearby.",
-    "Requirements": [
-      1303
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "HiddenSuppliesLocation",
-        "RequiredCount": 1,
-        "Description": "Find the Hidden Supplies."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 102,
-          "Quantity": 2
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 2302,
-    "Title": "Battery Power",
-    "Description": "The electric eels are dangerous but their energy is useful. Clear them out.",
-    "Requirements": [
-      1303
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "ElectricEel",
-        "RequiredCount": 5,
-        "Description": "Kill 5 Electric Eels."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1401,
-    "Title": "Echoes from the Sea",
-    "Description": "The radio is picking up a signal loop from the North-East cliffs. It's not coming from off-island.",
-    "Requirements": [
-      1305
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "RepairedRadioTower",
-        "RequiredCount": 1,
-        "Description": "Get coordinates from the Radio Tower."
-      },
-      {
-        "Type": "Interact",
-        "TargetName": "NorthEastCliff",
-        "RequiredCount": 1,
-        "Description": "Travel to the North-East Cliffs."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1402,
-    "Title": "Blocked Passage",
-    "Description": "A rockfall blocks the path down to the cove. You need something explosive to clear it.",
-    "Requirements": [
-      1401
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HeavyRocks",
-        "RequiredCount": 1,
-        "Description": "Inspect the Heavy Rocks."
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "SulfurVent",
-        "RequiredCount": 1,
-        "Description": "Collect Sulfur."
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "BurntTree",
-        "RequiredCount": 1,
-        "Description": "Collect Charcoal."
-      },
-      {
-        "Type": "Craft",
-        "TargetName": "AlchemyTable",
-        "RequiredCount": 1,
-        "Description": "Craft Black Powder."
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1403,
-    "Title": "Clearing the Way",
-    "Description": "Use the Black Powder to blast the rocks.",
-    "Requirements": [
-      1402
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HeavyRocks",
-        "RequiredCount": 1,
-        "Description": "Blast the rocks with Black Powder."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1404,
-    "Title": "The Hidden Dock",
-    "Description": "The path is clear. Investigate the cove.",
-    "Requirements": [
-      1403
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HiddenDock",
-        "RequiredCount": 1,
-        "Description": "Investigate the Hidden Dock."
-      }
-    ],
-    "Rewards": {
-      "Exp": 500,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 9004,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 2401,
-    "Title": "Master Fisherman",
-    "Description": "The cove waters are teeming with rare life. Catch a Rare Blue Fish.",
-    "Requirements": [
-      2011,
-      1404
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "FishingSpot",
-        "RequiredCount": 1,
-        "Description": "Catch a Rare Blue Fish."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 50,
-      "Items": []
-    }
+    "Rewards": { "Exp": 200, "Gold": 100, "Items": [] }
   },
   {
     "QuestId": 3001,
-    "Title": "Ruins Discovery",
-    "Description": "The Hermit remembers another entrance. Ask him about it.",
-    "Requirements": [
-      1017
-    ],
+    "Title": "El Camino del Guerrero",
+    "Description": "Demuestra tu fuerza para comenzar el entrenamiento.",
+    "Requirements": [],
+    "RequiredLevel": 2,
+    "RequiredStats": { "Str": 10 },
     "Objectives": [
       {
         "Type": "Talk",
-        "TargetName": "OldHermit",
+        "TargetName": "Instructor de Combate",
         "RequiredCount": 1,
-        "Description": "Talk to Old Hermit about the map."
+        "Description": "Habla con el Instructor."
       }
     ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    },
-    "FlagsSet": [
-      "RuinsMapKnown"
-    ]
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
   },
   {
     "QuestId": 3002,
-    "Title": "Finding the Entrance",
-    "Description": "The map points to a hidden vine wall.",
-    "Requirements": [],
-    "RequiredFlags": [
-      "RuinsMapKnown"
-    ],
+    "Title": "Materiales de Entrenamiento",
+    "Description": "Trae madera para practicar cortes.",
+    "Requirements": [3001],
     "Objectives": [
       {
-        "Type": "Interact",
-        "TargetName": "HiddenVineWall",
+        "Type": "Deliver",
+        "TargetName": "Instructor de Combate",
         "RequiredCount": 1,
-        "Description": "Find the Hidden Entrance."
+        "Description": "Entrega 1 Madera.",
+        "DataId": 7316
       }
     ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 50,
-      "Items": []
-    },
-    "FlagsSet": [
-      "RuinsUnlocked"
-    ]
+    "Rewards": { "Exp": 150, "Gold": 50, "Items": [] }
   },
   {
     "QuestId": 3003,
-    "Title": "Ruins Clean Up",
-    "Description": "Keep the entrance clear of spiders.",
-    "Requirements": [],
-    "RequiredFlags": [
-      "RuinsUnlocked"
-    ],
+    "Title": "Primera Sangre",
+    "Description": "Elimina a los lobos que acechan el campamento.",
+    "Requirements": [3002],
     "Objectives": [
       {
         "Type": "Kill",
-        "TargetName": "RuinsSpider",
-        "RequiredCount": 5,
-        "Description": "Kill 5 Ruins Spiders."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 10,
-      "Items": []
-    },
-    "Repeatability": 4
-  },
-  {
-    "QuestId": 4000,
-    "Title": "Arrival at Puerto Roca",
-    "Description": "You have arrived at the bustling port city. Speak with the Port Master to get your bearings.",
-    "Requirements": [],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "PortMaster",
-        "RequiredCount": 1,
-        "Description": "Talk to the Port Master."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 10,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 4001,
-    "Title": "Supplies for the Journey",
-    "Description": "The Port Master advises you to stock up before heading inland. Collect fresh water and coconuts.",
-    "Requirements": [
-      4000
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "Coconut",
-        "RequiredCount": 5,
-        "Description": "Collect 5 Coconuts."
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "FreshWater",
-        "RequiredCount": 2,
-        "Description": "Collect 2 Fresh Water."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 20,
-      "Items": [
-        {
-          "ItemId": 101,
-          "Quantity": 2
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 4002,
-    "Title": "Local Wildlife",
-    "Description": "Crabs are blocking the trade route. Clear them out.",
-    "Requirements": [
-      4000
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "RockCrab",
+        "TargetName": "Lobo del Bosque",
         "RequiredCount": 3,
-        "Description": "Kill 3 Rock Crabs."
+        "Description": "Derrota a 3 Lobos del Bosque."
       }
     ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 30,
-      "Items": []
-    }
+    "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
   },
   {
-    "QuestId": 4003,
-    "Title": "Lost Cargo",
-    "Description": "A merchant lost a crate near the docks. Find it.",
-    "Requirements": [
-      4002
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "StrangeCrate",
-        "RequiredCount": 1,
-        "Description": "Investigate the Strange Crate."
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 50,
-      "Items": [
-        {
-          "ItemId": 105,
-          "Quantity": 5
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 4004,
-    "Title": "Departure",
-    "Description": "You are ready. Report to the Caravan Leader to leave the city.",
-    "Requirements": [
-      4001,
-      4003
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "CaravanLeader",
-        "RequiredCount": 1,
-        "Description": "Talk to the Caravan Leader."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 100,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 5000,
-    "Title": "Lost Shipment",
-    "Description": "A caravan was attacked nearby. Recover the spilled goods.",
+    "QuestId": 8001,
+    "Title": "Trial of the Fire Dragon",
+    "Description": "Prove your might by defeating the Guardian of the Fire Dragon to learn the legendary Dragon Slash.",
+    "Type": "SpecialSkill",
+    "SpecialCategory": "Dragon",
+    "RequiredLevel": 10,
+    "RequiredStats": { "Str": 20 },
     "Requirements": [],
     "Objectives": [
       {
-        "Type": "Collect",
-        "TargetName": "SpilledGoods",
-        "RequiredCount": 5,
-        "Description": "Collect 5 Spilled Goods."
+        "Type": "Kill",
+        "TargetName": "Fire Dragon Guardian",
+        "RequiredCount": 1,
+        "Description": "Defeat the Fire Dragon Guardian."
       }
     ],
     "Rewards": {
-      "Exp": 100,
-      "Gold": 50,
-      "Items": [
-        {
-          "ItemId": 5001,
-          "Quantity": 1
-        }
-      ]
-    }
+      "Exp": 5000,
+      "Gold": 1000,
+      "Items": [],
+      "GrantSkillId": 8001
+    },
+    "AntiAbuseRules": "UniquePerCharacter",
+    "Repeatability": 0
   },
   {
-    "QuestId": 5001,
-    "Title": "Broken Wagon",
-    "Description": "The wagon is damaged. Craft a Repair Kit and fix it.",
-    "Requirements": [
-      5000
-    ],
-    "Objectives": [
-      {
-        "Type": "Craft",
-        "TargetName": "Workbench",
-        "RequiredCount": 1,
-        "Description": "Craft a Repair Kit."
-      },
-      {
-        "Type": "Interact",
-        "TargetName": "BrokenWagon",
-        "RequiredCount": 1,
-        "Description": "Repair the Wagon."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 5002,
-    "Title": "Strange Vial",
-    "Description": "You found a strange vial in the wreckage. Analyze it using Alchemy.",
-    "Requirements": [
-      5001
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "StrangeVial",
-        "RequiredCount": 1,
-        "Description": "Find the Strange Vial."
-      },
-      {
-        "Type": "Compound",
-        "TargetName": "AlchemyTable",
-        "RequiredCount": 1,
-        "Description": "Compound an Analysis Result."
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 20,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 5003,
-    "Title": "Escort Duty",
-    "Description": "Protect the Caravan Leader while he moves to the Safe Zone. Do not let him die!",
-    "Requirements": [
-      5002
-    ],
+    "QuestId": 1050,
+    "Title": "Rumores en la Cala",
+    "Description": "El pescador ha escuchado ruidos extraños cerca de los acantilados por la noche.",
+    "Requirements": [],
     "Objectives": [
       {
         "Type": "Talk",
-        "TargetName": "CaravanLeader",
+        "TargetName": "Pescador Viejo",
         "RequiredCount": 1,
-        "Description": "Meet the Leader at the Safe Zone."
+        "Description": "Habla con el Pescador Viejo."
       }
     ],
-    "FailConditions": [
-      {
-        "Type": "NpcDeath",
-        "Value": "CaravanLeader",
-        "Description": "The Caravan Leader died."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 100,
-      "Items": []
-    }
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
   },
   {
-    "QuestId": 5004,
-    "Title": "Forging Ahead",
-    "Description": "Debris blocks the final path. Forge a Heavy Pickaxe to clear it.",
-    "Requirements": [
-      5003
-    ],
+    "QuestId": 1051,
+    "Title": "La Fuente del Ruido",
+    "Description": "Investiga la entrada de las cuevas y elimina a las bestias que bloquean el camino.",
+    "Requirements": [1050],
     "Objectives": [
       {
-        "Type": "Forge",
-        "TargetName": "Anvil",
+        "Type": "Kill",
+        "TargetName": "Cave Bat",
+        "RequiredCount": 3,
+        "Description": "Matar 3 Murciélago de Cueva."
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [{"ItemId": 3001, "Quantity": 1}] }
+  },
+  {
+    "QuestId": 1052,
+    "Title": "Inscripciones Antiguas",
+    "Description": "Hay extraños grabados en las paredes. Toma calcos para estudiarlos.",
+    "Requirements": [1051],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Grabado de Pared",
+        "RequiredCount": 3,
+        "Description": "Toma 3 Calcos de Piedra de los Grabados."
+      }
+    ],
+    "Rewards": { "Exp": 150, "Gold": 20, "Items": [{"ItemId": 7502, "Quantity": 3}] }
+  },
+  {
+    "QuestId": 1053,
+    "Title": "El Guardián de Piedra",
+    "Description": "Un gólem bloquea el altar interior. Derrótalo.",
+    "Requirements": [1052],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Stone Golem",
         "RequiredCount": 1,
-        "Description": "Forge a Heavy Pickaxe."
+        "Description": "Matar 1 Gólem de Piedra."
+      }
+    ],
+    "Rewards": { "Exp": 300, "Gold": 0, "Items": [{"ItemId": 7501, "Quantity": 1}] }
+  },
+  {
+    "QuestId": 1054,
+    "Title": "Un Pequeño Amigo",
+    "Description": "El fragmento brilla cerca del altar. Úsalo para despertar al espíritu.",
+    "Requirements": [1053],
+    "RequiredItems": [ { "ItemId": 7501, "Quantity": 1 } ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Ancient Altar",
+        "RequiredCount": 1,
+        "Description": "Hablar con Altar Antiguo."
+      }
+    ],
+    "Rewards": { "Exp": 0, "Gold": 0, "Items": [], "PetUnlockId": 201 }
+  },
+  {
+    "QuestId": 1060,
+    "Title": "Suministros Perdidos",
+    "Description": "Una caja cayó al mar y fue arrastrada a la orilla.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Caja a la Deriva",
+        "RequiredCount": 1,
+        "Description": "Recuperar la Caja a la Deriva."
+      }
+    ],
+    "Rewards": { "Exp": 0, "Gold": 50, "Items": [{"ItemId": 7503, "Quantity": 1}] }
+  },
+  {
+    "QuestId": 8002,
+    "Title": "Trial of the Fairy Queen",
+    "Description": "Prove your purity by clearing the Fairy Woods to learn the Fairy's Blessing.",
+    "Type": "SpecialSkill",
+    "SpecialCategory": "Fairy",
+    "RequiredLevel": 10,
+    "RequiredStats": { "Wis": 20 },
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Instance",
+        "TargetName": "Fairy Woods",
+        "RequiredCount": 1,
+        "Description": "Clear the Fairy Woods Instance."
       }
     ],
     "Rewards": {
-      "Exp": 400,
+      "Exp": 5000,
+      "Gold": 1000,
+      "Items": [],
+      "GrantSkillId": 8002
+    },
+    "AntiAbuseRules": "UniquePerCharacter",
+    "Repeatability": 0
+  },
+  {
+    "QuestId": 1100,
+    "Title": "Partida Inminente",
+    "Description": "La caravana está lista para partir. Habla con el Líder de la Caravana.",
+    "Requirements": [1004],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Caravan Leader",
+        "RequiredCount": 1,
+        "Description": "Habla con el Líder de la Caravana."
+      }
+    ],
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [{"ItemId": 3001, "Quantity": 3}] }
+  },
+  {
+    "QuestId": 1101,
+    "Title": "El Camino del Bosque",
+    "Description": "Sigue el sendero hacia el Bosque del Norte.",
+    "Requirements": [1100],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Sendero Norte",
+        "RequiredCount": 1,
+        "Description": "Interactúa con el Sendero Norte."
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 1102,
+    "Title": "Peligros del Camino",
+    "Description": "Bandidos acechan el camino. Despeja la ruta.",
+    "Requirements": [1101],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Bandido del Camino",
+        "RequiredCount": 2,
+        "Description": "Derrota a 2 Bandidos del Camino."
+      }
+    ],
+    "Rewards": { "Exp": 200, "Gold": 50, "Items": [] }
+  },
+  {
+    "QuestId": 1103,
+    "Title": "Llegada a Puerto Roca",
+    "Description": "Has llegado a las puertas de la ciudad. Entra.",
+    "Requirements": [1102],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Puerta de la Ciudad",
+        "RequiredCount": 1,
+        "Description": "Interactúa con la Puerta de la Ciudad."
+      }
+    ],
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 1104,
+    "Title": "Ciudadano Nuevo",
+    "Description": "Regístrate en el Ayuntamiento para obtener acceso a la ciudad.",
+    "Requirements": [1103],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Funcionario de Registro",
+        "RequiredCount": 1,
+        "Description": "Habla con el Funcionario de Registro."
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 100, "Items": [] }
+  },
+  {
+    "QuestId": 9000,
+    "Title": "Housing Authorization",
+    "Description": "To own land in this world, one must prove their worth and pay the tax. Talk to the Estate Agent.",
+    "Requirements": [],
+    "RequiredLevel": 10,
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Estate Agent",
+        "RequiredCount": 1,
+        "Description": "Talk to the Estate Agent."
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "Madera",
+        "RequiredCount": 10,
+        "Description": "Collect 10 Wood.",
+        "DataId": 7316
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "Iron Ore",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Iron Ore.",
+        "DataId": 7301
+      },
+      {
+        "Type": "PayGold",
+        "TargetName": "Estate Agent",
+        "RequiredCount": 500,
+        "Description": "Pay 500 Gold fee."
+      }
+    ],
+    "FlagsSet": ["HOUSING_UNLOCKED"],
+    "Rewards": {
+      "Exp": 1000,
       "Gold": 0,
       "Items": [
-        {
-          "ItemId": 5005,
-          "Quantity": 1
-        }
+        { "ItemId": 800, "Quantity": 1 }
       ]
     }
   }
