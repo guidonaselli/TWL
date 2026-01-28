@@ -359,5 +359,67 @@
       { "Tag": "Shield", "Value": 0, "Duration": 2 }
     ],
     "Requirements": { "Wis": 20 }
+  },
+  {
+    "SkillId": 100,
+    "Name": "Boulder Crash",
+    "Description": "A massive rock falls on the enemy, potentially stunning them.",
+    "Element": "Earth",
+    "Branch": "Magical",
+    "Tier": 2,
+    "TargetType": "SingleEnemy",
+    "SpCost": 35,
+    "Cooldown": 2,
+    "Scaling": [
+      { "Stat": "Mat", "Coefficient": 1.4 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 },
+      { "Tag": "Seal", "Value": 0, "Duration": 2, "Chance": 0.5, "ConflictGroup": "Control", "Outcome": "Partial", "ResistanceTags": ["EarthResist", "StunResist"] }
+    ],
+    "Requirements": { "Int": 25 },
+    "HitRules": { "BaseChance": 0.5, "MinChance": 0.1, "MaxChance": 0.9 },
+    "UnlockRules": { "ParentSkillId": 61, "ParentSkillRank": 10 }
+  },
+  {
+    "SkillId": 101,
+    "Name": "Gale Slice",
+    "Description": "A razor-sharp wind cut that causes bleeding.",
+    "Element": "Wind",
+    "Branch": "Physical",
+    "Tier": 1,
+    "TargetType": "SingleEnemy",
+    "SpCost": 12,
+    "Cooldown": 0,
+    "Scaling": [
+      { "Stat": "Atk", "Coefficient": 1.1 },
+      { "Stat": "Spd", "Coefficient": 0.3 }
+    ],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "Duration": 0 },
+      { "Tag": "Burn", "Value": 10, "Duration": 3, "Chance": 0.8, "ConflictGroup": "DoT", "StackingPolicy": "StackUpToN", "MaxStacks": 3 }
+    ],
+    "Requirements": { "Str": 10, "Agi": 15 },
+    "UnlockRules": { "Level": 5 }
+  },
+  {
+    "SkillId": 102,
+    "Name": "Aqua Shield",
+    "Description": "Protects an ally with water, reducing damage and resisting fire.",
+    "Element": "Water",
+    "Branch": "Support",
+    "Tier": 1,
+    "TargetType": "SingleAlly",
+    "SpCost": 20,
+    "Cooldown": 3,
+    "Scaling": [
+      { "Stat": "Wis", "Coefficient": 1.5 }
+    ],
+    "Effects": [
+      { "Tag": "BuffStats", "Value": 20, "Duration": 3, "Param": "Def", "StackingPolicy": "RefreshDuration" },
+      { "Tag": "BuffStats", "Value": 0.5, "Duration": 3, "Param": "FireResist", "StackingPolicy": "RefreshDuration" }
+    ],
+    "Requirements": { "Wis": 15 },
+    "UnlockRules": { "Level": 5 }
   }
 ]

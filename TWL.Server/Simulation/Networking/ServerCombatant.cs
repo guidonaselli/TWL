@@ -57,6 +57,9 @@ public abstract class ServerCombatant
     // Skills
     public ConcurrentDictionary<int, SkillMastery> SkillMastery { get; protected set; } = new();
 
+    // Cooldowns (Transient)
+    private readonly ConcurrentDictionary<int, int> _activeCooldowns = new();
+
     // Status Effects
     protected readonly List<StatusEffectInstance> _statusEffects = new();
     protected readonly object _statusLock = new();
@@ -160,6 +163,38 @@ public abstract class ServerCombatant
         }
         IsDirty = true;
         return mastery.Rank;
+    }
+
+    public bool IsSkillOnCooldown(int skillId)
+    {
+        return _activeCooldowns.TryGetValue(skillId, out int turns) && turns > 0;
+    }
+
+    public void SetSkillCooldown(int skillId, int turns)
+    {
+        if (turns > 0)
+        {
+            _activeCooldowns[skillId] = turns;
+        }
+    }
+
+    public void TickCooldowns()
+    {
+        foreach (var kvp in _activeCooldowns)
+        {
+            if (kvp.Value > 0)
+            {
+                int newValue = kvp.Value - 1;
+                if (newValue <= 0)
+                {
+                    _activeCooldowns.TryRemove(kvp.Key, out _);
+                }
+                else
+                {
+                    _activeCooldowns[kvp.Key] = newValue;
+                }
+            }
+        }
     }
 
     public abstract void ReplaceSkill(int oldId, int newId);
