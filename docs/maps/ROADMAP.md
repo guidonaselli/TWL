@@ -10,8 +10,8 @@
 ## Initial Release (Puerto Roca)
 
 ### Phase 1: Core City & Surroundings
-- [ ] **1000 - Puerto Roca City**
-    - **Status:** Planned
+- [x] **1000 - Puerto Roca City**
+    - **Status:** Implemented (Skeleton)
     - **Type:** Safe Zone / City
     - **Connections:** 1001 (Port), 1002 (North Gate), 1003 (Mines Entrance)
     - **Entities:** Banker, Merchant, Quest Givers.
@@ -22,8 +22,8 @@
     - **Connections:** 1000
     - **Entities:** Ship Captain, Sailors.
 
-- [ ] **1002 - North Path (Sendero Norte)**
-    - **Status:** Planned
+- [x] **1002 - North Path (Sendero Norte)**
+    - **Status:** Implemented (Skeleton)
     - **Type:** Adventure Field
     - **Connections:** 1000
     - **Mobs:** Bandido del Camino (9200), Lobo del Bosque (9202).
