@@ -540,5 +540,104 @@
     "RequiredItems": [],
     "RewardItems": [],
     "ConsumeRequiredItems": false
+  },
+  {
+    "TargetName": "SpilledGoods",
+    "Type": "Gather",
+    "RewardItems": [
+      {
+        "ItemId": 5001,
+        "Quantity": 1
+      }
+    ]
+  },
+  {
+    "TargetName": "Workbench",
+    "Type": "Craft",
+    "RequiredItems": [
+      {
+        "ItemId": 101,
+        "Quantity": 2
+      },
+      {
+        "ItemId": 103,
+        "Quantity": 1
+      }
+    ],
+    "RewardItems": [
+      {
+        "ItemId": 5002,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 5001
+  },
+  {
+    "TargetName": "BrokenWagon",
+    "Type": "Interact",
+    "ConsumeRequiredItems": true,
+    "RequiredItems": [
+      {
+        "ItemId": 5002,
+        "Quantity": 1
+      }
+    ],
+    "RewardItems": [],
+    "RequiredQuestId": 5001
+  },
+  {
+    "TargetName": "StrangeVial",
+    "Type": "Gather",
+    "RewardItems": [
+      {
+        "ItemId": 5003,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 5002
+  },
+  {
+    "TargetName": "AlchemyTable",
+    "Type": "Compound",
+    "ConsumeRequiredItems": true,
+    "RequiredItems": [
+      {
+        "ItemId": 5003,
+        "Quantity": 1
+      },
+      {
+        "ItemId": 8001,
+        "Quantity": 1
+      }
+    ],
+    "RewardItems": [
+      {
+        "ItemId": 5004,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 5002
+  },
+  {
+    "TargetName": "Anvil",
+    "Type": "Forge",
+    "ConsumeRequiredItems": true,
+    "RequiredItems": [
+      {
+        "ItemId": 103,
+        "Quantity": 2
+      },
+      {
+        "ItemId": 201,
+        "Quantity": 3
+      }
+    ],
+    "RewardItems": [
+      {
+        "ItemId": 5005,
+        "Quantity": 1
+      }
+    ],
+    "RequiredQuestId": 5004
   }
 ]

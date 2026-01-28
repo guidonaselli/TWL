@@ -62,7 +62,7 @@ public class ServerQuestManager
         }
     }
 
-    public QuestDefinition? GetDefinition(int questId)
+    public virtual QuestDefinition? GetDefinition(int questId)
     {
         return _questDefinitions.GetValueOrDefault(questId);
     }
