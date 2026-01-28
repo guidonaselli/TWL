@@ -64,6 +64,17 @@ public class ClientSession
         _worldTriggerService = worldTriggerService;
         QuestComponent = new PlayerQuestComponent(questManager, petManager);
         _rateLimiter = new RateLimiter();
+
+        if (_combatManager != null)
+        {
+            _combatManager.OnCombatantDeath += OnCombatantDeath;
+        }
+    }
+
+    private void OnCombatantDeath(ServerCombatant victim)
+    {
+        if (Character == null) return;
+        QuestComponent.HandleCombatantDeath(victim.Name);
     }
 
     public void StartHandling()
@@ -107,6 +118,11 @@ public class ClientSession
         }
         finally
         {
+            if (_combatManager != null)
+            {
+                _combatManager.OnCombatantDeath -= OnCombatantDeath;
+            }
+
             if (UserId > 0)
             {
                 _playerService.SaveSession(this);

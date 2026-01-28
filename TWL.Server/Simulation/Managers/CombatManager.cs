@@ -21,6 +21,8 @@ public class CombatManager
     private readonly ISkillCatalog _skills;
     private readonly IStatusEngine _statusEngine;
 
+    public event Action<ServerCombatant>? OnCombatantDeath;
+
     public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills, IStatusEngine statusEngine)
     {
         _combatants = new ConcurrentDictionary<int, ServerCombatant>();
@@ -166,6 +168,12 @@ public class CombatManager
         attacker.IncrementSkillUsage(skill.SkillId);
         attacker.SetSkillCooldown(skill.SkillId, skill.Cooldown);
         CheckSkillEvolution(attacker, skill);
+
+        // Check for death
+        if (newTargetHp <= 0)
+        {
+            OnCombatantDeath?.Invoke(target);
+        }
 
         // 3) Retornar el resultado para avisar al cliente.
         var result = new CombatResult

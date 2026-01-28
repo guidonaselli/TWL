@@ -1426,5 +1426,137 @@
       "Gold": 100,
       "Items": []
     }
+  },
+  {
+    "QuestId": 5000,
+    "Title": "Lost Shipment",
+    "Description": "A caravan was attacked nearby. Recover the spilled goods.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "SpilledGoods",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Spilled Goods."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 50,
+      "Items": [
+        {
+          "ItemId": 5001,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 5001,
+    "Title": "Broken Wagon",
+    "Description": "The wagon is damaged. Craft a Repair Kit and fix it.",
+    "Requirements": [
+      5000
+    ],
+    "Objectives": [
+      {
+        "Type": "Craft",
+        "TargetName": "Workbench",
+        "RequiredCount": 1,
+        "Description": "Craft a Repair Kit."
+      },
+      {
+        "Type": "Interact",
+        "TargetName": "BrokenWagon",
+        "RequiredCount": 1,
+        "Description": "Repair the Wagon."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 5002,
+    "Title": "Strange Vial",
+    "Description": "You found a strange vial in the wreckage. Analyze it using Alchemy.",
+    "Requirements": [
+      5001
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "StrangeVial",
+        "RequiredCount": 1,
+        "Description": "Find the Strange Vial."
+      },
+      {
+        "Type": "Compound",
+        "TargetName": "AlchemyTable",
+        "RequiredCount": 1,
+        "Description": "Compound an Analysis Result."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 20,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 5003,
+    "Title": "Escort Duty",
+    "Description": "Protect the Caravan Leader while he moves to the Safe Zone. Do not let him die!",
+    "Requirements": [
+      5002
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "CaravanLeader",
+        "RequiredCount": 1,
+        "Description": "Meet the Leader at the Safe Zone."
+      }
+    ],
+    "FailConditions": [
+      {
+        "Type": "NpcDeath",
+        "Value": "CaravanLeader",
+        "Description": "The Caravan Leader died."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 100,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 5004,
+    "Title": "Forging Ahead",
+    "Description": "Debris blocks the final path. Forge a Heavy Pickaxe to clear it.",
+    "Requirements": [
+      5003
+    ],
+    "Objectives": [
+      {
+        "Type": "Forge",
+        "TargetName": "Anvil",
+        "RequiredCount": 1,
+        "Description": "Forge a Heavy Pickaxe."
+      }
+    ],
+    "Rewards": {
+      "Exp": 400,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 5005,
+          "Quantity": 1
+        }
+      ]
+    }
   }
 ]

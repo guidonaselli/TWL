@@ -845,4 +845,40 @@ public class PlayerQuestComponent
         }
         return failedQuests;
     }
+
+    public void HandleCombatantDeath(string victimName)
+    {
+        lock (_lock)
+        {
+            var failedQuests = new List<int>();
+
+            foreach (var kvp in QuestStates)
+            {
+                if (kvp.Value != QuestState.InProgress) continue;
+
+                var def = _questManager.GetDefinition(kvp.Key);
+                if (def == null) continue;
+
+                if (def.FailConditions != null)
+                {
+                    foreach (var cond in def.FailConditions)
+                    {
+                        if (string.Equals(cond.Type, "NpcDeath", StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(cond.Type, "TargetDeath", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (string.Equals(cond.Value, victimName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                failedQuests.Add(kvp.Key);
+                            }
+                        }
+                    }
+                }
+            }
+
+            foreach (var qid in failedQuests)
+            {
+                FailQuest(qid);
+            }
+        }
+    }
 }

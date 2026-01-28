@@ -61,11 +61,10 @@ public class InteractionManager
                 }
             }
 
-            // Check Type logic
-            if (string.Equals(def.Type, "Craft", StringComparison.OrdinalIgnoreCase))
+            // Check Required Items
+            bool hasAll = true;
+            if (def.RequiredItems != null)
             {
-                // Check Required Items
-                bool hasAll = true;
                 foreach (var req in def.RequiredItems)
                 {
                     if (!character.HasItem(req.ItemId, req.Quantity))
@@ -74,16 +73,16 @@ public class InteractionManager
                         break;
                     }
                 }
+            }
 
-                if (!hasAll) continue; // Try next definition
+            if (!hasAll) continue; // Try next definition
 
-                // Consume Items
-                if (def.ConsumeRequiredItems)
+            // Consume Items
+            if (def.ConsumeRequiredItems && def.RequiredItems != null)
+            {
+                foreach (var req in def.RequiredItems)
                 {
-                    foreach (var req in def.RequiredItems)
-                    {
-                        character.RemoveItem(req.ItemId, req.Quantity);
-                    }
+                    character.RemoveItem(req.ItemId, req.Quantity);
                 }
             }
 
