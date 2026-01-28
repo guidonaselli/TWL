@@ -49,7 +49,7 @@ public class PetManager
         }
     }
 
-    public PetDefinition? GetDefinition(int petTypeId)
+    public virtual PetDefinition? GetDefinition(int petTypeId)
     {
         return _definitions.GetValueOrDefault(petTypeId);
     }

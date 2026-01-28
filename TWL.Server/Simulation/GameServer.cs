@@ -69,7 +69,7 @@ public class GameServer
         var statusEngine = new StatusEngine();
         CombatManager = new CombatManager(combatResolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance, statusEngine);
 
-        PetService = new PetService(PlayerService, PetManager, CombatManager);
+        PetService = new PetService(PlayerService, PetManager, CombatManager, random);
         EconomyManager = new EconomyManager();
 
         // Init World System

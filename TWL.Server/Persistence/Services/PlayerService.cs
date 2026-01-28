@@ -118,7 +118,7 @@ public class PlayerService
         _sessions.TryRemove(userId, out _);
     }
 
-    public ClientSession? GetSession(int userId)
+    public virtual ClientSession? GetSession(int userId)
     {
         _sessions.TryGetValue(userId, out var session);
         return session;

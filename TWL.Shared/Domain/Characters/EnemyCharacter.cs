@@ -1,4 +1,4 @@
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 
 namespace TWL.Shared.Domain.Characters;
 
@@ -15,6 +15,12 @@ public class EnemyCharacter : Character
     }
 
     public bool IsCapturable { get; private set; }
+
+    // If captured, what Pet Type ID does it become?
+    public int? PetTypeId { get; set; }
+
+    // HP must be below this percentage (0.0 to 1.0) to capture
+    public float CaptureThreshold { get; set; } = 0.5f;
 
     public int Level { get; set; } = 1;
 
