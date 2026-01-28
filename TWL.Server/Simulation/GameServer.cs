@@ -102,7 +102,7 @@ public class GameServer
              System.Console.WriteLine("Warning: Content/Maps not found.");
         }
 
-        var scheduler = new WorldScheduler(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldScheduler>.Instance);
+        var scheduler = new WorldScheduler(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldScheduler>.Instance, Metrics);
         scheduler.Start();
 
         PopulateTestWorld();

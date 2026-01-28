@@ -17,6 +17,14 @@ public class ServerMetrics
     private long _totalPersistenceDurationMs;
     private long _totalMessageProcessingTimeTicks;
 
+    // New Observability Metrics
+    private long _worldLoopTicks;
+    private long _worldLoopTotalDurationMs;
+    private long _worldSchedulerQueueDepth;
+
+    private long _pipelineValidateDurationTicks;
+    private long _pipelineResolveDurationTicks;
+
     public void RecordNetBytesReceived(long bytes) => Interlocked.Add(ref _netBytesReceived, bytes);
     public void RecordNetBytesSent(long bytes) => Interlocked.Add(ref _netBytesSent, bytes);
     public void RecordNetMessageProcessed() => Interlocked.Increment(ref _netMessagesProcessed);
@@ -36,6 +44,23 @@ public class ServerMetrics
          Interlocked.Add(ref _totalMessageProcessingTimeTicks, ticks);
     }
 
+    public void RecordWorldLoopTick(long durationMs, int queueDepth)
+    {
+        Interlocked.Increment(ref _worldLoopTicks);
+        Interlocked.Add(ref _worldLoopTotalDurationMs, durationMs);
+        Interlocked.Exchange(ref _worldSchedulerQueueDepth, queueDepth);
+    }
+
+    public void RecordPipelineValidateDuration(long ticks)
+    {
+        Interlocked.Add(ref _pipelineValidateDurationTicks, ticks);
+    }
+
+    public void RecordPipelineResolveDuration(long ticks)
+    {
+        Interlocked.Add(ref _pipelineResolveDurationTicks, ticks);
+    }
+
     public MetricsSnapshot GetSnapshot()
     {
         return new MetricsSnapshot
@@ -48,7 +73,14 @@ public class ServerMetrics
             PersistenceFlushes = Interlocked.Read(ref _persistenceFlushes),
             PersistenceErrors = Interlocked.Read(ref _persistenceErrors),
             TotalPersistenceDurationMs = Interlocked.Read(ref _totalPersistenceDurationMs),
-            TotalMessageProcessingTimeTicks = Interlocked.Read(ref _totalMessageProcessingTimeTicks)
+            TotalMessageProcessingTimeTicks = Interlocked.Read(ref _totalMessageProcessingTimeTicks),
+
+            WorldLoopTicks = Interlocked.Read(ref _worldLoopTicks),
+            WorldLoopTotalDurationMs = Interlocked.Read(ref _worldLoopTotalDurationMs),
+            WorldSchedulerQueueDepth = Interlocked.Read(ref _worldSchedulerQueueDepth),
+
+            PipelineValidateDurationTicks = Interlocked.Read(ref _pipelineValidateDurationTicks),
+            PipelineResolveDurationTicks = Interlocked.Read(ref _pipelineResolveDurationTicks)
         };
     }
 
@@ -63,6 +95,13 @@ public class ServerMetrics
         Interlocked.Exchange(ref _persistenceErrors, 0);
         Interlocked.Exchange(ref _totalPersistenceDurationMs, 0);
         Interlocked.Exchange(ref _totalMessageProcessingTimeTicks, 0);
+
+        Interlocked.Exchange(ref _worldLoopTicks, 0);
+        Interlocked.Exchange(ref _worldLoopTotalDurationMs, 0);
+        Interlocked.Exchange(ref _worldSchedulerQueueDepth, 0);
+
+        Interlocked.Exchange(ref _pipelineValidateDurationTicks, 0);
+        Interlocked.Exchange(ref _pipelineResolveDurationTicks, 0);
     }
 }
 
@@ -78,6 +117,13 @@ public class MetricsSnapshot
     public long TotalPersistenceDurationMs { get; set; }
     public long TotalMessageProcessingTimeTicks { get; set; }
 
+    public long WorldLoopTicks { get; set; }
+    public long WorldLoopTotalDurationMs { get; set; }
+    public long WorldSchedulerQueueDepth { get; set; }
+
+    public long PipelineValidateDurationTicks { get; set; }
+    public long PipelineResolveDurationTicks { get; set; }
+
     public double AverageMessageProcessingTimeMs => NetMessagesProcessed > 0
         ? TimeSpan.FromTicks(TotalMessageProcessingTimeTicks).TotalMilliseconds / NetMessagesProcessed
         : 0;
@@ -86,10 +132,22 @@ public class MetricsSnapshot
         ? (double)TotalPersistenceDurationMs / PersistenceFlushes
         : 0;
 
+    public double AverageWorldLoopDurationMs => WorldLoopTicks > 0
+        ? (double)WorldLoopTotalDurationMs / WorldLoopTicks
+        : 0;
+
+    public double AverageValidateTimeMs => NetMessagesProcessed > 0
+        ? TimeSpan.FromTicks(PipelineValidateDurationTicks).TotalMilliseconds / NetMessagesProcessed
+        : 0;
+
+    public double AverageResolveTimeMs => NetMessagesProcessed > 0
+        ? TimeSpan.FromTicks(PipelineResolveDurationTicks).TotalMilliseconds / NetMessagesProcessed
+        : 0;
+
     public override string ToString()
     {
-        return $"[Metrics] Net: {NetMessagesProcessed} msgs ({NetBytesReceived} B in / {NetBytesSent} B out), " +
-               $"AvgProcess: {AverageMessageProcessingTimeMs:F2}ms, Errors: {NetErrors} net / {ValidationErrors} val. " +
-               $"Persist: {PersistenceFlushes} flushes (Avg {AveragePersistenceFlushTimeMs:F2}ms), {PersistenceErrors} errs.";
+        return $"[Metrics] Net: {NetMessagesProcessed} msgs, AvgProc: {AverageMessageProcessingTimeMs:F2}ms (Val: {AverageValidateTimeMs:F2}ms, Res: {AverageResolveTimeMs:F2}ms). " +
+               $"World: {WorldLoopTicks} ticks (Avg {AverageWorldLoopDurationMs:F2}ms), Queue: {WorldSchedulerQueueDepth}. " +
+               $"Persist: {PersistenceFlushes} flushes, {PersistenceErrors} errs.";
     }
 }

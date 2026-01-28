@@ -20,12 +20,12 @@ namespace TWL.Tests
             var current = new DirectoryInfo(baseDir);
             while (current != null)
             {
-                var candidate = Path.Combine(current.FullName, "TWL.Server/Content/Data");
+                var candidate = Path.Combine(current.FullName, "Content/Data");
                 if (Directory.Exists(candidate)) return candidate;
                 current = current.Parent;
             }
             // Fallback for direct test execution if structure differs
-             return "../../../../TWL.Server/Content/Data";
+             return "../../../../Content/Data";
         }
 
         private JsonSerializerOptions GetJsonOptions()
@@ -80,6 +80,14 @@ namespace TWL.Tests
                 Assert.Equal(kvp.Value, skill.Name); // Must have exact name
                 Assert.Equal(SkillFamily.Special, skill.Family);
                 Assert.Equal(SkillCategory.Goddess, skill.Category);
+
+                // Goddess Skills: Initial grant only. No UnlockRules.
+                if (skill.UnlockRules != null)
+                {
+                    Assert.Equal(0, skill.UnlockRules.Level);
+                    Assert.Null(skill.UnlockRules.QuestId);
+                    Assert.True(string.IsNullOrEmpty(skill.UnlockRules.QuestFlag), $"Goddess Skill {skill.SkillId} cannot have QuestFlag.");
+                }
             }
         }
 
@@ -134,16 +142,27 @@ namespace TWL.Tests
 
                 bool hasQuestOrigin = skillsGrantedByQuests.Contains(skill.SkillId);
                 bool hasFlagOrigin = !string.IsNullOrEmpty(skill.UnlockRules?.QuestFlag);
-                bool hasQuestIdOrigin = !string.IsNullOrEmpty(skill.UnlockRules?.QuestId);
+                bool hasQuestIdOrigin = skill.UnlockRules?.QuestId.HasValue ?? false;
 
                 Assert.True(hasQuestOrigin || hasFlagOrigin || hasQuestIdOrigin,
                     $"Special Skill {skill.SkillId} ({skill.Name}) has no origin (QuestFlag/QuestId in UnlockRules or GrantSkillId in a Quest).");
 
                 // If Skill refers to a QuestId in UnlockRules, verify that quest exists
-                if (hasQuestIdOrigin && int.TryParse(skill.UnlockRules!.QuestId, out int qId))
+                if (skill.UnlockRules?.QuestId is int qId)
                 {
                      Assert.True(questIds.Contains(qId),
                          $"Skill {skill.SkillId} refers to non-existent QuestId {qId} in UnlockRules.");
+                }
+            }
+
+            // 5. Stage Upgrade Rules Integrity (Anti-Snowball)
+            // Ensure NextSkillId exists
+            foreach (var skill in skills)
+            {
+                if (skill.StageUpgradeRules?.NextSkillId.HasValue == true)
+                {
+                    Assert.True(skillIds.Contains(skill.StageUpgradeRules.NextSkillId.Value),
+                         $"Skill {skill.SkillId} StageUpgrade refers to non-existent NextSkillId {skill.StageUpgradeRules.NextSkillId}");
                 }
             }
         }

@@ -137,13 +137,19 @@ public class ClientSession
     {
         if (msg == null) return;
 
+        var swValidate = System.Diagnostics.Stopwatch.StartNew();
         if (!_rateLimiter.Check(msg.Op))
         {
+            swValidate.Stop();
+            _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
             _metrics?.RecordValidationError();
             SecurityLogger.LogSecurityEvent("RateLimitExceeded", UserId, $"Opcode: {msg.Op}");
             return;
         }
+        swValidate.Stop();
+        _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
 
+        var swResolve = System.Diagnostics.Stopwatch.StartNew();
         switch (msg.Op)
         {
             case Opcode.LoginRequest:
@@ -178,6 +184,8 @@ public class ClientSession
                 break;
             // etc.
         }
+        swResolve.Stop();
+        _metrics?.RecordPipelineResolveDuration(swResolve.ElapsedTicks);
     }
 
     private async Task HandlePetActionAsync(string payload)

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
+using TWL.Server.Simulation.Managers;
 using TWL.Shared.Services;
 
 namespace TWL.Server.Services;
@@ -10,6 +11,7 @@ namespace TWL.Server.Services;
 public class WorldScheduler : IWorldScheduler, IDisposable
 {
     private readonly ILogger<WorldScheduler> _logger;
+    private readonly ServerMetrics _metrics;
     private CancellationTokenSource? _cts;
     private Task? _loopTask;
     private readonly List<ScheduledTask> _scheduledTasks = new();
@@ -22,9 +24,10 @@ public class WorldScheduler : IWorldScheduler, IDisposable
         public TimeSpan? Interval { get; set; } // If null, one-off
     }
 
-    public WorldScheduler(ILogger<WorldScheduler> logger)
+    public WorldScheduler(ILogger<WorldScheduler> logger, ServerMetrics metrics)
     {
         _logger = logger;
+        _metrics = metrics;
     }
 
     public void Start()
@@ -81,18 +84,27 @@ public class WorldScheduler : IWorldScheduler, IDisposable
     {
         while (!token.IsCancellationRequested)
         {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
+            int tasksCount = 0;
             try
             {
-                ProcessTasks();
+                tasksCount = ProcessTasks();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error in WorldScheduler loop");
             }
+            sw.Stop();
+
+            _metrics.RecordWorldLoopTick(sw.ElapsedMilliseconds, tasksCount);
 
             try
             {
-                await Task.Delay(50, token); // 20 ticks per second
+                // Simple fixed delay loop (not fixed timestep, but good enough for now)
+                // Ideally we subtract elapsed time from delay to maintain 20 TPS
+                var delay = 50 - (int)sw.ElapsedMilliseconds;
+                if (delay < 1) delay = 1;
+                await Task.Delay(delay, token);
             }
             catch (OperationCanceledException)
             {
@@ -101,13 +113,15 @@ public class WorldScheduler : IWorldScheduler, IDisposable
         }
     }
 
-    private void ProcessTasks()
+    private int ProcessTasks()
     {
         var now = DateTime.UtcNow;
         var tasksToRun = new List<Action>();
+        int queueDepth = 0;
 
         lock (_lock)
         {
+            queueDepth = _scheduledTasks.Count;
             // Iterate backwards to allow safe removal
             for (int i = _scheduledTasks.Count - 1; i >= 0; i--)
             {
@@ -119,8 +133,6 @@ public class WorldScheduler : IWorldScheduler, IDisposable
                     if (task.Interval.HasValue)
                     {
                         // Schedule next run
-                        // We add to 'now' or 'NextRun'? 'now' prevents drift if we lag, but 'NextRun' preserves strict interval.
-                        // Usually 'now' is safer to prevent burst after lag.
                         task.NextRun = now.Add(task.Interval.Value);
                     }
                     else
@@ -142,6 +154,8 @@ public class WorldScheduler : IWorldScheduler, IDisposable
                 _logger.LogError(ex, "Error executing scheduled task");
             }
         }
+
+        return queueDepth; // Return initial queue depth for observability
     }
 
     public void Dispose()
