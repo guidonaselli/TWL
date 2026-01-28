@@ -59,7 +59,7 @@ public class ClientSession
         _economyManager = economyManager;
         _metrics = metrics;
         _petService = petService;
-        QuestComponent = new PlayerQuestComponent(questManager);
+        QuestComponent = new PlayerQuestComponent(questManager, petManager);
         _rateLimiter = new RateLimiter();
     }
 
@@ -273,7 +273,7 @@ public class ClientSession
             // Check for death and quest progress
             if (result.NewTargetHp <= 0)
             {
-                var target = _combatManager.GetCharacter(result.TargetId);
+                var target = _combatManager.GetCombatant(result.TargetId);
                 if (target != null)
                 {
                     // Update quest progress for "Kill" objective
@@ -333,53 +333,7 @@ public class ClientSession
         {
             if (QuestComponent.ClaimReward(questId))
             {
-                var def = _questManager.GetDefinition(questId);
-                if (def != null && Character != null)
-                {
-                    Character.AddExp(def.Rewards.Exp);
-                    Character.AddGold(def.Rewards.Gold);
-
-                    var itemsLog = "";
-                    if (def.Rewards.Items != null)
-                    {
-                        var sb = new StringBuilder();
-                        foreach (var item in def.Rewards.Items)
-                        {
-                            Character.AddItem(item.ItemId, item.Quantity);
-                            sb.Append($", Item {item.ItemId} x{item.Quantity}");
-                        }
-                        itemsLog = sb.ToString();
-                    }
-
-                    if (def.Rewards.PetUnlockId.HasValue)
-                    {
-                        var petDef = _petManager.GetDefinition(def.Rewards.PetUnlockId.Value);
-                        if (petDef != null)
-                        {
-                            var newPet = new ServerPet(petDef);
-                            Character.AddPet(newPet);
-                            itemsLog += $", Pet Unlock {def.Rewards.PetUnlockId.Value} ({petDef.Name})";
-                        }
-                        else
-                        {
-                            Console.WriteLine($"Error: Pet Definition {def.Rewards.PetUnlockId.Value} not found.");
-                        }
-                    }
-
-                    if (def.Rewards.GrantSkillId.HasValue)
-                    {
-                        if (Character.LearnSkill(def.Rewards.GrantSkillId.Value))
-                        {
-                            itemsLog += $", Skill Unlock {def.Rewards.GrantSkillId.Value}";
-                        }
-                        else
-                        {
-                            itemsLog += $", Skill {def.Rewards.GrantSkillId.Value} (Already Known)";
-                        }
-                    }
-
-                    Console.WriteLine($"Player {UserId} claimed quest {questId}, gained {def.Rewards.Exp} EXP, {def.Rewards.Gold} Gold{itemsLog}.");
-                }
+                Console.WriteLine($"Player {UserId} claimed quest {questId}.");
                 await SendQuestUpdateAsync(questId);
             }
         }

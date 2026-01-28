@@ -12,6 +12,7 @@ namespace TWL.Server.Simulation.Networking.Components;
 public class PlayerQuestComponent
 {
     private readonly ServerQuestManager _questManager;
+    private readonly PetManager _petManager;
     private readonly object _lock = new();
 
     public bool IsDirty { get; set; }
@@ -29,9 +30,10 @@ public class PlayerQuestComponent
 
     public ServerCharacter? Character { get; set; }
 
-    public PlayerQuestComponent(ServerQuestManager questManager)
+    public PlayerQuestComponent(ServerQuestManager questManager, PetManager? petManager = null)
     {
         _questManager = questManager;
+        _petManager = petManager;
     }
 
     private bool CheckGating(QuestDefinition def)
@@ -400,6 +402,36 @@ public class PlayerQuestComponent
             {
                 foreach (var f in def.FlagsSet) Flags.Add(f);
                 foreach (var f in def.FlagsClear) Flags.Remove(f);
+
+                if (Character != null)
+                {
+                    // Grant Rewards
+                    if (def.Rewards.Exp > 0) Character.AddExp(def.Rewards.Exp);
+                    if (def.Rewards.Gold > 0) Character.AddGold(def.Rewards.Gold);
+
+                    if (def.Rewards.Items != null)
+                    {
+                        foreach (var item in def.Rewards.Items)
+                        {
+                            Character.AddItem(item.ItemId, item.Quantity);
+                        }
+                    }
+
+                    if (def.Rewards.PetUnlockId.HasValue && _petManager != null)
+                    {
+                        var petDef = _petManager.GetDefinition(def.Rewards.PetUnlockId.Value);
+                        if (petDef != null)
+                        {
+                            var newPet = new ServerPet(petDef);
+                            Character.AddPet(newPet);
+                        }
+                    }
+
+                    if (def.Rewards.GrantSkillId.HasValue)
+                    {
+                        Character.LearnSkill(def.Rewards.GrantSkillId.Value);
+                    }
+                }
             }
 
             QuestStates[questId] = QuestState.RewardClaimed;
