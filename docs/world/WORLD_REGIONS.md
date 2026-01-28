@@ -7,6 +7,7 @@ A bustling port city built on the ruins of an ancient colonial settlement. It se
 - **Key Locations:**
     - The Grand Plaza (Map 1000)
     - The Docks (Map 1001) - *Main transport hub.*
+    - Sendero Norte (Map 1002) - *Adventure Field.*
     - The Old Mines (Map 1003+)
 
 ## North Island
