@@ -39,13 +39,13 @@ public class InteractionManager
         Console.WriteLine($"Loaded interactions for {_interactions.Count} targets from {path}");
     }
 
-    public bool ProcessInteraction(ServerCharacter character, PlayerQuestComponent questComponent, string targetName)
+    public string? ProcessInteraction(ServerCharacter character, PlayerQuestComponent questComponent, string targetName)
     {
-        if (character == null) return false;
+        if (character == null) return null;
 
         if (!_interactions.TryGetValue(targetName, out var definitions))
         {
-            return false;
+            return null;
         }
 
         foreach (var def in definitions)
@@ -94,9 +94,9 @@ public class InteractionManager
             }
 
             Console.WriteLine($"Player {character.Id} interacted with {targetName} ({def.Type}).");
-            return true; // Successfully processed an interaction rule
+            return def.Type; // Successfully processed an interaction rule
         }
 
-        return false;
+        return null;
     }
 }

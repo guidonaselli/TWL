@@ -22,10 +22,10 @@ public class InteractHandler : ICommandHandler<InteractCommand, InteractResult>
         var targetName = command.TargetName;
 
         // Process Interaction Rules (Give Items, Craft, etc.)
-        bool interactionSuccess = false;
+        string? interactionType = null;
         if (character != null)
         {
-            interactionSuccess = _interactionManager.ProcessInteraction(character, questComponent, targetName);
+            interactionType = _interactionManager.ProcessInteraction(character, questComponent, targetName);
         }
 
         var uniqueUpdates = new HashSet<int>();
@@ -38,9 +38,9 @@ public class InteractHandler : ICommandHandler<InteractCommand, InteractResult>
         foreach(var qid in deliveredQuests) uniqueUpdates.Add(qid);
 
         // If interaction was successful (e.g. Crafting done), try "Craft" objectives
-        if (interactionSuccess)
+        if (!string.IsNullOrEmpty(interactionType))
         {
-            questComponent.TryProgress(uniqueUpdates, targetName, "Craft");
+            questComponent.TryProgress(uniqueUpdates, targetName, interactionType);
         }
 
         var result = new InteractResult

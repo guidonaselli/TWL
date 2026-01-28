@@ -22,7 +22,8 @@ public static class QuestValidator
         "EventParticipation",
         "Escort", "Protect",
         "Puzzle", "Sequence",
-        "Capture"
+        "Capture",
+        "PetAcquired", "Trade"
     };
 
     public static List<string> Validate(IEnumerable<QuestDefinition> quests)

@@ -56,14 +56,14 @@ public class HiddenCoveTests
         _questComponent.TryProgress("Interact", "HeavyRocks");
 
         // Obj 2: Collect Sulfur (Simulate gathering)
-        bool gathered = _interactionManager.ProcessInteraction(_character, _questComponent, "SulfurVent");
-        Assert.True(gathered, "Should gather Sulfur");
+        var interactionType = _interactionManager.ProcessInteraction(_character, _questComponent, "SulfurVent");
+        Assert.NotNull(interactionType);
         Assert.True(_character.HasItem(9001, 1));
         _questComponent.TryProgress("Collect", "SulfurVent");
 
         // Obj 3: Collect Charcoal
-        gathered = _interactionManager.ProcessInteraction(_character, _questComponent, "BurntTree");
-        Assert.True(gathered, "Should gather Charcoal");
+        interactionType = _interactionManager.ProcessInteraction(_character, _questComponent, "BurntTree");
+        Assert.NotNull(interactionType);
         Assert.True(_character.HasItem(9002, 1));
         _questComponent.TryProgress("Collect", "BurntTree");
 
@@ -72,8 +72,8 @@ public class HiddenCoveTests
         Assert.True(_character.HasItem(9001, 1));
         Assert.True(_character.HasItem(9002, 1));
 
-        bool crafted = _interactionManager.ProcessInteraction(_character, _questComponent, "AlchemyTable");
-        Assert.True(crafted, "Should craft Black Powder");
+        var craftedType = _interactionManager.ProcessInteraction(_character, _questComponent, "AlchemyTable");
+        Assert.NotNull(craftedType);
         Assert.True(_character.HasItem(9003, 1));
 
         _questComponent.TryProgress("Craft", "AlchemyTable");
@@ -89,8 +89,8 @@ public class HiddenCoveTests
         // Interaction AlchemyTable gives 9003 x1.
         // HeavyRocks consumes 1.
 
-        bool blasted = _interactionManager.ProcessInteraction(_character, _questComponent, "HeavyRocks");
-        Assert.True(blasted, "Should blast rocks");
+        var blastedType = _interactionManager.ProcessInteraction(_character, _questComponent, "HeavyRocks");
+        Assert.NotNull(blastedType);
 
         _questComponent.TryProgress("Interact", "HeavyRocks");
         Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1403]);
@@ -122,8 +122,8 @@ public class HiddenCoveTests
         // FishingSpot requires Item 303 (Rod).
         _character.AddItem(303, 1);
 
-        bool fished = _interactionManager.ProcessInteraction(_character, _questComponent, "FishingSpot");
-        Assert.True(fished, "Should catch rare fish");
+        var fishedType = _interactionManager.ProcessInteraction(_character, _questComponent, "FishingSpot");
+        Assert.NotNull(fishedType);
         Assert.True(_character.HasItem(9005, 1));
 
         _questComponent.TryProgress("Collect", "FishingSpot");

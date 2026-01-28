@@ -104,6 +104,7 @@ public class TradeManager
         }
 
         SecurityLogger.LogSecurityEvent("TradeSuccess", source.Id, $"To:{target.Id} Item:{itemId} Qty:{quantity}");
+        source.NotifyTradeCommitted(target, itemId, quantity);
         return true;
     }
 }

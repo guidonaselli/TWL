@@ -43,9 +43,10 @@ public class InteractionTests
         SaveInteractions(interactions);
         _manager.Load("test_interactions.json");
 
-        bool result = _manager.ProcessInteraction(_character, _questComponent, "Rock");
+        var result = _manager.ProcessInteraction(_character, _questComponent, "Rock");
 
-        Assert.True(result);
+        Assert.NotNull(result);
+        Assert.Equal("Gather", result);
         Assert.True(_character.HasItem(201, 1));
     }
 
@@ -67,9 +68,9 @@ public class InteractionTests
         _manager.Load("test_interactions.json");
 
         // Quest not started
-        bool result = _manager.ProcessInteraction(_character, _questComponent, "QuestRock");
+        var result = _manager.ProcessInteraction(_character, _questComponent, "QuestRock");
 
-        Assert.False(result);
+        Assert.Null(result);
         Assert.False(_character.HasItem(201, 1));
     }
 
@@ -93,9 +94,9 @@ public class InteractionTests
         // Start Quest
         _questComponent.StartQuest(1016);
 
-        bool result = _manager.ProcessInteraction(_character, _questComponent, "QuestRock");
+        var result = _manager.ProcessInteraction(_character, _questComponent, "QuestRock");
 
-        Assert.True(result);
+        Assert.NotNull(result);
         Assert.True(_character.HasItem(201, 1));
     }
 
@@ -117,9 +118,10 @@ public class InteractionTests
 
         _character.AddItem(201, 1);
 
-        bool result = _manager.ProcessInteraction(_character, _questComponent, "Bench");
+        var result = _manager.ProcessInteraction(_character, _questComponent, "Bench");
 
-        Assert.True(result);
+        Assert.NotNull(result);
+        Assert.Equal("Craft", result);
         Assert.False(_character.HasItem(201, 1)); // Consumed
         Assert.True(_character.HasItem(203, 1)); // Rewarded
     }
@@ -140,9 +142,9 @@ public class InteractionTests
         SaveInteractions(interactions);
         _manager.Load("test_interactions.json");
 
-        bool result = _manager.ProcessInteraction(_character, _questComponent, "Bench");
+        var result = _manager.ProcessInteraction(_character, _questComponent, "Bench");
 
-        Assert.False(result);
+        Assert.Null(result);
         Assert.False(_character.HasItem(203, 1));
     }
 

@@ -40,11 +40,22 @@ public class ServerCharacter : ServerCombatant
 
     // Stats & Progression
     public event Action<Item, int>? OnItemAdded;
+    public event Action<ServerPet>? OnPetAdded;
+    public event Action<ServerCharacter, int, int>? OnTradeCommitted;
 
     public List<int> KnownSkills { get; set; } = new();
     public int Level { get; private set; } = 1;
     public int ExpToNextLevel { get; private set; } = 100;
     public int StatPoints { get; private set; } = 0;
+
+    public ServerCharacter()
+    {
+        Str = 8;
+        Con = 8;
+        Int = 8;
+        Wis = 8;
+        Agi = 8;
+    }
 
     public string ActivePetInstanceId { get; private set; }
 
@@ -155,7 +166,13 @@ public class ServerCharacter : ServerCombatant
         {
             _pets.Add(pet);
             IsDirty = true;
+            OnPetAdded?.Invoke(pet);
         }
+    }
+
+    public void NotifyTradeCommitted(ServerCharacter target, int itemId, int quantity)
+    {
+        OnTradeCommitted?.Invoke(target, itemId, quantity);
     }
 
     public bool RemovePet(string instanceId)

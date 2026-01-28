@@ -45,8 +45,8 @@ public class HiddenRuinsQuestTests
         Assert.Equal(QuestState.InProgress, _questComponent.QuestStates[1201]);
 
         // 2. Interact with StrangeStoneDebris
-        bool interacted = _interactionManager.ProcessInteraction(_character, _questComponent, "StrangeStoneDebris");
-        Assert.True(interacted, "Should successfully interact with debris");
+        var interactionType = _interactionManager.ProcessInteraction(_character, _questComponent, "StrangeStoneDebris");
+        Assert.NotNull(interactionType);
         Assert.True(_character.HasItem(8101, 1), "Should have Strange Stone");
 
         // 3. Update Progress (simulated client/server event)
@@ -60,8 +60,8 @@ public class HiddenRuinsQuestTests
         Assert.True(_questComponent.StartQuest(1202));
 
         // 6. Interact AncientTablet
-        interacted = _interactionManager.ProcessInteraction(_character, _questComponent, "AncientTablet");
-        Assert.True(interacted, "Should successfully interact with tablet");
+        interactionType = _interactionManager.ProcessInteraction(_character, _questComponent, "AncientTablet");
+        Assert.NotNull(interactionType);
         Assert.True(_character.HasItem(8102, 1), "Should have Ancient Rubbing");
 
         // 7. Update Progress
@@ -90,8 +90,8 @@ public class HiddenRuinsQuestTests
 
         // 12. Interact RuinsEntrance
         // This interaction gives no items, but requires Quest 1204 to be InProgress (checked by InteractionManager)
-        interacted = _interactionManager.ProcessInteraction(_character, _questComponent, "RuinsEntrance");
-        Assert.True(interacted, "Should enter ruins");
+        interactionType = _interactionManager.ProcessInteraction(_character, _questComponent, "RuinsEntrance");
+        Assert.NotNull(interactionType);
 
         _questComponent.TryProgress("Interact", "RuinsEntrance");
         Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1204]);
