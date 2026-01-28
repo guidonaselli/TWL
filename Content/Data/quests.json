@@ -1306,5 +1306,125 @@
       "Items": []
     },
     "Repeatability": 4
+  },
+  {
+    "QuestId": 4000,
+    "Title": "Arrival at Puerto Roca",
+    "Description": "You have arrived at the bustling port city. Speak with the Port Master to get your bearings.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "PortMaster",
+        "RequiredCount": 1,
+        "Description": "Talk to the Port Master."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 10,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 4001,
+    "Title": "Supplies for the Journey",
+    "Description": "The Port Master advises you to stock up before heading inland. Collect fresh water and coconuts.",
+    "Requirements": [
+      4000
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Coconut",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Coconuts."
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "FreshWater",
+        "RequiredCount": 2,
+        "Description": "Collect 2 Fresh Water."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 20,
+      "Items": [
+        {
+          "ItemId": 101,
+          "Quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 4002,
+    "Title": "Local Wildlife",
+    "Description": "Crabs are blocking the trade route. Clear them out.",
+    "Requirements": [
+      4000
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "RockCrab",
+        "RequiredCount": 3,
+        "Description": "Kill 3 Rock Crabs."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 30,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 4003,
+    "Title": "Lost Cargo",
+    "Description": "A merchant lost a crate near the docks. Find it.",
+    "Requirements": [
+      4002
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "StrangeCrate",
+        "RequiredCount": 1,
+        "Description": "Investigate the Strange Crate."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": [
+        {
+          "ItemId": 105,
+          "Quantity": 5
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 4004,
+    "Title": "Departure",
+    "Description": "You are ready. Report to the Caravan Leader to leave the city.",
+    "Requirements": [
+      4001,
+      4003
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "CaravanLeader",
+        "RequiredCount": 1,
+        "Description": "Talk to the Caravan Leader."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 100,
+      "Items": []
+    }
   }
 ]
