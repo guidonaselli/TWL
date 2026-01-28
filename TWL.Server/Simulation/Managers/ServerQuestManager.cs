@@ -22,6 +22,17 @@ public class ServerQuestManager
         var list = JsonSerializer.Deserialize<List<QuestDefinition>>(json, _jsonOptions);
         if (list != null)
         {
+            var errors = QuestValidator.Validate(list);
+            if (errors.Count > 0)
+            {
+                System.Console.WriteLine("QUEST VALIDATION FAILED:");
+                foreach (var err in errors)
+                {
+                    System.Console.WriteLine($" - {err}");
+                }
+                throw new System.InvalidOperationException($"Quest validation failed with {errors.Count} errors.");
+            }
+
             foreach (var def in list)
             {
                 _questDefinitions[def.QuestId] = def;

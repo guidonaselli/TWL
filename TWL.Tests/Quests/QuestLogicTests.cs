@@ -43,7 +43,7 @@ public class QuestLogicTests
                 QuestId = 102,
                 Title = "Quest B",
                 Description = "Blocked by A",
-                Objectives = new List<ObjectiveDefinition>(),
+                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
                 Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
                 BlockedByFlags = new List<string> { "A_DONE" }
             },
@@ -53,7 +53,7 @@ public class QuestLogicTests
                 QuestId = 103,
                 Title = "Quest C",
                 Description = "Expired Quest",
-                Objectives = new List<ObjectiveDefinition>(),
+                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
                 Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
                 Expiry = DateTime.UtcNow.AddMinutes(-10) // Expired 10 mins ago
             },
@@ -63,7 +63,7 @@ public class QuestLogicTests
                 QuestId = 104,
                 Title = "Quest D",
                 Description = "Instance Quest",
-                Objectives = new List<ObjectiveDefinition>(),
+                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
                 Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
                 InstanceRules = new InstanceRules("Inst01", 1, 300, "KillBoss")
             }
