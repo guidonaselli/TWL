@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.IO;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.DTO;
+using TWL.Shared.Domain.Models;
 
 namespace TWL.Server.Simulation.Managers;
 
@@ -19,11 +20,11 @@ public class EconomyManager : IEconomyService
         { "gems_1000", 1000 }
     };
 
-    private readonly Dictionary<int, (long Price, int ItemId)> _shopItems = new()
+    private readonly Dictionary<int, (long Price, int ItemId, BindPolicy Policy)> _shopItems = new()
     {
-        { 1, (10, 101) }, // ShopItem 1: 10 Gems -> Item 101 (Potion)
-        { 2, (50, 102) }, // ShopItem 2: 50 Gems -> Item 102 (Sword)
-        { 3, (100, 103) } // ShopItem 3: 100 Gems -> Item 103 (Armor)
+        { 1, (10, 101, BindPolicy.Unbound) }, // ShopItem 1: 10 Gems -> Item 101 (Potion)
+        { 2, (50, 102, BindPolicy.BindOnEquip) }, // ShopItem 2: 50 Gems -> Item 102 (Sword)
+        { 3, (100, 103, BindPolicy.BindOnPickup) } // ShopItem 3: 100 Gems -> Item 103 (Armor)
     };
 
     private enum TransactionState
@@ -370,8 +371,8 @@ public class EconomyManager : IEconomyService
         var details = $"ShopItem:{shopItemId}, Item:{itemDef.ItemId} x{quantity}";
         if (!string.IsNullOrEmpty(operationId)) details += $", OrderId:{operationId}";
 
-        // Add Item
-        bool added = character.AddItem(itemDef.ItemId, quantity);
+        // Add Item with Policy
+        bool added = character.AddItem(itemDef.ItemId, quantity, itemDef.Policy);
 
         if (!added)
         {

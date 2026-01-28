@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using TWL.Shared.Domain.Models;
 
 namespace TWL.Shared.Domain.Characters;
 
@@ -8,37 +9,45 @@ namespace TWL.Shared.Domain.Characters;
 /// </summary>
 public class Inventory
 {
-    private readonly Dictionary<int, ItemSlot> _slots;
+    private readonly List<ItemSlot> _slots;
 
     public Inventory()
     {
-        _slots = new Dictionary<int, ItemSlot>();
+        _slots = new List<ItemSlot>();
     }
 
     public IReadOnlyList<ItemSlot> ItemSlots
     {
-        get => _slots.Values.ToList().AsReadOnly();
+        get => _slots.AsReadOnly();
         set
         {
             if (value == null) return;
             _slots.Clear();
             foreach (var slot in value)
                 if (slot != null)
-                    _slots[slot.ItemId] = slot;
+                    _slots.Add(slot);
         }
     }
 
     public void AddItem(int itemId, int quantity)
     {
+        AddItem(itemId, quantity, BindPolicy.Unbound, null);
+    }
+
+    public void AddItem(int itemId, int quantity, BindPolicy policy, int? boundToId)
+    {
         if (quantity <= 0) return;
 
-        if (_slots.TryGetValue(itemId, out var slot))
+        // Try to find an existing stack that matches exactly
+        var existing = _slots.FirstOrDefault(s => s.ItemId == itemId && s.Policy == policy && s.BoundToId == boundToId);
+
+        if (existing != null)
         {
-            slot.Quantity += quantity;
+            existing.Quantity += quantity;
         }
         else
         {
-            _slots[itemId] = new ItemSlot(itemId, quantity);
+            _slots.Add(new ItemSlot(itemId, quantity, policy, boundToId));
         }
     }
 
@@ -46,23 +55,49 @@ public class Inventory
     {
         if (requiredQuantity <= 0) return false;
 
-        return _slots.TryGetValue(itemId, out var slot) && slot.Quantity >= requiredQuantity;
+        long total = _slots.Where(s => s.ItemId == itemId).Sum(s => (long)s.Quantity);
+        return total >= requiredQuantity;
     }
 
     public bool RemoveItem(int itemId, int quantity)
     {
+        return RemoveItem(itemId, quantity, null);
+    }
+
+    public bool RemoveItem(int itemId, int quantity, BindPolicy? policyFilter)
+    {
         if (quantity <= 0) return false;
 
-        if (!_slots.TryGetValue(itemId, out var slot)) return false;
-        if (slot.Quantity < quantity) return false;
+        var candidates = _slots.Where(s => s.ItemId == itemId).ToList();
+        if (policyFilter.HasValue)
+        {
+            candidates = candidates.Where(s => s.Policy == policyFilter.Value).ToList();
+        }
 
-        slot.Quantity -= quantity;
-        if (slot.Quantity <= 0) _slots.Remove(itemId);
+        long totalAvailable = candidates.Sum(s => (long)s.Quantity);
+        if (totalAvailable < quantity) return false;
+
+        int remaining = quantity;
+
+        foreach (var slot in candidates)
+        {
+            if (remaining <= 0) break;
+            int toTake = System.Math.Min(slot.Quantity, remaining);
+
+            slot.Quantity -= toTake;
+            remaining -= toTake;
+
+            if (slot.Quantity <= 0)
+            {
+                _slots.Remove(slot);
+            }
+        }
+
         return true;
     }
 
     public int GetItemCount(int itemId)
     {
-        return _slots.TryGetValue(itemId, out var slot) ? slot.Quantity : 0;
+        return _slots.Where(s => s.ItemId == itemId).Sum(s => s.Quantity);
     }
 }
