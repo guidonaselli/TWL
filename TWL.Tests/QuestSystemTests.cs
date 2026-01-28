@@ -124,8 +124,8 @@ public class QuestSystemTests
             qm.Load(path);
             var q1 = qm.GetDefinition(1001);
             Assert.NotNull(q1);
-            Assert.Equal("Washed Ashore", q1.Title);
-            Assert.Equal(10, q1.Rewards.Exp);
+            Assert.Equal("El Despertar", q1.Title);
+            Assert.Equal(50, q1.Rewards.Exp);
         }
     }
 
@@ -160,7 +160,7 @@ public class QuestSystemTests
     }
 
     [Fact]
-    public void MonkeyChain_ShouldWork_EndToEnd()
+    public void BasicChain_ShouldWork_EndToEnd()
     {
         var qm = new ServerQuestManager();
         string path = "../../../Content/Data/quests.json";
@@ -171,106 +171,40 @@ public class QuestSystemTests
         qm.Load(path);
         var pq = new PlayerQuestComponent(qm);
 
-        // Pre-req: We need to complete 1010 to unlock 1013
-        // And 1010 requires... many before.
-        // For unit test, we can just forcefully set the state of 1010 to RewardClaimed?
-        // No, PlayerQuestComponent doesn't expose setters for state.
-        // We have to walk the chain or cheat by using reflection if needed,
-        // BUT, since we just loaded definitions, we can manually insert state into the dictionary if it was public/internal,
-        // It is public! QuestStates is public get; private set;
-        // The Dictionary is exposed!
+        // --- Quest 1001: El Despertar ---
+        Assert.True(pq.CanStartQuest(1001), "Should be able to start 1001");
+        Assert.True(pq.StartQuest(1001));
 
-        pq.QuestStates[1010] = QuestState.RewardClaimed; // Cheat: Pretend we finished "Nursing to Health"
-
-        // --- Quest 1013: Monkey's Favorite Snack ---
-        Assert.True(pq.CanStartQuest(1013));
-        Assert.True(pq.StartQuest(1013));
-
-        // Collect 5 Bananas
-        var updated = pq.TryProgress("Collect", "BananaCluster");
-        Assert.Single(updated); // 1/5
-        for (int i = 0; i < 4; i++) pq.TryProgress("Collect", "BananaCluster");
-
-        Assert.Equal(QuestState.Completed, pq.QuestStates[1013]);
-        Assert.True(pq.ClaimReward(1013));
-
-        // --- Quest 1014: Playtime ---
-        Assert.True(pq.CanStartQuest(1014));
-        Assert.True(pq.StartQuest(1014));
-
-        updated = pq.TryProgress("Interact", "MyMonkey");
-        Assert.Single(updated);
-        Assert.Equal(QuestState.Completed, pq.QuestStates[1014]);
-        Assert.True(pq.ClaimReward(1014));
-
-        // --- Quest 1015: The Old Hermit ---
-        // Requires 1012. Let's cheat 1012 too.
-        pq.QuestStates[1012] = QuestState.RewardClaimed;
-
-        Assert.True(pq.CanStartQuest(1015));
-        Assert.True(pq.StartQuest(1015));
-
-        updated = pq.TryProgress("Talk", "OldHermit");
-        Assert.Single(updated);
-        Assert.Equal(QuestState.Completed, pq.QuestStates[1015]);
-    }
-
-    [Fact]
-    public void FishingChain_ShouldWork_EndToEnd()
-    {
-        var qm = new ServerQuestManager();
-        string path = "../../../Content/Data/quests.json";
-        if (!System.IO.File.Exists(path)) path = "Content/Data/quests.json";
-        if (!System.IO.File.Exists(path)) return;
-
-        qm.Load(path);
-        var pq = new PlayerQuestComponent(qm);
-
-        // Verify dependency: Cannot start 2010 without 1004
-        Assert.False(pq.CanStartQuest(2010));
-
-        // Prerequisite: 1004
-        pq.QuestStates[1004] = QuestState.RewardClaimed;
-
-        // --- Quest 2010: Gone Fishing ---
-        Assert.True(pq.CanStartQuest(2010));
-        Assert.True(pq.StartQuest(2010));
-
-        // 1. Collect 2 Bendable Branches
-        pq.TryProgress("Collect", "BendableBranch");
-        pq.TryProgress("Collect", "BendableBranch");
-        // 2. Collect 2 Vine Strings
-        pq.TryProgress("Collect", "VineString");
-        pq.TryProgress("Collect", "VineString");
-        // 3. Craft Simple Fishing Rod
-        var updated = pq.TryProgress("Craft", "OldWorkbench");
+        // Talk to Anciano Varado
+        var updated = pq.TryProgress("Talk", "Anciano Varado");
         Assert.Single(updated);
 
-        Assert.Equal(QuestState.Completed, pq.QuestStates[2010]);
-        pq.ClaimReward(2010);
+        Assert.Equal(QuestState.Completed, pq.QuestStates[1001]);
+        Assert.True(pq.ClaimReward(1001));
 
-        // --- Quest 2011: First Catch ---
-        Assert.True(pq.CanStartQuest(2011));
-        Assert.True(pq.StartQuest(2011));
+        // --- Quest 1002: Supervivencia Básica ---
+        Assert.True(pq.CanStartQuest(1002), "Should be able to start 1002");
+        Assert.True(pq.StartQuest(1002));
 
-        // Catch 3 Fish
-        pq.TryProgress("Collect", "FishingSpot");
-        pq.TryProgress("Collect", "FishingSpot");
-        updated = pq.TryProgress("Collect", "FishingSpot");
+        // Collect 5 Madera
+        for (int i = 0; i < 5; i++)
+        {
+             updated = pq.TryProgress("Collect", "Madera");
+        }
+        Assert.Single(updated); // Last one implies update
+
+        Assert.Equal(QuestState.Completed, pq.QuestStates[1002]);
+        Assert.True(pq.ClaimReward(1002));
+
+        // --- Quest 1003: El Cangrejo Molesto ---
+        Assert.True(pq.CanStartQuest(1003), "Should be able to start 1003");
+        Assert.True(pq.StartQuest(1003));
+
+        // Kill Cangrejo de Playa
+        updated = pq.TryProgress("Kill", "Cangrejo de Playa");
         Assert.Single(updated);
 
-        Assert.Equal(QuestState.Completed, pq.QuestStates[2011]);
-        pq.ClaimReward(2011);
-
-        // --- Quest 2012: Grilling ---
-        Assert.True(pq.CanStartQuest(2012));
-        Assert.True(pq.StartQuest(2012));
-
-        // Cook Fish
-        updated = pq.TryProgress("Craft", "Campfire");
-        Assert.Single(updated);
-
-        Assert.Equal(QuestState.Completed, pq.QuestStates[2012]);
-        pq.ClaimReward(2012);
+        Assert.Equal(QuestState.Completed, pq.QuestStates[1003]);
+        Assert.True(pq.ClaimReward(1003));
     }
 }
