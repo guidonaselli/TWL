@@ -28,7 +28,7 @@ public class QuestGatingTests
                 Title = "Level Gate",
                 Description = "Req Level 5",
                 RequiredLevel = 5,
-                Objectives = new List<ObjectiveDefinition>(),
+                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
                 Rewards = new RewardDefinition(0,0, new List<ItemReward>())
             },
             new QuestDefinition
@@ -37,7 +37,7 @@ public class QuestGatingTests
                 Title = "Stat Gate",
                 Description = "Req Str 10",
                 RequiredStats = new Dictionary<string, int> { { "Str", 10 } },
-                Objectives = new List<ObjectiveDefinition>(),
+                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
                 Rewards = new RewardDefinition(0,0, new List<ItemReward>())
             },
             new QuestDefinition
@@ -46,7 +46,7 @@ public class QuestGatingTests
                 Title = "Item Gate",
                 Description = "Req Item 100 x 1",
                 RequiredItems = new List<ItemRequirement> { new ItemRequirement(100, 1) },
-                Objectives = new List<ObjectiveDefinition>(),
+                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
                 Rewards = new RewardDefinition(0,0, new List<ItemReward>())
             }
         };

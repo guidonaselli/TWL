@@ -22,7 +22,7 @@ public class InteractionTests
         _character = new ServerCharacter { Id = 1, Name = "TestPlayer" };
         _questManager = new ServerQuestManager();
         // Setup Quest Manager with dummy data
-        File.WriteAllText("test_quests.json", "[{\"QuestId\": 1016, \"Title\": \"Test\", \"Description\": \"\", \"Objectives\": [], \"Rewards\": {\"Exp\":0,\"Gold\":0,\"Items\":[]}}]");
+        File.WriteAllText("test_quests.json", "[{\"QuestId\": 1016, \"Title\": \"Test\", \"Description\": \"Test\", \"Objectives\": [{\"Type\":\"Talk\",\"TargetName\":\"Dummy\",\"RequiredCount\":1,\"Description\":\"Dummy\"}], \"Rewards\": {\"Exp\":0,\"Gold\":0,\"Items\":[]}}]");
         _questManager.Load("test_quests.json");
         _questComponent = new PlayerQuestComponent(_questManager);
     }
