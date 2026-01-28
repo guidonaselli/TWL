@@ -22,3 +22,4 @@
 - [ ] **SKL-009**: Packs T2 (rotación por elemento) + evolución stage 2/3 donde aplique.
 - [x] **SKL-010**: Counters avanzados (Stacking Policies, Priority, Resistance logic).
 - [ ] **SKL-011**: Goddess Skills. Implementar habilidades de Diosa (Shrink, Blockage, Hotfire, Vanish) con IDs separados al resto y evitando que esten duplicados, asegurando también su asignación por elemento.
+- [ ] **SKL-012**: Life Skills (Passives). Implementar skills pasivas de Alquimia, Minería, Pesca (si aplica) que modifican rates de economía.

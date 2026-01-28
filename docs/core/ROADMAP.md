@@ -83,7 +83,7 @@ Objetivo: contenido continuo, tooling, operaciones, monetización segura (item m
 - [ ] **COMB-003**: Status engine tag-based (`Buff`, `Debuff`, `Control`, `DoT`, `Seal`, `Barrier`).
 - [ ] **COMB-004**: Cleanse/Dispel por tags + prioridades + límites por cast.
 - [ ] **COMB-005**: Reglas de hit chance para control (INT u otra regla explícita) + tests seedables.
-- [ ] **COMB-006**: Matriz elemental (multiplicadores + counters sistémicos más allá de daño).
+- [ ] **COMB-006**: Ciclo Elemental estricto (Water > Fire > Wind > Earth) + Interactions (Counter/Seal rate).
 
 ### 4.6 INVENTORY / ITEMS / DROPS (P0/P1)
 - [ ] **INV-001**: Inventario transaccional (add/remove/stack) con ownership checks.
@@ -91,9 +91,9 @@ Objetivo: contenido continuo, tooling, operaciones, monetización segura (item m
 - [ ] **INV-003**: Equipamiento y stats derivados coherentes (STR/INT/WIS/AGI/CON → ATK/MAT/MDEF/DEF/SPD).
 - [ ] **INV-004**: Validador de items/recipes/loot tables (IDs, referencias, constraints).
 
-### 4.7 ECONOMY: CRAFT / COMPOUND / MARKET / MALL (P1/P2)
-- [ ] **ECO-001**: Recipes data-driven + CraftService server-side.
-- [ ] **ECO-002**: Compound/Forge: operación atómica/compensable con `OperationId` + idempotency key.
+### 4.7 ECONOMY: ALCHEMY / CRAFT / MARKET (P1/P2)
+- [ ] **ECO-001**: Alchemy (Compound) System: Tier + Material Logic (WLO-like).
+- [ ] **ECO-002**: Manufacturing System: Blueprints + Workbench interactions.
 - [ ] **ECO-003**: RNG del compound auditable + métricas de éxito/fallo.
 - [ ] **ECO-004**: Anti-dupe: doble consumo/rollback parcial/imposible.
 - [ ] **ECO-005**: Marketplace P2P (listing, buy, cancel) con locks/idempotencia.
@@ -101,9 +101,9 @@ Objetivo: contenido continuo, tooling, operaciones, monetización segura (item m
 - [ ] **ECO-007**: Item Mall: flujo receipt-verification + ledger append-only + delivery garantizada.
 - [ ] **ECO-008**: Refund/chargeback handling (mínimo: marcar y bloquear benefits si aplica).
 
-### 4.8 SOCIAL: PARTY / GUILD / MARRIAGE (P1/P2)
-- [ ] **SOC-001**: Party (invite/leave/kick/leader) + reglas de loot/quest sharing (MVP).
-- [ ] **SOC-002**: Party en combate (turn ownership, disconnect handling).
+### 4.8 SOCIAL: TEAM / GUILD / MARRIAGE (P1/P2)
+- [ ] **SOC-001**: Team System (Formations + Leader logic + Join/Leave).
+- [ ] **SOC-002**: Team en combate (turn ownership, disconnect handling, combo attack).
 - [ ] **SOC-003**: Guild (create/roles/permissions) + storage mínimo + logs.
 - [ ] **SOC-004**: Marriage/intimacy (estado persistente + anti-abuso) si se incluye.
 - [ ] **SOC-005**: Moderación y anti-spam en chat (rate limits + filtros + sanciones básicas).
