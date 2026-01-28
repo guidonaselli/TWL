@@ -65,6 +65,11 @@ public class CombatManager
         var skill = _skills.GetSkillById(request.SkillId);
         if (skill == null) return null;
 
+        if (attacker.IsSkillOnCooldown(skill.SkillId))
+        {
+            return null;
+        }
+
         if (!attacker.ConsumeSp(skill.SpCost))
         {
             return null;
@@ -96,11 +101,15 @@ public class CombatManager
                 foreach (var tag in effect.ResistanceTags)
                 {
                     float resistance = target.GetResistance(tag);
+
+                    // Immunity Check
                     if (resistance >= 1.0f)
                     {
                         resist = true;
                         break;
                     }
+
+                    // Resistance Roll
                     if (_random.NextFloat() < resistance)
                     {
                         if (effect.Outcome == OutcomeModel.Partial)
@@ -110,6 +119,7 @@ public class CombatManager
                         }
                         else
                         {
+                            // OutcomeModel.Resist (or default)
                             resist = true;
                             break;
                         }
@@ -154,6 +164,7 @@ public class CombatManager
         newTargetHp = target.ApplyDamage(finalDamage);
 
         attacker.IncrementSkillUsage(skill.SkillId);
+        attacker.SetSkillCooldown(skill.SkillId, skill.Cooldown);
         CheckSkillEvolution(attacker, skill);
 
         // 3) Retornar el resultado para avisar al cliente.

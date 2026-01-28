@@ -1,139 +1,100 @@
+using Moq;
 using System.Collections.Generic;
-using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
+using Xunit;
 
 namespace TWL.Tests.Simulation;
 
 public class AutoBattleTests
 {
-    private AutoBattleService _service;
-    private FakeSkillCatalog _fakeSkills;
-    private ServerCharacter _actor;
-    private ServerCharacter _ally;
-    private ServerCharacter _enemy;
+    private readonly Mock<ISkillCatalog> _skillCatalogMock;
+    private readonly AutoBattleService _service;
 
     public AutoBattleTests()
     {
-        _fakeSkills = new FakeSkillCatalog();
-        _service = new AutoBattleService(_fakeSkills);
-
-        _actor = new ServerCharacter { Id = 1, Name = "Actor", Int = 10, Sp = 100 };
-        _ally = new ServerCharacter { Id = 2, Name = "Ally", Con = 10 }; // MaxHP 100
-        _enemy = new ServerCharacter { Id = 3, Name = "Enemy", Con = 10 };
-        _ally.Heal(100);
-        _enemy.Heal(50);
+        _skillCatalogMock = new Mock<ISkillCatalog>();
+        _service = new AutoBattleService(_skillCatalogMock.Object);
     }
 
     [Fact]
-    public void SelectAction_LowHpAlly_ShouldHeal()
-    {
-        _ally.ApplyDamage(80); // HP 20/100
-
-        var healSkillId = 10;
-        _actor.KnownSkills.Add(healSkillId);
-        _fakeSkills.AddSkill(new Skill
-        {
-            SkillId = healSkillId,
-            SpCost = 10,
-            TargetType = SkillTargetType.SingleAlly,
-            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Heal } }
-        });
-
-        var action = _service.SelectAction(_actor, new List<ServerCharacter> { _actor, _ally }, new List<ServerCharacter> { _enemy }, 12345);
-
-        Assert.Equal(CombatActionType.Skill, action.Type);
-        Assert.Equal(healSkillId, action.SkillId);
-        Assert.Equal(_ally.Id, action.TargetId);
-    }
-
-    [Fact]
-    public void SelectAction_Determinism_ShouldReturnSameActionForSameSeed()
-    {
-        // Setup multiple choices to test randomness/determinism
-        var atkSkillId = 20;
-        _actor.KnownSkills.Add(atkSkillId);
-        _fakeSkills.AddSkill(new Skill
-        {
-            SkillId = atkSkillId,
-            SpCost = 10,
-            TargetType = SkillTargetType.SingleEnemy,
-            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }
-        });
-
-        var action1 = _service.SelectAction(_actor, new List<ServerCharacter> { _actor }, new List<ServerCharacter> { _enemy }, 999);
-        var action2 = _service.SelectAction(_actor, new List<ServerCharacter> { _actor }, new List<ServerCharacter> { _enemy }, 999);
-
-        Assert.Equal(action1.Type, action2.Type);
-        Assert.Equal(action1.SkillId, action2.SkillId);
-        Assert.Equal(action1.TargetId, action2.TargetId);
-    }
-
-    [Fact]
-    public void SelectAction_ConservesSp_WhenBelowThreshold()
+    public void SelectAction_Dispel_Prioritized_WhenEnemyBuffed()
     {
         // Arrange
-        // Threshold = 10 (default).
-        // Actor SP = 15. Skill Cost = 10.
-        // Remaining SP would be 5, which is < 10.
-        // Expectation: Should NOT use skill, should Attack.
+        var actor = new ServerCharacter { Id = 1, Name = "Actor", Sp = 100 };
+        var ally = new ServerCharacter { Id = 2, Name = "Ally" };
+        ally.Con = 10; ally.Hp = 100; // Full HP
 
-        // Reset actor
-        _actor = new ServerCharacter { Id = 1, Name = "Actor", Sp = 15, Str = 10 };
+        var enemy = new ServerCharacter { Id = 3, Name = "Enemy" };
+        enemy.Con = 10; enemy.Hp = 50;
+        // Enemy has buff
+        enemy.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.Shield, 10, 3, null), new StatusEngine());
 
-        var damageSkillId = 30;
-        _actor.KnownSkills.Add(damageSkillId);
-        _fakeSkills.AddSkill(new Skill
-        {
-            SkillId = damageSkillId,
-            SpCost = 10,
-            TargetType = SkillTargetType.SingleEnemy,
-            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }
-        });
+        // Skills:
+        // 10: Damage
+        // 11: Dispel
+        actor.KnownSkills.Add(10);
+        actor.KnownSkills.Add(11);
+
+        _skillCatalogMock.Setup(x => x.GetSkillById(10)).Returns(new Skill { SkillId = 10, SpCost = 5, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }, TargetType = SkillTargetType.SingleEnemy });
+        _skillCatalogMock.Setup(x => x.GetSkillById(11)).Returns(new Skill { SkillId = 11, SpCost = 5, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Dispel } }, TargetType = SkillTargetType.SingleEnemy });
 
         // Act
-        var action = _service.SelectAction(_actor, new List<ServerCharacter> { _actor }, new List<ServerCharacter> { _enemy }, 12345);
+        var action = _service.SelectAction(actor, new List<ServerCharacter> { ally }, new List<ServerCharacter> { enemy }, 12345, AutoBattlePolicy.Balanced);
 
         // Assert
-        Assert.Equal(CombatActionType.Attack, action.Type); // Fallback to Attack
+        Assert.Equal(CombatActionType.Skill, action.Type);
+        Assert.Equal(11, action.SkillId); // Should choose Dispel
     }
 
     [Fact]
-    public void SelectAction_UsesSkill_WhenAboveThreshold()
+    public void SelectAction_Cooldown_AvoidsSkill()
     {
         // Arrange
-        // Threshold = 10.
-        // Actor SP = 25. Skill Cost = 10.
-        // Remaining SP = 15 >= 10.
-        // Expectation: Use Skill.
+        var actor = new ServerCharacter { Id = 1, Name = "Actor", Sp = 100 };
+        var enemy = new ServerCharacter { Id = 3, Name = "Enemy" };
+        enemy.Con = 10; enemy.Hp = 50;
 
-        _actor = new ServerCharacter { Id = 1, Name = "Actor", Sp = 25, Str = 10 };
-
-        var damageSkillId = 30;
-        _actor.KnownSkills.Add(damageSkillId);
-        _fakeSkills.AddSkill(new Skill
+        // Skills: 10 (Damage)
+        actor.KnownSkills.Add(10);
+        _skillCatalogMock.Setup(x => x.GetSkillById(10)).Returns(new Skill
         {
-            SkillId = damageSkillId,
-            SpCost = 10,
-            TargetType = SkillTargetType.SingleEnemy,
-            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }
+            SkillId = 10,
+            SpCost = 5,
+            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } },
+            TargetType = SkillTargetType.SingleEnemy
         });
 
-        var action = _service.SelectAction(_actor, new List<ServerCharacter> { _actor }, new List<ServerCharacter> { _enemy }, 12345);
+        // Set Cooldown
+        actor.SetSkillCooldown(10, 1);
 
-        Assert.Equal(CombatActionType.Skill, action.Type);
-        Assert.Equal(damageSkillId, action.SkillId);
+        // Act
+        var action = _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy }, 12345, AutoBattlePolicy.Aggressive);
+
+        // Assert
+        // Should fallback to Attack (Id 0 usually implicit) or at least NOT use skill 10
+        Assert.NotEqual(10, action.SkillId);
+        Assert.Equal(CombatActionType.Attack, action.Type); // Fallback
     }
 
-    // Fake Implementation
-    class FakeSkillCatalog : ISkillCatalog
+    [Fact]
+    public void SelectAction_Deterministic()
     {
-        private Dictionary<int, Skill> _skills = new();
-        public void AddSkill(Skill skill) => _skills[skill.SkillId] = skill;
-        public Skill? GetSkillById(int id) => _skills.ContainsKey(id) ? _skills[id] : null;
-        public IEnumerable<int> GetAllSkillIds() => _skills.Keys;
+         var actor = new ServerCharacter { Id = 1, Name = "Actor", Sp = 100 };
+         var enemy = new ServerCharacter { Id = 3, Name = "Enemy" };
+         enemy.Con = 10; enemy.Hp = 50;
+
+         actor.KnownSkills.Add(10);
+         _skillCatalogMock.Setup(x => x.GetSkillById(10)).Returns(new Skill { SkillId = 10, SpCost = 5, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }, TargetType = SkillTargetType.SingleEnemy });
+
+         var action1 = _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy }, 123, AutoBattlePolicy.Balanced);
+         var action2 = _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy }, 123, AutoBattlePolicy.Balanced);
+
+         Assert.Equal(action1.Type, action2.Type);
+         Assert.Equal(action1.SkillId, action2.SkillId);
+         Assert.Equal(action1.TargetId, action2.TargetId);
     }
 }

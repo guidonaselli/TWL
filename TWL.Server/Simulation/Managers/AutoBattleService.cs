@@ -70,7 +70,21 @@ public class AutoBattleService
             }
         }
 
-        // 3. Attack
+        // 3. Check Enemy Buffs -> Dispel
+        if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced || policy == AutoBattlePolicy.Aggressive)
+        {
+             var buffedEnemy = enemies.FirstOrDefault(e => e.Hp > 0 && e.StatusEffects.Any(s => s.Tag == SkillEffectTag.BuffStats || s.Tag == SkillEffectTag.Shield));
+             if (buffedEnemy != null)
+             {
+                  var dispelSkillId = FindBestSkill(actor, SkillEffectTag.Dispel, SkillTargetType.SingleEnemy, ignoreThreshold: false);
+                  if (dispelSkillId.HasValue)
+                  {
+                       return CombatAction.UseSkill(actor.Id, buffedEnemy.Id, dispelSkillId.Value);
+                  }
+             }
+        }
+
+        // 4. Attack
         var target = GetBestTarget(enemies);
         if (target != null)
         {
@@ -106,6 +120,8 @@ public class AutoBattleService
         {
             var skill = _skillCatalog.GetSkillById(skillId);
             if (skill == null) continue;
+
+            if (actor.IsSkillOnCooldown(skill.SkillId)) continue;
 
             if (skill.SpCost > actor.Sp) continue;
 
