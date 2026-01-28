@@ -1,0 +1,150 @@
+<?xml version='1.0' encoding='utf-8'?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="SKILL_RockSmash" xml:space="preserve">
+    <value>Rock Smash</value>
+  </data>
+  <data name="SKILL_BoulderCrush" xml:space="preserve">
+    <value>Boulder Crush</value>
+  </data>
+  <data name="SKILL_StoneBullet" xml:space="preserve">
+    <value>Stone Bullet</value>
+  </data>
+  <data name="SKILL_RollingStone" xml:space="preserve">
+    <value>Rolling Stone</value>
+  </data>
+  <data name="SKILL_GaiasProtection" xml:space="preserve">
+    <value>Gaia's Protection</value>
+  </data>
+  <data name="SKILL_Entangle" xml:space="preserve">
+    <value>Entangle</value>
+  </data>
+  <data name="SKILL_AquaImpact" xml:space="preserve">
+    <value>Aqua Impact</value>
+  </data>
+  <data name="SKILL_WaterBall" xml:space="preserve">
+    <value>Water Ball</value>
+  </data>
+  <data name="SKILL_AquaRecover" xml:space="preserve">
+    <value>Aqua Recover</value>
+  </data>
+  <data name="SKILL_Shrink" xml:space="preserve">
+    <value>Shrink</value>
+  </data>
+  <data name="SKILL_Blockage" xml:space="preserve">
+    <value>Blockage</value>
+  </data>
+  <data name="SKILL_Hotfire" xml:space="preserve">
+    <value>Hotfire</value>
+  </data>
+  <data name="SKILL_Vanish" xml:space="preserve">
+    <value>Vanish</value>
+  </data>
+  <data name="SKILL_FairyLight" xml:space="preserve">
+    <value>Fairy Light</value>
+  </data>
+  <data name="SKILL_DragonSlash" xml:space="preserve">
+    <value>Dragon Slash</value>
+  </data>
+  <data name="SKILL_FairyBlessing" xml:space="preserve">
+    <value>Fairy's Blessing</value>
+  </data>
+  <data name="SKILL_FlameSmash" xml:space="preserve">
+    <value>Flame Smash</value>
+  </data>
+  <data name="SKILL_Fireball" xml:space="preserve">
+    <value>Fireball</value>
+  </data>
+  <data name="SKILL_FieryWill" xml:space="preserve">
+    <value>Fiery Will</value>
+  </data>
+  <data name="UI_Login" xml:space="preserve">
+    <value>Login</value>
+  </data>
+  <data name="UI_LoadGame" xml:space="preserve">
+    <value>Load Game</value>
+  </data>
+  <data name="UI_Exit" xml:space="preserve">
+    <value>Exit</value>
+  </data>
+  <data name="UI_Username" xml:space="preserve">
+    <value>Username: </value>
+  </data>
+  <data name="UI_Password" xml:space="preserve">
+    <value>Password: </value>
+  </data>
+  <data name="UI_Back" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="UI_Title" xml:space="preserve">
+    <value>The Wonderland</value>
+  </data>
+  <data name="UI_NoSave" xml:space="preserve">
+    <value>No save game found.</value>
+  </data>
+  <data name="UI_OPTIONS_TITLE" xml:space="preserve">
+    <value>Options</value>
+  </data>
+  <data name="UI_OPTIONS_MASTER_VOLUME" xml:space="preserve">
+    <value>Master Volume: {0:0}%</value>
+  </data>
+  <data name="UI_OPTIONS_MUSIC_VOLUME" xml:space="preserve">
+    <value>Music Volume: {0:0}%</value>
+  </data>
+  <data name="UI_OPTIONS_SFX_VOLUME" xml:space="preserve">
+    <value>SFX Volume: {0:0}%</value>
+  </data>
+  <data name="UI_OPTIONS_TEXT_SPEED" xml:space="preserve">
+    <value>Text Speed: {0}</value>
+  </data>
+  <data name="UI_OPTIONS_MUTE_UNFOCUS" xml:space="preserve">
+    <value>Mute on Unfocus: {0}</value>
+  </data>
+  <data name="UI_COMMON_BACK" xml:space="preserve">
+    <value>Back</value>
+  </data>
+  <data name="UI_SPEED_SLOW" xml:space="preserve">
+    <value>Slow</value>
+  </data>
+  <data name="UI_SPEED_NORMAL" xml:space="preserve">
+    <value>Normal</value>
+  </data>
+  <data name="UI_SPEED_FAST" xml:space="preserve">
+    <value>Fast</value>
+  </data>
+  <data name="UI_COMMON_ON" xml:space="preserve">
+    <value>On</value>
+  </data>
+  <data name="UI_COMMON_OFF" xml:space="preserve">
+    <value>Off</value>
+  </data>
+  <data name="UI_Icon" xml:space="preserve">
+    <value>Icon</value>
+  </data>
+  <data name="UI_LevelFormat" xml:space="preserve">
+    <value>Lv.{0}</value>
+  </data>
+  <data name="UI_HpFormat" xml:space="preserve">
+    <value>HP: {0}/{1}</value>
+  </data>
+  <data name="UI_SpFormat" xml:space="preserve">
+    <value>SP: {0}/{1}</value>
+  </data>
+  <data name="UI_XpFormat" xml:space="preserve">
+    <value>XP: {0}/{1}</value>
+  </data>
+  <data name="UI_Minimap" xml:space="preserve">
+    <value>Minimap</value>
+  </data>
+  <data name="UI_MarketplaceListingFormat" xml:space="preserve">
+    <value>[{0}] Item {1} x{2} Price:{3}</value>
+  </data>
+</root>

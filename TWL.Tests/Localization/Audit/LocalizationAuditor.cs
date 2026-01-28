@@ -315,32 +315,37 @@ namespace TWL.Tests.Localization.Audit
             var baseKeys = results.ResourceKeys.ContainsKey("base") ? results.ResourceKeys["base"] : new List<string>();
 
             // 1. Missing Keys
-            if (!results.ResourceKeys.ContainsKey("base"))
+            foreach (var lang in _config.RequiredLanguages)
             {
-                results.Findings.Add(new AuditFinding
-                {
-                    Code = "ERR_NO_BASE_RESOURCES",
-                    Severity = "ERROR",
-                    File = "Resources/Strings.resx",
-                    Location = "Project Root",
-                    Message = "Base resource file is missing.",
-                    SuggestedFix = "Create Resources/Strings.resx"
-                });
-            }
-
-            foreach (var key in allUsedKeys)
-            {
-                if (!baseKeys.Contains(key))
+                if (!results.ResourceKeys.ContainsKey(lang))
                 {
                     results.Findings.Add(new AuditFinding
                     {
-                        Code = "ERR_MISSING_KEY",
+                        Code = $"ERR_NO_{lang.ToUpper()}_RESOURCES",
                         Severity = "ERROR",
-                        File = "Resources/Strings.resx",
-                        Location = key,
-                        Message = $"Key '{key}' is used but missing from base resources.",
-                        SuggestedFix = $"Add data name='{key}' to Strings.resx"
+                        File = lang == "base" ? "Resources/Strings.resx" : $"Resources/Strings.{lang}.resx",
+                        Location = "Project Root",
+                        Message = $"Resource file for required language '{lang}' is missing.",
+                        SuggestedFix = $"Create Resources/Strings.{lang}.resx"
                     });
+                    continue;
+                }
+
+                var langKeys = results.ResourceKeys[lang];
+                foreach (var key in allUsedKeys)
+                {
+                    if (!langKeys.Contains(key))
+                    {
+                        results.Findings.Add(new AuditFinding
+                        {
+                            Code = "ERR_MISSING_KEY",
+                            Severity = "ERROR",
+                            File = lang == "base" ? "Resources/Strings.resx" : $"Resources/Strings.{lang}.resx",
+                            Location = key,
+                            Message = $"Key '{key}' is used but missing from '{lang}' resources.",
+                            SuggestedFix = $"Add data name='{key}' to Strings.{lang}.resx"
+                        });
+                    }
                 }
             }
 
