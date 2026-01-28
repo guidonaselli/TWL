@@ -8,6 +8,7 @@ using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Services;
+using TWL.Server.Services.World;
 using TWL.Shared.Domain.Characters;
 using Xunit;
 using Moq;
@@ -44,9 +45,10 @@ public class PipelineMetricsTests
         var mockEconomy = new Mock<IEconomyService>();
 
         var petService = new TWL.Server.Services.PetService(playerService, mockPet.Object, combatManager);
+        var mockWorldTrigger = new Mock<IWorldTriggerService>();
 
         int port = 9123;
-        var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object, playerService, mockEconomy.Object, metrics, petService);
+        var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object, playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object);
 
         server.Start();
 

@@ -29,6 +29,9 @@ public class ServerCharacterData
     public int Agi { get; set; }
     public int Gold { get; set; }
     public long PremiumCurrency { get; set; }
+    public int MapId { get; set; }
+    public float X { get; set; }
+    public float Y { get; set; }
     public List<Item> Inventory { get; set; } = new();
     public List<ServerPetData> Pets { get; set; } = new();
     public string ActivePetInstanceId { get; set; }

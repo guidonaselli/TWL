@@ -4,47 +4,12 @@ using System.IO;
 using System.Linq;
 using System.Xml.Linq;
 using System.Text.Json;
+using TWL.Shared.Domain.World;
 
 namespace TWL.Tests.Maps
 {
     public static class MapValidator
     {
-        private static readonly string[] RequiredLayers = new[]
-        {
-            "Ground",
-            "Ground_Detail",
-            "Water",
-            "Cliffs",
-            "Rocks",
-            "Props_Low",
-            "Props_High",
-            "Collisions",
-            "Spawns",
-            "Triggers"
-        };
-
-        private static readonly string[] ObjectGroupLayers = new[]
-        {
-            "Collisions",
-            "Spawns",
-            "Triggers"
-        };
-
-        private static readonly HashSet<string> ValidCollisionTypes = new HashSet<string>
-        {
-            "Solid", "WaterBlock", "CliffBlock", "OneWay"
-        };
-
-        private static readonly HashSet<string> ValidSpawnTypes = new HashSet<string>
-        {
-            "PlayerStart", "Monster", "NPC", "ResourceNode"
-        };
-
-        private static readonly HashSet<string> ValidTriggerTypes = new HashSet<string>
-        {
-            "MapTransition", "QuestHook", "InstanceGate", "CutsceneHook", "Interaction"
-        };
-
         public static void ValidateMap(string mapFolderPath)
         {
             if (!Directory.Exists(mapFolderPath))
@@ -91,7 +56,7 @@ namespace TWL.Tests.Maps
             var layers = root.Elements().Where(e => e.Name == "layer" || e.Name == "objectgroup").ToList();
 
             // Check for missing required layers
-            foreach (var requiredLayer in RequiredLayers)
+            foreach (var requiredLayer in WorldConstants.RequiredLayers)
             {
                 if (!layers.Any(l => l.Attribute("name")?.Value == requiredLayer))
                 {
@@ -101,24 +66,24 @@ namespace TWL.Tests.Maps
 
             var presentRequiredLayers = layers
                 .Select(l => l.Attribute("name")?.Value)
-                .Where(n => n != null && RequiredLayers.Contains(n))
+                .Where(n => n != null && WorldConstants.RequiredLayers.Contains(n))
                 .ToList();
 
-            for (int i = 0; i < RequiredLayers.Length; i++)
+            for (int i = 0; i < WorldConstants.RequiredLayers.Count; i++)
             {
                 if (i >= presentRequiredLayers.Count)
                 {
-                     throw new Exception($"Missing required layer (checking order): {RequiredLayers[i]}");
+                     throw new Exception($"Missing required layer (checking order): {WorldConstants.RequiredLayers[i]}");
                 }
 
-                if (presentRequiredLayers[i] != RequiredLayers[i])
+                if (presentRequiredLayers[i] != WorldConstants.RequiredLayers[i])
                 {
-                    throw new Exception($"Layer order mismatch. Expected {RequiredLayers[i]}, found {presentRequiredLayers[i]}.");
+                    throw new Exception($"Layer order mismatch. Expected {WorldConstants.RequiredLayers[i]}, found {presentRequiredLayers[i]}.");
                 }
             }
 
             // Verify types (ObjectGroup vs TileLayer)
-            foreach (var layerName in ObjectGroupLayers)
+            foreach (var layerName in WorldConstants.ObjectGroupLayers)
             {
                 var layer = layers.First(l => l.Attribute("name")?.Value == layerName);
                 if (layer.Name != "objectgroup")
@@ -128,7 +93,7 @@ namespace TWL.Tests.Maps
             }
 
             // Verify Tile Layers
-            var tileLayers = RequiredLayers.Except(ObjectGroupLayers);
+            var tileLayers = WorldConstants.RequiredLayers.Except(WorldConstants.ObjectGroupLayers);
             foreach (var layerName in tileLayers)
             {
                 var layer = layers.First(l => l.Attribute("name")?.Value == layerName);
@@ -153,7 +118,7 @@ namespace TWL.Tests.Maps
                 {
                     throw new Exception($"Collision object (ID {obj.Attribute("id")?.Value}) missing 'CollisionType' property.");
                 }
-                if (!ValidCollisionTypes.Contains(collisionType))
+                if (!WorldConstants.ValidCollisionTypes.Contains(collisionType))
                 {
                     throw new Exception($"Collision object (ID {obj.Attribute("id")?.Value}) has invalid 'CollisionType': {collisionType}.");
                 }
@@ -169,7 +134,7 @@ namespace TWL.Tests.Maps
                 {
                     throw new Exception($"Spawn object (ID {obj.Attribute("id")?.Value}) missing 'SpawnType' property.");
                 }
-                if (!ValidSpawnTypes.Contains(spawnType))
+                if (!WorldConstants.ValidSpawnTypes.Contains(spawnType))
                 {
                     throw new Exception($"Spawn object (ID {obj.Attribute("id")?.Value}) has invalid 'SpawnType': {spawnType}.");
                 }
@@ -180,7 +145,6 @@ namespace TWL.Tests.Maps
                 if (spawnType == "Monster" || spawnType == "NPC")
                 {
                     // Faction, LevelRange, RespawnSeconds, Radius
-                    // ValidatePropertyExists(obj, "Faction"); // Not always mandatory? Style guide implies yes.
                 }
             }
         }
@@ -196,7 +160,7 @@ namespace TWL.Tests.Maps
                 {
                     throw new Exception($"Trigger object (ID {obj.Attribute("id")?.Value}) missing 'TriggerType' property.");
                 }
-                if (!ValidTriggerTypes.Contains(triggerType))
+                if (!WorldConstants.ValidTriggerTypes.Contains(triggerType))
                 {
                     throw new Exception($"Trigger object (ID {obj.Attribute("id")?.Value}) has invalid 'TriggerType': {triggerType}.");
                 }

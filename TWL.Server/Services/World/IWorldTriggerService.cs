@@ -1,0 +1,14 @@
+using TWL.Server.Domain.World;
+using TWL.Server.Simulation.Networking;
+
+namespace TWL.Server.Services.World;
+
+public interface IWorldTriggerService
+{
+    void LoadMaps(IEnumerable<ServerMap> maps);
+    void RegisterHandler(ITriggerHandler handler);
+    void OnEnterTrigger(ServerCharacter character, int mapId, string triggerId);
+    void OnInteractTrigger(ServerCharacter character, int mapId, string triggerId);
+    void CheckTriggers(ServerCharacter character);
+    ServerSpawn? GetSpawn(int mapId, string spawnId);
+}
