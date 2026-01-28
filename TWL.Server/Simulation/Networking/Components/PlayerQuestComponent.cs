@@ -38,11 +38,93 @@ public class PlayerQuestComponent
             if (_character != null)
             {
                 _character.OnItemAdded -= HandleItemAdded;
+                _character.OnPetAdded -= HandlePetAdded;
+                _character.OnTradeCommitted -= HandleTradeCommitted;
             }
             _character = value;
             if (_character != null)
             {
                 _character.OnItemAdded += HandleItemAdded;
+                _character.OnPetAdded += HandlePetAdded;
+                _character.OnTradeCommitted += HandleTradeCommitted;
+            }
+        }
+    }
+
+    private void HandlePetAdded(ServerPet pet)
+    {
+        lock (_lock)
+        {
+            CheckFailures();
+
+            foreach (var kvp in QuestStates)
+            {
+                if (kvp.Value != QuestState.InProgress) continue;
+
+                var questId = kvp.Key;
+                var def = _questManager.GetDefinition(questId);
+                if (def == null) continue;
+
+                for (int i = 0; i < def.Objectives.Count; i++)
+                {
+                    var obj = def.Objectives[i];
+                    if (!string.Equals(obj.Type, "PetAcquired", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    bool match = false;
+                    if (obj.DataId.HasValue)
+                    {
+                        if (obj.DataId.Value == pet.DefinitionId) match = true;
+                    }
+                    else
+                    {
+                        if (string.Equals(obj.TargetName, pet.Name, StringComparison.OrdinalIgnoreCase)) match = true;
+                    }
+
+                    if (match)
+                    {
+                         if (QuestProgress[questId][i] < obj.RequiredCount)
+                        {
+                            UpdateProgressInternal(questId, i, 1);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void HandleTradeCommitted(ServerCharacter target, int itemId, int quantity)
+    {
+        lock (_lock)
+        {
+            CheckFailures();
+
+            foreach (var kvp in QuestStates)
+            {
+                if (kvp.Value != QuestState.InProgress) continue;
+
+                var questId = kvp.Key;
+                var def = _questManager.GetDefinition(questId);
+                if (def == null) continue;
+
+                for (int i = 0; i < def.Objectives.Count; i++)
+                {
+                    var obj = def.Objectives[i];
+                    if (!string.Equals(obj.Type, "Trade", StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    // Match Target (Person we traded WITH)
+                    if (!string.Equals(obj.TargetName, target.Name, StringComparison.OrdinalIgnoreCase))
+                        continue;
+
+                    // Match Item
+                    if (obj.DataId.HasValue && obj.DataId.Value != itemId) continue;
+
+                    if (QuestProgress[questId][i] < obj.RequiredCount)
+                    {
+                        UpdateProgressInternal(questId, i, quantity);
+                    }
+                }
             }
         }
     }

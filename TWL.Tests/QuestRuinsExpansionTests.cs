@@ -65,8 +65,8 @@ public class QuestRuinsExpansionTests
 
         // Collect Power Crystal
         // Check interaction logic first
-        bool interacted = _interactionManager.ProcessInteraction(_character, _questComponent, "PowerCrystalSource");
-        Assert.True(interacted, "Should successfully interact with PowerCrystalSource");
+        var interactionType = _interactionManager.ProcessInteraction(_character, _questComponent, "PowerCrystalSource");
+        Assert.NotNull(interactionType);
         Assert.True(_character.HasItem(8108, 1), "Should have Power Crystal (8108)");
 
         _questComponent.TryProgress("Collect", "PowerCrystalSource");
@@ -98,8 +98,8 @@ public class QuestRuinsExpansionTests
         // Gather 5 Wings
         for (int i = 0; i < 5; i++)
         {
-            bool interacted = _interactionManager.ProcessInteraction(_character, _questComponent, "BatNest");
-            Assert.True(interacted, $"Should successfully interact with BatNest iteration {i+1}");
+            var result = _interactionManager.ProcessInteraction(_character, _questComponent, "BatNest");
+            Assert.NotNull(result);
             _questComponent.TryProgress("Collect", "BatNest");
         }
 
