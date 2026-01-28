@@ -722,27 +722,50 @@ public class PlayerQuestComponent
                 for (int i = 0; i < def.Objectives.Count; i++)
                 {
                     var obj = def.Objectives[i];
-                    if (!string.Equals(obj.Type, "Deliver", StringComparison.OrdinalIgnoreCase)) continue;
-                    if (!string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase)) continue;
-                    if (!obj.DataId.HasValue) continue;
 
-                    var required = obj.RequiredCount;
-                    var current = QuestProgress[questId][i];
-                    if (current >= required) continue;
-
-                    var needed = required - current;
-                    var itemId = obj.DataId.Value;
-
-                    // Check if player has the item
-                    var invItems = Character.GetItems(itemId);
-                    var totalInv = invItems.Sum(x => x.Quantity);
-
-                    if (totalInv > 0)
+                    // Handle Deliver Item
+                    if (string.Equals(obj.Type, "Deliver", StringComparison.OrdinalIgnoreCase))
                     {
-                        var toRemove = Math.Min(needed, (int)totalInv);
-                        if (Character.RemoveItem(itemId, toRemove))
+                        if (!string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase)) continue;
+                        if (!obj.DataId.HasValue) continue;
+
+                        var required = obj.RequiredCount;
+                        var current = QuestProgress[questId][i];
+                        if (current >= required) continue;
+
+                        var needed = required - current;
+                        var itemId = obj.DataId.Value;
+
+                        // Check if player has the item
+                        var invItems = Character.GetItems(itemId);
+                        var totalInv = invItems.Sum(x => x.Quantity);
+
+                        if (totalInv > 0)
                         {
-                            UpdateProgressInternal(questId, i, toRemove);
+                            var toRemove = Math.Min(needed, (int)totalInv);
+                            if (Character.RemoveItem(itemId, toRemove))
+                            {
+                                UpdateProgressInternal(questId, i, toRemove);
+                                changed = true;
+                            }
+                        }
+                    }
+                    // Handle Pay Gold
+                    else if (string.Equals(obj.Type, "PayGold", StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (!string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase)) continue;
+
+                        var required = obj.RequiredCount;
+                        var current = QuestProgress[questId][i];
+                        if (current >= required) continue;
+
+                        var needed = required - current;
+
+                        // Check if player has enough gold
+                        if (Character.Gold >= needed)
+                        {
+                            Character.AddGold(-needed);
+                            UpdateProgressInternal(questId, i, needed);
                             changed = true;
                         }
                     }
