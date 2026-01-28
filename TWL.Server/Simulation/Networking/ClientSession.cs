@@ -511,4 +511,15 @@ public class ClientSession
             _ = SendQuestUpdateAsync(questId);
         }
     }
+
+    public void HandleInstanceFailure(string instanceId)
+    {
+        if (Character == null) return;
+
+        var failedQuests = QuestComponent.HandleInstanceFailure(instanceId);
+        foreach (var questId in failedQuests)
+        {
+            _ = SendQuestUpdateAsync(questId);
+        }
+    }
 }
