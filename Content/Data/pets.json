@@ -25,9 +25,11 @@
       { "SkillId": 201, "UnlockLevel": 1, "UnlockAmity": 0 },
       { "SkillId": 202, "UnlockLevel": 10, "UnlockAmity": 60 }
     ],
-    "IsCapturable": true,
-    "CaptureLevelLimit": 5,
-    "CaptureChance": 0.5
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.5
+    }
   },
   {
     "PetTypeId": 1002,
@@ -55,7 +57,9 @@
       { "SkillId": 301, "UnlockLevel": 1, "UnlockAmity": 0 }
     ],
     "IsQuestUnique": true,
-    "IsCapturable": false
+    "CaptureRules": {
+      "IsCapturable": false
+    }
   },
   {
     "PetTypeId": 1003,
@@ -84,7 +88,9 @@
       { "SkillId": 402, "UnlockLevel": 30, "UnlockAmity": 80, "RequiresRebirth": false },
       { "SkillId": 403, "UnlockLevel": 60, "UnlockAmity": 100, "RequiresRebirth": true }
     ],
-    "IsCapturable": false,
+    "CaptureRules": {
+      "IsCapturable": false
+    },
     "RebirthEligible": true,
     "RebirthSkillId": 403
   },
@@ -113,9 +119,11 @@
     "Utilities": [
       { "Type": "Mount", "Value": 1.5, "RequiredLevel": 10, "RequiredAmity": 40 }
     ],
-    "IsCapturable": true,
-    "CaptureLevelLimit": 10,
-    "CaptureChance": 0.4
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 10,
+      "BaseChance": 0.4
+    }
   },
   {
     "PetTypeId": 1005,
@@ -140,8 +148,166 @@
       "AgiWeight": 50
     },
     "Utilities": [
-      { "Type": "Delivery", "Value": 10, "RequiredLevel": 1, "RequiredAmity": 20 }
+      { "Type": "Delivery", "Value": 10.0, "RequiredLevel": 1, "RequiredAmity": 20 }
     ],
-    "IsCapturable": false
+    "CaptureRules": {
+      "IsCapturable": false
+    }
+  },
+  {
+    "PetTypeId": 1006,
+    "Name": "Rock Golem",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Earth",
+    "BaseHp": 200,
+    "BaseStr": 15,
+    "BaseCon": 25,
+    "BaseInt": 2,
+    "BaseWis": 5,
+    "BaseAgi": 3,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 20.0,
+      "SpGrowthPerLevel": 2.0,
+      "StrWeight": 20,
+      "ConWeight": 50,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 5
+    },
+    "SkillSet": [
+        { "SkillId": 501, "UnlockLevel": 5, "UnlockAmity": 0 }
+    ],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 15,
+      "BaseChance": 0.3
+    }
+  },
+  {
+    "PetTypeId": 1007,
+    "Name": "Water Fairy",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Water",
+    "BaseHp": 60,
+    "BaseStr": 3,
+    "BaseCon": 5,
+    "BaseInt": 18,
+    "BaseWis": 15,
+    "BaseAgi": 12,
+    "GrowthModel": {
+      "CurveType": "LateBloomer",
+      "HpGrowthPerLevel": 6.0,
+      "SpGrowthPerLevel": 15.0,
+      "StrWeight": 5,
+      "ConWeight": 10,
+      "IntWeight": 40,
+      "WisWeight": 30,
+      "AgiWeight": 15
+    },
+    "SkillSet": [
+        { "SkillId": 601, "UnlockLevel": 1, "UnlockAmity": 10 }
+    ],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 8,
+      "BaseChance": 0.6
+    }
+  },
+  {
+    "PetTypeId": 1008,
+    "Name": "Flame Tiger",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Fire",
+    "BaseHp": 130,
+    "BaseStr": 25,
+    "BaseCon": 10,
+    "BaseInt": 5,
+    "BaseWis": 5,
+    "BaseAgi": 15,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 12.0,
+      "SpGrowthPerLevel": 4.0,
+      "StrWeight": 45,
+      "ConWeight": 15,
+      "IntWeight": 5,
+      "WisWeight": 5,
+      "AgiWeight": 30
+    },
+    "SkillSet": [
+        { "SkillId": 701, "UnlockLevel": 10, "UnlockAmity": 30 }
+    ],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 20,
+      "BaseChance": 0.25
+    }
+  },
+  {
+    "PetTypeId": 1009,
+    "Name": "Ancient Dragon",
+    "Type": "HumanLike",
+    "Rarity": "Legend",
+    "Element": "Wind",
+    "BaseHp": 250,
+    "BaseStr": 20,
+    "BaseCon": 20,
+    "BaseInt": 20,
+    "BaseWis": 20,
+    "BaseAgi": 10,
+    "GrowthModel": {
+      "CurveType": "LateBloomer",
+      "HpGrowthPerLevel": 25.0,
+      "SpGrowthPerLevel": 10.0,
+      "StrWeight": 25,
+      "ConWeight": 25,
+      "IntWeight": 25,
+      "WisWeight": 15,
+      "AgiWeight": 10
+    },
+    "SkillSet": [
+        { "SkillId": 801, "UnlockLevel": 1, "UnlockAmity": 0 },
+        { "SkillId": 802, "UnlockLevel": 90, "UnlockAmity": 100, "RequiresRebirth": true }
+    ],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "RebirthEligible": true,
+    "RebirthSkillId": 802
+  },
+  {
+    "PetTypeId": 1010,
+    "Name": "Mining Mole",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Earth",
+    "BaseHp": 90,
+    "BaseStr": 12,
+    "BaseCon": 12,
+    "BaseInt": 2,
+    "BaseWis": 5,
+    "BaseAgi": 8,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 9.0,
+      "SpGrowthPerLevel": 3.0,
+      "StrWeight": 25,
+      "ConWeight": 25,
+      "IntWeight": 10,
+      "WisWeight": 20,
+      "AgiWeight": 20
+    },
+    "Utilities": [
+      { "Type": "Gathering", "Value": 1.2, "RequiredLevel": 5, "RequiredAmity": 30 }
+    ],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.6
+    }
   }
 ]

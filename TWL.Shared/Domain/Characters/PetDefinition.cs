@@ -26,13 +26,14 @@ public class PetDefinition
     public List<int> SkillIds; // skill fijos
 
     // New WLO-like properties
-    public bool IsCapturable;
     public bool IsQuestUnique;
     public bool RecoveryServiceEnabled;
     public bool RebirthEligible;
     public int? DeathQuestId;
-    public int CaptureLevelLimit;
-    public float CaptureChance;
+
+    public CaptureRules CaptureRules; // Structured capture rules
+
+    // Legacy fields removed/deprecated in favor of CaptureRules
 
     public PetDefinition()
     {
@@ -40,5 +41,14 @@ public class PetDefinition
         SkillSet = new List<PetSkillSet>();
         Utilities = new List<PetUtility>();
         SkillIds = new List<int>();
+        CaptureRules = new CaptureRules();
     }
+}
+
+public class CaptureRules
+{
+    public bool IsCapturable { get; set; }
+    public int LevelLimit { get; set; }
+    public float BaseChance { get; set; }
+    public int? RequiredItemId { get; set; }
 }

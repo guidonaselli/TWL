@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
@@ -11,12 +12,14 @@ public class PetService : IPetService
     private readonly PlayerService _playerService;
     private readonly PetManager _petManager;
     private readonly CombatManager _combatManager;
+    private readonly IRandomService _random;
 
-    public PetService(PlayerService playerService, PetManager petManager, CombatManager combatManager)
+    public PetService(PlayerService playerService, PetManager petManager, CombatManager combatManager, IRandomService random)
     {
         _playerService = playerService;
         _petManager = petManager;
         _combatManager = combatManager;
+        _random = random;
     }
 
     public string CreatePet(int ownerId, int definitionId)
@@ -32,21 +35,63 @@ public class PetService : IPetService
         return pet.InstanceId;
     }
 
-    public string CapturePet(int ownerId, int petTypeId, float roll)
+    public string CaptureEnemy(int ownerId, int enemyCombatantId)
     {
         var session = _playerService.GetSession(ownerId);
         if (session == null || session.Character == null) return null;
 
-        var def = _petManager.GetDefinition(petTypeId);
-        if (def == null || !def.IsCapturable) return null;
+        // 1. Validate Target
+        var target = _combatManager.GetCombatant(enemyCombatantId);
+        if (target is not ServerEnemy enemy) return null; // Can only capture enemies
 
-        if (session.Character.Level < def.CaptureLevelLimit) return null;
-        if (roll > def.CaptureChance) return null;
+        // Security: Prevent capturing dead enemies (Anti-dupe)
+        if (enemy.Hp <= 0) return null;
 
-        var pet = new ServerPet(def);
-        pet.Amity = 40;
+        // 2. Validate Enemy Definition
+        if (!enemy.Definition.IsCapturable || enemy.Definition.PetTypeId == null) return null;
+
+        // 3. Validate HP Threshold
+        float hpPercent = (float)enemy.Hp / enemy.MaxHp;
+        if (hpPercent > enemy.Definition.CaptureThreshold) return null; // Too healthy
+
+        // 4. Validate Pet Definition Rules
+        var petDef = _petManager.GetDefinition(enemy.Definition.PetTypeId.Value);
+        if (petDef == null || petDef.CaptureRules == null || !petDef.CaptureRules.IsCapturable) return null;
+
+        // 5. Level Check
+        // If Player Level is significantly lower than Pet Capture Limit?
+        // Actually usually strictly "Player Level >= Pet Level + X" or similar.
+        // Or "LevelLimit" in CaptureRules means "Required Player Level".
+        if (session.Character.Level < petDef.CaptureRules.LevelLimit) return null;
+
+        // 6. Calculate Chance
+        // Base Chance + Bonus for low HP
+        float baseChance = petDef.CaptureRules.BaseChance;
+        float hpBonus = (1.0f - hpPercent) * 0.5f; // Up to +50% capture rate if 0 HP (impossible but close)
+        float totalChance = baseChance + hpBonus;
+
+        // 7. Roll
+        if (_random.NextFloat() > totalChance)
+        {
+             return null; // Failed capture
+        }
+
+        // 8. Success!
+        var pet = new ServerPet(petDef);
+        pet.Amity = 40; // Default wild amity
+
+        if (session.Character.Pets.Count >= 5) // Hardcoded slot limit for now
+        {
+            // Or send to bank? fail for now.
+            return null;
+        }
 
         session.Character.AddPet(pet);
+
+        // 9. Remove Enemy (Die)
+        enemy.Die();
+        // CombatManager should handle death event
+
         return pet.InstanceId;
     }
 
@@ -54,6 +99,13 @@ public class PetService : IPetService
     {
         var pet = GetPet(ownerId, petInstanceId);
         if (pet == null) return false;
+
+        if (!pet.IsDead) return false;
+
+        // Cost Logic?
+        // E.g. consume Gold or Item.
+        // For now, free or minimal check.
+        // if (owner.Gold < 100) return false;
 
         pet.Revive();
         return true;
@@ -69,6 +121,7 @@ public class PetService : IPetService
         if (active != null && active.InstanceId == petInstanceId)
         {
             _combatManager.UnregisterCombatant(active.Id);
+            session.Character.SetActivePet(null);
         }
 
         return session.Character.RemovePet(petInstanceId);
@@ -110,7 +163,10 @@ public class PetService : IPetService
 
         if (oldPet != null)
         {
+            // Despawn old pet from combat
             _combatManager.UnregisterCombatant(oldPet.Id);
+
+            // Should consume turn? logic handled by Handler, not Service usually.
         }
 
         bool success = chara.SetActivePet(petInstanceId);
@@ -119,9 +175,18 @@ public class PetService : IPetService
         var newPet = chara.GetActivePet();
         if (newPet != null)
         {
-            // Assign runtime ID for combat: Negative OwnerID
-            // This ensures 1 pet per owner in combat map
-            newPet.Id = -chara.Id;
+            // Assign runtime ID for combat: Negative OwnerID - Slot Index?
+            // Or just ensure unique ID. ServerCombatant.Id usually must be unique.
+            // If we use negative IDs for pets: -1000 * PlayerId - SlotId?
+            // For now, simple approach:
+
+            // Important: We must not conflict with other entities.
+            // ServerCharacter uses its Database ID (positive).
+            // Mobs use... something.
+            // Pets should use generated IDs or transient IDs.
+            // Let's assume GetHashCode or similar for now, or just negative random.
+            newPet.Id = -System.Math.Abs(petInstanceId.GetHashCode());
+
             _combatManager.RegisterCombatant(newPet);
         }
 

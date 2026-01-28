@@ -108,22 +108,30 @@ public class PetCoreTests
     public void TestCaptureLogic_Validation()
     {
         // Simulating Capture Logic manually since Service mocking is complex
-        var def = new PetDefinition { IsCapturable = true, CaptureLevelLimit = 10, CaptureChance = 0.5f };
+        var def = new PetDefinition
+        {
+            CaptureRules = new CaptureRules
+            {
+                IsCapturable = true,
+                LevelLimit = 10,
+                BaseChance = 0.5f
+            }
+        };
         int playerLevel = 5;
 
-        bool canCapture = playerLevel >= def.CaptureLevelLimit;
+        bool canCapture = playerLevel >= def.CaptureRules.LevelLimit;
         Assert.False(canCapture, "Should fail level requirement");
 
         playerLevel = 15;
-        canCapture = playerLevel >= def.CaptureLevelLimit;
+        canCapture = playerLevel >= def.CaptureRules.LevelLimit;
         Assert.True(canCapture);
 
         float roll = 0.6f;
-        bool success = roll <= def.CaptureChance;
+        bool success = roll <= def.CaptureRules.BaseChance;
         Assert.False(success, "Roll 0.6 > 0.5 should fail");
 
         roll = 0.4f;
-        success = roll <= def.CaptureChance;
+        success = roll <= def.CaptureRules.BaseChance;
         Assert.True(success, "Roll 0.4 <= 0.5 should success");
     }
 

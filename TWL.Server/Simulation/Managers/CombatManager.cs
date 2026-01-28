@@ -32,17 +32,17 @@ public class CombatManager
         _statusEngine = statusEngine;
     }
 
-    public void RegisterCombatant(ServerCombatant combatant)
+    public virtual void RegisterCombatant(ServerCombatant combatant)
     {
         _combatants[combatant.Id] = combatant;
     }
 
-    public void UnregisterCombatant(int id)
+    public virtual void UnregisterCombatant(int id)
     {
         _combatants.TryRemove(id, out _);
     }
 
-    public ServerCombatant? GetCombatant(int id)
+    public virtual ServerCombatant? GetCombatant(int id)
     {
         _combatants.TryGetValue(id, out var combatant);
         return combatant;

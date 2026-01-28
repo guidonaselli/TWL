@@ -48,9 +48,11 @@ public class PetSystemTests : IDisposable
     ""BaseInt"": 5,
     ""BaseWis"": 5,
     ""BaseAgi"": 10,
-    ""IsCapturable"": true,
-    ""CaptureLevelLimit"": 1,
-    ""CaptureChance"": 0.5,
+    ""CaptureRules"": {
+        ""IsCapturable"": true,
+        ""LevelLimit"": 1,
+        ""BaseChance"": 0.5
+    },
     ""GrowthModel"": {
       ""HpGrowthPerLevel"": 10.0,
       ""SpGrowthPerLevel"": 5.0
@@ -65,7 +67,7 @@ public class PetSystemTests : IDisposable
         _mockRandom = new Mock<IRandomService>();
 
         _combatManager = new CombatManager(_mockResolver.Object, _mockRandom.Object, _mockSkills.Object, _mockStatusEngine.Object);
-        _petService = new PetService(_playerService, _petManager, _combatManager);
+        _petService = new PetService(_playerService, _petManager, _combatManager, _mockRandom.Object);
     }
 
     public void Dispose()
@@ -82,11 +84,25 @@ public class PetSystemTests : IDisposable
         session.SetCharacter(new ServerCharacter { Id = 1, Name = "Trainer" });
         _playerService.RegisterSession(session);
 
+        // Setup Enemy
+        var enemyDef = new EnemyCharacter("Wild Wolf", Element.Earth, true)
+        {
+            PetTypeId = 9999,
+            CaptureThreshold = 0.5f,
+            Health = 10,
+            MaxHealth = 100
+        };
+        var enemy = new ServerEnemy(enemyDef) { Id = 200, Hp = 10 };
+        _combatManager.RegisterCombatant(enemy);
+
+        // Mock RNG
+        _mockRandom.Setup(r => r.NextFloat()).Returns(0.1f);
+
         // Act
-        var petId = _petService.CapturePet(1, 9999, 0.1f);
+        var petInstanceId = _petService.CaptureEnemy(1, 200);
 
         // Assert
-        Assert.NotNull(petId);
+        Assert.NotNull(petInstanceId);
         var pet = session.Character.Pets[0];
         Assert.Equal(9999, pet.DefinitionId);
         Assert.Equal(40, pet.Amity); // Default capture amity
