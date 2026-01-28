@@ -1,0 +1,69 @@
+[
+  {
+    "QuestId": 9001,
+    "Title": "Dungeon Prep",
+    "Description": "Collect some wood before entering the dungeon.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Wood",
+        "RequiredCount": 1,
+        "Description": "Collect 1 Wood."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 10,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 9002,
+    "Title": "The Dark Hollow",
+    "Description": "Clear the Dark Hollow instance.",
+    "Requirements": [
+      9001
+    ],
+    "Objectives": [
+      {
+        "Type": "Instance",
+        "TargetName": "DarkHollow",
+        "RequiredCount": 1,
+        "Description": "Clear Dark Hollow."
+      }
+    ],
+    "InstanceRules": {
+      "InstanceId": "DarkHollow",
+      "DifficultyLevel": 1,
+      "TimeLimitSeconds": 300,
+      "CompletionCriteria": "KillBoss"
+    },
+    "Rewards": {
+      "Exp": 500,
+      "Gold": 50,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 9003,
+    "Title": "Survivor",
+    "Description": "You survived! Tell the Elder.",
+    "Requirements": [
+      9002
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Elder",
+        "RequiredCount": 1,
+        "Description": "Talk to Elder."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
+  }
+]

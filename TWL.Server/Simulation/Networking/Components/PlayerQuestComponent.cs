@@ -736,4 +736,31 @@ public class PlayerQuestComponent
             IsDirty = false;
         }
     }
+
+    public List<int> HandleInstanceFailure(string instanceId)
+    {
+        var failedQuests = new List<int>();
+        lock (_lock)
+        {
+            foreach (var kvp in QuestStates)
+            {
+                if (kvp.Value != QuestState.InProgress) continue;
+
+                var def = _questManager.GetDefinition(kvp.Key);
+                if (def == null) continue;
+
+                // Check if quest is bound to this instance
+                if (def.InstanceRules != null &&
+                    string.Equals(def.InstanceRules.InstanceId, instanceId, StringComparison.OrdinalIgnoreCase))
+                {
+                    // Fail the quest
+                    // FailQuest returns true if state changed
+                    QuestStates[kvp.Key] = QuestState.Failed;
+                    IsDirty = true;
+                    failedQuests.Add(kvp.Key);
+                }
+            }
+        }
+        return failedQuests;
+    }
 }
