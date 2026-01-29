@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using TWL.Shared.Domain.Characters;
+using TWL.Client.Presentation.Services;
 
 namespace TWL.Client.Presentation.Managers;
 
@@ -42,14 +43,14 @@ public class MarketplaceManager
     {
         if (!_listings.ContainsKey(listingId))
         {
-            status = "Listing not found.";
+            status = Loc.T("ERR_MARKET_LISTING_NOT_FOUND");
             return false;
         }
 
         var listing = _listings[listingId];
         if (listing.Quantity < qty)
         {
-            status = "Not enough quantity in listing.";
+            status = Loc.T("ERR_MARKET_INSUFFICIENT_QTY");
             return false;
         }
 
@@ -57,7 +58,7 @@ public class MarketplaceManager
         // Check if buyer has enough gold
         if (buyerInventory.GetItemCount(1) < cost) // supongamos itemID=1 = Gold
         {
-            status = "Buyer has insufficient gold.";
+            status = Loc.T("ERR_MARKET_INSUFFICIENT_GOLD");
             return false;
         }
 
@@ -75,7 +76,7 @@ public class MarketplaceManager
 
         if (listing.Quantity <= 0) _listings.Remove(listingId);
 
-        status = "Purchase successful!";
+        status = Loc.T("UI_MARKET_PURCHASE_SUCCESS");
         return true;
     }
 

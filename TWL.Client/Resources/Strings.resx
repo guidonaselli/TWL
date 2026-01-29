@@ -147,4 +147,28 @@
   <data name="UI_MarketplaceListingFormat" xml:space="preserve">
     <value>[{0}] Item {1} x{2} Price:{3}</value>
   </data>
+  <data name="ERR_MARKET_LISTING_NOT_FOUND" xml:space="preserve">
+    <value>Listing not found.</value>
+  </data>
+  <data name="ERR_MARKET_INSUFFICIENT_QTY" xml:space="preserve">
+    <value>Not enough quantity in listing.</value>
+  </data>
+  <data name="ERR_MARKET_INSUFFICIENT_GOLD" xml:space="preserve">
+    <value>Buyer has insufficient gold.</value>
+  </data>
+  <data name="UI_MARKET_PURCHASE_SUCCESS" xml:space="preserve">
+    <value>Purchase successful!</value>
+  </data>
+  <data name="UI_BATTLE_START" xml:space="preserve">
+    <value>Battle start!</value>
+  </data>
+  <data name="UI_BATTLE_VICTORY" xml:space="preserve">
+    <value>Victory!</value>
+  </data>
+  <data name="UI_BATTLE_DEFEAT" xml:space="preserve">
+    <value>Defeat...</value>
+  </data>
+  <data name="ITEM_Potion" xml:space="preserve">
+    <value>Potion</value>
+  </data>
 </root>
