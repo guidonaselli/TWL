@@ -116,7 +116,7 @@ namespace TWL.Tests.Localization.Audit
 
         private void ScanContent(AuditResults results)
         {
-            var dataDir = Path.Combine(_serverPath, "Content", "Data");
+            var dataDir = Path.Combine(_solutionRoot, "Content", "Data");
             if (!Directory.Exists(dataDir)) return;
 
             var files = Directory.GetFiles(dataDir, "*.json");

@@ -38,6 +38,7 @@
   "UiScanRoots": [
     "TWL.Client/Presentation/UI",
     "TWL.Client/Presentation/Views",
-    "TWL.Client/Presentation/Components"
+    "TWL.Client/Presentation/Components",
+    "TWL.Client/Presentation/Managers"
   ]
 }

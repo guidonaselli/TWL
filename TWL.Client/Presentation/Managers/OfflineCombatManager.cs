@@ -6,6 +6,7 @@ using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Events;
 using TWL.Shared.Domain.Models;
 using TWL.Shared.Net;
+using TWL.Client.Presentation.Services;
 
 namespace TWL.Client.Presentation.Managers;
 
@@ -23,7 +24,7 @@ public class OfflineCombatManager
 
     // Expose for UI
     public BattleInstance Battle => _battle;
-    public string LastMessage { get; private set; } = "Battle start!";
+    public string LastMessage { get; private set; } = Loc.T("UI_BATTLE_START");
     public LocalBattleState State { get; private set; } = LocalBattleState.AwaitingInput;
 
     public OfflineCombatManager(IEnumerable<PlayerCharacter> allies, IEnumerable<EnemyCharacter> enemies)
@@ -127,7 +128,7 @@ public class OfflineCombatManager
         }
         var loot = victory ? LootTable.RollCommonChest() : new List<Item>();
 
-        LastMessage = victory ? "Victory!" : "Defeat...";
+        LastMessage = victory ? Loc.T("UI_BATTLE_VICTORY") : Loc.T("UI_BATTLE_DEFEAT");
 
         EventBus.Publish(new BattleFinished(victory, exp, loot));
     }
