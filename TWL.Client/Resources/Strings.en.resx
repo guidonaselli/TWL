@@ -171,4 +171,40 @@
   <data name="ITEM_Potion" xml:space="preserve">
     <value>Potion</value>
   </data>
+  <data name="SKILL_WindSlashI" xml:space="preserve">
+    <value>Wind Slash I</value>
+  </data>
+  <data name="SKILL_WindSlashII" xml:space="preserve">
+    <value>Wind Slash II</value>
+  </data>
+  <data name="SKILL_WindSlashIII" xml:space="preserve">
+    <value>Wind Slash III</value>
+  </data>
+  <data name="SKILL_SonicBlade" xml:space="preserve">
+    <value>Sonic Blade</value>
+  </data>
+  <data name="SKILL_AirBladeI" xml:space="preserve">
+    <value>Air Blade I</value>
+  </data>
+  <data name="SKILL_AirBladeII" xml:space="preserve">
+    <value>Air Blade II</value>
+  </data>
+  <data name="SKILL_AirBladeIII" xml:space="preserve">
+    <value>Air Blade III</value>
+  </data>
+  <data name="SKILL_Tornado" xml:space="preserve">
+    <value>Tornado</value>
+  </data>
+  <data name="SKILL_BreezeI" xml:space="preserve">
+    <value>Breeze I</value>
+  </data>
+  <data name="SKILL_BreezeII" xml:space="preserve">
+    <value>Breeze II</value>
+  </data>
+  <data name="SKILL_BreezeIII" xml:space="preserve">
+    <value>Breeze III</value>
+  </data>
+  <data name="SKILL_Zephyr" xml:space="preserve">
+    <value>Zephyr</value>
+  </data>
 </root>
