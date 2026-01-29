@@ -165,6 +165,11 @@ public class CombatManager
         int finalDamage = _resolver.CalculateDamage(attacker, target, request);
         newTargetHp = target.ApplyDamage(finalDamage);
 
+        if (finalDamage > 0)
+        {
+            target.LastAttackerId = attacker.Id;
+        }
+
         attacker.IncrementSkillUsage(skill.SkillId);
         attacker.SetSkillCooldown(skill.SkillId, skill.Cooldown);
         CheckSkillEvolution(attacker, skill);

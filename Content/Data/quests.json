@@ -484,5 +484,50 @@
         { "ItemId": 800, "Quantity": 1 }
       ]
     }
+  },
+  {
+    "QuestId": 1200,
+    "Title": "Seaworthy Vessel",
+    "Description": "Construct a Canoe to explore the nearby islands.",
+    "Requirements": [1002],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Madera",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Wood.",
+        "DataId": 7316
+      },
+      {
+        "Type": "Craft",
+        "TargetName": "Canoe",
+        "RequiredCount": 1,
+        "Description": "Craft a Canoe (or Interact with Workbench)."
+      }
+    ],
+    "Rewards": { "Exp": 500, "Gold": 0, "Items": [{ "ItemId": 1200, "Quantity": 1 }] },
+    "FlagsSet": ["VEHICLE_CANOE_UNLOCKED"]
+  },
+  {
+    "QuestId": 1201,
+    "Title": "Into the Deep",
+    "Description": "Build a Raft to traverse the open ocean.",
+    "Requirements": [1200],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Hardwood",
+        "RequiredCount": 10,
+        "Description": "Collect 10 Hardwood."
+      },
+      {
+        "Type": "Compound",
+        "TargetName": "Raft",
+        "RequiredCount": 1,
+        "Description": "Compound a Raft structure."
+      }
+    ],
+    "Rewards": { "Exp": 1000, "Gold": 0, "Items": [{ "ItemId": 1201, "Quantity": 1 }] },
+    "FlagsSet": ["VEHICLE_RAFT_UNLOCKED"]
   }
 ]
