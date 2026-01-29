@@ -64,7 +64,7 @@ public class GameServer
         InteractionManager = new InteractionManager();
         InteractionManager.Load("Content/Data/interactions.json");
 
-        var random = new SystemRandomService();
+        var random = new SeedableRandomService(Microsoft.Extensions.Logging.Abstractions.NullLogger<SeedableRandomService>.Instance);
         var combatResolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
         var statusEngine = new StatusEngine();
         CombatManager = new CombatManager(combatResolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance, statusEngine);

@@ -1,6 +1,7 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.Extensions.Logging;
 using Serilog;
 using TWL.Server;
 using TWL.Server.Persistence;
@@ -39,7 +40,12 @@ Host.CreateDefaultBuilder(args)
 
         // Base Services
         svcs.AddSingleton<ServerMetrics>();
-        svcs.AddSingleton<IRandomService, SystemRandomService>();
+        svcs.AddSingleton<IRandomService>(sp =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            int? seed = config.GetValue<int?>("Server:RandomSeed");
+            return new SeedableRandomService(sp.GetRequiredService<ILogger<SeedableRandomService>>(), seed);
+        });
         svcs.AddSingleton<ISkillCatalog>(_ => SkillRegistry.Instance);
         svcs.AddSingleton<IWorldScheduler, WorldScheduler>();
         svcs.AddSingleton<IStatusEngine, StatusEngine>();
