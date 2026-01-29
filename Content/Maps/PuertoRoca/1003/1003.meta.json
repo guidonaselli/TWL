@@ -1,0 +1,23 @@
+{
+  "MapId": 1003,
+  "RegionId": "PuertoRoca",
+  "Biome": "Underground",
+  "RecommendedLevelMin": 5,
+  "RecommendedLevelMax": 10,
+  "EntryPoints": [ 1 ],
+  "Exits": [
+    {
+      "TargetMapId": 1000,
+      "SpawnId": 4,
+      "Gating": { "MinLevel": 1 }
+    }
+  ],
+  "AmbientProfile": {
+    "MusicKey": "BGM_CAVE_01",
+    "AmbienceKey": "AMB_CAVE_DRIPS",
+    "PaletteHintKey": "DARK_CAVE"
+  },
+  "WorldFlagsSet": [],
+  "WorldFlagsCleared": [],
+  "Notes": "Initial skeleton for Old Mines Entrance. Tiles are placeholders."
+}

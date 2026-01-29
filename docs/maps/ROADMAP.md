@@ -28,8 +28,8 @@
     - **Connections:** 1000
     - **Mobs:** Bandido del Camino (9200), Lobo del Bosque (9202).
 
-- [ ] **1003 - Old Mines Entrance**
-    - **Status:** Planned
+- [x] **1003 - Old Mines Entrance**
+    - **Status:** Implemented (Skeleton)
     - **Type:** Dungeon Entrance
     - **Connections:** 1000
     - **Mobs:** Cave Bat (9101).
