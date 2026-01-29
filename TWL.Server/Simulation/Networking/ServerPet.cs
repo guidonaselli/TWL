@@ -127,17 +127,34 @@ public class ServerPet : ServerCombatant
             Wis = (int)(Wis * 1.1);
             Agi = (int)(Agi * 1.1);
         }
+
+        if (IsRebellious)
+        {
+            // Amity < 20 Penalty: -20% Stats
+            Str = (int)(Str * 0.8);
+            Con = (int)(Con * 0.8);
+            Int = (int)(Int * 0.8);
+            Wis = (int)(Wis * 0.8);
+            Agi = (int)(Agi * 0.8);
+        }
     }
 
     public void ChangeAmity(int amount)
     {
         int oldAmity = Amity;
+        bool wasRebellious = IsRebellious;
+
         Amity = Math.Clamp(Amity + amount, 0, 100);
 
         if (oldAmity != Amity)
         {
             IsDirty = true;
             CheckSkillUnlocks();
+
+            if (wasRebellious != IsRebellious)
+            {
+                RecalculateStats();
+            }
         }
     }
 
