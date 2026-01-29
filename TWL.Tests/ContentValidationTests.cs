@@ -1,4 +1,3 @@
-
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -165,6 +164,71 @@ namespace TWL.Tests
                          $"Skill {skill.SkillId} StageUpgrade refers to non-existent NextSkillId {skill.StageUpgradeRules.NextSkillId}");
                 }
             }
+        }
+
+        [Fact]
+        public void ValidateStageUpgradeConsistency()
+        {
+            var skills = LoadSkills();
+            var skillMap = skills.ToDictionary(s => s.SkillId);
+
+            foreach (var skill in skills)
+            {
+                if (skill.StageUpgradeRules?.NextSkillId is int nextId)
+                {
+                    Assert.True(skillMap.ContainsKey(nextId),
+                        $"Skill {skill.SkillId} upgrades to non-existent skill {nextId}");
+
+                    var nextSkill = skillMap[nextId];
+                    if (nextSkill.UnlockRules?.ParentSkillId.HasValue == true)
+                    {
+                        Assert.Equal(skill.SkillId, nextSkill.UnlockRules.ParentSkillId.Value); // Must point back to parent
+
+                        if (skill.StageUpgradeRules.RankThreshold > 0 && nextSkill.UnlockRules.ParentSkillRank.HasValue)
+                        {
+                             Assert.Equal(skill.StageUpgradeRules.RankThreshold, nextSkill.UnlockRules.ParentSkillRank.Value);
+                        }
+                    }
+                }
+            }
+        }
+
+        [Fact]
+        public void ValidateSkillRewardsConsistency()
+        {
+            var skills = LoadSkills();
+            var quests = LoadQuests();
+            var skillMap = skills.ToDictionary(s => s.SkillId);
+
+            foreach (var quest in quests)
+            {
+                if (quest.Rewards.GrantSkillId is int skillId)
+                {
+                    Assert.True(skillMap.ContainsKey(skillId), $"Quest {quest.QuestId} grants unknown skill {skillId}");
+                    var skill = skillMap[skillId];
+
+                    // Rule: Skills granted by quests must have UniquePerCharacter=true
+                    Assert.True(skill.Restrictions?.UniquePerCharacter == true,
+                        $"Skill {skillId} ({skill.Name}) granted by Quest {quest.QuestId} must have Restrictions.UniquePerCharacter = true");
+
+                    // Rule: Quests CANNOT grant Goddess Skills
+                    Assert.NotEqual(SkillCategory.Goddess, skill.Category);
+                }
+            }
+        }
+
+        [Fact]
+        public void ValidateUniqueDisplayNameKeys()
+        {
+            var skills = LoadSkills();
+            var duplicates = skills
+                .Where(s => !string.IsNullOrEmpty(s.DisplayNameKey))
+                .GroupBy(s => s.DisplayNameKey)
+                .Where(g => g.Count() > 1)
+                .Select(g => g.Key)
+                .ToList();
+
+            Assert.True(duplicates.Count == 0, $"Duplicate DisplayNameKeys found: {string.Join(", ", duplicates)}");
         }
     }
 }

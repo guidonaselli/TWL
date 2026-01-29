@@ -25,7 +25,14 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
 *   **Skill Rewards**:
     *   Quests can only grant existing SkillIds.
     *   Quests CANNOT grant Goddess Skills (2001-2004).
+    *   **Consistency**: Any Skill granted by a Quest MUST have `UniquePerCharacter: true` in its restrictions to ensure anti-exploit/idempotency.
 
-## 4. Content Validation
+## 4. General Content Rules
+*   **Unique DisplayNameKeys**: No two skills can share the same localization key.
+*   **Anti-Snowball (Stage Upgrades)**:
+    *   If Skill A upgrades to Skill B at Rank X (via `StageUpgradeRules`), then Skill B MUST strictly require Skill A at Rank X (via `UnlockRules`), OR have no parent requirements.
+    *   Inconsistent requirements (e.g. A says Rank 10, B says Rank 20) are forbidden.
+
+## 5. Content Validation
 *   `TWL.Tests.ContentValidationTests` is the enforcement mechanism.
 *   The build must fail if inconsistencies are detected.
