@@ -75,6 +75,16 @@ public class ClientSession
     {
         if (Character == null) return;
         QuestComponent.HandleCombatantDeath(victim.Name);
+
+        // Handle Quest Progress (Kill)
+        if (victim.LastAttackerId.HasValue && victim.LastAttackerId.Value == Character.Id)
+        {
+            var updated = QuestComponent.TryProgress("Kill", victim.Name);
+            foreach (var qid in updated)
+            {
+                _ = SendQuestUpdateAsync(qid);
+            }
+        }
     }
 
     public void StartHandling()
@@ -298,19 +308,7 @@ public class ClientSession
             });
 
             // Check for death and quest progress
-            if (result.NewTargetHp <= 0)
-            {
-                var target = _combatManager.GetCombatant(result.TargetId);
-                if (target != null)
-                {
-                    // Update quest progress for "Kill" objective
-                    var updated = QuestComponent.TryProgress("Kill", target.Name);
-                    foreach (var questId in updated)
-                    {
-                        await SendQuestUpdateAsync(questId);
-                    }
-                }
-            }
+            // (Quest progress is now handled via OnCombatantDeath event)
         }
     }
 

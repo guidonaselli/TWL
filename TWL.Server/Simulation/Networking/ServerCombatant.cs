@@ -52,6 +52,8 @@ public abstract class ServerCombatant
     public virtual int Mdf => (Wis * 2) + GetStatModifier("Mdf");
     public virtual int Spd => Agi + GetStatModifier("Spd");
 
+    public int? LastAttackerId { get; set; }
+
     public bool IsDirty { get; set; } // Simplified for Combatant, Character will override
 
     // Skills

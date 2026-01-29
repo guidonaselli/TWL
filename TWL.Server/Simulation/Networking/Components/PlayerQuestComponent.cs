@@ -904,4 +904,39 @@ public class PlayerQuestComponent
             }
         }
     }
+
+    public List<int> HandleCraft(string itemName, int quantity = 1)
+    {
+        return TryProgress("Craft", itemName, quantity);
+    }
+
+    public List<int> HandleCompound(string resultName, int quantity = 1)
+    {
+        return TryProgress("Compound", resultName, quantity);
+    }
+
+    public List<int> HandleForge(string resultName, int quantity = 1)
+    {
+        return TryProgress("Forge", resultName, quantity);
+    }
+
+    public List<int> HandleEventParticipation(string eventName)
+    {
+        return TryProgress("EventParticipation", eventName, 1);
+    }
+
+    public List<int> HandleEscort(string npcName, bool success)
+    {
+        if (success)
+        {
+            return TryProgress("Escort", npcName, 1);
+        }
+        else
+        {
+            // If escort failed (e.g. timeout), trigger failure manually or via existing FailCondition check
+            // For now, let's assume HandleCombatantDeath covers the death case.
+            // If failure is due to timeout/distance, we might need a separate call.
+            return new List<int>();
+        }
+    }
 }
