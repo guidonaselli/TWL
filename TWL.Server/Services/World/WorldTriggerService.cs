@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Microsoft.Extensions.Logging;
 using TWL.Server.Domain.World;
+using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 
 namespace TWL.Server.Services.World;
@@ -9,12 +10,14 @@ namespace TWL.Server.Services.World;
 public class WorldTriggerService : IWorldTriggerService
 {
     private readonly ILogger<WorldTriggerService> _logger;
+    private readonly ServerMetrics _metrics;
     private readonly Dictionary<int, ServerMap> _maps = new();
     private readonly List<ITriggerHandler> _handlers = new();
 
-    public WorldTriggerService(ILogger<WorldTriggerService> logger)
+    public WorldTriggerService(ILogger<WorldTriggerService> logger, ServerMetrics metrics)
     {
         _logger = logger;
+        _metrics = metrics;
     }
 
     public void LoadMaps(IEnumerable<ServerMap> maps)
@@ -46,6 +49,7 @@ public class WorldTriggerService : IWorldTriggerService
         var handler = _handlers.FirstOrDefault(h => h.CanHandle(trigger.Type));
         if (handler != null)
         {
+            _metrics.RecordTriggersExecuted();
             _logger.LogDebug("Character {CharId} entered trigger {TriggerId} ({Type})", character.Id, triggerId, trigger.Type);
             handler.ExecuteEnter(character, trigger, this);
         }
@@ -60,6 +64,7 @@ public class WorldTriggerService : IWorldTriggerService
         var handler = _handlers.FirstOrDefault(h => h.CanHandle(trigger.Type));
         if (handler != null)
         {
+            _metrics.RecordTriggersExecuted();
             _logger.LogDebug("Character {CharId} interacted with trigger {TriggerId} ({Type})", character.Id, triggerId, trigger.Type);
             handler.ExecuteInteract(character, trigger, this);
         }

@@ -74,7 +74,7 @@ public class GameServer
 
         // Init World System
         var mapLoader = new MapLoader(Microsoft.Extensions.Logging.Abstractions.NullLogger<MapLoader>.Instance);
-        var worldTriggerService = new WorldTriggerService(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldTriggerService>.Instance);
+        var worldTriggerService = new WorldTriggerService(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldTriggerService>.Instance, Metrics);
         worldTriggerService.RegisterHandler(new TWL.Server.Services.World.Handlers.MapTransitionHandler());
 
         // Load Maps

@@ -21,6 +21,9 @@ public class ServerMetrics
     private long _worldLoopTicks;
     private long _worldLoopTotalDurationMs;
     private long _worldSchedulerQueueDepth;
+    private long _worldLoopSlippageMs;
+
+    private long _triggersExecuted;
 
     private long _pipelineValidateDurationTicks;
     private long _pipelineResolveDurationTicks;
@@ -51,6 +54,16 @@ public class ServerMetrics
         Interlocked.Exchange(ref _worldSchedulerQueueDepth, queueDepth);
     }
 
+    public void RecordWorldLoopSlippage(long driftMs)
+    {
+        Interlocked.Add(ref _worldLoopSlippageMs, driftMs);
+    }
+
+    public void RecordTriggersExecuted()
+    {
+        Interlocked.Increment(ref _triggersExecuted);
+    }
+
     public void RecordPipelineValidateDuration(long ticks)
     {
         Interlocked.Add(ref _pipelineValidateDurationTicks, ticks);
@@ -78,6 +91,9 @@ public class ServerMetrics
             WorldLoopTicks = Interlocked.Read(ref _worldLoopTicks),
             WorldLoopTotalDurationMs = Interlocked.Read(ref _worldLoopTotalDurationMs),
             WorldSchedulerQueueDepth = Interlocked.Read(ref _worldSchedulerQueueDepth),
+            WorldLoopSlippageMs = Interlocked.Read(ref _worldLoopSlippageMs),
+
+            TriggersExecuted = Interlocked.Read(ref _triggersExecuted),
 
             PipelineValidateDurationTicks = Interlocked.Read(ref _pipelineValidateDurationTicks),
             PipelineResolveDurationTicks = Interlocked.Read(ref _pipelineResolveDurationTicks)
@@ -99,6 +115,9 @@ public class ServerMetrics
         Interlocked.Exchange(ref _worldLoopTicks, 0);
         Interlocked.Exchange(ref _worldLoopTotalDurationMs, 0);
         Interlocked.Exchange(ref _worldSchedulerQueueDepth, 0);
+        Interlocked.Exchange(ref _worldLoopSlippageMs, 0);
+
+        Interlocked.Exchange(ref _triggersExecuted, 0);
 
         Interlocked.Exchange(ref _pipelineValidateDurationTicks, 0);
         Interlocked.Exchange(ref _pipelineResolveDurationTicks, 0);
@@ -120,6 +139,9 @@ public class MetricsSnapshot
     public long WorldLoopTicks { get; set; }
     public long WorldLoopTotalDurationMs { get; set; }
     public long WorldSchedulerQueueDepth { get; set; }
+    public long WorldLoopSlippageMs { get; set; }
+
+    public long TriggersExecuted { get; set; }
 
     public long PipelineValidateDurationTicks { get; set; }
     public long PipelineResolveDurationTicks { get; set; }

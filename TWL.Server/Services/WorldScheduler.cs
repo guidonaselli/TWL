@@ -82,8 +82,33 @@ public class WorldScheduler : IWorldScheduler, IDisposable
 
     private async Task LoopAsync(CancellationToken token)
     {
+        const int TargetTickMs = 50;
+        var loopTimer = System.Diagnostics.Stopwatch.StartNew();
+        var nextTick = loopTimer.ElapsedMilliseconds;
+
         while (!token.IsCancellationRequested)
         {
+            var now = loopTimer.ElapsedMilliseconds;
+
+            // Calculate slippage (how far behind schedule we are)
+            var slippage = now - nextTick;
+            if (slippage < 0) slippage = 0; // We are ahead (or on time)
+
+            if (slippage > 0)
+            {
+                _metrics.RecordWorldLoopSlippage(slippage);
+            }
+
+            // Schedule next tick
+            nextTick += TargetTickMs;
+
+            // Hard drift correction if we are too far behind (e.g. > 1s), to prevent burst catch-up
+            if ((now - nextTick) > 1000)
+            {
+                _logger.LogWarning("World Loop drifted significantly ({Drift}ms). Resetting schedule.", now - nextTick);
+                nextTick = now + TargetTickMs;
+            }
+
             var sw = System.Diagnostics.Stopwatch.StartNew();
             int tasksCount = 0;
             try
@@ -96,15 +121,22 @@ public class WorldScheduler : IWorldScheduler, IDisposable
             }
             sw.Stop();
 
-            _metrics.RecordWorldLoopTick(sw.ElapsedMilliseconds, tasksCount);
+            var elapsed = sw.ElapsedMilliseconds;
+            _metrics.RecordWorldLoopTick(elapsed, tasksCount);
+
+            if (elapsed > TargetTickMs)
+            {
+                _logger.LogWarning("Slow World Tick: {Duration}ms > {Target}ms. Tasks: {Count}. Slippage: {Slippage}ms",
+                    elapsed, TargetTickMs, tasksCount, slippage);
+            }
+
+            // Calculate delay until next scheduled tick
+            var delay = nextTick - loopTimer.ElapsedMilliseconds;
+            if (delay < 1) delay = 1; // Yield at least
 
             try
             {
-                // Simple fixed delay loop (not fixed timestep, but good enough for now)
-                // Ideally we subtract elapsed time from delay to maintain 20 TPS
-                var delay = 50 - (int)sw.ElapsedMilliseconds;
-                if (delay < 1) delay = 1;
-                await Task.Delay(delay, token);
+                await Task.Delay((int)delay, token);
             }
             catch (OperationCanceledException)
             {
