@@ -59,7 +59,7 @@ public class AutoBattleService
         // 2. Check Debuffs -> Cleanse
         if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced)
         {
-            var debuffedAlly = allies.FirstOrDefault(a => a.StatusEffects.Any(e => e.Tag == SkillEffectTag.Seal || e.Tag == SkillEffectTag.DebuffStats));
+            var debuffedAlly = allies.FirstOrDefault(a => a.Hp > 0 && a.StatusEffects.Any(e => e.Tag == SkillEffectTag.Seal || e.Tag == SkillEffectTag.DebuffStats));
             if (debuffedAlly != null)
             {
                 var cleanseSkillId = FindBestSkill(actor, SkillEffectTag.Cleanse, SkillTargetType.SingleAlly, ignoreThreshold: true);
@@ -84,7 +84,57 @@ public class AutoBattleService
              }
         }
 
-        // 4. Attack
+        // 4. Control/Seal
+        if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced || policy == AutoBattlePolicy.Aggressive)
+        {
+             // Find unsealed enemy
+             var targetEnemy = enemies
+                 .Where(e => e.Hp > 0 && !e.StatusEffects.Any(s => s.Tag == SkillEffectTag.Seal))
+                 .OrderByDescending(e => e.Atk + e.Mat) // Target strongest
+                 .FirstOrDefault();
+
+             if (targetEnemy != null)
+             {
+                 var sealSkillId = FindBestSkill(actor, SkillEffectTag.Seal, SkillTargetType.SingleEnemy, ignoreThreshold: false);
+                 if (sealSkillId.HasValue)
+                 {
+                     return CombatAction.UseSkill(actor.Id, targetEnemy.Id, sealSkillId.Value);
+                 }
+             }
+        }
+
+        // 5. Apply Buffs
+        if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced)
+        {
+             foreach(var skillId in actor.KnownSkills)
+             {
+                 var skill = _skillCatalog.GetSkillById(skillId);
+                 if (skill == null || actor.IsSkillOnCooldown(skillId) || actor.Sp < skill.SpCost) continue;
+
+                 // Only consider SingleAlly buffs for now to keep it simple
+                 if (skill.TargetType != SkillTargetType.SingleAlly && skill.TargetType != SkillTargetType.AllAllies) continue;
+
+                 var buffEffect = skill.Effects.FirstOrDefault(e => e.Tag == SkillEffectTag.BuffStats);
+                 if (buffEffect != null && !string.IsNullOrEmpty(buffEffect.Param))
+                 {
+                     // Find ally without this buff param
+                     var targetAlly = allies.FirstOrDefault(a => a.Hp > 0 && !a.StatusEffects.Any(e => e.Tag == SkillEffectTag.BuffStats && e.Param == buffEffect.Param));
+
+                     // If AllAllies, just check if ANYONE needs it or average need? Simplest: If targetAlly found, use it.
+                     // Note: If TargetType is AllAllies, TargetId might strictly be ignored or needs to be valid ally.
+                     if (targetAlly != null)
+                     {
+                         // Basic SP check for non-critical actions
+                         if ((actor.Sp - skill.SpCost) >= MinSpThreshold)
+                         {
+                             return CombatAction.UseSkill(actor.Id, targetAlly.Id, skillId);
+                         }
+                     }
+                 }
+             }
+        }
+
+        // 6. Attack
         var target = GetBestTarget(enemies);
         if (target != null)
         {
@@ -116,6 +166,11 @@ public class AutoBattleService
 
     private int? FindBestSkill(ServerCharacter actor, SkillEffectTag effectTag, SkillTargetType targetType, bool ignoreThreshold)
     {
+        // Heuristic: Pick highest Tier/Cost skill that matches?
+        // Or just the first one found. Let's pick Highest SP Cost as proxy for "Best".
+        int? bestSkillId = null;
+        int maxCost = -1;
+
         foreach (var skillId in actor.KnownSkills)
         {
             var skill = _skillCatalog.GetSkillById(skillId);
@@ -131,16 +186,20 @@ public class AutoBattleService
             bool targetMatch = false;
 
             if (targetType == SkillTargetType.SingleAlly && (skill.TargetType == SkillTargetType.SingleAlly || skill.TargetType == SkillTargetType.AllAllies)) targetMatch = true;
-            if (targetType == SkillTargetType.SingleEnemy && (skill.TargetType == SkillTargetType.SingleEnemy || skill.TargetType == SkillTargetType.AllEnemies)) targetMatch = true;
+            if (targetType == SkillTargetType.SingleEnemy && (skill.TargetType == SkillTargetType.SingleEnemy || skill.TargetType == SkillTargetType.AllEnemies || skill.TargetType == SkillTargetType.RowEnemies)) targetMatch = true;
 
             if (targetMatch)
             {
                 if (skill.Effects.Any(e => e.Tag == effectTag))
                 {
-                    return skillId;
+                    if (skill.SpCost > maxCost)
+                    {
+                        maxCost = skill.SpCost;
+                        bestSkillId = skillId;
+                    }
                 }
             }
         }
-        return null;
+        return bestSkillId;
     }
 }
