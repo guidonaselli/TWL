@@ -409,6 +409,116 @@ public class EconomyManager : IEconomyService
         };
     }
 
+    public EconomyOperationResultDTO GiftShopItem(ServerCharacter giver, ServerCharacter receiver, int shopItemId, int quantity, string operationId)
+    {
+        if (giver == null || receiver == null)
+            return new EconomyOperationResultDTO { Success = false, Message = "Invalid participants" };
+
+        if (string.IsNullOrEmpty(operationId))
+            return new EconomyOperationResultDTO { Success = false, Message = "OperationId is required for gifting" };
+
+        if (quantity <= 0 || quantity > 999)
+            return new EconomyOperationResultDTO { Success = false, Message = "Invalid quantity (1-999)" };
+
+        if (!CheckRateLimit(giver.Id))
+            return new EconomyOperationResultDTO { Success = false, Message = "Rate limit exceeded" };
+
+        // Idempotency Check
+        Transaction? tx = null;
+        if (_transactions.TryGetValue(operationId, out tx))
+        {
+            lock (tx!)
+            {
+                if (tx.State == TransactionState.Completed)
+                {
+                    return new EconomyOperationResultDTO
+                    {
+                        Success = true,
+                        Message = "Already completed",
+                        NewBalance = giver.PremiumCurrency,
+                        OrderId = operationId
+                    };
+                }
+                else if (tx.State == TransactionState.Pending)
+                {
+                    return new EconomyOperationResultDTO { Success = false, Message = "Transaction in progress" };
+                }
+                // If Failed, allow retry
+            }
+        }
+        else
+        {
+            tx = new Transaction
+            {
+                OrderId = operationId,
+                UserId = giver.Id,
+                ProductId = $"gift_shop_{shopItemId}_to_{receiver.Id}",
+                State = TransactionState.Pending,
+                Timestamp = DateTime.UtcNow
+            };
+            if (!_transactions.TryAdd(operationId, tx))
+            {
+                return GiftShopItem(giver, receiver, shopItemId, quantity, operationId);
+            }
+        }
+
+        if (!_shopItems.TryGetValue(shopItemId, out var itemDef))
+        {
+            if (tx != null) { lock (tx) tx.State = TransactionState.Failed; }
+            return new EconomyOperationResultDTO { Success = false, Message = "Item not found" };
+        }
+
+        long totalCost = itemDef.Price * quantity;
+
+        // Debit Giver
+        if (!giver.TryConsumePremiumCurrency(totalCost))
+        {
+            if (tx != null) { lock (tx) tx.State = TransactionState.Failed; }
+            return new EconomyOperationResultDTO { Success = false, Message = "Insufficient funds" };
+        }
+
+        var details = $"GiftShopItem:{shopItemId}, Item:{itemDef.ItemId} x{quantity}, To:{receiver.Id}";
+        if (!string.IsNullOrEmpty(operationId)) details += $", OrderId:{operationId}";
+
+        // Add Item to Receiver (BindPolicy applies to Receiver)
+        // Note: BindOnPickup becomes bound to Receiver.
+        bool added = receiver.AddItem(itemDef.ItemId, quantity, itemDef.Policy);
+
+        if (!added)
+        {
+            // Compensation: Refund Giver
+            giver.AddPremiumCurrency(totalCost);
+
+            if (tx != null)
+            {
+                lock (tx) tx.State = TransactionState.Failed;
+            }
+
+            LogLedger("GiftBuyFailed", giver.Id, details + ", Reason:ReceiverInventoryFull", 0, giver.PremiumCurrency);
+
+            return new EconomyOperationResultDTO { Success = false, Message = "Receiver inventory full" };
+        }
+
+        // Mark Transaction as Completed
+        if (tx != null)
+        {
+            lock (tx)
+            {
+                tx.State = TransactionState.Completed;
+            }
+        }
+
+        LogLedger("GiftBuy", giver.Id, details, -totalCost, giver.PremiumCurrency);
+
+        return new EconomyOperationResultDTO
+        {
+            Success = true,
+            Message = "Gift successful",
+            NewBalance = giver.PremiumCurrency,
+            OrderId = operationId
+        };
+    }
+
     private bool ValidateReceipt(string receiptToken, string orderId)
     {
         // In a real app, this would verify a cryptographic signature.
