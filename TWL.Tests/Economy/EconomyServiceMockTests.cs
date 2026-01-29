@@ -30,6 +30,12 @@ public class EconomyServiceMockTests
             CallLog.Add($"BuyShopItem({character.Id}, {shopItemId}, {quantity})");
             return new EconomyOperationResultDTO { Success = true, Message = "Mock Success" };
         }
+
+        public EconomyOperationResultDTO GiftShopItem(ServerCharacter giver, ServerCharacter receiver, int shopItemId, int quantity, string operationId)
+        {
+            CallLog.Add($"GiftShopItem({giver.Id}, {receiver.Id}, {shopItemId}, {quantity})");
+            return new EconomyOperationResultDTO { Success = true, Message = "Mock Success" };
+        }
     }
 
     [Fact]
