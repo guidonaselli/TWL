@@ -57,5 +57,6 @@ public class ServerPetData
     public bool IsLost { get; set; }
     public bool DeathQuestCompleted { get; set; }
     public bool HasRebirthed { get; set; }
+    public DateTime? ExpirationTime { get; set; }
     public List<int> UnlockedSkillIds { get; set; } = new();
 }

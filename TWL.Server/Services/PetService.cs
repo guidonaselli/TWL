@@ -98,12 +98,20 @@ public class PetService : IPetService
 
     public bool RevivePet(int ownerId, string petInstanceId)
     {
+        var session = _playerService.GetSession(ownerId);
+        if (session == null || session.Character == null) return false;
+
         var pet = GetPet(ownerId, petInstanceId);
         if (pet == null) return false;
 
         if (!pet.IsDead) return false;
+        if (pet.IsExpired) return false; // Cannot revive expired pets
 
-        // Cost Logic could go here
+        int cost = pet.Level * 50; // Simple cost formula
+        if (!session.Character.TryConsumeGold(cost))
+        {
+            return false;
+        }
 
         pet.Revive();
         return true;
@@ -157,21 +165,29 @@ public class PetService : IPetService
         if (session == null || session.Character == null) return false;
 
         var chara = session.Character;
+
+        // Cooldown Check (e.g. 60 seconds)
+        if (DateTime.UtcNow < chara.LastPetSwitchTime.AddSeconds(60))
+        {
+            return false;
+        }
+
+        var targetPet = GetPet(ownerId, petInstanceId);
+        if (targetPet == null || targetPet.IsExpired) return false;
+
         var oldPet = chara.GetActivePet();
 
         // 1. Unregister existing pet from Combat
         if (oldPet != null)
         {
             _combatManager.UnregisterCombatant(oldPet.Id);
-
-            // Note: If switching to the SAME pet, we unregister then register?
-            // Usually switch means "Switch TO another".
-            // If ID is same, unregister might remove it.
         }
 
         // 2. Set new Active Pet
         bool success = chara.SetActivePet(petInstanceId);
         if (!success) return false;
+
+        chara.LastPetSwitchTime = DateTime.UtcNow;
 
         var newPet = chara.GetActivePet();
         if (newPet != null)

@@ -58,6 +58,7 @@ public class ServerCharacter : ServerCombatant
     }
 
     public string ActivePetInstanceId { get; private set; }
+    public DateTime LastPetSwitchTime { get; set; } = DateTime.MinValue;
 
     // Legacy/Alias support if needed, but preferable to use MaxHp from base
     public int MaxHealth => MaxHp;
@@ -243,6 +244,22 @@ public class ServerCharacter : ServerCombatant
     {
         Interlocked.Add(ref _gold, amount);
         IsDirty = true;
+    }
+
+    public bool TryConsumeGold(int amount)
+    {
+        if (amount < 0) return false;
+        int initial, current;
+        do
+        {
+            initial = _gold;
+            if (initial < amount) return false;
+            current = initial - amount;
+        }
+        while (Interlocked.CompareExchange(ref _gold, current, initial) != initial);
+
+        IsDirty = true;
+        return true;
     }
 
     public void AddPremiumCurrency(long amount)
