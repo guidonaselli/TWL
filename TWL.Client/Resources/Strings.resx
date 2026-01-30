@@ -207,4 +207,13 @@
   <data name="SKILL_Zephyr" xml:space="preserve">
     <value>Zephyr</value>
   </data>
+  <data name="ENEMY_Slime" xml:space="preserve">
+    <value>Slime</value>
+  </data>
+  <data name="ENEMY_Wolf" xml:space="preserve">
+    <value>Wolf</value>
+  </data>
+  <data name="ENEMY_Bat" xml:space="preserve">
+    <value>Bat</value>
+  </data>
 </root>

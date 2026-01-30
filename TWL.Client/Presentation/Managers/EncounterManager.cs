@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TWL.Client.Presentation.Services;
 using TWL.Shared;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Events;
@@ -52,19 +53,19 @@ public class EncounterManager
             int type = _rng.Next(0, 3);
             if (type == 0)
             {
-                enemies.Add(new EnemyCharacter("Slime", Element.Earth, false) {
+                enemies.Add(new EnemyCharacter(Loc.T("ENEMY_Slime"), Element.Earth, false) {
                     Health = 30, MaxHealth = 30, Str = 5, Con = 2, Agi = 3, Level = 1
                 });
             }
             else if (type == 1)
             {
-                enemies.Add(new EnemyCharacter("Wolf", Element.Wind, false) {
+                enemies.Add(new EnemyCharacter(Loc.T("ENEMY_Wolf"), Element.Wind, false) {
                     Health = 50, MaxHealth = 50, Str = 9, Con = 4, Agi = 6, Level = 3
                 });
             }
             else
             {
-                enemies.Add(new EnemyCharacter("Bat", Element.Wind, false) {
+                enemies.Add(new EnemyCharacter(Loc.T("ENEMY_Bat"), Element.Wind, false) {
                     Health = 20, MaxHealth = 20, Str = 4, Con = 1, Agi = 8, Level = 2
                 });
             }
