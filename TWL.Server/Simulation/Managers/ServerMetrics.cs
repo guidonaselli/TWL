@@ -22,6 +22,10 @@ public class ServerMetrics
     private long _worldLoopTotalDurationMs;
     private long _worldSchedulerQueueDepth;
 
+    private long _worldLoopSlowTicks;
+    private long _worldLoopSlowTasks;
+    private long _triggersExecuted;
+
     private long _pipelineValidateDurationTicks;
     private long _pipelineResolveDurationTicks;
 
@@ -51,6 +55,21 @@ public class ServerMetrics
         Interlocked.Exchange(ref _worldSchedulerQueueDepth, queueDepth);
     }
 
+    public void RecordSlowWorldTick(long durationMs)
+    {
+        Interlocked.Increment(ref _worldLoopSlowTicks);
+    }
+
+    public void RecordSlowWorldTask(string taskName, long durationMs)
+    {
+        Interlocked.Increment(ref _worldLoopSlowTasks);
+    }
+
+    public void RecordTriggerExecuted(string triggerType)
+    {
+        Interlocked.Increment(ref _triggersExecuted);
+    }
+
     public void RecordPipelineValidateDuration(long ticks)
     {
         Interlocked.Add(ref _pipelineValidateDurationTicks, ticks);
@@ -78,6 +97,9 @@ public class ServerMetrics
             WorldLoopTicks = Interlocked.Read(ref _worldLoopTicks),
             WorldLoopTotalDurationMs = Interlocked.Read(ref _worldLoopTotalDurationMs),
             WorldSchedulerQueueDepth = Interlocked.Read(ref _worldSchedulerQueueDepth),
+            WorldLoopSlowTicks = Interlocked.Read(ref _worldLoopSlowTicks),
+            WorldLoopSlowTasks = Interlocked.Read(ref _worldLoopSlowTasks),
+            TriggersExecuted = Interlocked.Read(ref _triggersExecuted),
 
             PipelineValidateDurationTicks = Interlocked.Read(ref _pipelineValidateDurationTicks),
             PipelineResolveDurationTicks = Interlocked.Read(ref _pipelineResolveDurationTicks)
@@ -99,6 +121,9 @@ public class ServerMetrics
         Interlocked.Exchange(ref _worldLoopTicks, 0);
         Interlocked.Exchange(ref _worldLoopTotalDurationMs, 0);
         Interlocked.Exchange(ref _worldSchedulerQueueDepth, 0);
+        Interlocked.Exchange(ref _worldLoopSlowTicks, 0);
+        Interlocked.Exchange(ref _worldLoopSlowTasks, 0);
+        Interlocked.Exchange(ref _triggersExecuted, 0);
 
         Interlocked.Exchange(ref _pipelineValidateDurationTicks, 0);
         Interlocked.Exchange(ref _pipelineResolveDurationTicks, 0);
@@ -120,6 +145,9 @@ public class MetricsSnapshot
     public long WorldLoopTicks { get; set; }
     public long WorldLoopTotalDurationMs { get; set; }
     public long WorldSchedulerQueueDepth { get; set; }
+    public long WorldLoopSlowTicks { get; set; }
+    public long WorldLoopSlowTasks { get; set; }
+    public long TriggersExecuted { get; set; }
 
     public long PipelineValidateDurationTicks { get; set; }
     public long PipelineResolveDurationTicks { get; set; }
@@ -147,7 +175,8 @@ public class MetricsSnapshot
     public override string ToString()
     {
         return $"[Metrics] Net: {NetMessagesProcessed} msgs, AvgProc: {AverageMessageProcessingTimeMs:F2}ms (Val: {AverageValidateTimeMs:F2}ms, Res: {AverageResolveTimeMs:F2}ms). " +
-               $"World: {WorldLoopTicks} ticks (Avg {AverageWorldLoopDurationMs:F2}ms), Queue: {WorldSchedulerQueueDepth}. " +
+               $"World: {WorldLoopTicks} ticks (Avg {AverageWorldLoopDurationMs:F2}ms), Queue: {WorldSchedulerQueueDepth}, SlowTicks: {WorldLoopSlowTicks}, SlowTasks: {WorldLoopSlowTasks}. " +
+               $"Triggers: {TriggersExecuted}. " +
                $"Persist: {PersistenceFlushes} flushes, {PersistenceErrors} errs.";
     }
 }

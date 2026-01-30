@@ -16,7 +16,7 @@ public class WorldTriggerServiceTests
 
     public WorldTriggerServiceTests()
     {
-        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance);
+        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, new TWL.Server.Simulation.Managers.ServerMetrics());
         _handlerMock = new Mock<ITriggerHandler>();
     }
 
