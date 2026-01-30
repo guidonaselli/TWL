@@ -87,14 +87,9 @@ public class SkillInfrastructureTests
     [Fact]
     public void RealSkillsJson_IsValid()
     {
-        var path = "/app/TWL.Server/Content/Data/skills.json";
-        if (!File.Exists(path))
-        {
-             // Fallback if not absolute
-             path = Path.Combine(Environment.CurrentDirectory, "../../../../TWL.Server/Content/Data/skills.json");
-        }
+        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/skills.json");
 
-        Assert.True(File.Exists(path), $"File not found at {path}");
+        Assert.True(File.Exists(path), $"File not found at {path}. BaseDir: {AppContext.BaseDirectory}");
         var json = File.ReadAllText(path);
 
         // Should not throw

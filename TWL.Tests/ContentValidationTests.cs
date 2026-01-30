@@ -41,7 +41,7 @@ namespace TWL.Tests
         private List<Skill> LoadSkills()
         {
             var root = GetContentRoot();
-            var path = Path.Combine(root, "skills.json");
+            var path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
             // Ensure path exists
             if (!File.Exists(path)) throw new FileNotFoundException($"Could not find skills.json at {Path.GetFullPath(path)}");
 
@@ -52,7 +52,7 @@ namespace TWL.Tests
         private List<QuestDefinition> LoadQuests()
         {
             var root = GetContentRoot();
-            var path = Path.Combine(root, "quests.json");
+            var path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
             // Ensure path exists
             if (!File.Exists(path)) throw new FileNotFoundException($"Could not find quests.json at {Path.GetFullPath(path)}");
 

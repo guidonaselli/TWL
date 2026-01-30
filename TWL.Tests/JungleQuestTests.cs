@@ -17,7 +17,7 @@ public class JungleQuestTests
         // We need to go up 4 levels to root: ../../../../Content/Data/quests.json
         // Or we can try to find it.
 
-        string path = Path.Combine("..", "..", "..", "..", "Content", "Data", "quests.json");
+        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
         if (!File.Exists(path))
         {
              // Fallback for different runners

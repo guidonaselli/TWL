@@ -8,35 +8,23 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Missing to Production (Critical Gaps)
-- **CI/CD & Testing**:
-  - `dotnet test` is failing for 18/290 tests due to File Path resolution errors (`Content/Data/quests.json` not found).
-  - Combat Unit Tests (Water Skills) are failing with 0 damage (Logic or Test Setup issue).
-  - No automated Content Validation in CI pipeline.
-- **Persistence**:
-  - Current implementation is `FilePlayerRepository` (JSON). Needs migration to SQL/NoSQL for production (P0).
-- **Security**:
-  - Rate Limiting and Packet Validation are stubbed but not battle-hardened.
-  - No explicit "Anti-Speedhack" validation in movement packets yet.
-- **Content**:
-  - Maps (Puerto Roca) are stubbed but missing complete Trigger/Spawn definitions.
-  - Quests for "Starter Island" and "Puerto Roca" are defined but fail validation in tests.
+- **Persistence Layer**: Currently using `FilePlayerRepository` (JSON). **Must migrate to PostgreSQL** (P0) to prevent data loss and support atomic transactions.
+- **Content Integrity**: 8/292 tests failing. `quests.json` has missing IDs/Keys. `Puerto Roca` questline is broken.
+- **Security**: No authoritative Movement Validation (Anti-Speedhack). No Packet Replay protection.
+- **Market System**: "Hybrid Market" (Centralized Listings + Stalls) is not implemented.
+- **Instance Isolation**: Dungeon maps are currently shared world. Need dynamic instance cloning for Parties.
+- **Pet Systems**: Amity logic and Death penalties (Amity loss on KO) are missing.
 
 ### Added
-- **Core Architecture**:
-  - Server-Authoritative loop (`GameServer`, `WorldScheduler`) targeting 50ms ticks.
-  - Packet handling pipeline (`ClientSession`, `PacketHandler`).
-  - Domain-Driven Design structure (`TWL.Shared`, `TWL.Server`).
-- **Systems**:
-  - **Combat**: `CombatManager` and `StandardCombatResolver` implemented with Elements (Water/Fire/Wind/Earth), Stats, and Turn order.
-  - **Skills**: `SkillService` with JSON-based definitions, Cooldowns, SP cost, and Status Effects (`Buff`, `Debuff`, `Seal`).
-  - **Quests**: `ServerQuestManager` with JSON validation and objective tracking (`Kill`, `Deliver`, `Interact`).
-  - **Pets**: Basic `PetService` and `PetDefinition`.
-  - **World**: `WorldTriggerService` for map transitions and spawn points.
+- **Core Architecture**: `GameServer` loop (50ms tick), `ClientSession` pipeline, and `PacketHandler`.
+- **Test Harness Fixes**: Fixed `FileNotFoundException` in `TWL.Tests` by correctly resolving `Content/Data` paths (PR #FixTests).
+- **Documentation**: Added `docs/PRODUCTION_GAP_ANALYSIS.md` detailing the path to Vertical Slice.
 
 ### Changed
-- Refactored `CombatManager` to support `LastAttackerId` for Kill Quest credit.
-- Updated `MapLoader` to enforce TMX layer strictness.
+- **Combat**: Refactored `CombatManager` to support `LastAttackerId` for Quest credit.
+- **Networking**: Updated `ClientSession` to use `Mediator` pattern for Skills and Interactions.
+- **World**: `WorldTriggerService` now handles basic Map Transitions.
 
 ### Known Issues
-- `AquaImpact` skill test returns 0 damage.
-- Localization keys mismatch in Jungle Quests (`Into the Green` vs `El Camino del Bosque`).
+- **Test Failures**: `JungleQuestTests` (Loc mismatch), `PuertoRocaQuestTests` (Missing Data), `HiddenRuinsQuestTests` (Logic).
+- **Performance**: `GameServer` uses manual dependency injection; scaling will require a DI Container Refactor.

@@ -1,22 +1,21 @@
-# Quests System Changelog
-> Tracks changes in Quest Engine, Content, and Progression.
+# Quests Changelog
+> Tracks changes to Quest System, Objectives, and Narratives.
 
 ## [Unreleased]
 
-### Missing to Production (Quests)
-- **Content**: Implement "Puerto Roca" Questline (IDs 1100-1104) and "Tent" Quest.
-- **Testing**: Fix test harness to correctly load `quests.json` (currently blocking all content validation tests).
-- **Localization**: Fix mismatch in Jungle Quest titles (`Into the Green` vs `El Camino del Bosque`).
+### Missing to Production
+- **Content Fixes**:
+    - `Puerto Roca` questline (IDs 1100-1104) is defined but missing specific triggers/NPCs, causing test failures.
+    - Localization Keys mismatch in Jungle Quests (`Into the Green` vs `El Camino del Bosque`).
+- **Features**:
+    - **Instance Objectives**: "Complete Instance X" logic is stubbed.
+    - **Time Limits**: No support for timed quests.
+    - **Escort Failure**: Death of escort target does not currently fail the quest.
 
 ### Added
-- **Quest Engine**:
-  - `ServerQuestManager`: Loads and validates `QuestDefinition` JSONs.
-  - `PlayerQuestComponent`: Handles `TryProgress` for `Kill`, `Deliver`, `Interact`.
-  - `QuestValidator`: Enforces DataId validity and objective structure.
-- **Objectives Support**:
-  - `Kill`: Verified via `OnCombatantDeath` and `LastAttackerId`.
-  - `Deliver`: Basic item consumption support.
-  - `PayGold`: Gold deduction support.
+- **System**: `ServerQuestManager` with JSON validation.
+- **Objectives**: Support for `Kill`, `Deliver`, `Interact`, `PayGold`.
+- **Integration**: `CombatManager` events now drive `Kill` objective progress automatically via `LastAttackerId`.
 
-### Changed
-- Refactored `QuestState` to reside in `TWL.Shared.Domain.Requests` (Note: Consider moving to `Domain.Quests` for consistency).
+### Broken
+- **Tests**: 8/292 tests failing due to missing/incorrect content in `quests.json`.

@@ -1,19 +1,18 @@
-# Pets System Changelog
-> Tracks changes in Pet System, AI, Capture, and Evolution.
+# Pets Changelog
+> Tracks changes to Pet System, AI, and Lifecycle.
 
 ## [Unreleased]
 
-### Missing to Production (Pets)
-- **Capture Logic**: Implement `CaptureEnemy` mechanics with Item consumption and Probability formula.
-- **AI**: Implement Basic Pet AI (Attack/Defend/Follow) in `CombatManager`.
-- **Amity**: Implement Amity effects (Stats reduction if rebellious).
-- **Evolution**: Implement Rebirth/Evolution lifecycle.
+### Missing to Production
+- **Lifecycle**:
+    - **Amity System**: No logic for Amity decrease on KO or low-Amity stat penalties.
+    - **Death Penalty**: "Soft Death" (Revive in combat) vs "Hard Death" (Despawn + Amity Loss) logic.
+- **AI**: Pets currently do not act independently (Stubbed AI).
+- **Capture**: `CaptureEnemy` logic is stubbed.
 
 ### Added
-- **Pet Engine**:
-  - `PetService`: Basic management of `ServerPet` instances.
-  - `PetDefinition`: JSON schema for base stats and growth.
-  - `PetGrowthCalculator`: Implemented stat growth logic.
+- **System**: `PetService` and `PetManager` (JSON loader).
+- **Structure**: `ServerPet` class with basic Stats (Str, Con, Int, Wis, Agi).
 
 ### Changed
-- `ServerCharacter`: Updated `GetSaveData` to include Pet persistence (Partial).
+- **Persistence**: Pet state is saved within `ServerCharacter` JSON, but hydration logic in `ClientSession` was added to link `PetDefinition`.

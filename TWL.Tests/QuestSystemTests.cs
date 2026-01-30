@@ -111,7 +111,7 @@ public class QuestSystemTests
         // Let's rely on the file existing in Content/Data/quests.json relative to repo root
         // Tests usually run in a temp folder.
 
-        string path = "../../../Content/Data/quests.json"; // Relative from TWL.Tests/bin/Debug/net8.0
+        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json"); // Relative from TWL.Tests/bin/Debug/net8.0
         if (!System.IO.File.Exists(path))
         {
              // Fallback for different test runners
@@ -163,7 +163,7 @@ public class QuestSystemTests
     public void BasicChain_ShouldWork_EndToEnd()
     {
         var qm = new ServerQuestManager();
-        string path = "../../../Content/Data/quests.json";
+        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
         if (!System.IO.File.Exists(path)) path = "Content/Data/quests.json";
 
         if (!System.IO.File.Exists(path)) return; // Skip if file not found in test env

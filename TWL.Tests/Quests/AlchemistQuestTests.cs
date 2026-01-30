@@ -20,11 +20,11 @@ public class AlchemistQuestTests
         _questManager = new ServerQuestManager();
 
         // Locate quests.json
-        string path = "../../../../TWL.Server/Content/Data/quests.json";
+        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
         if (!File.Exists(path))
         {
              // Try valid fallback if running from root
-             path = "TWL.Server/Content/Data/quests.json";
+             path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
         }
 
         Assert.True(File.Exists(path), $"Quest file not found at {Path.GetFullPath(path)}");
