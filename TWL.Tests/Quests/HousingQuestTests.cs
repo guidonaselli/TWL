@@ -40,57 +40,64 @@ public class HousingQuestTests
     }
 
     [Fact]
-    public void HousingAuthorization_Quest_Should_Complete_With_PayGold()
+    public void HousingChain_Should_Progress_Correctly()
     {
-        int questId = 9000;
+        // --- QUEST 9001: Housing Dreams ---
+        int q1 = 9001;
+        Assert.True(_playerQuests.CanStartQuest(q1), "Should start 9001");
+        Assert.True(_playerQuests.StartQuest(q1));
 
-        // 1. Start Quest
-        Assert.True(_playerQuests.CanStartQuest(questId), "Should be able to start 9000 at level 10+");
-        Assert.True(_playerQuests.StartQuest(questId));
-        Assert.Equal(QuestState.InProgress, _playerQuests.QuestStates[questId]);
-
-        // 2. Talk to Estate Agent
+        // Talk to Estate Agent
         var updated = _playerQuests.TryProgress("Talk", "Estate Agent");
-        Assert.Contains(questId, updated);
+        Assert.Contains(q1, updated);
+        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[q1]);
+        Assert.True(_playerQuests.ClaimReward(q1));
 
-        // 3. Collect Materials
-        // Add Wood (7316) x 10
-        // We simulate Item Added event by calling AddItem
-        Assert.True(_character.AddItem(7316, 10)); // Should trigger OnItemAdded -> UpdateProgress
+        // --- QUEST 9002: Building Blocks ---
+        int q2 = 9002;
+        Assert.True(_playerQuests.CanStartQuest(q2), "Should start 9002 after 9001");
+        Assert.True(_playerQuests.StartQuest(q2));
 
-        // Add Iron Ore (7301) x 5
+        // Collect Wood (7316) x 10
+        Assert.True(_character.AddItem(7316, 10));
+        // Collect Iron Ore (7301) x 5
         Assert.True(_character.AddItem(7301, 5));
 
-        // Verify progress for Items
-        // Indexes: 0=Talk, 1=Collect Wood, 2=Collect Iron, 3=PayGold
-        Assert.Equal(10, _playerQuests.QuestProgress[questId][1]);
-        Assert.Equal(5, _playerQuests.QuestProgress[questId][2]);
+        // Verify progress
+        Assert.Equal(10, _playerQuests.QuestProgress[q2][0]);
+        Assert.Equal(5, _playerQuests.QuestProgress[q2][1]);
 
-        // 4. Pay Gold
-        // Give player Gold
-        _character.AddGold(1000); // Has 1000
-        Assert.Equal(1000, _character.Gold);
+        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[q2]);
+        Assert.True(_playerQuests.ClaimReward(q2));
 
-        // Interact with Estate Agent to deliver/pay
-        // TryDeliver checks for "Deliver" AND "PayGold" objectives
+        // --- QUEST 9003: The Price of Land ---
+        int q3 = 9003;
+        Assert.True(_playerQuests.CanStartQuest(q3), "Should start 9003 after 9002");
+        Assert.True(_playerQuests.StartQuest(q3));
+
+        // Pay Gold
+        _character.AddGold(1000);
         updated = _playerQuests.TryDeliver("Estate Agent");
-        Assert.Contains(questId, updated);
+        Assert.Contains(q3, updated);
 
-        // Verify Gold Deducted (500 required)
-        Assert.Equal(500, _character.Gold);
-        Assert.Equal(500, _playerQuests.QuestProgress[questId][3]);
+        Assert.Equal(500, _character.Gold); // 1000 - 500
+        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[q3]);
+        Assert.True(_playerQuests.ClaimReward(q3));
 
-        // Verify Completion
-        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[questId]);
+        // --- QUEST 9004: Landowner ---
+        int q4 = 9004;
+        Assert.True(_playerQuests.CanStartQuest(q4), "Should start 9004 after 9003");
+        Assert.True(_playerQuests.StartQuest(q4));
 
-        // 5. Claim Reward
-        Assert.True(_playerQuests.ClaimReward(questId));
-        Assert.Equal(QuestState.RewardClaimed, _playerQuests.QuestStates[questId]);
+        // Talk to finalize
+        updated = _playerQuests.TryProgress("Talk", "Estate Agent");
+        Assert.Contains(q4, updated);
 
-        // Check Flag
+        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[q4]);
+        Assert.True(_playerQuests.ClaimReward(q4));
+
+        // Verify Final Rewards
         Assert.Contains("HOUSING_UNLOCKED", _playerQuests.Flags);
-
-        // Check Item Reward (Tent ID 800)
         Assert.True(_character.HasItem(800, 1));
     }
 }

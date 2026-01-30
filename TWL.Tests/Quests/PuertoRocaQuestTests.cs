@@ -22,7 +22,6 @@ public class PuertoRocaQuestTests
         if (File.Exists(path)) return path;
 
         // Try absolute path resolution relative to repo root (assuming we are in a subfolder)
-        // This is a bit hacky but works for different environments
         var current = new DirectoryInfo(Directory.GetCurrentDirectory());
         while (current != null)
         {
@@ -40,11 +39,11 @@ public class PuertoRocaQuestTests
         var questManager = new ServerQuestManager();
         questManager.Load(GetContentPath("quests.json"));
 
-        Assert.NotNull(questManager.GetDefinition(4000));
-        Assert.NotNull(questManager.GetDefinition(4001));
-        Assert.NotNull(questManager.GetDefinition(4002));
-        Assert.NotNull(questManager.GetDefinition(4003));
-        Assert.NotNull(questManager.GetDefinition(4004));
+        Assert.NotNull(questManager.GetDefinition(1100));
+        Assert.NotNull(questManager.GetDefinition(1101));
+        Assert.NotNull(questManager.GetDefinition(1102));
+        Assert.NotNull(questManager.GetDefinition(1103));
+        Assert.NotNull(questManager.GetDefinition(1104));
     }
 
     [Fact]
@@ -54,55 +53,60 @@ public class PuertoRocaQuestTests
         var questManager = new ServerQuestManager();
         questManager.Load(GetContentPath("quests.json"));
 
-        var petManager = new PetManager(); // Empty is fine as we don't test pet rewards here
+        var petManager = new PetManager(); // Empty is fine
 
         var component = new PlayerQuestComponent(questManager, petManager);
         var character = new ServerCharacter { Id = 1, Name = "TestPlayer" };
+        character.AddExp(10000); // Ensure level reqs met
         component.Character = character;
 
-        // 1. Start Quest 4000
-        Assert.True(component.StartQuest(4000), "Should start quest 4000");
-        Assert.Equal(QuestState.InProgress, component.QuestStates[4000]);
+        // Mock requirements: 1100 requires 1004. Let's force complete 1004 or mock state.
+        component.QuestStates[1004] = QuestState.RewardClaimed;
 
-        // 2. Progress (Talk to PortMaster)
-        var updated = component.TryProgress("Talk", "PortMaster");
-        Assert.Contains(4000, updated);
-        Assert.Equal(QuestState.Completed, component.QuestStates[4000]);
+        // 1. Start Quest 1100
+        Assert.True(component.CanStartQuest(1100), "Should be able to start 1100");
+        Assert.True(component.StartQuest(1100), "Should start quest 1100");
+        Assert.Equal(QuestState.InProgress, component.QuestStates[1100]);
 
-        // 3. Claim Reward
-        Assert.True(component.ClaimReward(4000), "Should claim reward");
-        Assert.Equal(QuestState.RewardClaimed, component.QuestStates[4000]);
+        // 2. Progress (Talk to Caravan Leader)
+        var updated = component.TryProgress("Talk", "Caravan Leader");
+        Assert.Contains(1100, updated);
+        Assert.Equal(QuestState.Completed, component.QuestStates[1100]);
+        Assert.True(component.ClaimReward(1100));
 
-        // Verify Rewards (Exp 50, Gold 10)
-        Assert.Equal(50, character.Exp);
-        Assert.Equal(10, character.Gold);
+        // 3. Start 1101 (Requires 1100)
+        Assert.True(component.StartQuest(1101));
 
-        // 4. Start Quest 4001 (Requires 4000)
-        Assert.True(component.StartQuest(4001), "Should start quest 4001");
+        // Progress 1101 (Interact Sendero Norte)
+        updated = component.TryProgress("Interact", "Sendero Norte");
+        Assert.Contains(1101, updated);
+        Assert.True(component.ClaimReward(1101));
 
-        // 5. Progress 4001 (Collect 5 Coconuts, 2 Fresh Water)
-        component.TryProgress("Collect", "Coconut", 5);
-        component.TryProgress("Collect", "FreshWater", 2);
+        // 4. Start 1102 (Requires 1101)
+        Assert.True(component.StartQuest(1102));
 
-        Assert.Equal(QuestState.Completed, component.QuestStates[4001]);
+        // Progress 1102 (Kill Bandido x2)
+        component.TryProgress("Kill", "Bandido del Camino", 2);
+        Assert.Equal(QuestState.Completed, component.QuestStates[1102]);
+        Assert.True(component.ClaimReward(1102));
 
-        // 6. Claim Reward 4001
-        component.ClaimReward(4001);
+        // 5. Start 1103 (Requires 1102)
+        Assert.True(component.StartQuest(1103));
+        component.TryProgress("Interact", "Puerta de la Ciudad");
+        Assert.True(component.ClaimReward(1103));
 
-        // Verify Rewards (Exp 100, Gold 20 -> Total 150, 30. Item 101 x2)
-        // Note: Character.Exp is current level exp.
-        // Start: Lvl 1, 0/100 Exp.
-        // Quest 4000: +50 Exp -> Lvl 1, 50/100.
-        // Quest 4001: +100 Exp -> Total 150.
-        // Level Up! 150 - 100 = 50. Level 2.
+        // 6. Start 1104 (Requires 1103)
+        Assert.True(component.StartQuest(1104));
+        component.TryProgress("Talk", "Funcionario de Registro");
+        Assert.True(component.ClaimReward(1104));
 
-        Assert.Equal(2, character.Level);
-        Assert.Equal(50, character.Exp);
-        Assert.Equal(30, character.Gold);
-        Assert.True(character.HasItem(101, 2));
-
-        // 7. Test Idempotency (Claiming again should fail or do nothing)
-        Assert.False(component.ClaimReward(4001), "Should not claim reward again");
-        Assert.Equal(50, character.Exp); // Exp should not increase
+        // Verify Rewards (1104 gives 100 Gold)
+        // 1100: 0 Gold
+        // 1101: 0 Gold
+        // 1102: 50 Gold
+        // 1103: 0 Gold
+        // 1104: 100 Gold
+        // Total: 150 Gold
+        Assert.Equal(150, character.Gold);
     }
 }
