@@ -1,0 +1,159 @@
+[
+  {
+    "QuestId": 1201,
+    "Title": "Hidden Ruins 1",
+    "Description": "Test Quest 1201",
+    "Requirements": [],
+    "Objectives": [
+      { "Type": "Collect", "TargetName": "StrangeStoneDebris", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 1202,
+    "Title": "Hidden Ruins 2",
+    "Description": "Test Quest 1202",
+    "Requirements": [1201],
+    "Objectives": [
+      { "Type": "Collect", "TargetName": "AncientTablet", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 1203,
+    "Title": "Hidden Ruins 3",
+    "Description": "Test Quest 1203",
+    "Requirements": [1202],
+    "Objectives": [
+      { "Type": "Kill", "TargetName": "RuinsGuardian", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 1204,
+    "Title": "Hidden Ruins 4",
+    "Description": "Test Quest 1204",
+    "Requirements": [1203],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "RuinsEntrance", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 1205,
+    "Title": "Dark Corridors",
+    "Description": "Test Quest 1205",
+    "Requirements": [1204],
+    "Objectives": [
+      { "Type": "Talk", "TargetName": "RuinsConsole", "RequiredCount": 1 },
+      { "Type": "Kill", "TargetName": "RuinsBat", "RequiredCount": 3 },
+      { "Type": "Kill", "TargetName": "GiantSpider", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 1206,
+    "Title": "Ancient Power",
+    "Description": "Test Quest 1206",
+    "Requirements": [1205],
+    "Objectives": [
+      { "Type": "Collect", "TargetName": "PowerCrystalSource", "RequiredCount": 1 },
+      { "Type": "Talk", "TargetName": "RuinsConsole", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 1207,
+    "Title": "The Hologram",
+    "Description": "Test Quest 1207",
+    "Requirements": [1206],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "HologramProjector", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 2203,
+    "Title": "Sidequest Bat Wings",
+    "Description": "Test Quest 2203",
+    "Requirements": [1205],
+    "Objectives": [
+      { "Type": "Collect", "TargetName": "BatNest", "RequiredCount": 5 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 1305,
+    "Title": "Prereq for Cove",
+    "Description": "Test Quest 1305",
+    "Requirements": [],
+    "Objectives": [
+      { "Type": "Talk", "TargetName": "Self", "RequiredCount": 1 }
+    ],
+    "Rewards": {}
+  },
+  {
+    "QuestId": 1401,
+    "Title": "Echoes from the Sea",
+    "Description": "Test Quest 1401",
+    "Requirements": [1305],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "RepairedRadioTower", "RequiredCount": 1 },
+      { "Type": "Interact", "TargetName": "NorthEastCliff", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 1402,
+    "Title": "Blocked Passage",
+    "Description": "Test Quest 1402",
+    "Requirements": [1401],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "HeavyRocks", "RequiredCount": 1 },
+      { "Type": "Collect", "TargetName": "SulfurVent", "RequiredCount": 1 },
+      { "Type": "Collect", "TargetName": "BurntTree", "RequiredCount": 1 },
+      { "Type": "Craft", "TargetName": "AlchemyTable", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 1403,
+    "Title": "Clearing the Way",
+    "Description": "Test Quest 1403",
+    "Requirements": [1402],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "HeavyRocks", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 1404,
+    "Title": "Hidden Dock",
+    "Description": "Test Quest 1404",
+    "Requirements": [1403],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "HiddenDock", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  },
+  {
+    "QuestId": 2011,
+    "Title": "First Catch",
+    "Description": "Test Quest 2011",
+    "Requirements": [],
+    "Objectives": [
+      { "Type": "Talk", "TargetName": "Self", "RequiredCount": 1 }
+    ],
+    "Rewards": {}
+  },
+  {
+    "QuestId": 2401,
+    "Title": "Fisherman Sidequest",
+    "Description": "Test Quest 2401",
+    "Requirements": [2011, 1404],
+    "Objectives": [
+      { "Type": "Collect", "TargetName": "FishingSpot", "RequiredCount": 1 }
+    ],
+    "Rewards": { "Exp": 100 }
+  }
+]

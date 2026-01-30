@@ -14,10 +14,10 @@ public class SkillMastery
     public int UsageCount { get; set; } = 0;
 }
 
-public abstract class ServerCombatant
+public abstract class ServerCombatant : ICombatant
 {
-    public int Id;
-    public string Name;
+    public int Id { get; set; }
+    public string Name { get; set; }
     public Element CharacterElement { get; set; }
 
     // Stats

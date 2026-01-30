@@ -1,7 +1,7 @@
-using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Requests;
 
-namespace TWL.Server.Simulation.Managers;
+namespace TWL.Shared.Services;
 
 /// <summary>
 /// Defines the contract for resolving combat actions, such as damage calculation.
@@ -16,7 +16,7 @@ public interface ICombatResolver
     /// <param name="target">The combatant receiving the attack.</param>
     /// <param name="request">The skill request details.</param>
     /// <returns>The calculated damage amount.</returns>
-    int CalculateDamage(ServerCombatant attacker, ServerCombatant target, UseSkillRequest request);
+    int CalculateDamage(ICombatant attacker, ICombatant target, UseSkillRequest request);
 
     /// <summary>
     /// Calculates the healing amount to be applied by a healer to a target using a specific skill request.
@@ -26,5 +26,5 @@ public interface ICombatResolver
     /// <param name="target">The combatant receiving the heal.</param>
     /// <param name="request">The skill request details.</param>
     /// <returns>The calculated heal amount.</returns>
-    int CalculateHeal(ServerCombatant healer, ServerCombatant target, UseSkillRequest request);
+    int CalculateHeal(ICombatant healer, ICombatant target, UseSkillRequest request);
 }

@@ -1,5 +1,5 @@
 using System;
-using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Domain.Skills;
@@ -18,7 +18,7 @@ public class StandardCombatResolver : ICombatResolver
         _skills = skills;
     }
 
-    public int CalculateDamage(ServerCombatant attacker, ServerCombatant target, UseSkillRequest request)
+    public int CalculateDamage(ICombatant attacker, ICombatant target, UseSkillRequest request)
     {
         var skill = _skills.GetSkillById(request.SkillId);
 
@@ -58,7 +58,7 @@ public class StandardCombatResolver : ICombatResolver
         return damage;
     }
 
-    public int CalculateHeal(ServerCombatant healer, ServerCombatant target, UseSkillRequest request)
+    public int CalculateHeal(ICombatant healer, ICombatant target, UseSkillRequest request)
     {
         var skill = _skills.GetSkillById(request.SkillId);
         if (skill == null) return 0;
@@ -79,7 +79,7 @@ public class StandardCombatResolver : ICombatResolver
         return Math.Max(0, (int)Math.Round(totalValue));
     }
 
-    private float GetStatValue(ServerCombatant c, StatType stat)
+    private float GetStatValue(ICombatant c, StatType stat)
     {
         switch (stat)
         {

@@ -27,8 +27,16 @@ public class HiddenCoveTests
         string contentPath = Path.Combine("..", "..", "..", "..", "Content", "Data");
         if (!Directory.Exists(contentPath)) contentPath = Path.Combine("Content", "Data");
 
-        _questManager.Load(Path.Combine(contentPath, "quests.json"));
-        _interactionManager.Load(Path.Combine(contentPath, "interactions.json"));
+        string testQuestPath = Path.Combine("Content", "test_quests.json");
+        if (!File.Exists(testQuestPath))
+             testQuestPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Content", "test_quests.json");
+
+        string testInteractionPath = Path.Combine("Content", "test_interactions.json");
+        if (!File.Exists(testInteractionPath))
+             testInteractionPath = Path.Combine(System.AppDomain.CurrentDomain.BaseDirectory, "Content", "test_interactions.json");
+
+        _questManager.Load(testQuestPath);
+        _interactionManager.Load(testInteractionPath);
     }
 
     [Fact]

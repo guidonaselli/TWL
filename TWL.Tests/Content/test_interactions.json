@@ -1,0 +1,98 @@
+[
+  {
+    "TargetName": "StrangeStoneDebris",
+    "Type": "Gather",
+    "RequiredQuestId": 1201,
+    "RewardItems": [ { "ItemId": 8101, "Quantity": 1 } ]
+  },
+  {
+    "TargetName": "AncientTablet",
+    "Type": "Gather",
+    "RequiredQuestId": 1202,
+    "RewardItems": [ { "ItemId": 8102, "Quantity": 1 } ]
+  },
+  {
+    "TargetName": "RuinsEntrance",
+    "Type": "Interact",
+    "RequiredQuestId": 1204,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "RepairedRadioTower",
+    "Type": "Interact",
+    "RequiredQuestId": 1401,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "NorthEastCliff",
+    "Type": "Interact",
+    "RequiredQuestId": 1401,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "HeavyRocks",
+    "Type": "Interact",
+    "RequiredQuestId": 1402,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "HeavyRocks",
+    "Type": "Interact",
+    "RequiredQuestId": 1403,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "SulfurVent",
+    "Type": "Gather",
+    "RequiredQuestId": 1402,
+    "RewardItems": [ { "ItemId": 9001, "Quantity": 1 } ]
+  },
+  {
+    "TargetName": "BurntTree",
+    "Type": "Gather",
+    "RequiredQuestId": 1402,
+    "RewardItems": [ { "ItemId": 9002, "Quantity": 1 } ]
+  },
+  {
+    "TargetName": "AlchemyTable",
+    "Type": "Craft",
+    "RequiredQuestId": 1402,
+    "RewardItems": [ { "ItemId": 9003, "Quantity": 1 } ]
+  },
+  {
+    "TargetName": "HiddenDock",
+    "Type": "Interact",
+    "RequiredQuestId": 1404,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "FishingSpot",
+    "Type": "Gather",
+    "RequiredQuestId": 2401,
+    "RewardItems": [ { "ItemId": 9005, "Quantity": 1 } ]
+  },
+  {
+    "TargetName": "RuinsConsole",
+    "Type": "Interact",
+    "RequiredQuestId": 1205,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "PowerCrystalSource",
+    "Type": "Gather",
+    "RequiredQuestId": 1206,
+    "RewardItems": [ { "ItemId": 8108, "Quantity": 1 } ]
+  },
+  {
+    "TargetName": "HologramProjector",
+    "Type": "Interact",
+    "RequiredQuestId": 1207,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "BatNest",
+    "Type": "Gather",
+    "RequiredQuestId": 2203,
+    "RewardItems": [ { "ItemId": 8106, "Quantity": 1 } ]
+  }
+]
