@@ -59,6 +59,7 @@ public class AutoBattleService
         // 2. Check Debuffs -> Cleanse
         if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced)
         {
+            // Check for Seal or Stat Debuffs
             var debuffedAlly = allies.FirstOrDefault(a => a.Hp > 0 && a.StatusEffects.Any(e => e.Tag == SkillEffectTag.Seal || e.Tag == SkillEffectTag.DebuffStats));
             if (debuffedAlly != null)
             {
@@ -115,13 +116,11 @@ public class AutoBattleService
                  if (skill.TargetType != SkillTargetType.SingleAlly && skill.TargetType != SkillTargetType.AllAllies) continue;
 
                  var buffEffect = skill.Effects.FirstOrDefault(e => e.Tag == SkillEffectTag.BuffStats);
-                 if (buffEffect != null && !string.IsNullOrEmpty(buffEffect.Param))
+                 if (buffEffect != null)
                  {
-                     // Find ally without this buff param
-                     var targetAlly = allies.FirstOrDefault(a => a.Hp > 0 && !a.StatusEffects.Any(e => e.Tag == SkillEffectTag.BuffStats && e.Param == buffEffect.Param));
+                     // Find ally without conflicting buff
+                     var targetAlly = allies.FirstOrDefault(a => a.Hp > 0 && !HasConflictingBuff(a, buffEffect));
 
-                     // If AllAllies, just check if ANYONE needs it or average need? Simplest: If targetAlly found, use it.
-                     // Note: If TargetType is AllAllies, TargetId might strictly be ignored or needs to be valid ally.
                      if (targetAlly != null)
                      {
                          // Basic SP check for non-critical actions
@@ -155,6 +154,20 @@ public class AutoBattleService
         return CombatAction.Defend(actor.Id);
     }
 
+    private bool HasConflictingBuff(ServerCharacter character, SkillEffect newEffect)
+    {
+        if (!string.IsNullOrEmpty(newEffect.ConflictGroup))
+        {
+             return character.StatusEffects.Any(e => e.ConflictGroup == newEffect.ConflictGroup);
+        }
+        // Fallback to Param check for basic buffs
+        if (newEffect.Tag == SkillEffectTag.BuffStats && !string.IsNullOrEmpty(newEffect.Param))
+        {
+             return character.StatusEffects.Any(e => e.Tag == SkillEffectTag.BuffStats && e.Param == newEffect.Param);
+        }
+        return false;
+    }
+
     private ServerCharacter? GetBestTarget(List<ServerCharacter> enemies)
     {
         // Simple heuristic: Lowest HP % to secure kill
@@ -166,8 +179,7 @@ public class AutoBattleService
 
     private int? FindBestSkill(ServerCharacter actor, SkillEffectTag effectTag, SkillTargetType targetType, bool ignoreThreshold)
     {
-        // Heuristic: Pick highest Tier/Cost skill that matches?
-        // Or just the first one found. Let's pick Highest SP Cost as proxy for "Best".
+        // Heuristic: Pick highest SP Cost as proxy for "Best".
         int? bestSkillId = null;
         int maxCost = -1;
 
