@@ -9,12 +9,25 @@ public class TradeManager
 {
     public bool ValidateTransfer(Item item, int targetUserId, int sourceUserId)
     {
+        // HARDENING: If item is already bound to a specific ID, strict rules apply.
+        if (item.BoundToId.HasValue && item.BoundToId.Value != 0)
+        {
+            // AccountBound allows transfer within same account (here checked via ID match or similar logic)
+            if (item.Policy == BindPolicy.AccountBound)
+            {
+                return targetUserId == sourceUserId;
+            }
+
+            // All other bound items (BoP, CharacterBound, or equipped BoE) are strictly non-transferable
+            return false;
+        }
+
         switch (item.Policy)
         {
             case BindPolicy.Unbound:
                 return true;
             case BindPolicy.BindOnEquip:
-                // Treat as unbound for transfer if in inventory
+                // Treat as unbound for transfer if in inventory AND NOT BOUND (checked above)
                 return true;
             case BindPolicy.AccountBound:
                 // Only allow if target is the same account (e.g. storage transfer)
