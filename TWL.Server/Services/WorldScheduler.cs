@@ -22,6 +22,7 @@ public class WorldScheduler : IWorldScheduler, IDisposable
         public Action Action { get; set; } = () => { };
         public DateTime NextRun { get; set; }
         public TimeSpan? Interval { get; set; } // If null, one-off
+        public string Name { get; set; } = "Unnamed";
     }
 
     public WorldScheduler(ILogger<WorldScheduler> logger, ServerMetrics metrics)
@@ -54,7 +55,7 @@ public class WorldScheduler : IWorldScheduler, IDisposable
         _logger.LogInformation("WorldScheduler stopped.");
     }
 
-    public void Schedule(Action action, TimeSpan delay)
+    public void Schedule(Action action, TimeSpan delay, string name = "Unnamed")
     {
         lock (_lock)
         {
@@ -62,12 +63,13 @@ public class WorldScheduler : IWorldScheduler, IDisposable
             {
                 Action = action,
                 NextRun = DateTime.UtcNow.Add(delay),
-                Interval = null
+                Interval = null,
+                Name = name
             });
         }
     }
 
-    public void ScheduleRepeating(Action action, TimeSpan interval)
+    public void ScheduleRepeating(Action action, TimeSpan interval, string name = "Unnamed")
     {
         lock (_lock)
         {
@@ -75,7 +77,8 @@ public class WorldScheduler : IWorldScheduler, IDisposable
             {
                 Action = action,
                 NextRun = DateTime.UtcNow.Add(interval),
-                Interval = interval
+                Interval = interval,
+                Name = name
             });
         }
     }
@@ -96,13 +99,20 @@ public class WorldScheduler : IWorldScheduler, IDisposable
             }
             sw.Stop();
 
-            _metrics.RecordWorldLoopTick(sw.ElapsedMilliseconds, tasksCount);
+            var elapsed = sw.ElapsedMilliseconds;
+            _metrics.RecordWorldLoopTick(elapsed, tasksCount);
+
+            if (elapsed > 50)
+            {
+                _logger.LogWarning("Slow World Loop Tick: {Duration}ms", elapsed);
+                _metrics.RecordSlowWorldTick(elapsed);
+            }
 
             try
             {
                 // Simple fixed delay loop (not fixed timestep, but good enough for now)
                 // Ideally we subtract elapsed time from delay to maintain 20 TPS
-                var delay = 50 - (int)sw.ElapsedMilliseconds;
+                var delay = 50 - (int)elapsed;
                 if (delay < 1) delay = 1;
                 await Task.Delay(delay, token);
             }
@@ -116,7 +126,7 @@ public class WorldScheduler : IWorldScheduler, IDisposable
     private int ProcessTasks()
     {
         var now = DateTime.UtcNow;
-        var tasksToRun = new List<Action>();
+        var tasksToRun = new List<ScheduledTask>();
         int queueDepth = 0;
 
         lock (_lock)
@@ -128,7 +138,7 @@ public class WorldScheduler : IWorldScheduler, IDisposable
                 var task = _scheduledTasks[i];
                 if (task.NextRun <= now)
                 {
-                    tasksToRun.Add(task.Action);
+                    tasksToRun.Add(task);
 
                     if (task.Interval.HasValue)
                     {
@@ -143,15 +153,23 @@ public class WorldScheduler : IWorldScheduler, IDisposable
             }
         }
 
-        foreach (var action in tasksToRun)
+        foreach (var task in tasksToRun)
         {
+            var sw = System.Diagnostics.Stopwatch.StartNew();
             try
             {
-                action();
+                task.Action();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error executing scheduled task");
+                _logger.LogError(ex, "Error executing scheduled task '{TaskName}'", task.Name);
+            }
+            sw.Stop();
+
+            if (sw.ElapsedMilliseconds > 10)
+            {
+                _logger.LogWarning("Slow World Task '{TaskName}': {Duration}ms", task.Name, sw.ElapsedMilliseconds);
+                _metrics.RecordSlowWorldTask(task.Name, sw.ElapsedMilliseconds);
             }
         }
 

@@ -21,10 +21,10 @@ public interface IWorldScheduler
     /// <summary>
     /// Schedules an action to be executed after a specified delay.
     /// </summary>
-    void Schedule(Action action, TimeSpan delay);
+    void Schedule(Action action, TimeSpan delay, string name = "Unnamed");
 
     /// <summary>
     /// Schedules an action to be executed repeatedly at a specified interval.
     /// </summary>
-    void ScheduleRepeating(Action action, TimeSpan interval);
+    void ScheduleRepeating(Action action, TimeSpan interval, string name = "Unnamed");
 }

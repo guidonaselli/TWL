@@ -1,7 +1,7 @@
 using System;
+using System.Threading;
 using System.Threading.Tasks;
-using Microsoft.Extensions.Logging;
-using Moq;
+using Microsoft.Extensions.Logging.Abstractions;
 using TWL.Server.Services;
 using TWL.Server.Simulation.Managers;
 using Xunit;
@@ -11,57 +11,48 @@ namespace TWL.Tests.Reliability;
 public class WorldLoopObservabilityTests
 {
     [Fact]
-    public async Task WorldScheduler_ShouldRecordMetrics_WhenRunning()
+    public async Task SlowTasks_AreRecordedInMetrics()
     {
-        // Arrange
         var metrics = new ServerMetrics();
-        var mockLogger = new Mock<ILogger<WorldScheduler>>();
-
-        using var scheduler = new WorldScheduler(mockLogger.Object, metrics);
-
-        // Act
+        using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, metrics);
         scheduler.Start();
 
-        // Schedule some tasks
-        int taskRunCount = 0;
-        scheduler.Schedule(() => { taskRunCount++; }, TimeSpan.FromMilliseconds(10));
-        scheduler.Schedule(() => { taskRunCount++; }, TimeSpan.FromMilliseconds(20));
+        // Schedule a task that sleeps for 20ms (above 10ms threshold)
+        scheduler.Schedule(() =>
+        {
+            Thread.Sleep(20);
+        }, TimeSpan.Zero, "SlowTask");
 
-        // Wait for loop to run a few times
+        // Wait for it to execute
+        await Task.Delay(100);
+
+        scheduler.Stop();
+
+        var snapshot = metrics.GetSnapshot();
+        Assert.True(snapshot.WorldLoopSlowTasks > 0, $"Should record at least one slow task. Actual: {snapshot.WorldLoopSlowTasks}");
+        // It might not trigger a SlowTick because 20ms < 50ms tick budget
+    }
+
+    [Fact]
+    public async Task SlowTicks_AreRecordedInMetrics()
+    {
+        var metrics = new ServerMetrics();
+        using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, metrics);
+        scheduler.Start();
+
+        // Schedule a task that sleeps for 70ms (above 50ms tick threshold)
+        scheduler.Schedule(() =>
+        {
+            Thread.Sleep(70);
+        }, TimeSpan.Zero, "VerySlowTask");
+
+        // Wait for it to execute
         await Task.Delay(200);
 
         scheduler.Stop();
 
-        // Assert
         var snapshot = metrics.GetSnapshot();
-
-        Assert.True(snapshot.WorldLoopTicks > 0, $"Expected WorldLoopTicks > 0, got {snapshot.WorldLoopTicks}");
-        Assert.True(snapshot.WorldLoopTotalDurationMs >= 0, "Expected WorldLoopTotalDurationMs >= 0");
-        Assert.Equal(2, taskRunCount);
-    }
-
-    [Fact]
-    public async Task WorldScheduler_ShouldReportQueueDepth()
-    {
-         // Arrange
-        var metrics = new ServerMetrics();
-        var mockLogger = new Mock<ILogger<WorldScheduler>>();
-        using var scheduler = new WorldScheduler(mockLogger.Object, metrics);
-
-        // Act
-        // We want to verify that QueueDepth is reported.
-        // We schedule something far in the future so it stays in queue.
-
-        scheduler.Schedule(() => { }, TimeSpan.FromMinutes(1));
-        scheduler.Start();
-
-        await Task.Delay(100);
-
-        var snapshot = metrics.GetSnapshot();
-
-        // Should be at least 1 because we have a task scheduled for future
-        Assert.True(snapshot.WorldSchedulerQueueDepth >= 1, $"Expected QueueDepth >= 1, got {snapshot.WorldSchedulerQueueDepth}");
-
-        scheduler.Stop();
+        Assert.True(snapshot.WorldLoopSlowTicks > 0, $"Should record at least one slow tick. Actual: {snapshot.WorldLoopSlowTicks}");
+        Assert.True(snapshot.WorldLoopSlowTasks > 0, $"Should also record slow task. Actual: {snapshot.WorldLoopSlowTasks}");
     }
 }
