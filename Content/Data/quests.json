@@ -443,9 +443,9 @@
     "Rewards": { "Exp": 100, "Gold": 100, "Items": [] }
   },
   {
-    "QuestId": 9000,
-    "Title": "Housing Authorization",
-    "Description": "To own land in this world, one must prove their worth and pay the tax. Talk to the Estate Agent.",
+    "QuestId": 9001,
+    "Title": "Housing Dreams",
+    "Description": "To own land in this world, one must prove their worth. Talk to the Estate Agent to begin.",
     "Requirements": [],
     "RequiredLevel": 10,
     "Objectives": [
@@ -454,7 +454,16 @@
         "TargetName": "Estate Agent",
         "RequiredCount": 1,
         "Description": "Talk to the Estate Agent."
-      },
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 9002,
+    "Title": "Building Blocks",
+    "Description": "Gather materials to demonstrate your resourcefulness.",
+    "Requirements": [9001],
+    "Objectives": [
       {
         "Type": "Collect",
         "TargetName": "Madera",
@@ -468,12 +477,36 @@
         "RequiredCount": 5,
         "Description": "Collect 5 Iron Ore.",
         "DataId": 7301
-      },
+      }
+    ],
+    "Rewards": { "Exp": 200, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 9003,
+    "Title": "The Price of Land",
+    "Description": "A fee is required to register your claim.",
+    "Requirements": [9002],
+    "Objectives": [
       {
         "Type": "PayGold",
         "TargetName": "Estate Agent",
         "RequiredCount": 500,
         "Description": "Pay 500 Gold fee."
+      }
+    ],
+    "Rewards": { "Exp": 300, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 9004,
+    "Title": "Landowner",
+    "Description": "Finalize your registration and receive your tent.",
+    "Requirements": [9003],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Estate Agent",
+        "RequiredCount": 1,
+        "Description": "Talk to the Estate Agent to finalize."
       }
     ],
     "FlagsSet": ["HOUSING_UNLOCKED"],
