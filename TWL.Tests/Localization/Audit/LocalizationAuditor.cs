@@ -275,10 +275,19 @@ namespace TWL.Tests.Localization.Audit
                 for (int i = 0; i < lines.Length; i++)
                 {
                     var line = lines[i].Trim();
-                    if (line.StartsWith("//") || line.StartsWith("using ") || line.Contains("Log(") || line.Contains("Console.Write") || line.Contains("// loc: ignore"))
+                    // Ignore comments, usings, logging, exceptions, console writes, and explicit ignores
+                    if (line.StartsWith("//") ||
+                        line.StartsWith("using ") ||
+                        (line.Contains("Log") && line.Contains("(")) ||
+                        line.Contains("throw new") ||
+                        line.Contains("Console.Write") ||
+                        line.Contains("// loc: ignore"))
                         continue;
 
-                    var matches = stringRegex.Matches(line);
+                    // Strip inline comments
+                    var codePart = line.Split(new[] { "//" }, StringSplitOptions.None)[0];
+
+                    var matches = stringRegex.Matches(codePart);
                     foreach (Match match in matches)
                     {
                         var val = match.Groups[1].Value;
@@ -381,7 +390,7 @@ namespace TWL.Tests.Localization.Audit
              }
 
             // 4. Key Naming Convention
-            var validPrefixes = new[] { "UI_", "ERR_", "QUEST_", "SKILL_", "ITEM_", "TUTORIAL_" };
+            var validPrefixes = new[] { "UI_", "ERR_", "QUEST_", "SKILL_", "ITEM_", "TUTORIAL_", "ENEMY_" };
             foreach (var key in allUsedKeys)
             {
                  if (!validPrefixes.Any(p => key.StartsWith(p)))

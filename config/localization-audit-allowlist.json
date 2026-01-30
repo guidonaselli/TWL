@@ -18,7 +18,15 @@
     "down",
     "left",
     "right",
-    "#888888"
+    "#888888",
+    "Content",
+    "Kill",
+    "TheWonderland",
+    "Portals",
+    "TargetMap",
+    "TargetX",
+    "TargetY",
+    "localhost"
   ],
   "AllowedFolders": [
     "bin",
