@@ -30,6 +30,8 @@ public class PetService : IPetService
         var def = _petManager.GetDefinition(definitionId);
         if (def == null) return null;
 
+        if (session.Character.Pets.Count >= 5) return null;
+
         var pet = new ServerPet(def);
         session.Character.AddPet(pet);
         return pet.InstanceId;
@@ -59,38 +61,37 @@ public class PetService : IPetService
         if (petDef == null || petDef.CaptureRules == null || !petDef.CaptureRules.IsCapturable) return null;
 
         // 5. Level Check
-        // If Player Level is significantly lower than Pet Capture Limit?
-        // Actually usually strictly "Player Level >= Pet Level + X" or similar.
-        // Or "LevelLimit" in CaptureRules means "Required Player Level".
         if (session.Character.Level < petDef.CaptureRules.LevelLimit) return null;
 
-        // 6. Calculate Chance
-        // Base Chance + Bonus for low HP
+        // 6. Check Item Requirement & Consume (On Attempt)
+        if (petDef.CaptureRules.RequiredItemId.HasValue)
+        {
+            if (!session.Character.RemoveItem(petDef.CaptureRules.RequiredItemId.Value, 1))
+            {
+                return null; // Missing item
+            }
+        }
+
+        // 7. Calculate Chance
         float baseChance = petDef.CaptureRules.BaseChance;
-        float hpBonus = (1.0f - hpPercent) * 0.5f; // Up to +50% capture rate if 0 HP (impossible but close)
+        float hpBonus = (1.0f - hpPercent) * 0.5f; // Up to +50% capture rate if 0 HP
         float totalChance = baseChance + hpBonus;
 
-        // 7. Roll
+        // 8. Roll
         if (_random.NextFloat() > totalChance)
         {
              return null; // Failed capture
         }
 
-        // 8. Success!
+        // 9. Success!
         var pet = new ServerPet(petDef);
         pet.Amity = 40; // Default wild amity
 
-        if (session.Character.Pets.Count >= 5) // Hardcoded slot limit for now
-        {
-            // Or send to bank? fail for now.
-            return null;
-        }
-
         session.Character.AddPet(pet);
 
-        // 9. Remove Enemy (Die)
+        // 12. Remove Enemy (Die)
         enemy.Die();
-        // CombatManager should handle death event
+        // CombatManager will handle death event via subscription
 
         return pet.InstanceId;
     }
@@ -102,10 +103,7 @@ public class PetService : IPetService
 
         if (!pet.IsDead) return false;
 
-        // Cost Logic?
-        // E.g. consume Gold or Item.
-        // For now, free or minimal check.
-        // if (owner.Gold < 100) return false;
+        // Cost Logic could go here
 
         pet.Revive();
         return true;
@@ -161,31 +159,26 @@ public class PetService : IPetService
         var chara = session.Character;
         var oldPet = chara.GetActivePet();
 
+        // 1. Unregister existing pet from Combat
         if (oldPet != null)
         {
-            // Despawn old pet from combat
             _combatManager.UnregisterCombatant(oldPet.Id);
 
-            // Should consume turn? logic handled by Handler, not Service usually.
+            // Note: If switching to the SAME pet, we unregister then register?
+            // Usually switch means "Switch TO another".
+            // If ID is same, unregister might remove it.
         }
 
+        // 2. Set new Active Pet
         bool success = chara.SetActivePet(petInstanceId);
         if (!success) return false;
 
         var newPet = chara.GetActivePet();
         if (newPet != null)
         {
-            // Assign runtime ID for combat: Negative OwnerID - Slot Index?
-            // Or just ensure unique ID. ServerCombatant.Id usually must be unique.
-            // If we use negative IDs for pets: -1000 * PlayerId - SlotId?
-            // For now, simple approach:
-
-            // Important: We must not conflict with other entities.
-            // ServerCharacter uses its Database ID (positive).
-            // Mobs use... something.
-            // Pets should use generated IDs or transient IDs.
-            // Let's assume GetHashCode or similar for now, or just negative random.
-            newPet.Id = -System.Math.Abs(petInstanceId.GetHashCode());
+            // 3. Assign Runtime ID: -OwnerId
+            // This ensures strict 1-pet-per-player mapping for easy identification
+            newPet.Id = -ownerId;
 
             _combatManager.RegisterCombatant(newPet);
         }
