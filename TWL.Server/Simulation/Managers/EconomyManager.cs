@@ -482,7 +482,13 @@ public class EconomyManager : IEconomyService
 
         // Add Item to Receiver (BindPolicy applies to Receiver)
         // Note: BindOnPickup becomes bound to Receiver.
-        bool added = receiver.AddItem(itemDef.ItemId, quantity, itemDef.Policy);
+        int? boundToId = null;
+        if (itemDef.Policy == BindPolicy.BindOnPickup || itemDef.Policy == BindPolicy.CharacterBound)
+        {
+            boundToId = receiver.Id;
+        }
+
+        bool added = receiver.AddItem(itemDef.ItemId, quantity, itemDef.Policy, boundToId);
 
         if (!added)
         {
