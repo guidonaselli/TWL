@@ -27,6 +27,8 @@ public class PetDefinition
 
     // New WLO-like properties
     public bool IsQuestUnique;
+    public bool IsTemporary;
+    public int? DurationSeconds; // For temporary pets
     public bool RecoveryServiceEnabled;
     public bool RebirthEligible;
     public int? DeathQuestId;

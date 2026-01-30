@@ -28,6 +28,9 @@ public class ServerPet : ServerCombatant
     public bool IsLost { get; set; }
     public bool DeathQuestCompleted { get; set; }
     public bool HasRebirthed { get; set; }
+    public DateTime? ExpirationTime { get; set; }
+
+    public bool IsExpired => ExpirationTime.HasValue && DateTime.UtcNow > ExpirationTime.Value;
 
     public List<int> UnlockedSkillIds { get; private set; } = new();
 
@@ -54,6 +57,11 @@ public class ServerPet : ServerCombatant
         Level = 1;
         Exp = 0;
         Amity = 50;
+
+        if (def.IsTemporary && def.DurationSeconds.HasValue)
+        {
+            ExpirationTime = DateTime.UtcNow.AddSeconds(def.DurationSeconds.Value);
+        }
 
         RecalculateStats();
         Hp = MaxHp;
@@ -137,6 +145,28 @@ public class ServerPet : ServerCombatant
             Wis = (int)(Wis * 0.8);
             Agi = (int)(Agi * 0.8);
         }
+        else if (Amity >= 90)
+        {
+            // High Amity Bonus: +10% Stats
+            Str = (int)(Str * 1.1);
+            Con = (int)(Con * 1.1);
+            Int = (int)(Int * 1.1);
+            Wis = (int)(Wis * 1.1);
+            Agi = (int)(Agi * 1.1);
+        }
+    }
+
+    public bool CheckObedience(float roll)
+    {
+        if (Amity >= 60) return true; // Always obeys
+        if (Amity >= 20) return true; // Normal range
+
+        // Amity < 20 (Rebellious)
+        // Chance to disobey increases as Amity drops.
+        // Amity 19 -> 5% fail
+        // Amity 0 -> 24% fail
+        float failChance = (20 - Amity) * 0.01f + 0.04f;
+        return roll > failChance;
     }
 
     public void ChangeAmity(int amount)
@@ -270,6 +300,7 @@ public class ServerPet : ServerCombatant
             IsLost = IsLost,
             DeathQuestCompleted = DeathQuestCompleted,
             HasRebirthed = HasRebirthed,
+            ExpirationTime = ExpirationTime,
             UnlockedSkillIds = new List<int>(UnlockedSkillIds)
         };
     }
@@ -286,6 +317,7 @@ public class ServerPet : ServerCombatant
         IsLost = data.IsLost;
         DeathQuestCompleted = data.DeathQuestCompleted;
         HasRebirthed = data.HasRebirthed;
+        ExpirationTime = data.ExpirationTime;
         if (data.UnlockedSkillIds != null)
         {
             UnlockedSkillIds = new List<int>(data.UnlockedSkillIds);

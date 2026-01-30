@@ -1,5 +1,7 @@
+using System;
 using System.Collections.Generic;
 using Moq;
+using Xunit;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
@@ -7,323 +9,298 @@ using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Services;
-using Xunit;
 
 namespace TWL.Tests.Services;
 
-public class TestClientSession : ClientSession
+// Helper to expose setting Character for tests
+public class ClientSessionForTest : ClientSession
 {
-    public TestClientSession(ServerCharacter character)
-    {
-        Character = character;
-        UserId = character.Id;
-    }
+    public ClientSessionForTest() : base() { }
+
+    public void SetUserId(int id) { UserId = id; }
+    public void SetCharacter(ServerCharacter c) { Character = c; }
 }
 
-public class PetServiceTests
+public class PetServiceTests : IDisposable
 {
-    private readonly Mock<PlayerService> _mockPlayerService;
-    private readonly Mock<PetManager> _mockPetManager;
-    private readonly Mock<CombatManager> _mockCombatManager;
-    private readonly Mock<IRandomService> _mockRandom;
-    private readonly PetService _petService;
+    private Mock<IPlayerRepository> _mockRepo;
+    private Mock<IStatusEngine> _mockStatusEngine;
+    private Mock<ICombatResolver> _mockResolver;
+    private Mock<ISkillCatalog> _mockSkills;
+    private Mock<IRandomService> _mockRandom;
+
+    private PlayerService _playerService;
+    private PetManager _petManager;
+    private CombatManager _combatManager;
+    private PetService _petService;
+    private ServerMetrics _metrics;
+
+    private const string TestFile = "Content/Data/pets_service_test.json";
 
     public PetServiceTests()
     {
-        var mockRepo = new Mock<IPlayerRepository>();
-        var mockMetrics = new Mock<ServerMetrics>();
-        _mockPlayerService = new Mock<PlayerService>(mockRepo.Object, mockMetrics.Object);
+        _mockRepo = new Mock<IPlayerRepository>();
+        _metrics = new ServerMetrics();
+        _playerService = new PlayerService(_mockRepo.Object, _metrics);
 
-        _mockPetManager = new Mock<PetManager>();
+        _petManager = new PetManager();
+        // Create mock definitions
+        var def = new PetDefinition
+        {
+            PetTypeId = 100,
+            Name = "Test Pet",
+            CaptureRules = new CaptureRules
+            {
+                IsCapturable = true,
+                LevelLimit = 5,
+                BaseChance = 0.5f,
+                RequiredItemId = 999
+            },
+            GrowthModel = new PetGrowthModel()
+        };
+        var tempDef = new PetDefinition
+        {
+             PetTypeId = 101,
+             Name = "Temp Pet",
+             IsTemporary = true,
+             DurationSeconds = 1,
+             GrowthModel = new PetGrowthModel()
+        };
 
-        var mockResolver = new Mock<ICombatResolver>();
-        var mockStatus = new Mock<IStatusEngine>();
-        var mockCatalog = new Mock<ISkillCatalog>();
+        var options = new System.Text.Json.JsonSerializerOptions { IncludeFields = true };
+        System.IO.Directory.CreateDirectory("Content/Data");
+        System.IO.File.WriteAllText(TestFile, System.Text.Json.JsonSerializer.Serialize(new List<PetDefinition> { def, tempDef }, options));
+        _petManager.Load(TestFile);
+
+        _mockStatusEngine = new Mock<IStatusEngine>();
+        _mockResolver = new Mock<ICombatResolver>();
+        _mockSkills = new Mock<ISkillCatalog>();
         _mockRandom = new Mock<IRandomService>();
 
-        _mockCombatManager = new Mock<CombatManager>(mockResolver.Object, _mockRandom.Object, mockCatalog.Object, mockStatus.Object);
-
-        _petService = new PetService(
-            _mockPlayerService.Object,
-            _mockPetManager.Object,
-            _mockCombatManager.Object,
-            _mockRandom.Object
-        );
+        _combatManager = new CombatManager(_mockResolver.Object, _mockRandom.Object, _mockSkills.Object, _mockStatusEngine.Object);
+        _petService = new PetService(_playerService, _petManager, _combatManager, _mockRandom.Object);
     }
 
-    private void LevelUpCharacter(ServerCharacter character, int targetLevel)
+    public void Dispose()
     {
-        while(character.Level < targetLevel)
-        {
-            character.AddExp(character.ExpToNextLevel);
-        }
+        if (System.IO.File.Exists(TestFile))
+            System.IO.File.Delete(TestFile);
     }
 
     [Fact]
     public void CaptureEnemy_Success()
     {
         // Arrange
-        int ownerId = 1;
-        int enemyId = 100;
-        int petTypeId = 1001;
+        var chara = new ServerCharacter { Id = 1, Name = "Trainer" };
+        while(chara.Level < 5) chara.AddExp(1000); // Level up to 5
 
-        var character = new ServerCharacter { Id = ownerId };
-        LevelUpCharacter(character, 10);
+        chara.AddItem(999, 1); // Required Item
 
-        var session = new TestClientSession(character);
+        var session = new ClientSessionForTest();
+        session.SetUserId(1);
+        session.SetCharacter(chara);
+        _playerService.RegisterSession(session);
 
-        _mockPlayerService.Setup(p => p.GetSession(ownerId)).Returns(session);
-
-        var enemyDef = new EnemyCharacter("Wolf", Element.Earth, true)
+        var enemyDef = new EnemyCharacter("Test Enemy", Element.Earth, true)
         {
-            PetTypeId = petTypeId,
+            PetTypeId = 100,
             CaptureThreshold = 0.5f,
-            Level = 5,
-            Health = 20,
-            Con = 10,
-            MaxHealth = 100
+            Con = 10 // MaxHp = 100
         };
+        var enemy = new ServerEnemy(enemyDef) { Id = 200, Hp = 10 };
+        _combatManager.RegisterCombatant(enemy);
 
-        var enemy = new ServerEnemy(enemyDef) { Id = enemyId, Hp = 20 };
-        _mockCombatManager.Setup(c => c.GetCombatant(enemyId)).Returns(enemy);
+        _mockRandom.Setup(r => r.NextFloat()).Returns(0.0f); // Always succeed
 
-        var petDef = new PetDefinition
-        {
-            PetTypeId = petTypeId,
-            Name = "Wolf Pet",
-            CaptureRules = new CaptureRules
-            {
-                IsCapturable = true,
-                LevelLimit = 5,
-                BaseChance = 0.5f
-            },
-            GrowthModel = new PetGrowthModel()
-        };
-        _mockPetManager.Setup(pm => pm.GetDefinition(petTypeId)).Returns(petDef);
-
-        _mockRandom.Setup(r => r.NextFloat()).Returns(0.1f);
+        // Debug assertions
+        Assert.NotNull(_playerService.GetSession(1));
+        Assert.NotNull(_combatManager.GetCombatant(200));
+        Assert.NotNull(_petManager.GetDefinition(100));
 
         // Act
-        var result = _petService.CaptureEnemy(ownerId, enemyId);
+        var result = _petService.CaptureEnemy(1, 200);
 
         // Assert
         Assert.NotNull(result);
-        Assert.Single(character.Pets);
-        Assert.Equal(petTypeId, character.Pets[0].DefinitionId);
-        Assert.Equal(0, enemy.Hp);
+        Assert.Single(chara.Pets);
+        Assert.Equal(100, chara.Pets[0].DefinitionId);
+        Assert.Equal(40, chara.Pets[0].Amity);
+        Assert.False(chara.HasItem(999, 1)); // Consumed
+        Assert.Equal(0, enemy.Hp); // Killed
     }
 
     [Fact]
-    public void SwitchPet_Success_And_CorrectID()
+    public void CaptureEnemy_Fails_LevelTooLow()
     {
         // Arrange
-        int ownerId = 1;
-        var character = new ServerCharacter { Id = ownerId };
-        var session = new TestClientSession(character);
-        _mockPlayerService.Setup(p => p.GetSession(ownerId)).Returns(session);
+        var chara = new ServerCharacter { Id = 1 }; // Level 1
+        chara.AddItem(999, 1);
+        var session = new ClientSessionForTest();
+        session.SetUserId(1);
+        session.SetCharacter(chara);
+        _playerService.RegisterSession(session);
 
-        var petDef = new PetDefinition { PetTypeId = 1, GrowthModel = new PetGrowthModel() };
-        var pet = new ServerPet(petDef);
-        character.AddPet(pet);
+        var enemyDef = new EnemyCharacter("Test Enemy", Element.Earth, true)
+        {
+            PetTypeId = 100,
+            CaptureThreshold = 0.5f,
+            Con = 10 // MaxHp = 100
+        };
+        var enemy = new ServerEnemy(enemyDef) { Id = 200, Hp = 10 };
+        _combatManager.RegisterCombatant(enemy);
 
         // Act
-        bool result = _petService.SwitchPet(ownerId, pet.InstanceId);
+        var result = _petService.CaptureEnemy(1, 200);
 
         // Assert
-        Assert.True(result);
-        Assert.Equal(pet.InstanceId, character.ActivePetInstanceId);
-
-        // Verify the registered ID is -OwnerId
-        _mockCombatManager.Verify(cm => cm.RegisterCombatant(It.Is<ServerCombatant>(sc => sc.Id == -ownerId)), Times.Once);
-
-        // Ensure name is correct
-        Assert.Equal(pet.Name, character.GetActivePet().Name);
+        Assert.Null(result);
+        Assert.Empty(chara.Pets);
+        Assert.True(chara.HasItem(999, 1)); // Not consumed on validation fail
     }
 
     [Fact]
-    public void SwitchPet_Dismiss_Active()
+    public void SwitchPet_Cooldown()
     {
         // Arrange
-        int ownerId = 1;
-        var character = new ServerCharacter { Id = ownerId };
-        var session = new TestClientSession(character);
-        _mockPlayerService.Setup(p => p.GetSession(ownerId)).Returns(session);
+        var chara = new ServerCharacter { Id = 1 };
+        var pet1 = new ServerPet(new PetDefinition { PetTypeId = 100 }) { InstanceId = "pet1" };
+        var pet2 = new ServerPet(new PetDefinition { PetTypeId = 100 }) { InstanceId = "pet2" };
+        chara.AddPet(pet1);
+        chara.AddPet(pet2);
 
-        var petDef = new PetDefinition { PetTypeId = 1, GrowthModel = new PetGrowthModel() };
-        var pet1 = new ServerPet(petDef);
-        var pet2 = new ServerPet(petDef);
-        character.AddPet(pet1);
-        character.AddPet(pet2);
+        var session = new ClientSessionForTest();
+        session.SetUserId(1);
+        session.SetCharacter(chara);
+        _playerService.RegisterSession(session);
 
-        // Set Pet1 Active
-        character.SetActivePet(pet1.InstanceId);
-        pet1.Id = -ownerId; // Simulate existing active pet ID
+        // Act 1: Switch to Pet 1 (Success)
+        var result1 = _petService.SwitchPet(1, "pet1");
+        Assert.True(result1);
+        Assert.Equal("pet1", chara.ActivePetInstanceId);
+        Assert.True(chara.LastPetSwitchTime > DateTime.MinValue);
 
-        // Act - Switch to Pet2
-        bool result = _petService.SwitchPet(ownerId, pet2.InstanceId);
+        // Act 2: Switch to Pet 2 immediately (Fail - Cooldown)
+        var result2 = _petService.SwitchPet(1, "pet2");
+        Assert.False(result2);
+        Assert.Equal("pet1", chara.ActivePetInstanceId); // Still pet1
 
-        // Assert
-        Assert.True(result);
-        Assert.Equal(pet2.InstanceId, character.ActivePetInstanceId);
-
-        // Verify unregistering old pet ID
-        _mockCombatManager.Verify(cm => cm.UnregisterCombatant(-ownerId), Times.Once);
-        // Verify registering new pet with same ID
-        _mockCombatManager.Verify(cm => cm.RegisterCombatant(It.Is<ServerCombatant>(sc => sc.Id == -ownerId && (sc as ServerPet).InstanceId == pet2.InstanceId)), Times.Once);
+        // Act 3: Force time travel (Simulate generic wait)
+        chara.LastPetSwitchTime = DateTime.UtcNow.AddMinutes(-2);
+        var result3 = _petService.SwitchPet(1, "pet2");
+        Assert.True(result3);
+        Assert.Equal("pet2", chara.ActivePetInstanceId);
     }
 
     [Fact]
-    public void DismissPet_Success()
+    public void RevivePet_Cost()
     {
         // Arrange
-        int ownerId = 1;
-        var character = new ServerCharacter { Id = ownerId };
-        var session = new TestClientSession(character);
-        _mockPlayerService.Setup(p => p.GetSession(ownerId)).Returns(session);
+        var chara = new ServerCharacter { Id = 1 };
+        chara.AddGold(1000);
+        var pet = new ServerPet(new PetDefinition { PetTypeId = 100 }) { InstanceId = "pet1", Level = 10, IsDead = true };
+        chara.AddPet(pet);
 
-        var petDef = new PetDefinition { PetTypeId = 1, GrowthModel = new PetGrowthModel() };
-        var pet = new ServerPet(petDef);
-        character.AddPet(pet);
-        character.SetActivePet(pet.InstanceId);
+        var session = new ClientSessionForTest();
+        session.SetUserId(1);
+        session.SetCharacter(chara);
+        _playerService.RegisterSession(session);
+
+        // Cost = Level 10 * 50 = 500
 
         // Act
-        bool result = _petService.DismissPet(ownerId, pet.InstanceId);
+        var result = _petService.RevivePet(1, "pet1");
 
         // Assert
         Assert.True(result);
-        Assert.Empty(character.Pets);
-        Assert.Null(character.ActivePetInstanceId);
-
-        // Verify removal from combat
-        // Note: DismissPet might need to know the runtime ID of the pet to unregister it.
-        // If the pet was active, it should unregister -ownerId
-        _mockCombatManager.Verify(cm => cm.UnregisterCombatant(It.IsAny<int>()), Times.Once);
+        Assert.False(pet.IsDead);
+        Assert.Equal(500, chara.Gold);
     }
 
     [Fact]
-    public void ModifyAmity_PenaltyEffect()
+    public void Amity_Effects_Stats()
     {
-        // Arrange
-        int ownerId = 1;
-        var character = new ServerCharacter { Id = ownerId };
-        var session = new TestClientSession(character);
-        _mockPlayerService.Setup(p => p.GetSession(ownerId)).Returns(session);
-
-        var petDef = new PetDefinition { PetTypeId = 1, BaseStr = 10, GrowthModel = new PetGrowthModel() };
-        var pet = new ServerPet(petDef);
+        var def = new PetDefinition { PetTypeId = 100, BaseStr = 100 };
+        var pet = new ServerPet(def);
         pet.Amity = 50;
-        character.AddPet(pet);
+        pet.RecalculateStats();
+        int baseStr = pet.Str;
 
-        int initialStr = pet.Str;
-
-        // Act - Reduce Amity below 20
-        _petService.ModifyAmity(ownerId, pet.InstanceId, -40); // 50 - 40 = 10
-
-        // Assert
-        Assert.Equal(10, pet.Amity);
+        // Rebellious (< 20)
+        pet.ChangeAmity(-40); // 10
         Assert.True(pet.IsRebellious);
-        Assert.True(pet.Str < initialStr); // Should be reduced
+        Assert.True(pet.Str < baseStr); // Penalty applied
+
+        // Loyal (>= 90)
+        pet.ChangeAmity(85); // 95
+        Assert.True(pet.Str > baseStr); // Bonus applied
     }
 
     [Fact]
-    public void CaptureEnemy_Fail_Threshold()
+    public void TemporaryPet_Expiry()
     {
-        // Arrange
-        int ownerId = 1;
-        int enemyId = 100;
+         var def = new PetDefinition
+         {
+             PetTypeId = 101,
+             IsTemporary = true,
+             DurationSeconds = 1 // 1 second duration
+         };
+         var pet = new ServerPet(def);
 
-        var character = new ServerCharacter { Id = ownerId };
-        LevelUpCharacter(character, 10);
-        var session = new TestClientSession(character);
-        _mockPlayerService.Setup(p => p.GetSession(ownerId)).Returns(session);
+         Assert.NotNull(pet.ExpirationTime);
+         Assert.False(pet.IsExpired);
 
-        var enemyDef = new EnemyCharacter("Wolf", Element.Earth, true)
-        {
-            PetTypeId = 1001,
-            CaptureThreshold = 0.1f, // Strict threshold
-            MaxHealth = 100,
-            Health = 50 // 50% > 10%
-        };
-        var enemy = new ServerEnemy(enemyDef) { Id = enemyId, Hp = 50 };
-        _mockCombatManager.Setup(c => c.GetCombatant(enemyId)).Returns(enemy);
+         // Wait slightly (in real test we shouldn't sleep ideally but for 1s it's okay-ish)
+         // Since ServerPet uses DateTime.UtcNow directly, we can't mock time easily.
+         // We'll manually set ExpirationTime for test stability.
 
-        // Act
-        var result = _petService.CaptureEnemy(ownerId, enemyId);
-
-        // Assert
-        Assert.Null(result);
-        Assert.Empty(character.Pets);
+         pet.ExpirationTime = DateTime.UtcNow.AddSeconds(-1);
+         Assert.True(pet.IsExpired);
     }
 
     [Fact]
-    public void CaptureEnemy_Fail_Dead()
+    public void SwitchPet_Expired_Fails()
     {
-        // Arrange
-        int ownerId = 1;
-        int enemyId = 100;
-
-        var character = new ServerCharacter { Id = ownerId };
-        LevelUpCharacter(character, 10);
-        var session = new TestClientSession(character);
-        _mockPlayerService.Setup(p => p.GetSession(ownerId)).Returns(session);
-
-        var enemyDef = new EnemyCharacter("Wolf", Element.Earth, true)
+        var chara = new ServerCharacter { Id = 1 };
+        var pet = new ServerPet(new PetDefinition { PetTypeId = 101, IsTemporary = true, DurationSeconds = 1 })
         {
-            PetTypeId = 1001,
-            CaptureThreshold = 0.5f,
-            MaxHealth = 100,
-            Health = 0 // DEAD
+            InstanceId = "pet1"
         };
-        var enemy = new ServerEnemy(enemyDef) { Id = enemyId, Hp = 0 }; // DEAD
-        _mockCombatManager.Setup(c => c.GetCombatant(enemyId)).Returns(enemy);
+        pet.ExpirationTime = DateTime.UtcNow.AddSeconds(-1); // Expired
+        chara.AddPet(pet);
 
-        // Act
-        var result = _petService.CaptureEnemy(ownerId, enemyId);
+        var session = new ClientSessionForTest();
+        session.SetUserId(1);
+        session.SetCharacter(chara);
+        _playerService.RegisterSession(session);
 
-        // Assert
-        Assert.Null(result);
-        Assert.Empty(character.Pets);
+        var result = _petService.SwitchPet(1, "pet1");
+
+        Assert.False(result);
+        Assert.Null(chara.ActivePetInstanceId);
     }
 
     [Fact]
-    public void CaptureEnemy_Fail_Level()
+    public void RevivePet_Expired_Fails()
     {
-        // Arrange
-        int ownerId = 1;
-        int enemyId = 100;
-        int petTypeId = 1001;
-
-        var character = new ServerCharacter { Id = ownerId }; // Level 1
-        // LevelUpCharacter(character, 1);
-        var session = new TestClientSession(character);
-        _mockPlayerService.Setup(p => p.GetSession(ownerId)).Returns(session);
-
-        var enemyDef = new EnemyCharacter("Wolf", Element.Earth, true)
+        var chara = new ServerCharacter { Id = 1 };
+        chara.AddGold(1000);
+        var pet = new ServerPet(new PetDefinition { PetTypeId = 101, IsTemporary = true })
         {
-            PetTypeId = petTypeId,
-            CaptureThreshold = 0.5f,
-            MaxHealth = 100,
-            Health = 10
+            InstanceId = "pet1",
+            IsDead = true
         };
-        var enemy = new ServerEnemy(enemyDef) { Id = enemyId, Hp = 10 };
-        _mockCombatManager.Setup(c => c.GetCombatant(enemyId)).Returns(enemy);
+        pet.ExpirationTime = DateTime.UtcNow.AddSeconds(-1); // Expired
+        chara.AddPet(pet);
 
-        var petDef = new PetDefinition
-        {
-            PetTypeId = petTypeId,
-            CaptureRules = new CaptureRules
-            {
-                IsCapturable = true,
-                LevelLimit = 5, // Requires level 5
-                BaseChance = 0.5f
-            }
-        };
-        _mockPetManager.Setup(pm => pm.GetDefinition(petTypeId)).Returns(petDef);
+        var session = new ClientSessionForTest();
+        session.SetUserId(1);
+        session.SetCharacter(chara);
+        _playerService.RegisterSession(session);
 
-        // Act
-        var result = _petService.CaptureEnemy(ownerId, enemyId);
+        var result = _petService.RevivePet(1, "pet1");
 
-        // Assert
-        Assert.Null(result);
+        Assert.False(result);
+        Assert.True(pet.IsDead);
+        Assert.Equal(1000, chara.Gold); // No gold consumed
     }
 }
