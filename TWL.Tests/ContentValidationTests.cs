@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Skills;
 using Xunit;
@@ -58,6 +59,17 @@ namespace TWL.Tests
 
             var json = File.ReadAllText(path);
             return JsonSerializer.Deserialize<List<QuestDefinition>>(json, GetJsonOptions()) ?? new List<QuestDefinition>();
+        }
+
+        private List<PetDefinition> LoadPets()
+        {
+            var root = GetContentRoot();
+            var path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/pets.json");
+            // Ensure path exists
+            if (!File.Exists(path)) throw new FileNotFoundException($"Could not find pets.json at {Path.GetFullPath(path)}");
+
+            var json = File.ReadAllText(path);
+            return JsonSerializer.Deserialize<List<PetDefinition>>(json, GetJsonOptions()) ?? new List<PetDefinition>();
         }
 
         [Fact]
@@ -229,6 +241,41 @@ namespace TWL.Tests
                 .ToList();
 
             Assert.True(duplicates.Count == 0, $"Duplicate DisplayNameKeys found: {string.Join(", ", duplicates)}");
+        }
+
+        [Fact]
+        public void ValidateCrossDomainIntegrity()
+        {
+            var skills = LoadSkills();
+            var quests = LoadQuests();
+            var pets = LoadPets();
+
+            var petIds = pets.Select(p => p.PetTypeId).ToHashSet();
+            var questFlagsSet = quests
+                .SelectMany(q => q.FlagsSet ?? new List<string>())
+                .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+            // 1. Skill -> Quest Flags
+            // Verify that if a skill requires a flag, that flag is set by some quest.
+            foreach (var skill in skills)
+            {
+                if (!string.IsNullOrEmpty(skill.UnlockRules?.QuestFlag))
+                {
+                    Assert.True(questFlagsSet.Contains(skill.UnlockRules.QuestFlag),
+                        $"Skill {skill.SkillId} ({skill.Name}) requires QuestFlag '{skill.UnlockRules.QuestFlag}' but no quest sets it.");
+                }
+            }
+
+            // 2. Quest -> Pet Unlock
+            // Verify that if a quest unlocks a pet, the PetId exists.
+            foreach (var quest in quests)
+            {
+                if (quest.Rewards.PetUnlockId.HasValue)
+                {
+                    Assert.True(petIds.Contains(quest.Rewards.PetUnlockId.Value),
+                        $"Quest {quest.QuestId} ({quest.Title}) unlocks non-existent PetId {quest.Rewards.PetUnlockId.Value}.");
+                }
+            }
         }
     }
 }

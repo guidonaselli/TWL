@@ -112,8 +112,7 @@
     "Rewards": {
       "Exp": 100,
       "Gold": 0,
-      "Items": [],
-      "PetUnlockId": 101
+      "Items": []
     }
   },
   {
@@ -324,7 +323,8 @@
         "Description": "Hablar con Altar Antiguo."
       }
     ],
-    "Rewards": { "Exp": 0, "Gold": 0, "Items": [], "PetUnlockId": 201 }
+    "FlagsSet": ["Unlock_FairyLight"],
+    "Rewards": { "Exp": 0, "Gold": 0, "Items": [], "PetUnlockId": 1003 }
   },
   {
     "QuestId": 1060,
