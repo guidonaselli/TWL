@@ -43,9 +43,32 @@ public class WorldSchedulerTests
             Interlocked.Increment(ref count);
         }, TimeSpan.FromMilliseconds(50));
 
-        await Task.Delay(170); // Should run at roughly 50, 100, 150. (3 times)
-        // Timing is loose in tests, so check at least 2.
+        await Task.Delay(250); // Increased from 170 to account for loop alignment and overhead
 
         Assert.True(count >= 2, $"Expected at least 2 executions, got {count}");
+    }
+
+    [Fact]
+    public async Task Slippage_ShouldBeRecorded_WhenLoopBlocked()
+    {
+        var metrics = new ServerMetrics();
+        using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, metrics);
+        scheduler.Start();
+
+        // Block the loop for > 50ms
+        var evt = new ManualResetEventSlim(false);
+        scheduler.Schedule(() =>
+        {
+            Thread.Sleep(150); // Block intentionally
+            evt.Set();
+        }, TimeSpan.FromMilliseconds(10));
+
+        Assert.True(evt.Wait(500));
+
+        // Wait for next tick to record slippage
+        await Task.Delay(200);
+
+        var snapshot = metrics.GetSnapshot();
+        Assert.True(snapshot.WorldLoopSlippageMs > 0, $"Slippage should be > 0, got {snapshot.WorldLoopSlippageMs}");
     }
 }

@@ -4,6 +4,7 @@ using Moq;
 using Microsoft.Extensions.Logging.Abstractions;
 using TWL.Server.Services.World;
 using TWL.Server.Domain.World;
+using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.World;
 
@@ -16,7 +17,7 @@ public class WorldTriggerServiceTests
 
     public WorldTriggerServiceTests()
     {
-        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance);
+        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, new ServerMetrics());
         _handlerMock = new Mock<ITriggerHandler>();
     }
 
