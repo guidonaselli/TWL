@@ -16,11 +16,11 @@ public class ServerFireSkillTests
     public ServerFireSkillTests()
     {
         // Adjust path logic to be robust
-        string path = "../../../TWL.Server/Content/Data/skills.json";
+        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
         if (!File.Exists(path))
         {
              // Try going up one more level if running from bin/Debug/net8.0
-             path = "../../../../TWL.Server/Content/Data/skills.json";
+             path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
         }
 
         if (File.Exists(path))

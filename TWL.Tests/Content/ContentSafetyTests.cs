@@ -20,8 +20,8 @@ public class ContentSafetyTests
     public void NoQuestsGrantGoddessSkills()
     {
         // Load quests.json
-        var path = "../../../../TWL.Server/Content/Data/quests.json";
-        if (!File.Exists(path)) path = "TWL.Server/Content/Data/quests.json"; // CI fallback
+        var path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
+        if (!File.Exists(path)) path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json"); // CI fallback
 
         Assert.True(File.Exists(path), "quests.json not found");
 

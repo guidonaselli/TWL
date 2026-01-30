@@ -1,21 +1,20 @@
-# Skills System Changelog
-> Tracks changes in Skill Definitions, Mechanics, and Packs.
+# Skills Changelog
+> Tracks changes to Skill System, Effects, and Calculation logic.
 
 ## [Unreleased]
 
-### Missing to Production (Skills)
-- **Content**: Implement full Tier 1 Skill Packs for Earth, Water, Fire, Wind.
-- **Validation**: `SkillMigrationTests` and `ServerWaterSkillTests` are failing.
-- **Goddess Skills**: Verify IDs 2001-2004 are reserved and not granted by Quests (Test `NoQuestsGrantGoddessSkills` is failing due to missing file).
+### Missing to Production
+- **Progression**: `StageUpgradeRules` (Rank-based evolution) needs dedicated verification tests.
+- **Mechanics**:
+    - Complex Targeting (Row/Column/Cross) support in `StandardCombatResolver`.
+    - Goddess Skills: Hardcoded `GrantGoddessSkills` needs to be moved to a Quest/Event trigger system.
+- **Content**:
+    - Full implementation of `Water`, `Fire`, `Wind` skill packs (currently stubbed).
 
 ### Added
-- **Skill Engine**:
-  - `SkillDefinition` schema with `Effects`, `Scaling`, `Branch` (Physics/Magic/Support).
-  - `StageUpgradeRules` for skill evolution (Rank-based).
-  - `UnlockRules` for prerequisites.
-- **Mechanics**:
-  - `ResistanceTags` logic in `CombatManager`.
-  - `ConflictGroup` and `StackingPolicy` for Status Effects.
+- **System**: `SkillService` with JSON-based definitions.
+- **Effects**: Basic Status Effects (`Buff`, `Debuff`, `Seal`, `Cleanse`, `Dispel`).
+- **Logic**: `StandardCombatResolver` implementing Elemental Multipliers (Water > Fire > Wind > Earth).
 
-### Changed
-- `StandardCombatResolver`: Now supports Elemental Multipliers (1.5x / 0.5x).
+### Known Issues
+- `AquaImpact` test formerly returned 0 damage (Fixed in previous iterations, now monitoring).

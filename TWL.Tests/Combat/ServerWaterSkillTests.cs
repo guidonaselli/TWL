@@ -13,11 +13,8 @@ public class ServerWaterSkillTests
 {
     public ServerWaterSkillTests()
     {
-        string path = "../../../TWL.Server/Content/Data/skills.json";
-        if (!File.Exists(path))
-        {
-             path = "TWL.Server/Content/Data/skills.json";
-        }
+        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
+
 
         if (File.Exists(path))
         {

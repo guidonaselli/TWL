@@ -17,11 +17,11 @@ public class UseSkillHandlerTests
     {
         if (SkillRegistry.Instance.GetSkillById(1001) == null)
         {
-             string path = "../../../TWL.Server/Content/Data/skills.json";
+             string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
              if (!System.IO.File.Exists(path))
              {
                  // Try looking from project root (if running from root)
-                 path = "TWL.Server/Content/Data/skills.json";
+                 path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
              }
 
              if (System.IO.File.Exists(path))
