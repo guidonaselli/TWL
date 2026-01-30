@@ -29,12 +29,10 @@ public class UseSkillHandlerTests
                  var json = System.IO.File.ReadAllText(path);
                  SkillRegistry.Instance.LoadSkills(json);
              }
-             else
-             {
-                 // Fallback: Manually register the skill needed for test
-                 var manualJson = "[{\"SkillId\":1001,\"Name\":\"Rock Smash\",\"SpCost\":5,\"Scaling\":[{\"Stat\":\"Atk\",\"Coefficient\":1.2}],\"Effects\":[{\"Tag\":\"Damage\"}]}]";
-                 SkillRegistry.Instance.LoadSkills(manualJson);
-             }
+
+             // Always ensure 1001 exists for this test, merging/overwriting if necessary
+             var manualJson = "[{\"SkillId\":1001,\"Name\":\"Rock Smash\",\"SpCost\":5,\"Scaling\":[{\"Stat\":\"Atk\",\"Coefficient\":1.2}],\"Effects\":[{\"Tag\":\"Damage\"}]}]";
+             SkillRegistry.Instance.LoadSkills(manualJson);
         }
 
         var mockRng = new MockRandomService(0.5f);
