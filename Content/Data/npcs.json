@@ -1,0 +1,29 @@
+[
+  {
+    "NpcId": 3001,
+    "Name": "Harbor Quartermaster",
+    "Title": "Quartermaster",
+    "SpritePath": "Npcs/npc_harbor_quartermaster_64_spritesheet.png",
+    "PortraitPath": "Portraits/npc_harbor_quartermaster_portrait_256.png",
+    "DefaultDialogueKey": "npc.harbor_quartermaster.hello",
+    "Region": "Tropical Coast"
+  },
+  {
+    "NpcId": 3002,
+    "Name": "Herbalist Apprentice",
+    "Title": "Apprentice",
+    "SpritePath": "Npcs/npc_herbalist_apprentice_64_spritesheet.png",
+    "PortraitPath": "Portraits/npc_herbalist_apprentice_portrait_256.png",
+    "DefaultDialogueKey": "npc.herbalist_apprentice.hello",
+    "Region": "Jungle Edge"
+  },
+  {
+    "NpcId": 3003,
+    "Name": "Wandering Tinkerer",
+    "Title": "Tinkerer",
+    "SpritePath": "Npcs/npc_wandering_tinkerer_64_spritesheet.png",
+    "PortraitPath": "Portraits/npc_wandering_tinkerer_portrait_256.png",
+    "DefaultDialogueKey": "npc.wandering_tinkerer.hello",
+    "Region": "Tropical Coast"
+  }
+]
