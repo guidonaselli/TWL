@@ -45,6 +45,17 @@ public class MockPlayerRepository : IPlayerRepository
     }
 
     public PlayerSaveData? Load(int userId) => null;
+
+    public async Task SaveAsync(int userId, PlayerSaveData data)
+    {
+        if (ShouldThrow) throw new Exception("Simulated disk failure");
+
+        // Mimic I/O delay
+        await Task.Delay(5);
+        SaveCallCount++;
+    }
+
+    public Task<PlayerSaveData?> LoadAsync(int userId) => Task.FromResult<PlayerSaveData?>(null);
 }
 
 public class PlayerServiceReliabilityTests
@@ -123,9 +134,10 @@ public class PlayerServiceReliabilityTests
         Assert.Equal(count, service.Metrics.SessionsSavedInLastFlush);
 
         // Assert that metrics captured duration correctly (within margin)
-        // Since repo sleeps 5ms per save, total should be at least 500ms
-        // Wait, async might be faster if parallel? But FlushAllDirtyAsync loops sequentially.
-        Assert.True(service.Metrics.LastFlushDurationMs >= 450); // Allow some margin
+        // With optimization, this should be much faster than 450ms (sequential 5ms * 100).
+        // We just ensure it's recorded correctly.
+        Assert.True(service.Metrics.LastFlushDurationMs >= 0);
+        Assert.InRange(service.Metrics.LastFlushDurationMs, 0, sw.ElapsedMilliseconds + 20); // Metrics duration should be close to stopwatch
 
         Console.WriteLine($"Benchmark: Flushed {count} sessions in {sw.ElapsedMilliseconds}ms (Metrics: {service.Metrics.LastFlushDurationMs}ms)");
     }

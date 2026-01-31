@@ -70,28 +70,42 @@ public class PlayerService
 
     public async Task FlushAllDirtyAsync()
     {
+        // Wrapper for synchronous calls (e.g. from Stop)
+        // We block here to ensure completion
+        FlushAllDirtyAsync().GetAwaiter().GetResult();
+    }
+
+    public async Task FlushAllDirtyAsync()
+    {
         var flushId = Guid.NewGuid().ToString();
         var sw = Stopwatch.StartNew();
+
+        var dirtySessions = _sessions.Values
+            .Where(s => s.Character != null && (s.Character.IsDirty || s.QuestComponent.IsDirty))
+            .ToList();
+
+        if (dirtySessions.Count == 0) return;
+
         int savedCount = 0;
         int errorCount = 0;
 
-        foreach (var session in _sessions.Values)
+        // Limit concurrency to avoid thread pool starvation
+        var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 20 };
+
+        await Parallel.ForEachAsync(dirtySessions, parallelOptions, async (session, token) =>
         {
-            try
+            var (success, error, userId) = await ProcessSessionSaveAsync(session);
+            if (success)
             {
-                if (session.Character != null && (session.Character.IsDirty || session.QuestComponent.IsDirty))
-                {
-                    await SaveSessionAsync(session);
-                    savedCount++;
-                }
+                Interlocked.Increment(ref savedCount);
             }
-            catch (Exception ex)
+            else
             {
-                errorCount++;
-                Metrics.TotalSaveErrors++;
-                PersistenceLogger.LogEvent("SaveError", $"UserId:{session.UserId} {ex.Message}", errors: 1);
+                Interlocked.Increment(ref errorCount);
+                // Log error immediately, but update metrics later
+                PersistenceLogger.LogEvent("SaveError", $"UserId:{userId} {error}", errors: 1);
             }
-        }
+        });
 
         sw.Stop();
 
@@ -100,11 +114,25 @@ public class PlayerService
             Metrics.LastFlushDurationMs = sw.ElapsedMilliseconds;
             Metrics.SessionsSavedInLastFlush = savedCount;
             Metrics.TotalSessionsSaved += savedCount;
+            Metrics.TotalSaveErrors += errorCount;
 
             _serverMetrics?.RecordPersistenceFlush(sw.ElapsedMilliseconds, errorCount);
 
             PersistenceLogger.LogEvent("FlushComplete", "Batch flush finished", count: savedCount, durationMs: sw.ElapsedMilliseconds, errors: errorCount);
             PipelineLogger.LogStage(flushId, "PersistBatch", sw.Elapsed.TotalMilliseconds, $"Count:{savedCount} Errors:{errorCount}");
+        }
+    }
+
+    private async Task<(bool Success, string? Error, int UserId)> ProcessSessionSaveAsync(ClientSession session)
+    {
+        try
+        {
+            await SaveSessionAsync(session);
+            return (true, null, session.UserId);
+        }
+        catch (Exception ex)
+        {
+            return (false, ex.Message, session.UserId);
         }
     }
 
@@ -129,7 +157,18 @@ public class PlayerService
 
     public PlayerSaveData? LoadData(int userId)
     {
+        // Keeping synchronous LoadData for compatibility if needed
         return _repo.Load(userId);
+    }
+
+    public async Task<PlayerSaveData?> LoadDataAsync(int userId)
+    {
+        return await _repo.LoadAsync(userId);
+    }
+
+    public void SaveSession(ClientSession session)
+    {
+       SaveSessionAsync(session).GetAwaiter().GetResult();
     }
 
     public async Task SaveSessionAsync(ClientSession session)
@@ -150,7 +189,5 @@ public class PlayerService
 
         session.Character.IsDirty = false;
         session.QuestComponent.IsDirty = false;
-
-        // Console.WriteLine($"Saved session for user {session.UserId}."); // Verbose
     }
 }
