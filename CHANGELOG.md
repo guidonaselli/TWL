@@ -7,21 +7,29 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Missing to Production (Prioritized)
-- **Persistence**: Migration from `FilePlayerRepository` (JSON) to PostgreSQL (Critical).
-- **Content**: Fix 7 failing Validation Tests (Quests, Localization keys).
-- **Economy**: Hybrid Market System (Centralized Ledger + Player Stalls).
-- **World**: Instance Isolation (Dungeon copies) + Daily Lockouts (5/day).
-- **Social**: Party (Formation, Loot) and Guild Systems (Roster, Chat, Storage).
-- **Security**: Authoritative Movement Validation & Anti-Cheat Handshakes.
+### Current Verified State
+**Maturity**: Proto-Alpha (Vertical Slice Incomplete)
+*   **Core**: Networking loop established.
+*   **Economy**: Premium Currency & Shop implemented (Idempotent).
+*   **Combat**: Basic turn-based resolution active.
+*   **Persistence**: **PROTOTYPE ONLY** (JSON Files).
+
+### Production V1 Blockers (P0)
+*   **Persistence**: Migration from `FilePlayerRepository` to PostgreSQL (Atomic Transactions).
+*   **Quality**: Fix 8 Failing Validation Tests (Localization, Quest Chains).
+*   **Security**: Authoritative Movement Validation (Anti-Speedhack).
+*   **Security**: Packet Replay Protection (Nonce/Sequence).
+
+### Next Milestones (P1)
+*   **Economy**: Hybrid Market (Centralized Ledger + Stalls) - *Currently Missing*.
+*   **Social**: Party & Guild Systems - *Currently Missing*.
+*   **World**: Instance Lockouts (5/day) & Isolation.
+*   **Gameplay**: Death Penalty (1% EXP, 1 Durability) implementation.
 
 ### Added
 - **Docs**: `PRODUCTION_GAP_ANALYSIS.md` detailing technical risks and feature matrix.
-- **Docs**: `docs/rules/GAMEPLAY_CONTRACTS.md` defining strict SSOT for Market, PvP, Death, and Instances.
-- **Docs**: Domain-specific changelogs in `docs/core`, `docs/skills`, `docs/quests`, etc.
-
-### Changed
-- **Tests**: Content Validation logic updated to better detect missing keys.
+- **Docs**: `PRODUCTION_BACKLOG.md` with prioritized P0/P1 tasks.
+- **Docs**: `docs/rules/GAMEPLAY_CONTRACTS.md` defining strict SSOT.
 
 ## [0.1.0] - 2024-05-01
 ### Added
