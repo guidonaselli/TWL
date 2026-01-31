@@ -28,6 +28,7 @@ public class PlayerQuestComponent
     public HashSet<string> Flags { get; private set; } = new();
 
     public Dictionary<int, DateTime> QuestCompletionTimes { get; private set; } = new();
+    public Dictionary<int, DateTime> QuestStartTimes { get; private set; } = new();
 
     private ServerCharacter? _character;
     public ServerCharacter? Character
@@ -448,6 +449,7 @@ public class PlayerQuestComponent
 
             QuestStates[questId] = QuestState.InProgress;
             QuestProgress[questId] = new List<int>(new int[def.Objectives.Count]); // Init with zeros
+            QuestStartTimes[questId] = DateTime.UtcNow;
 
             IsDirty = true;
             return true;
@@ -585,6 +587,16 @@ public class PlayerQuestComponent
             if (def.Expiry.HasValue && now > def.Expiry.Value)
             {
                 failedIds.Add(kvp.Key);
+            }
+            else if (def.TimeLimitSeconds.HasValue && def.TimeLimitSeconds.Value > 0)
+            {
+                if (QuestStartTimes.TryGetValue(kvp.Key, out var startTime))
+                {
+                    if (now > startTime.AddSeconds(def.TimeLimitSeconds.Value))
+                    {
+                        failedIds.Add(kvp.Key);
+                    }
+                }
             }
         }
 
@@ -806,7 +818,8 @@ public class PlayerQuestComponent
                 States = new Dictionary<int, QuestState>(QuestStates),
                 Progress = new Dictionary<int, List<int>>(),
                 Flags = new HashSet<string>(Flags),
-                CompletionTimes = new Dictionary<int, DateTime>(QuestCompletionTimes)
+                CompletionTimes = new Dictionary<int, DateTime>(QuestCompletionTimes),
+                StartTimes = new Dictionary<int, DateTime>(QuestStartTimes)
             };
 
             foreach(var kvp in QuestProgress)
@@ -852,6 +865,15 @@ public class PlayerQuestComponent
                 foreach (var kvp in data.CompletionTimes)
                 {
                     QuestCompletionTimes[kvp.Key] = kvp.Value;
+                }
+            }
+
+            QuestStartTimes.Clear();
+            if (data.StartTimes != null)
+            {
+                foreach (var kvp in data.StartTimes)
+                {
+                    QuestStartTimes[kvp.Key] = kvp.Value;
                 }
             }
 
