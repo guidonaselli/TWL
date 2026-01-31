@@ -48,4 +48,36 @@ public class WorldSchedulerTests
 
         Assert.True(count >= 2, $"Expected at least 2 executions, got {count}");
     }
+
+    [Fact]
+    public async Task CurrentTick_IncrementsOverTime()
+    {
+        using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, new ServerMetrics());
+        scheduler.Start();
+
+        long startTick = scheduler.CurrentTick;
+        await Task.Delay(200); // Expect ~4 ticks (50ms each)
+
+        Assert.True(scheduler.CurrentTick > startTick, $"Expected tick to increment from {startTick}, got {scheduler.CurrentTick}");
+    }
+
+    [Fact]
+    public async Task OnTick_InvokesHandler()
+    {
+        using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, new ServerMetrics());
+        scheduler.Start();
+
+        long capturedTick = -1;
+        var tcs = new TaskCompletionSource<bool>();
+
+        scheduler.OnTick += (tick) =>
+        {
+            capturedTick = tick;
+            tcs.TrySetResult(true);
+        };
+
+        var completed = await Task.WhenAny(tcs.Task, Task.Delay(500));
+        Assert.Same(tcs.Task, completed);
+        Assert.True(capturedTick > 0);
+    }
 }
