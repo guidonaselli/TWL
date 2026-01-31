@@ -13,9 +13,10 @@ This document serves as the Single Source of Truth (SSOT) for gameplay logic and
 *   **Primary System**: A global, centralized **Listing Ledger** (Auction House style).
     *   Features: Searchable, Buyout Listings, Expiry Times, Transaction Taxes.
     *   Authority: All market transactions are settled against this single ledger.
-*   **Secondary Frontend**: **Player Stalls / Tents**.
+*   **Secondary Frontend**: **Player Stalls**.
     *   Role: purely an alternative UI/Frontend for the Centralized Ledger.
-    *   Constraint: Stalls **must not** create a parallel economy or separate inventory state. They simply publish listings to the global ledger and display a subset of that ledger visually in the world.
+    *   **V1 Scope**: UI-based listing view (Physical world objects are optional/post-V1).
+    *   Constraint: Stalls **must not** create a parallel economy or separate inventory state. They simply publish listings to the global ledger.
 
 ## 2. Instance Lockouts
 **Model**: **Count-Based**
@@ -24,30 +25,37 @@ This document serves as the Single Source of Truth (SSOT) for gameplay logic and
 *   **Reset**: Daily at a fixed Server-Day boundary (e.g., 00:00 UTC).
 *   **Enforcement**: Server-Authoritative.
     *   Must be idempotent (reconnecting or retrying does not grant extra runs).
-    *   Deducted upon successful entry or boss engage (TBD, but must be exploitable-proof).
-*   **Future**: Time-window events may exist, but the baseline is always 5/day.
+    *   Deducted upon successful entry.
 
 ## 3. Player Death Penalty
-**Severity**: **Softcore / Mid-Core**
+**Severity**: **Softcore / Mid-Core (Production V1)**
 
-*   **Consequences**:
+*   **Consequences** (applied on server-confirmed death only):
     *   **Respawn**: At the nearest "Safe Spawn" or defined bind point.
-    *   **Durability**: Equipment suffers durability loss.
-        *   *Exception*: "Starter" gear or specific cosmetic items are indestructible.
-    *   **Experience**: Small % EXP loss (TBD), but **no de-leveling** (optional) or irreversible stat loss.
+    *   **Experience Loss (Leve)**:
+        *   Loss: **1% of the EXP progress within the current level** (never de-levels).
+        *   Floor: cannot drop below 0% progress in the current level.
+        *   Notes: No irreversible stat loss.
+    *   **Durability Loss (Leve)**:
+        *   Each equipped item loses **1 durability** per death.
+        *   *Exceptions*: Starter gear and cosmetics can be flagged `Indestructible=true`.
+        *   If an item reaches 0 durability, it becomes `Broken` (stats disabled) until repaired (no deletion).
+    *   **Optional**: A short post-death debuff/cooldown is allowed, but must be explicitly defined if implemented.
+
 *   **Pets**:
-    *   Pet Death (KO) -> Revive needed.
-    *   Combat End while KO -> **Amity Loss** (Already implemented).
-    *   Excessive Damage (>= 1.5x MaxHP) -> **Despawn** (Already implemented).
+    *   Pet KO -> can be revived during combat.
+        *   **Restricted**: Via **Water Skill (Revive)** or **Revive Items** (1/100/500 HP) only. NO Gold Revive.
+    *   Combat End while KO -> **Amity -1**.
+    *   Excessive Damage (>= 1.5x MaxHP in a single hit) -> **Despawn to spawn** (cannot be revived during combat).
 
 ## 4. PvP Scope
 **Type**: **Open World with Opt-In**
 
-*   **Mechanism**: `PKEnabled` Toggle.
+*   **Mechanism**: `PKEnabled` Toggle (Per Character).
 *   **Rules**:
     *   Attacks can ONLY be initiated if the target has `PKEnabled = true`.
     *   **Mandatory**: Server-side handshake validation, cooldowns, and anti-spam protection.
-*   **Exclusions**: No complex MMR, Ranked Ladders, or instanced Arenas required for V1.
+*   **Exclusions**: No complex MMR, Ranked Ladders, Jail, or Karma systems for V1.
 
 ## 5. Skill Progression
 **System**: **Mastery-Based** (No Skill Points for Unlocking)
@@ -58,7 +66,6 @@ This document serves as the Single Source of Truth (SSOT) for gameplay logic and
 *   **Upgrading**:
     *   **Mastery-by-Use**: Using a skill increases its Rank.
     *   **Stage Evolution**: Reaching specific Ranks unlocks the next Stage (e.g., Fireball I -> Fireball II).
-*   **Stat Points**: Used solely for increasing Base Attributes (Str, Con, Int, Wis, Agi) on Level Up.
 
 ## 6. Quest Failure
 **Philosophy**: **Explicit Conditions Only**
@@ -68,4 +75,18 @@ Quests generally do not fail from simple combat loss. They only fail under:
 2.  **Key NPC Death**: Escort/Protect missions -> Fail.
 3.  **Instance Wipe**: If the quest is bound to a specific instance run and the party wipes/timeouts -> Fail.
 
-**Recovery**: Failed quests must be manually restarted (abandon & retake or specific retry mechanic).
+**Recovery**: Failed quests must be manually restarted.
+
+## 7. Combat Rules
+*   **Pet Switching**: Consumes the player's turn.
+*   **Turn Order**: Based on SPD (Speed) stat.
+*   **Row/Column**: Skills affect grid-based formations.
+
+## 8. Social Systems (V1)
+*   **Guilds**: Roster, Chat, and Shared Storage only. (No Housing/Territory in V1).
+*   **Party**: Basic formation and loot sharing.
+
+## 9. Item Binding
+*   **BindOnEquip (CharacterBound)**: Baseline requirement for equipment.
+*   **AccountBound**: Optional for premium items.
+*   **BindOnPickup**: Used only if explicitly required (rare drops).
