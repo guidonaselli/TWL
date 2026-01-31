@@ -259,6 +259,7 @@ public class PlayerQuestComponent
                 if (def.AntiAbuseRules.Contains("UniquePerCharacter"))
                 {
                     if (QuestStates.ContainsKey(questId)) return false;
+                    if (QuestCompletionTimes.ContainsKey(questId)) return false;
                 }
             }
 
@@ -356,6 +357,7 @@ public class PlayerQuestComponent
             if (!string.IsNullOrEmpty(def.AntiAbuseRules) && def.AntiAbuseRules.Contains("UniquePerCharacter"))
             {
                 if (QuestStates.ContainsKey(questId)) return false;
+                if (QuestCompletionTimes.ContainsKey(questId)) return false;
             }
 
             // Exclusivity: Mutual Exclusion Group

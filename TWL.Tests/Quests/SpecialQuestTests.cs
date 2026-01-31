@@ -108,13 +108,15 @@ public class SpecialQuestTests
         // 4. Try to start again (Repeatable is false, AND AntiAbuse is set)
         Assert.False(_playerQuests.StartQuest(100), "Should not start after completion");
 
-        // 5. Simulate data hack or bug where state is removed but log remains?
-        // Actually, PlayerQuestComponent logic relies on QuestStates.
-        // If we clear the state key, we lose history.
-        // But let's check if we manually set it to NotStarted (simulate reset)
-        // The implementation uses QuestStates.ContainsKey(questId).
-        // If we remove the key, it forgets we ever did it.
-        // But if the state is recorded, it blocks.
+        // 5. Simulate data hack or bug where state is removed but log remains
+        Assert.True(_playerQuests.QuestCompletionTimes.ContainsKey(100), "Completion log should exist");
+
+        // We manually remove the state key to simulate data loss/hack
+        _playerQuests.QuestStates.Remove(100);
+
+        // Even though state is gone, the CompletionLog (QuestCompletionTimes) should remain
+        // and UniquePerCharacter rule should still block it.
+        Assert.False(_playerQuests.StartQuest(100), "Should not start even if state is hacked/removed, because log remains");
     }
 
     [Fact]
