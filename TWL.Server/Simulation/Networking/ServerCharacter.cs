@@ -43,7 +43,7 @@ public class ServerCharacter : ServerCombatant
     public event Action<ServerPet>? OnPetAdded;
     public event Action<ServerCharacter, int, int>? OnTradeCommitted;
 
-    public List<int> KnownSkills => SkillMastery.Keys.ToList();
+    public ICollection<int> KnownSkills => SkillMastery.Keys;
     public int Level { get; private set; } = 1;
     public int ExpToNextLevel { get; private set; } = 100;
     public int StatPoints { get; private set; } = 0;
