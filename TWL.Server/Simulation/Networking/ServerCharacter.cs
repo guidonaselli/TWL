@@ -43,7 +43,7 @@ public class ServerCharacter : ServerCombatant
     public event Action<ServerPet>? OnPetAdded;
     public event Action<ServerCharacter, int, int>? OnTradeCommitted;
 
-    public List<int> KnownSkills { get; set; } = new();
+    public List<int> KnownSkills => SkillMastery.Keys.ToList();
     public int Level { get; private set; } = 1;
     public int ExpToNextLevel { get; private set; } = 100;
     public int StatPoints { get; private set; } = 0;
@@ -121,32 +121,22 @@ public class ServerCharacter : ServerCombatant
 
     public override void ReplaceSkill(int oldId, int newId)
     {
-        lock (KnownSkills)
+        if (SkillMastery.TryRemove(oldId, out _))
         {
-            if (KnownSkills.Contains(oldId))
-            {
-                KnownSkills.Remove(oldId);
-                if (!KnownSkills.Contains(newId))
-                {
-                    KnownSkills.Add(newId);
-                }
-                IsDirty = true;
-            }
+            SkillMastery.TryAdd(newId, new SkillMastery());
+            IsDirty = true;
         }
     }
 
     public bool LearnSkill(int skillId)
     {
-        lock (KnownSkills)
+        if (SkillMastery.ContainsKey(skillId))
         {
-            if (KnownSkills.Contains(skillId))
-            {
-                return false;
-            }
-            KnownSkills.Add(skillId);
-            IsDirty = true;
-            return true;
+            return false;
         }
+        SkillMastery.TryAdd(skillId, new SkillMastery());
+        IsDirty = true;
+        return true;
     }
 
     private readonly List<ServerPet> _pets = new();
@@ -429,6 +419,13 @@ public class ServerCharacter : ServerCombatant
             data.StatPoints = StatPoints;
         }
 
+        data.Skills = SkillMastery.Select(kvp => new SkillMasteryData
+        {
+            SkillId = kvp.Key,
+            Rank = kvp.Value.Rank,
+            UsageCount = kvp.Value.UsageCount
+        }).ToList();
+
         lock (_inventory)
         {
             data.Inventory = _inventory.Select(i => new Item
@@ -476,6 +473,19 @@ public class ServerCharacter : ServerCombatant
             Level = data.Level;
             ExpToNextLevel = data.ExpToNextLevel;
             StatPoints = data.StatPoints;
+        }
+
+        SkillMastery.Clear();
+        if (data.Skills != null)
+        {
+            foreach (var s in data.Skills)
+            {
+                SkillMastery[s.SkillId] = new SkillMastery
+                {
+                    Rank = s.Rank,
+                    UsageCount = s.UsageCount
+                };
+            }
         }
 
         lock (_inventory)

@@ -45,14 +45,32 @@
   <data name="SKILL_Entangle" xml:space="preserve">
     <value>Entangle</value>
   </data>
-  <data name="SKILL_AquaImpact" xml:space="preserve">
-    <value>Aqua Impact</value>
+  <data name="SKILL_AquaImpactI" xml:space="preserve">
+    <value>Aqua Impact I</value>
   </data>
-  <data name="SKILL_WaterBall" xml:space="preserve">
-    <value>Water Ball</value>
+  <data name="SKILL_AquaImpactII" xml:space="preserve">
+    <value>Aqua Impact II</value>
   </data>
-  <data name="SKILL_AquaRecover" xml:space="preserve">
-    <value>Aqua Recover</value>
+  <data name="SKILL_AquaImpactIII" xml:space="preserve">
+    <value>Aqua Impact III</value>
+  </data>
+  <data name="SKILL_WaterBallI" xml:space="preserve">
+    <value>Water Ball I</value>
+  </data>
+  <data name="SKILL_WaterBallII" xml:space="preserve">
+    <value>Water Ball II</value>
+  </data>
+  <data name="SKILL_WaterBallIII" xml:space="preserve">
+    <value>Water Ball III</value>
+  </data>
+  <data name="SKILL_AquaRecoverI" xml:space="preserve">
+    <value>Aqua Recover I</value>
+  </data>
+  <data name="SKILL_AquaRecoverII" xml:space="preserve">
+    <value>Aqua Recover II</value>
+  </data>
+  <data name="SKILL_AquaRecoverIII" xml:space="preserve">
+    <value>Aqua Recover III</value>
   </data>
   <data name="SKILL_Shrink" xml:space="preserve">
     <value>Shrink</value>
@@ -75,14 +93,32 @@
   <data name="SKILL_FairyBlessing" xml:space="preserve">
     <value>Fairy's Blessing</value>
   </data>
-  <data name="SKILL_FlameSmash" xml:space="preserve">
-    <value>Flame Smash</value>
+  <data name="SKILL_FlameSmashI" xml:space="preserve">
+    <value>Flame Smash I</value>
   </data>
-  <data name="SKILL_Fireball" xml:space="preserve">
-    <value>Fireball</value>
+  <data name="SKILL_FlameSmashII" xml:space="preserve">
+    <value>Flame Smash II</value>
   </data>
-  <data name="SKILL_FieryWill" xml:space="preserve">
-    <value>Fiery Will</value>
+  <data name="SKILL_FlameSmashIII" xml:space="preserve">
+    <value>Flame Smash III</value>
+  </data>
+  <data name="SKILL_FireballI" xml:space="preserve">
+    <value>Fireball I</value>
+  </data>
+  <data name="SKILL_FireballII" xml:space="preserve">
+    <value>Fireball II</value>
+  </data>
+  <data name="SKILL_FireballIII" xml:space="preserve">
+    <value>Fireball III</value>
+  </data>
+  <data name="SKILL_FieryWillI" xml:space="preserve">
+    <value>Fiery Will I</value>
+  </data>
+  <data name="SKILL_FieryWillII" xml:space="preserve">
+    <value>Fiery Will II</value>
+  </data>
+  <data name="SKILL_FieryWillIII" xml:space="preserve">
+    <value>Fiery Will III</value>
   </data>
   <data name="UI_Login" xml:space="preserve">
     <value>Login</value>
