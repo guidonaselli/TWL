@@ -104,6 +104,7 @@ namespace TWL.Client.Presentation.Core
             if (_gameManager.IsPaused)
                 return;
 
+            _gameClientManager.NetworkClient.Update();
             _gameManager.Update(gameTime);
             base.Update(gameTime);
         }

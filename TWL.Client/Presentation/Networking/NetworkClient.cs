@@ -7,7 +7,6 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
-using TWL.Shared.Net.Messages;
 using TWL.Shared.Net.Network;
 
 namespace TWL.Client.Presentation.Networking;
@@ -28,8 +27,8 @@ public class NetworkClient
     private NetworkStream? _stream;
     private TcpClient _tcp;
 
-    private readonly Channel<ClientMessage> _sendChannel;
-    private readonly Channel<ServerMessage> _receiveChannel;
+    private readonly Channel<NetMessage> _sendChannel;
+    private readonly Channel<NetMessage> _receiveChannel;
     private CancellationTokenSource? _cts;
 
     // Reusable buffer for receiving data to avoid repeated allocations
@@ -44,8 +43,8 @@ public class NetworkClient
 
         _tcp = new TcpClient();
 
-        _sendChannel = Channel.CreateUnbounded<ClientMessage>();
-        _receiveChannel = Channel.CreateUnbounded<ServerMessage>();
+        _sendChannel = Channel.CreateUnbounded<NetMessage>();
+        _receiveChannel = Channel.CreateUnbounded<NetMessage>();
     }
 
     public bool IsConnected => _tcp?.Connected ?? false;
@@ -99,7 +98,7 @@ public class NetworkClient
                 {
                     // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
                     // Using Source Generator Context for better performance
-                    var serverMsg = JsonSerializer.Deserialize(_receiveBuffer.AsSpan(0, read), AppJsonContext.Default.ServerMessage);
+                    var serverMsg = JsonSerializer.Deserialize(_receiveBuffer.AsSpan(0, read), AppJsonContext.Default.NetMessage);
 
                     if (serverMsg != null)
                     {
@@ -122,12 +121,12 @@ public class NetworkClient
         }
     }
 
-    private void HandleServerMessage(ServerMessage serverMsg)
+    private void HandleServerMessage(NetMessage serverMsg)
     {
         EventBus.Publish(serverMsg);
     }
 
-    public void SendClientMessage(ClientMessage message)
+    public void SendNetMessage(NetMessage message)
     {
         if (!IsConnected)
         {
@@ -156,7 +155,7 @@ public class NetworkClient
                         // Optimization: Use System.Text.Json (SerializeToUtf8Bytes)
                         // to avoid intermediate string allocations and utilize existing _jsonOptions
                         // Using Source Generator Context for better performance
-                        var data = JsonSerializer.SerializeToUtf8Bytes(message, AppJsonContext.Default.ClientMessage);
+                        var data = JsonSerializer.SerializeToUtf8Bytes(message, AppJsonContext.Default.NetMessage);
                         await _stream.WriteAsync(data, 0, data.Length, token);
                     }
                     catch (Exception ex)

@@ -14,6 +14,7 @@ using TWL.Server.Security;
 using TWL.Server.Services.World;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Net.Payloads;
 using TWL.Shared.Net.Network;
 using TWL.Server.Security;
 
@@ -436,6 +437,9 @@ public class ClientSession
         catch (JsonException) { return; }
 
         if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Username) || string.IsNullOrWhiteSpace(loginDto.PassHash)) return;
+        if (loginDto.Username.Length > 50) return;
+        if (loginDto.PassHash.Length < 64 || loginDto.PassHash.Length > 128) return;
+        if (!IsHex(loginDto.PassHash)) return;
 
         var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
         if (uid < 0)
@@ -444,7 +448,11 @@ public class ClientSession
             await SendAsync(new NetMessage
             {
                 Op = Opcode.LoginResponse,
-                JsonPayload = "{\"success\":false}"
+                JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
+                {
+                    Success = false,
+                    ErrorMessage = "Invalid credentials."
+                }, _jsonOptions)
             });
         }
         else
@@ -493,9 +501,30 @@ public class ClientSession
             await SendAsync(new NetMessage
             {
                 Op = Opcode.LoginResponse,
-                JsonPayload = "{\"success\":true,\"userId\":" + uid + "}"
+                JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
+                {
+                    Success = true,
+                    UserId = uid,
+                    PosX = Character?.X ?? 0f,
+                    PosY = Character?.Y ?? 0f,
+                    Hp = Character?.Hp ?? 0,
+                    MaxHp = Character?.MaxHp ?? 0
+                }, _jsonOptions)
             });
         }
+    }
+
+    private static bool IsHex(string value)
+    {
+        for (int i = 0; i < value.Length; i++)
+        {
+            var c = value[i];
+            var isDigit = c >= '0' && c <= '9';
+            var isLower = c >= 'a' && c <= 'f';
+            var isUpper = c >= 'A' && c <= 'F';
+            if (!isDigit && !isLower && !isUpper) return false;
+        }
+        return true;
     }
 
     private async Task HandleMoveAsync(string payload)

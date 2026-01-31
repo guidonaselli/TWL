@@ -5,12 +5,15 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System.Text.Json;
+using TWL.Client.Presentation.Helpers;
 using TWL.Client.Presentation.Managers;
 using TWL.Client.Presentation.Networking;
 using TWL.Client.Presentation.Services;
+using TWL.Shared.Domain.DTO;
+using TWL.Shared.Net;
 using TWL.Shared.Net.Abstractions;
-using TWL.Shared.Net.Messages;
 using TWL.Shared.Net.Payloads;
+using TWL.Shared.Net.Network;
 
 namespace TWL.Client.Presentation.UI
 {
@@ -39,6 +42,9 @@ namespace TWL.Client.Presentation.UI
         private ActiveField _activeField = ActiveField.Username;
         private readonly List<string> _loginOptions = new() { Loc.T("UI_Login"), Loc.T("UI_Back") };
         private int _loginSelectedIndex = 0;
+        private string _loginStatusMessage = "";
+        private Color _loginStatusColor = Color.White;
+        private bool _netSubscribed;
 
 
         private MenuState _currentState = MenuState.ShowingMenu;
@@ -77,6 +83,29 @@ namespace TWL.Client.Presentation.UI
             _optionsStart = new Vector2(vp.Width / 2, vp.Height * 0.4f);
 
             _prevKeyboardState = Keyboard.GetState();
+
+            if (!_netSubscribed)
+            {
+                EventBus.Subscribe<NetMessage>(OnNetMessage);
+                _netSubscribed = true;
+            }
+
+            if (!_networkClient.IsConnected)
+            {
+                _loginStatusMessage = "Connecting...";
+                _loginStatusColor = Color.White;
+                try
+                {
+                    _networkClient.Connect();
+                    _loginStatusMessage = "Connected.";
+                    _loginStatusColor = Color.LightGreen;
+                }
+                catch (Exception ex)
+                {
+                    _loginStatusMessage = $"Connection failed: {ex.Message}";
+                    _loginStatusColor = Color.OrangeRed;
+                }
+            }
         }
 
         public void Update(GameTime gameTime)
@@ -144,11 +173,33 @@ namespace TWL.Client.Presentation.UI
 
         private void OnLoginSelected()
         {
-            var loginRequest = new LoginRequestDto { Username = _username, Password = _password };
-            var jsonPayload = JsonSerializer.Serialize(loginRequest);
-            var clientMessage = new ClientMessage { MessageType = ClientMessageType.LoginRequest, Payload = jsonPayload };
+            var username = _username.Trim();
+            if (string.IsNullOrWhiteSpace(username) || string.IsNullOrEmpty(_password))
+            {
+                _loginStatusMessage = "Username and password are required.";
+                _loginStatusColor = Color.OrangeRed;
+                return;
+            }
+            if (username.Length > 50)
+            {
+                _loginStatusMessage = "Username is too long.";
+                _loginStatusColor = Color.OrangeRed;
+                return;
+            }
 
-            _networkClient.SendClientMessage(clientMessage);
+            var loginRequest = new LoginDTO
+            {
+                Username = username,
+                PassHash = CryptographyHelper.HashPassword(_password)
+            };
+            var jsonPayload = JsonSerializer.Serialize(loginRequest);
+            var netMessage = new NetMessage { Op = Opcode.LoginRequest, JsonPayload = jsonPayload };
+
+            _networkClient.SendNetMessage(netMessage);
+            _password = string.Empty;
+            _activeField = ActiveField.Username;
+            _loginStatusMessage = "Logging in...";
+            _loginStatusColor = Color.White;
 
             Console.WriteLine($"Attempting login for user: {_username}");
         }
@@ -221,6 +272,35 @@ namespace TWL.Client.Presentation.UI
             }
         }
 
+        private void OnNetMessage(NetMessage msg)
+        {
+            if (msg.Op != Opcode.LoginResponse) return;
+            if (string.IsNullOrWhiteSpace(msg.JsonPayload)) return;
+
+            LoginResponseDto? response = null;
+            try
+            {
+                response = JsonSerializer.Deserialize<LoginResponseDto>(msg.JsonPayload);
+            }
+            catch (JsonException)
+            {
+                _loginStatusMessage = "Login failed.";
+                _loginStatusColor = Color.OrangeRed;
+                return;
+            }
+
+            if (response == null || !response.Success)
+            {
+                _loginStatusMessage = response?.ErrorMessage ?? "Login failed.";
+                _loginStatusColor = Color.OrangeRed;
+                return;
+            }
+
+            _loginStatusMessage = "Login successful.";
+            _loginStatusColor = Color.LightGreen;
+            _scenes.ChangeScene("Gameplay");
+        }
+
         private void DrawMainMenu(SpriteBatch sb)
         {
             for (int i = 0; i < _options.Count; i++)
@@ -258,6 +338,13 @@ namespace TWL.Client.Presentation.UI
                  var origin = _optionFont.MeasureString(text) / 2;
                  sb.DrawString(_optionFont, text, pos, color, 0f, origin, 1f, SpriteEffects.None, 0f);
              }
+
+            if (!string.IsNullOrEmpty(_loginStatusMessage))
+            {
+                var statusPos = new Vector2(_graphicsDevice.Viewport.Width / 2, yPos + _loginOptions.Count * _optionSpacing);
+                var statusOrigin = _optionFont.MeasureString(_loginStatusMessage) / 2;
+                sb.DrawString(_optionFont, _loginStatusMessage, statusPos, _loginStatusColor, 0f, statusOrigin, 1f, SpriteEffects.None, 0f);
+            }
         }
     }
 }
