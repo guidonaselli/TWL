@@ -1,13 +1,12 @@
-# Economy System Changelog
+# Economy Changelog
 
 ## [Unreleased]
-
 ### Missing
-- **Market**: Hybrid System (Centralized Ledger + Player Stalls) is unimplemented.
-- **Trading**: `TradeManager` exists but lacks atomic cross-player locking for complex scenarios.
-- **Anti-Dupe**: Strict Transaction Ledger for all Item movements is not enforced.
+- **Market**: Hybrid System (Centralized Ledger + Player Stalls).
+- **Transactions**: Atomic "Buy" and "Sell" operations with Anti-Dupe checks.
+- **Manufacturing**: Blueprint/Recipe system for specialized crafting.
+- **Currency**: `Gold` sink tuning (taxes, fees).
 
-### Existing
-- **Ledger**: `EconomyManager` logs Gem/Gold transactions to file.
-- **Policies**: `BindPolicy` (BoP/BoE/AccountBound) is supported in `Item` model.
-- **Shops**: Basic NPC Shop buy/sell logic is implemented.
+### Added
+- **System**: Basic `EconomyManager` (Stub).
+- **Logic**: Inventory `TryConsume` (Thread-safe checks).

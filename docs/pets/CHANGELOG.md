@@ -1,12 +1,13 @@
-# Pet System Changelog
+# Pets Changelog
 
 ## [Unreleased]
-
 ### Missing
-- **Content**: `pets.json` is sparse. Needs population with 20+ capturable mobs.
-- **AI**: `PetCombatAI` (Attack/Defend/Heal logic) is not implemented in Combat.
+- **Content**: Population of `pets.json` with 20+ capturable creatures (Stats/Skills).
+- **AI**: `PetCombatAI` logic (currently pets are passive or basic).
+- **Logic**: "Ride" mechanics (Stats boost + Visual).
+- **Persistence**: Re-hydration of `PetDefinition` after loading from save.
 
-### Existing
-- **Lifecycle**: Capture (Probability + Item Cost), Death (KO/Despawn), Revive (Gold Cost), Rebirth (Level 100 Reset).
-- **Stats**: Amity System (Rebellious < 20, Bonus > 90) fully implemented in `ServerPet`.
-- **Logic**: `PetService.CaptureEnemy` enforces `RequiredItemId` and HP% probability.
+### Added
+- **System**: `PetService` for Capture, Revive, and Amity management.
+- **Logic**: Capture Formula (Health % + Level Delta).
+- **Logic**: Amity effects (Rebellious state < 20 Amity).

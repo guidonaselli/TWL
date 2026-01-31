@@ -1,13 +1,12 @@
-# World System Changelog
+# World Changelog
 
 ## [Unreleased]
-
 ### Missing
-- **Instances**: `InstanceManager` to create private map copies for parties is missing.
-- **Lockouts**: Daily Limit (5/day) logic is not implemented.
-- **Streaming**: Map loading is all-in-memory; no chunk/region streaming.
+- **Instances**: `InstanceManager` to create private map copies for parties.
+- **Lockouts**: Daily Limit enforcement (5/day) for dungeons.
+- **Streaming**: Map chunk loading (currently loads all maps to RAM).
+- **Content**: `Maps/PuertoRoca` TMX files missing Triggers/Spawns validation.
 
-### Existing
-- **Loading**: `MapLoader` parses TMX and `.meta.json` correctly.
-- **Triggers**: `WorldTriggerService` handles Enter/Interact triggers via `ITriggerHandler`.
-- **Spawns**: Static spawn points loaded from TMX.
+### Added
+- **System**: `WorldTriggerService` for Warp/Spawn handling.
+- **Pipeline**: TMX Map Loader with Layer validation.

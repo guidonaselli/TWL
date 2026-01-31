@@ -1,13 +1,13 @@
-# Core System Changelog
+# Core Changelog
 
 ## [Unreleased]
-
 ### Missing
-- **Persistence**: `FilePlayerRepository` is a prototype. Must implement `PostgresPlayerRepository`.
-- **Security**: `MovementValidator` is missing.
-- **Networking**: Packet replay protection is missing.
+- **Persistence**: Migration to PostgreSQL for atomic transactions.
+- **Networking**: Packet replay protection (Nonce/Sequence).
+- **Security**: Movement validation (Speed/Teleport checks).
+- **Observability**: Structured Logging (Serilog) implementation in critical paths (Combat/Trade).
 
-### Existing
-- **Networking**: `ClientSession` handles basic packet routing.
-- **Persistence**: `FilePlayerRepository` handles atomic file moves (Safe-ish for single user, unsafe for cluster).
-- **Concurrency**: Basic thread-safety in `ServerCharacter` (Interlocked/Locks).
+### Added
+- **Infrastructure**: Basic `FilePlayerRepository` (Prototype).
+- **Networking**: `GameServer` loop and `ClientSession` handling.
+- **Metrics**: Basic `ServerMetrics` for Tick Time and Slippage.

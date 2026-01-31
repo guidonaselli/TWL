@@ -1,13 +1,13 @@
-# Skills System Changelog
+# Skills Changelog
 
 ## [Unreleased]
-
 ### Missing
-- **Content Integrity**: Tests failing for Skill Keys (Localization).
 - **Validation**: `StageUpgradeRules` logic is implemented but lacks specific unit tests.
-- **Complex Scopes**: Row/Column targeting logic is stubbed.
+- **Content**: Earth/Water/Fire/Wind T1 Skill Packs (Data entry).
+- **Logic**: `GrantGoddessSkills` is hardcoded; needs to be data-driven or flag-based.
+- **Balancing**: Tier Budgets for SP and Damage Coefficients.
 
-### Existing
-- **System**: `SkillService` handles learning and upgrading.
-- **Logic**: `SkillRegistry` loads definitions. `StandardCombatResolver` applies damage/effects.
-- **Progression**: Mastery-by-Use (Rank) and Stage Evolution logic is present in `ServerCharacter.ReplaceSkill`.
+### Added
+- **System**: `SkillService` handling Learn, Upgrade, and Forget.
+- **Logic**: `UnlockRules` (Stat-based and QuestFlag-based).
+- **Logic**: `StatusEngine` supporting Buffs/Debuffs/DoTs.
