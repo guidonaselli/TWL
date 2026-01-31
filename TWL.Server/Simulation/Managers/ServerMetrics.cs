@@ -3,6 +3,65 @@ using System.Threading;
 
 namespace TWL.Server.Simulation.Managers;
 
+// Simple Histogram structure
+public class PipelineLatencyHistogram
+{
+    private long _bucket1ms;
+    private long _bucket5ms;
+    private long _bucket10ms;
+    private long _bucket50ms;
+    private long _bucket100ms;
+    private long _bucketOver100ms;
+
+    public void Record(double ms)
+    {
+        if (ms < 1) Interlocked.Increment(ref _bucket1ms);
+        else if (ms < 5) Interlocked.Increment(ref _bucket5ms);
+        else if (ms < 10) Interlocked.Increment(ref _bucket10ms);
+        else if (ms < 50) Interlocked.Increment(ref _bucket50ms);
+        else if (ms < 100) Interlocked.Increment(ref _bucket100ms);
+        else Interlocked.Increment(ref _bucketOver100ms);
+    }
+
+    public void Reset()
+    {
+        Interlocked.Exchange(ref _bucket1ms, 0);
+        Interlocked.Exchange(ref _bucket5ms, 0);
+        Interlocked.Exchange(ref _bucket10ms, 0);
+        Interlocked.Exchange(ref _bucket50ms, 0);
+        Interlocked.Exchange(ref _bucket100ms, 0);
+        Interlocked.Exchange(ref _bucketOver100ms, 0);
+    }
+
+    public HistogramSnapshot GetSnapshot()
+    {
+        return new HistogramSnapshot
+        {
+            Bucket1ms = Interlocked.Read(ref _bucket1ms),
+            Bucket5ms = Interlocked.Read(ref _bucket5ms),
+            Bucket10ms = Interlocked.Read(ref _bucket10ms),
+            Bucket50ms = Interlocked.Read(ref _bucket50ms),
+            Bucket100ms = Interlocked.Read(ref _bucket100ms),
+            BucketOver100ms = Interlocked.Read(ref _bucketOver100ms)
+        };
+    }
+}
+
+public class HistogramSnapshot
+{
+    public long Bucket1ms { get; set; }
+    public long Bucket5ms { get; set; }
+    public long Bucket10ms { get; set; }
+    public long Bucket50ms { get; set; }
+    public long Bucket100ms { get; set; }
+    public long BucketOver100ms { get; set; }
+
+    public override string ToString()
+    {
+        return $"<1ms:{Bucket1ms}, <5ms:{Bucket5ms}, <10ms:{Bucket10ms}, <50ms:{Bucket50ms}, <100ms:{Bucket100ms}, >100ms:{BucketOver100ms}";
+    }
+}
+
 public class ServerMetrics
 {
     private long _netBytesReceived;
@@ -29,6 +88,11 @@ public class ServerMetrics
     private long _pipelineValidateDurationTicks;
     private long _pipelineResolveDurationTicks;
 
+    // Histograms
+    private readonly PipelineLatencyHistogram _validateHistogram = new();
+    private readonly PipelineLatencyHistogram _resolveHistogram = new();
+    private readonly PipelineLatencyHistogram _persistHistogram = new();
+
     public void RecordNetBytesReceived(long bytes) => Interlocked.Add(ref _netBytesReceived, bytes);
     public void RecordNetBytesSent(long bytes) => Interlocked.Add(ref _netBytesSent, bytes);
     public void RecordNetMessageProcessed() => Interlocked.Increment(ref _netMessagesProcessed);
@@ -41,6 +105,9 @@ public class ServerMetrics
         Interlocked.Increment(ref _persistenceFlushes);
         Interlocked.Add(ref _totalPersistenceDurationMs, durationMs);
         if (errors > 0) Interlocked.Add(ref _persistenceErrors, errors);
+
+        // Also record to histogram
+        _persistHistogram.Record(durationMs);
     }
 
     public void RecordMessageProcessingTime(long ticks)
@@ -73,11 +140,30 @@ public class ServerMetrics
     public void RecordPipelineValidateDuration(long ticks)
     {
         Interlocked.Add(ref _pipelineValidateDurationTicks, ticks);
+        _validateHistogram.Record(TimeSpan.FromTicks(ticks).TotalMilliseconds);
     }
 
     public void RecordPipelineResolveDuration(long ticks)
     {
         Interlocked.Add(ref _pipelineResolveDurationTicks, ticks);
+        _resolveHistogram.Record(TimeSpan.FromTicks(ticks).TotalMilliseconds);
+    }
+
+    public void RecordPipelineStageLatency(string stage, long ticks)
+    {
+        double ms = TimeSpan.FromTicks(ticks).TotalMilliseconds;
+        switch (stage.ToLower())
+        {
+            case "validate":
+                _validateHistogram.Record(ms);
+                break;
+            case "resolve":
+                _resolveHistogram.Record(ms);
+                break;
+            case "persist":
+                _persistHistogram.Record(ms);
+                break;
+        }
     }
 
     public MetricsSnapshot GetSnapshot()
@@ -102,7 +188,11 @@ public class ServerMetrics
             TriggersExecuted = Interlocked.Read(ref _triggersExecuted),
 
             PipelineValidateDurationTicks = Interlocked.Read(ref _pipelineValidateDurationTicks),
-            PipelineResolveDurationTicks = Interlocked.Read(ref _pipelineResolveDurationTicks)
+            PipelineResolveDurationTicks = Interlocked.Read(ref _pipelineResolveDurationTicks),
+
+            ValidateHistogram = _validateHistogram.GetSnapshot(),
+            ResolveHistogram = _resolveHistogram.GetSnapshot(),
+            PersistHistogram = _persistHistogram.GetSnapshot()
         };
     }
 
@@ -127,6 +217,10 @@ public class ServerMetrics
 
         Interlocked.Exchange(ref _pipelineValidateDurationTicks, 0);
         Interlocked.Exchange(ref _pipelineResolveDurationTicks, 0);
+
+        _validateHistogram.Reset();
+        _resolveHistogram.Reset();
+        _persistHistogram.Reset();
     }
 }
 
@@ -151,6 +245,10 @@ public class MetricsSnapshot
 
     public long PipelineValidateDurationTicks { get; set; }
     public long PipelineResolveDurationTicks { get; set; }
+
+    public HistogramSnapshot ValidateHistogram { get; set; }
+    public HistogramSnapshot ResolveHistogram { get; set; }
+    public HistogramSnapshot PersistHistogram { get; set; }
 
     public double AverageMessageProcessingTimeMs => NetMessagesProcessed > 0
         ? TimeSpan.FromTicks(TotalMessageProcessingTimeTicks).TotalMilliseconds / NetMessagesProcessed
@@ -177,6 +275,7 @@ public class MetricsSnapshot
         return $"[Metrics] Net: {NetMessagesProcessed} msgs, AvgProc: {AverageMessageProcessingTimeMs:F2}ms (Val: {AverageValidateTimeMs:F2}ms, Res: {AverageResolveTimeMs:F2}ms). " +
                $"World: {WorldLoopTicks} ticks (Avg {AverageWorldLoopDurationMs:F2}ms), Queue: {WorldSchedulerQueueDepth}, SlowTicks: {WorldLoopSlowTicks}, SlowTasks: {WorldLoopSlowTasks}. " +
                $"Triggers: {TriggersExecuted}. " +
-               $"Persist: {PersistenceFlushes} flushes, {PersistenceErrors} errs.";
+               $"Persist: {PersistenceFlushes} flushes, {PersistenceErrors} errs. " +
+               $"Histograms: [Val: {ValidateHistogram}] [Res: {ResolveHistogram}] [Persist: {PersistHistogram}]";
     }
 }

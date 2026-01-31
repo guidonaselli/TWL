@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
+using TWL.Server.Architecture.Observability;
 using TWL.Server.Persistence;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -69,6 +70,7 @@ public class PlayerService
 
     public void FlushAllDirty()
     {
+        var flushId = Guid.NewGuid().ToString();
         var sw = Stopwatch.StartNew();
         int savedCount = 0;
         int errorCount = 0;
@@ -102,6 +104,7 @@ public class PlayerService
             _serverMetrics?.RecordPersistenceFlush(sw.ElapsedMilliseconds, errorCount);
 
             PersistenceLogger.LogEvent("FlushComplete", "Batch flush finished", count: savedCount, durationMs: sw.ElapsedMilliseconds, errors: errorCount);
+            PipelineLogger.LogStage(flushId, "PersistBatch", sw.Elapsed.TotalMilliseconds, $"Count:{savedCount} Errors:{errorCount}");
         }
     }
 
