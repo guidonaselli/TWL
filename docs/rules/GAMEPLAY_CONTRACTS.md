@@ -35,7 +35,9 @@ This document serves as the Single Source of Truth (SSOT) for gameplay logic and
     *   **No Experience Loss** (V1).
     *   **No Durability Loss** (V1).
 *   **Pets**:
-    *   Pet Death (KO) -> Revive needed.
+    *   Pet Death (KO) -> **Revive Restricted**.
+        *   **In-Combat**: Can ONLY be revived via **Water Skill (Revive)** or **Revive Items** (1HP, 100HP, 500HP variants).
+        *   **NO Gold Revive** in combat.
     *   Combat End while KO -> **Amity Loss** (Already implemented).
     *   Excessive Damage (>= 1.5x MaxHP) -> **Despawn** (Already implemented).
 
