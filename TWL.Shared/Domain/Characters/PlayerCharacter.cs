@@ -41,6 +41,9 @@ namespace TWL.Shared.Domain.Characters
         public PlayerCharacter(Guid guidId, string name, Element element)
             : base(name, element)
         {
+            if (element == Element.None)
+                throw new ArgumentException("PlayerCharacter cannot be Element.None", nameof(element));
+
             GuidId = guidId;
             Inventory = new Inventory();
             Pets = new List<PetCharacter>();

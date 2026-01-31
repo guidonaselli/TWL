@@ -88,6 +88,22 @@ namespace TWL.Tests
             Assert.Contains(monsters, m => m.MonsterId == 2004 && m.Element == Element.Wind);
             Assert.Contains(monsters, m => m.MonsterId == 2012 && m.Name.Contains("Vine"));
 
+            // Verify new fields
+            foreach (var mob in monsters)
+            {
+                Assert.False(string.IsNullOrEmpty(mob.Code), $"Monster {mob.MonsterId} missing Code");
+                Assert.True(mob.FamilyId > 0, $"Monster {mob.MonsterId} invalid FamilyId");
+                Assert.NotNull(mob.Tags);
+                Assert.NotNull(mob.Behavior);
+                Assert.True(mob.EncounterWeight > 0, $"Monster {mob.MonsterId} invalid EncounterWeight");
+
+                // Validate Element.None rule
+                if (mob.Element == Element.None)
+                {
+                    Assert.Contains("QuestOnly", mob.Tags);
+                }
+            }
+
             // Verify Asset Paths exist
             var repoRoot = GetRepoRoot();
 

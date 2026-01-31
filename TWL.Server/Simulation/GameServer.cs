@@ -28,6 +28,7 @@ public class GameServer
     public PlayerService PlayerService { get; private set; }
     public PetService PetService { get; private set; }
     public IEconomyService EconomyManager { get; private set; }
+    public SpawnManager SpawnManager { get; private set; }
     public ServerMetrics Metrics { get; private set; }
 
     public void Start()
@@ -80,6 +81,9 @@ public class GameServer
         PetService = new PetService(PlayerService, PetManager, CombatManager, random);
         EconomyManager = new EconomyManager();
 
+        SpawnManager = new SpawnManager(MonsterManager, CombatManager);
+        SpawnManager.Load("Content/Data/spawns");
+
         // Init World System
         var mapLoader = new MapLoader(Microsoft.Extensions.Logging.Abstractions.NullLogger<MapLoader>.Instance);
         var worldTriggerService = new WorldTriggerService(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldTriggerService>.Instance, Metrics);
@@ -121,7 +125,7 @@ public class GameServer
         mediator.Register<InteractCommand, InteractResult>(new InteractHandler(InteractionManager));
 
         // 3) Inicia Network
-        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService, EconomyManager, Metrics, PetService, worldTriggerService);
+        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService, EconomyManager, Metrics, PetService, worldTriggerService, SpawnManager);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");

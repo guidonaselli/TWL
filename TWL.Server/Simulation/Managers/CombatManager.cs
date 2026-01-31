@@ -48,6 +48,14 @@ public class CombatManager
         return combatant;
     }
 
+    public virtual void StartEncounter(int encounterId, List<ServerCharacter> participants)
+    {
+        foreach (var p in participants)
+        {
+            RegisterCombatant(p);
+        }
+    }
+
     // Legacy / Convenience
     public void AddCharacter(ServerCharacter character) => RegisterCombatant(character);
     public void RemoveCharacter(int id) => UnregisterCombatant(id);
