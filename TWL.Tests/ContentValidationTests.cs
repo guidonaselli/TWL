@@ -277,5 +277,32 @@ namespace TWL.Tests
                 }
             }
         }
+
+        [Fact]
+        public void ValidateSkillRequirements()
+        {
+            var skills = LoadSkills();
+            // Verify that at least one skill has requirements (to ensure loading isn't broken)
+            bool anyRequirements = skills.Any(s =>
+                s.Requirements.Str > 0 ||
+                s.Requirements.Con > 0 ||
+                s.Requirements.Int > 0 ||
+                s.Requirements.Wis > 0 ||
+                s.Requirements.Agi > 0);
+
+            Assert.True(anyRequirements, "No skill requirements detected. Check JSON loading/serialization.");
+        }
+
+        [Fact]
+        public void ValidateTierBudgets()
+        {
+            var skills = LoadSkills();
+            var coreT1 = skills.Where(s => s.Family == SkillFamily.Core && s.Tier == 1).ToList();
+
+            foreach (var skill in coreT1)
+            {
+                Assert.InRange(skill.SpCost, 5, 20); // 5-20 SP Budget for T1
+            }
+        }
     }
 }

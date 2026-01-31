@@ -36,3 +36,29 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
 ## 5. Content Validation
 *   `TWL.Tests.ContentValidationTests` is the enforcement mechanism.
 *   The build must fail if inconsistencies are detected.
+
+## 6. Skill Categories Definition
+*   **None**: Core skills (Tier 1-3).
+*   **Goddess**: Special skills granted at start (Shrink, Blockage, Hotfire, Vanish).
+*   **Dragon**: Legendary Fire physical skills.
+*   **Fairy**: Support/Healing skills from Fairy quests.
+*   **RebirthJob**: Skills unlocked after Rebirth.
+*   **ElementSpecial**: High-tier elemental skills requiring specific quests.
+
+## 7. Tier Budgets (SP & Cooldowns)
+These budgets are enforced to maintain game balance.
+
+### Tier 1 (Core)
+*   **SP Cost**: 5 - 20 SP.
+*   **Cooldown**: 0 - 2 Turns.
+*   **Availability**: Level 1+, Low Stat Requirements (approx. 5).
+
+### Tier 2 (Core)
+*   **SP Cost**: 15 - 40 SP.
+*   **Cooldown**: 1 - 3 Turns.
+*   **Availability**: Upgrade from Tier 1 (Rank 10+).
+
+### Tier 3 (Core / Special)
+*   **SP Cost**: 30 - 100 SP.
+*   **Cooldown**: 3 - 6 Turns.
+*   **Availability**: High Level / Special Quest.

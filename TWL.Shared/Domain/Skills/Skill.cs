@@ -42,11 +42,7 @@ public class Skill
     public int MaxLevel;
 
     // Requirements
-    public int StrRequirement;
-    public int ConRequirement;
-    public int IntRequirement;
-    public int WisRequirement;
-    public int AgiRequirement;
+    public SkillRequirements Requirements { get; set; } = new();
 
     public int Stage { get; set; } = 1;
     public SkillUnlockRules UnlockRules { get; set; } = new();
@@ -59,6 +55,15 @@ public class Skill
 
     // Placeholder for application logic if needed, but logic should move to BattleInstance/System
     public void Apply(Character src, Character tgt) { }
+}
+
+public class SkillRequirements
+{
+    public int Str { get; set; }
+    public int Con { get; set; }
+    public int Int { get; set; }
+    public int Wis { get; set; }
+    public int Agi { get; set; }
 }
 
 public class SkillUnlockRules
