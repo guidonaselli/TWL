@@ -206,14 +206,14 @@
   <object id="3" name="PortMaster" type="NPC" x="416" y="288" width="32" height="32">
    <properties>
     <property name="SpawnType" value="NPC"/>
-    <property name="Id" type="int" value="3"/>
+    <property name="Id" type="int" value="13"/>
     <property name="Faction" value="Neutral"/>
    </properties>
   </object>
   <object id="4" name="CaravanLeader" type="NPC" x="256" y="288" width="32" height="32">
    <properties>
     <property name="SpawnType" value="NPC"/>
-    <property name="Id" type="int" value="4"/>
+    <property name="Id" type="int" value="14"/>
     <property name="Faction" value="Neutral"/>
    </properties>
   </object>
