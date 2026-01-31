@@ -1,21 +1,13 @@
-# Quests Changelog
-> Tracks changes to Quest System, Objectives, and Narratives.
+# Quest System Changelog
 
 ## [Unreleased]
 
-### Missing to Production
-- **Content Fixes**:
-    - `Puerto Roca` questline (IDs 1100-1104) is defined but missing specific triggers/NPCs, causing test failures.
-    - Localization Keys mismatch in Jungle Quests (`Into the Green` vs `El Camino del Bosque`).
-- **Features**:
-    - **Instance Objectives**: "Complete Instance X" logic is stubbed.
-    - **Time Limits**: No support for timed quests.
-    - **Escort Failure**: Death of escort target does not currently fail the quest.
+### Missing
+- **Fixes**: 8 Validation Tests failing (Puerto Roca, Jungle Quests).
+- **Logic**: Explicit "Failure" conditions (Time Limit, NPC Death) are not enforced in `ServerQuestManager`.
+- **Validation**: `QuestGraphValidator` to detect dead-ends or loops is missing.
 
-### Added
-- **System**: `ServerQuestManager` with JSON validation.
-- **Objectives**: Support for `Kill`, `Deliver`, `Interact`, `PayGold`.
-- **Integration**: `CombatManager` events now drive `Kill` objective progress automatically via `LastAttackerId`.
-
-### Broken
-- **Tests**: 8/292 tests failing due to missing/incorrect content in `quests.json`.
+### Existing
+- **Engine**: `ServerQuestManager` supports Linear Chains, Branching (Mutual Exclusion), and Flag-based gating.
+- **Data**: `quests.json` defines initial content (needs repair).
+- **State**: `PlayerQuestComponent` tracks active/completed quests.

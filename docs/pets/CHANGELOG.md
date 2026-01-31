@@ -1,18 +1,12 @@
-# Pets Changelog
-> Tracks changes to Pet System, AI, and Lifecycle.
+# Pet System Changelog
 
 ## [Unreleased]
 
-### Missing to Production
-- **Lifecycle**:
-    - **Amity System**: No logic for Amity decrease on KO or low-Amity stat penalties.
-    - **Death Penalty**: "Soft Death" (Revive in combat) vs "Hard Death" (Despawn + Amity Loss) logic.
-- **AI**: Pets currently do not act independently (Stubbed AI).
-- **Capture**: `CaptureEnemy` logic is stubbed.
+### Missing
+- **Content**: `pets.json` is sparse. Needs population with 20+ capturable mobs.
+- **AI**: `PetCombatAI` (Attack/Defend/Heal logic) is not implemented in Combat.
 
-### Added
-- **System**: `PetService` and `PetManager` (JSON loader).
-- **Structure**: `ServerPet` class with basic Stats (Str, Con, Int, Wis, Agi).
-
-### Changed
-- **Persistence**: Pet state is saved within `ServerCharacter` JSON, but hydration logic in `ClientSession` was added to link `PetDefinition`.
+### Existing
+- **Lifecycle**: Capture (Probability + Item Cost), Death (KO/Despawn), Revive (Gold Cost), Rebirth (Level 100 Reset).
+- **Stats**: Amity System (Rebellious < 20, Bonus > 90) fully implemented in `ServerPet`.
+- **Logic**: `PetService.CaptureEnemy` enforces `RequiredItemId` and HP% probability.

@@ -1,20 +1,13 @@
-# Economy Changelog
-> Tracks changes to Market, Trade, Crafting, and Currency.
+# Economy System Changelog
 
 ## [Unreleased]
 
-### Missing to Production
-- **Market System**:
-    - **Centralized Listings**: Schema and Logic for Global Auction House / Listings.
-    - **Player Stalls**: UI/Logic to view listings via "Tent" frontend.
-- **Security**:
-    - **Transaction Ledger**: No audit log for Gems/Gold exchanges.
-    - **Idempotency**: `BuyShopItem` lacks idempotency keys (Double-spend risk).
-- **Crafting**: Alchemy (Compound) and Manufacturing logic is missing.
+### Missing
+- **Market**: Hybrid System (Centralized Ledger + Player Stalls) is unimplemented.
+- **Trading**: `TradeManager` exists but lacks atomic cross-player locking for complex scenarios.
+- **Anti-Dupe**: Strict Transaction Ledger for all Item movements is not enforced.
 
-### Added
-- **System**: Basic `EconomyManager` for Shop Purchases (`BuyShopItem`).
-- **Currency**: Support for Gold and Gems (Premium Currency) flow (`PurchaseGemsIntent`).
-
-### Planned
-- **Hybrid Market**: Design decision finalized (Centralized Listings + Stall Frontend).
+### Existing
+- **Ledger**: `EconomyManager` logs Gem/Gold transactions to file.
+- **Policies**: `BindPolicy` (BoP/BoE/AccountBound) is supported in `Item` model.
+- **Shops**: Basic NPC Shop buy/sell logic is implemented.
