@@ -62,6 +62,22 @@ public class ServerQuestManager
         }
     }
 
+    public void AddQuest(QuestDefinition quest)
+    {
+        var list = new List<QuestDefinition> { quest };
+        var errors = QuestValidator.Validate(list);
+        if (errors.Count > 0)
+        {
+            throw new System.InvalidOperationException($"Quest validation failed: {string.Join(", ", errors)}");
+        }
+
+        if (_questDefinitions.ContainsKey(quest.QuestId))
+        {
+            System.Console.WriteLine($"Warning: Duplicate QuestId {quest.QuestId}. Overwriting.");
+        }
+        _questDefinitions[quest.QuestId] = quest;
+    }
+
     public virtual QuestDefinition? GetDefinition(int questId)
     {
         return _questDefinitions.GetValueOrDefault(questId);
