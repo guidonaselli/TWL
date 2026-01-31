@@ -34,10 +34,11 @@ public class QuestCombatIntegrationTests
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>())
             }
         };
-        // Hack: Save and Load because ServerQuestManager doesn't expose AddQuest directly
-        string json = System.Text.Json.JsonSerializer.Serialize(quests);
-        System.IO.File.WriteAllText("test_combat_quests.json", json);
-        _questManager.Load("test_combat_quests.json");
+
+        foreach (var quest in quests)
+        {
+            _questManager.AddQuest(quest);
+        }
 
         // Load Skills
         var skillsJson = @"

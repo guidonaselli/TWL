@@ -47,7 +47,7 @@ public class PlayerService
         }
         catch { }
 
-        FlushAllDirty();
+        FlushAllDirtyAsync().GetAwaiter().GetResult();
         PersistenceLogger.LogEvent("ServiceStop", "PlayerService stopped and flushed.");
     }
 
@@ -68,7 +68,7 @@ public class PlayerService
         }
     }
 
-    public void FlushAllDirty()
+    public async Task FlushAllDirtyAsync()
     {
         // Wrapper for synchronous calls (e.g. from Stop)
         // We block here to ensure completion

@@ -16,31 +16,35 @@ public class EconomyPersistenceTests
         try
         {
             // 1. Initial Session
-            var manager1 = new EconomyManager(ledgerFile);
-            var character1 = new ServerCharacter { Id = 1, PremiumCurrency = 100 };
+            using (var manager1 = new EconomyManager(ledgerFile))
+            {
+                var character1 = new ServerCharacter { Id = 1, PremiumCurrency = 100 };
 
-            // Buy Shop Item 1 (Cost 10)
-            var result1 = manager1.BuyShopItem(character1, 1, 1, opId);
-            Assert.True(result1.Success, "First purchase should succeed");
-            Assert.Equal(90, character1.PremiumCurrency);
+                // Buy Shop Item 1 (Cost 10)
+                var result1 = manager1.BuyShopItem(character1, 1, 1, opId);
+                Assert.True(result1.Success, "First purchase should succeed");
+                Assert.Equal(90, character1.PremiumCurrency);
+            }
 
             // 2. Simulate Restart (New Manager, same ledger)
-            var manager2 = new EconomyManager(ledgerFile);
-            var character2 = new ServerCharacter { Id = 1, PremiumCurrency = 100 }; // Fresh state (e.g. from DB)
+            using (var manager2 = new EconomyManager(ledgerFile))
+            {
+                var character2 = new ServerCharacter { Id = 1, PremiumCurrency = 100 }; // Fresh state (e.g. from DB)
 
-            // Retry Purchase with same opId
-            var result2 = manager2.BuyShopItem(character2, 1, 1, opId);
+                // Retry Purchase with same opId
+                var result2 = manager2.BuyShopItem(character2, 1, 1, opId);
 
-            // 3. Assert Idempotency
-            Assert.True(result2.Success, "Retry should be considered successful (idempotent)");
-            Assert.Equal("Already completed", result2.Message);
-            Assert.Equal(100, character2.PremiumCurrency); // Should NOT deduct again
+                // 3. Assert Idempotency
+                Assert.True(result2.Success, "Retry should be considered successful (idempotent)");
+                Assert.Equal("Already completed", result2.Message);
+                Assert.Equal(100, character2.PremiumCurrency); // Should NOT deduct again
+            }
         }
         finally
         {
             if (File.Exists(ledgerFile))
             {
-                File.Delete(ledgerFile);
+                try { File.Delete(ledgerFile); } catch {}
             }
         }
     }

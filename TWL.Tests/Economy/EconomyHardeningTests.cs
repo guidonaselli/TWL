@@ -28,6 +28,7 @@ public class EconomyHardeningTests : IDisposable
 
     public void Dispose()
     {
+        _economy?.Dispose();
         if (File.Exists(_tempLedger))
         {
             try { File.Delete(_tempLedger); } catch { }
@@ -81,6 +82,7 @@ public class EconomyHardeningTests : IDisposable
         Assert.Equal(initialBalance, _character.PremiumCurrency);
 
         // Check Ledger for failure log
+        _economy.Dispose(); // Flush logs
         var log = File.ReadAllText(_tempLedger);
         Assert.Contains("ShopBuyFailed", log);
         Assert.Contains("Reason:InventoryFull", log);

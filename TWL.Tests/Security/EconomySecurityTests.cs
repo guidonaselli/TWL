@@ -11,7 +11,7 @@ public class EconomySecurityTests
     [Fact]
     public void VerifyPurchase_InvalidReceiptSignature_Fails()
     {
-        var manager = new EconomyManager();
+        using var manager = new EconomyManager();
         var charId = 1;
         var character = new ServerCharacter { Id = charId, PremiumCurrency = 0 };
 
@@ -28,7 +28,7 @@ public class EconomySecurityTests
     [Fact]
     public void VerifyPurchase_ValidReceiptSignature_Succeeds()
     {
-        var manager = new EconomyManager();
+        using var manager = new EconomyManager();
         var charId = 1;
         var character = new ServerCharacter { Id = charId, PremiumCurrency = 0 };
 
@@ -45,7 +45,7 @@ public class EconomySecurityTests
     [Fact]
     public void VerifyPurchase_Replay_Idempotency()
     {
-        var manager = new EconomyManager();
+        using var manager = new EconomyManager();
         var charId = 1;
         var character = new ServerCharacter { Id = charId, PremiumCurrency = 0 };
 
@@ -67,7 +67,7 @@ public class EconomySecurityTests
     [Fact]
     public void BuyShopItem_InvalidQuantity_Fails()
     {
-        var manager = new EconomyManager();
+        using var manager = new EconomyManager();
         var character = new ServerCharacter { Id = 1, PremiumCurrency = 1000 };
 
         // Test Negative
@@ -87,7 +87,7 @@ public class EconomySecurityTests
     [Fact]
     public void BuyShopItem_ValidQuantity_Succeeds()
     {
-        var manager = new EconomyManager();
+        using var manager = new EconomyManager();
         var character = new ServerCharacter { Id = 1, PremiumCurrency = 1000 };
 
         // ShopItem 1 costs 10. Buy 5 = 50 cost.

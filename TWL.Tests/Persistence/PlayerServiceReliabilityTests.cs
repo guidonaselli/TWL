@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Threading;
+using System.Threading.Tasks;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
@@ -34,12 +35,12 @@ public class MockPlayerRepository : IPlayerRepository
     public int SaveCallCount { get; private set; }
     public bool ShouldThrow { get; set; }
 
-    public void Save(int userId, PlayerSaveData data)
+    public async Task SaveAsync(int userId, PlayerSaveData data)
     {
         if (ShouldThrow) throw new Exception("Simulated disk failure");
 
         // Mimic I/O delay
-        Thread.Sleep(5);
+        await Task.Delay(5);
         SaveCallCount++;
     }
 
@@ -60,7 +61,7 @@ public class MockPlayerRepository : IPlayerRepository
 public class PlayerServiceReliabilityTests
 {
     [Fact]
-    public void Flush_SavesOnlyDirtySessions()
+    public async Task Flush_SavesOnlyDirtySessions()
     {
         var repo = new MockPlayerRepository();
         var service = new PlayerService(repo, new ServerMetrics());
@@ -82,14 +83,14 @@ public class PlayerServiceReliabilityTests
         s2.SetQuestComponent(new PlayerQuestComponent(null));
         service.RegisterSession(s2);
 
-        service.FlushAllDirty();
+        await service.FlushAllDirtyAsync();
 
         Assert.Equal(1, repo.SaveCallCount);
         Assert.False(c1.IsDirty); // Should be cleared
     }
 
     [Fact]
-    public void Flush_RetainsDirtyFlag_OnFailure()
+    public async Task Flush_RetainsDirtyFlag_OnFailure()
     {
         var repo = new MockPlayerRepository { ShouldThrow = true };
         var service = new PlayerService(repo, new ServerMetrics());
@@ -101,7 +102,7 @@ public class PlayerServiceReliabilityTests
         s1.SetQuestComponent(new PlayerQuestComponent(null));
         service.RegisterSession(s1);
 
-        service.FlushAllDirty();
+        await service.FlushAllDirtyAsync();
 
         Assert.Equal(0, repo.SaveCallCount); // Save threw exception
         Assert.True(c1.IsDirty); // Should still be dirty
@@ -109,7 +110,7 @@ public class PlayerServiceReliabilityTests
     }
 
     [Fact]
-    public void Benchmark_Flush_Performance()
+    public async Task Benchmark_Flush_Performance()
     {
         var repo = new MockPlayerRepository();
         var service = new PlayerService(repo, new ServerMetrics());
@@ -126,7 +127,7 @@ public class PlayerServiceReliabilityTests
         }
 
         var sw = Stopwatch.StartNew();
-        service.FlushAllDirty();
+        await service.FlushAllDirtyAsync();
         sw.Stop();
 
         Assert.Equal(count, repo.SaveCallCount);

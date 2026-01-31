@@ -38,6 +38,7 @@ public class EconomyGiftingTests : IDisposable
 
     public void Dispose()
     {
+        _economy?.Dispose();
         if (File.Exists(_tempLedger))
         {
             try { File.Delete(_tempLedger); } catch { }
@@ -58,6 +59,7 @@ public class EconomyGiftingTests : IDisposable
         Assert.True(_receiver.HasItem(101, 1));
 
         // Ledger Check
+        _economy.Dispose(); // Flush logs
         var log = File.ReadAllText(_tempLedger);
         Assert.Contains("GiftBuy", log);
         Assert.Contains("To:200", log);
@@ -96,6 +98,7 @@ public class EconomyGiftingTests : IDisposable
         Assert.Equal(1000, _giver.PremiumCurrency);
 
         // Ledger Check
+        _economy.Dispose(); // Flush logs
         var log = File.ReadAllText(_tempLedger);
         Assert.Contains("GiftBuyFailed", log);
         Assert.Contains("Reason:ReceiverInventoryFull", log);
