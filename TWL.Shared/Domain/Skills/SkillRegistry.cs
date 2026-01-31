@@ -47,11 +47,14 @@ public class SkillRegistry : ISkillCatalog
                 Restrictions = def.Restrictions,
 
                 // Requirements
-                StrRequirement = def.Requirements?.Str ?? 0,
-                ConRequirement = def.Requirements?.Con ?? 0,
-                IntRequirement = def.Requirements?.Int ?? 0,
-                WisRequirement = def.Requirements?.Wis ?? 0,
-                AgiRequirement = def.Requirements?.Agi ?? 0,
+                Requirements = new SkillRequirements
+                {
+                    Str = def.Requirements?.Str ?? 0,
+                    Con = def.Requirements?.Con ?? 0,
+                    Int = def.Requirements?.Int ?? 0,
+                    Wis = def.Requirements?.Wis ?? 0,
+                    Agi = def.Requirements?.Agi ?? 0
+                },
 
                 Stage = def.Stage > 0 ? def.Stage : 1,
                 UnlockRules = new SkillUnlockRules
