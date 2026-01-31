@@ -132,6 +132,7 @@ public class GameServer
         _netServer?.Stop();
         PlayerService?.Stop();
         DB?.Dispose();
+        (EconomyManager as IDisposable)?.Dispose();
         Console.WriteLine("GameServer stopped.");
     }
 

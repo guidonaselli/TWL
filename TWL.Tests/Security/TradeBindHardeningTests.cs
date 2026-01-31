@@ -79,6 +79,7 @@ public class TradeBindHardeningTests
         }
         finally
         {
+            economy.Dispose();
             if (File.Exists(tempLedger)) File.Delete(tempLedger);
         }
     }

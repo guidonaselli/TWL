@@ -2,6 +2,8 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Channels;
+using System.Threading.Tasks;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Models;
@@ -9,9 +11,11 @@ using TWL.Server.Security;
 
 namespace TWL.Server.Simulation.Managers;
 
-public class EconomyManager : IEconomyService
+public class EconomyManager : IEconomyService, IDisposable
 {
     private readonly string _ledgerFile;
+    private readonly Channel<string> _logChannel;
+    private readonly Task _logTask;
 
     // Mock Data
     private readonly Dictionary<string, long> _productPrices = new()
@@ -82,6 +86,10 @@ public class EconomyManager : IEconomyService
         {
             ReplayLedger();
         }
+
+        // Initialize Async Logging
+        _logChannel = Channel.CreateUnbounded<string>();
+        _logTask = Task.Run(ProcessLogQueue);
     }
 
     private bool CheckRateLimit(int userId, int limit = 10, int windowSeconds = 60)
@@ -211,6 +219,46 @@ public class EconomyManager : IEconomyService
         Metrics.ReplayedTransactionCount = count;
         Metrics.ReplayDurationMs = sw.ElapsedMilliseconds;
         Console.WriteLine($"[EconomyManager] Replayed {count} transactions in {sw.ElapsedMilliseconds}ms.");
+    }
+
+    private async Task ProcessLogQueue()
+    {
+        try
+        {
+            using var stream = new FileStream(_ledgerFile, FileMode.Append, FileAccess.Write, FileShare.Read, 4096, true);
+            using var writer = new StreamWriter(stream) { AutoFlush = false };
+
+            while (await _logChannel.Reader.WaitToReadAsync())
+            {
+                while (_logChannel.Reader.TryRead(out var line))
+                {
+                    await writer.WriteAsync(line);
+                }
+                await writer.FlushAsync();
+            }
+        }
+        catch (Exception ex)
+        {
+             // Log to console if the background writer dies
+             Console.Error.WriteLine($"[CRITICAL] EconomyManager Log Writer Failed: {ex}");
+        }
+    }
+
+    public void Dispose()
+    {
+        try
+        {
+            _logChannel.Writer.TryComplete();
+        }
+        catch { }
+
+        try
+        {
+            // Wait gracefully for the task to finish writing remaining logs.
+            // We use a timeout to prevent hanging the process indefinitely.
+            _logTask.Wait(2000);
+        }
+        catch { }
     }
 
     public PurchaseGemsIntentResponseDTO InitiatePurchase(int userId, string productId)
@@ -555,18 +603,9 @@ public class EconomyManager : IEconomyService
     private void LogLedger(string type, int userId, string details, long delta, long newBalance)
     {
         var line = $"{DateTime.UtcNow:O},{type},{userId},{details},{delta},{newBalance}\n";
-        lock (_ledgerLock)
-        {
-            try
-            {
-                File.AppendAllText(_ledgerFile, line);
-            }
-            catch (Exception ex)
-            {
-                // Fallback logging to console so we don't lose the audit trail completely
-                Console.Error.WriteLine($"[CRITICAL] LEDGER WRITE FAILED: {ex.Message} | Data: {line}");
-            }
-        }
+
+        // Async Logging
+        _logChannel.Writer.TryWrite(line);
 
         // Audit via SecurityLogger as well
         SecurityLogger.LogSecurityEvent($"Economy_{type}", userId, $"{details} | Delta:{delta} NewBalance:{newBalance}");
