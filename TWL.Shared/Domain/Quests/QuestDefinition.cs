@@ -54,6 +54,7 @@ public sealed record QuestDefinition
     public QuestRepeatability Repeatability { get; init; } = QuestRepeatability.None;
     public TimeSpan? RepeatCooldown { get; init; }
     public DateTime? Expiry { get; init; }
+    public int? TimeLimitSeconds { get; init; }
     public string? PartyRules { get; init; }
     public string? GuildRules { get; init; }
     public InstanceRules? InstanceRules { get; init; }

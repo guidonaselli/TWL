@@ -66,6 +66,9 @@ public static class QuestValidator
         if (string.IsNullOrWhiteSpace(quest.Description))
             errors.Add($"Quest {quest.QuestId}: Description is missing.");
 
+        if (quest.TimeLimitSeconds.HasValue && quest.TimeLimitSeconds.Value <= 0)
+            errors.Add($"Quest {quest.QuestId}: TimeLimitSeconds must be positive.");
+
         // 2. Requirements (Prerequisites)
         if (quest.Requirements != null)
         {
