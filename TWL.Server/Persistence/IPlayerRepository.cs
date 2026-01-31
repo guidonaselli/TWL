@@ -1,7 +1,9 @@
+using System.Threading.Tasks;
+
 namespace TWL.Server.Persistence;
 
 public interface IPlayerRepository
 {
-    void Save(int userId, PlayerSaveData data);
+    Task SaveAsync(int userId, PlayerSaveData data);
     PlayerSaveData? Load(int userId);
 }

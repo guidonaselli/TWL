@@ -16,13 +16,13 @@ public class FilePlayerRepository : IPlayerRepository
         }
     }
 
-    public void Save(int userId, PlayerSaveData data)
+    public async Task SaveAsync(int userId, PlayerSaveData data)
     {
         var filePath = Path.Combine(_saveDirectory, $"{userId}.json");
         var tmpPath = filePath + ".tmp";
 
         var json = JsonSerializer.Serialize(data, _jsonOptions);
-        File.WriteAllText(tmpPath, json);
+        await File.WriteAllTextAsync(tmpPath, json);
 
         // Atomic move
         File.Move(tmpPath, filePath, overwrite: true);

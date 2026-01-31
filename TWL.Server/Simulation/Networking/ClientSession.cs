@@ -141,7 +141,7 @@ public class ClientSession
 
             if (UserId > 0)
             {
-                _playerService.SaveSession(this);
+                await _playerService.SaveSessionAsync(this);
                 _playerService.UnregisterSession(UserId);
             }
             _stream.Close();

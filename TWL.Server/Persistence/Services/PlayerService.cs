@@ -47,7 +47,7 @@ public class PlayerService
         }
         catch { }
 
-        FlushAllDirty();
+        FlushAllDirtyAsync().GetAwaiter().GetResult();
         PersistenceLogger.LogEvent("ServiceStop", "PlayerService stopped and flushed.");
     }
 
@@ -58,7 +58,7 @@ public class PlayerService
             try
             {
                 await Task.Delay(TimeSpan.FromSeconds(30), token);
-                FlushAllDirty();
+                await FlushAllDirtyAsync();
             }
             catch (OperationCanceledException) { }
             catch (Exception ex)
@@ -68,7 +68,7 @@ public class PlayerService
         }
     }
 
-    public void FlushAllDirty()
+    public async Task FlushAllDirtyAsync()
     {
         var flushId = Guid.NewGuid().ToString();
         var sw = Stopwatch.StartNew();
@@ -81,7 +81,7 @@ public class PlayerService
             {
                 if (session.Character != null && (session.Character.IsDirty || session.QuestComponent.IsDirty))
                 {
-                    SaveSession(session);
+                    await SaveSessionAsync(session);
                     savedCount++;
                 }
             }
@@ -132,7 +132,7 @@ public class PlayerService
         return _repo.Load(userId);
     }
 
-    public void SaveSession(ClientSession session)
+    public async Task SaveSessionAsync(ClientSession session)
     {
         if (session.Character == null) return;
 
@@ -146,7 +146,7 @@ public class PlayerService
             LastSaved = DateTime.UtcNow
         };
 
-        _repo.Save(session.UserId, saveData);
+        await _repo.SaveAsync(session.UserId, saveData);
 
         session.Character.IsDirty = false;
         session.QuestComponent.IsDirty = false;
