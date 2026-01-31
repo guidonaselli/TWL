@@ -23,7 +23,7 @@ public class PersistenceTests : IDisposable
     }
 
     [Fact]
-    public void Repo_SaveAndLoad_CharacterData()
+    public async System.Threading.Tasks.Task Repo_SaveAndLoad_CharacterData()
     {
         var repo = new FilePlayerRepository(_testDir);
         var data = new PlayerSaveData
@@ -33,7 +33,7 @@ public class PersistenceTests : IDisposable
             LastSaved = DateTime.UtcNow
         };
 
-        repo.Save(1, data);
+        await repo.SaveAsync(1, data);
 
         var loaded = repo.Load(1);
         Assert.NotNull(loaded);
