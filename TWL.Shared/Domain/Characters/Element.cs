@@ -2,6 +2,7 @@
 
 public enum Element
 {
+    None,
     Fire,
     Wind,
     Earth,

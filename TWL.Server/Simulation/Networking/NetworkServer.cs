@@ -21,11 +21,12 @@ public class NetworkServer
     private readonly ServerMetrics _metrics;
     private readonly TWL.Server.Services.PetService _petService;
     private readonly IWorldTriggerService _worldTriggerService;
+    private readonly SpawnManager _spawnManager;
     private readonly TcpListener _listener;
     private bool _running;
     private CancellationTokenSource _cts;
 
-    public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService, IWorldTriggerService worldTriggerService)
+    public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService, IWorldTriggerService worldTriggerService, SpawnManager spawnManager)
     {
         _listener = new TcpListener(IPAddress.Any, port);
         _dbService = dbService;
@@ -38,6 +39,7 @@ public class NetworkServer
         _metrics = metrics;
         _petService = petService;
         _worldTriggerService = worldTriggerService;
+        _spawnManager = spawnManager;
     }
 
     public void Start()
@@ -64,7 +66,7 @@ public class NetworkServer
             {
                 var client = await _listener.AcceptTcpClientAsync(token);
                 Console.WriteLine("New client connected!");
-                var session = new ClientSession(client, _dbService, _petManager, _questManager, _combatManager, _interactionManager, _playerService, _economyManager, _metrics, _petService, _worldTriggerService);
+                var session = new ClientSession(client, _dbService, _petManager, _questManager, _combatManager, _interactionManager, _playerService, _economyManager, _metrics, _petService, _worldTriggerService, _spawnManager);
                 session.StartHandling();
             }
         }

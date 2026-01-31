@@ -19,6 +19,7 @@ public abstract class ServerCombatant
     public int Id;
     public string Name;
     public Element CharacterElement { get; set; }
+    public Team Team { get; set; }
 
     // Stats
     protected int _hp;

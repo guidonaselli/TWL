@@ -33,5 +33,8 @@ public enum Opcode
 
     // Pet
     PetActionRequest,
-    PetActionResponse
+    PetActionResponse,
+
+    // Encounter
+    EncounterStarted
 }

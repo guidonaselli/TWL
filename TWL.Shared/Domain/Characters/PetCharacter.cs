@@ -13,6 +13,9 @@ public class PetCharacter : Character
 
     public PetCharacter(string name, Element element) : base(name, element)
     {
+        if (element == Element.None)
+            throw new System.ArgumentException("PetCharacter cannot be Element.None", nameof(element));
+
         IsUnique = false;
         IsReborn = false;
         PetLevel = 1;

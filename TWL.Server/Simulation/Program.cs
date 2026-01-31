@@ -61,6 +61,8 @@ Host.CreateDefaultBuilder(args)
 
         // Domain Managers
         svcs.AddSingleton<PetManager>();
+        svcs.AddSingleton<MonsterManager>();
+        svcs.AddSingleton<SpawnManager>();
         svcs.AddSingleton<ServerQuestManager>();
         svcs.AddSingleton<InteractionManager>();
         svcs.AddSingleton<ICombatResolver, StandardCombatResolver>();
@@ -93,7 +95,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<EconomyManager>(),
                 sp.GetRequiredService<ServerMetrics>(),
                 sp.GetRequiredService<PetService>(),
-                sp.GetRequiredService<IWorldTriggerService>()
+                sp.GetRequiredService<IWorldTriggerService>(),
+                sp.GetRequiredService<SpawnManager>()
             );
         });
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer

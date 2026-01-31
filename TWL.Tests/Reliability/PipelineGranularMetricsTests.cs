@@ -39,9 +39,10 @@ public class PipelineGranularMetricsTests
         var mockEconomy = new Mock<IEconomyService>();
         var petService = new TWL.Server.Services.PetService(playerService, mockPet.Object, combatManager, mockRandom.Object);
         var mockWorldTrigger = new Mock<IWorldTriggerService>();
+        var spawnManager = new SpawnManager(new MonsterManager(), combatManager);
 
         int port = 9124; // Use different port
-        var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object, playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object);
+        var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object, playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object, spawnManager);
 
         server.Start();
 

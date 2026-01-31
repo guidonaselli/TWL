@@ -38,6 +38,7 @@ public class ClientSession
     private readonly PlayerService _playerService;
     private readonly TWL.Server.Services.PetService _petService;
     private readonly IWorldTriggerService _worldTriggerService;
+    private readonly SpawnManager _spawnManager;
     private readonly IMediator _mediator;
     private readonly NetworkStream _stream;
     private readonly RateLimiter _rateLimiter;
@@ -50,7 +51,7 @@ public class ClientSession
 
     protected ClientSession() { } // For testing
 
-    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService, IWorldTriggerService worldTriggerService)
+    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService, IWorldTriggerService worldTriggerService, SpawnManager spawnManager)
     {
         _client = client;
         _stream = client.GetStream();
@@ -64,6 +65,7 @@ public class ClientSession
         _metrics = metrics;
         _petService = petService;
         _worldTriggerService = worldTriggerService;
+        _spawnManager = spawnManager;
         QuestComponent = new PlayerQuestComponent(questManager, petManager);
         _rateLimiter = new RateLimiter();
 
@@ -551,11 +553,14 @@ public class ClientSession
         // Check for triggers
         _worldTriggerService.CheckTriggers(Character);
 
+        // Check for encounters
+        _spawnManager?.OnPlayerMoved(this);
+
         // Broadcast a otros en la misma zona
         await Task.CompletedTask; // Placeholder for async broadcast
     }
 
-    private async Task SendAsync(NetMessage msg)
+    public virtual async Task SendAsync(NetMessage msg)
     {
         var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
