@@ -278,6 +278,12 @@ public class ServerCharacter : ServerCombatant
 
     public bool AddItem(int itemId, int quantity, BindPolicy policy = BindPolicy.Unbound, int? boundToId = null)
     {
+        // Auto-bind logic: If policy is strictly bound to owner, ensure it is bound to this character
+        if ((policy == BindPolicy.BindOnPickup || policy == BindPolicy.CharacterBound) && boundToId == null)
+        {
+            boundToId = Id;
+        }
+
         lock (_inventory)
         {
             // Only stack if ID, Policy and BoundToId match

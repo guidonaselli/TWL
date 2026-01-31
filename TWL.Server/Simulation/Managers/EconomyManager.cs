@@ -5,6 +5,7 @@ using System.IO;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Models;
+using TWL.Server.Security;
 
 namespace TWL.Server.Simulation.Managers;
 
@@ -241,18 +242,21 @@ public class EconomyManager : IEconomyService
 
     public EconomyOperationResultDTO VerifyPurchase(int userId, string orderId, string receiptToken, ServerCharacter character)
     {
-        if (!CheckRateLimit(userId)) return new EconomyOperationResultDTO { Success = false, Message = "Rate limit exceeded" };
+        if (!CheckRateLimit(userId))
+        {
+            SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, "Reason:RateLimitExceeded");
+            return new EconomyOperationResultDTO { Success = false, Message = "Rate limit exceeded" };
+        }
 
         if (!_transactions.TryGetValue(orderId, out var tx))
         {
-             // Idempotency check: if it was completed and removed?
-             // Ideally we keep completed ones for a while.
-             // For now, assume if not found, it's invalid or expired.
+             SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, $"Reason:OrderNotFound OrderId:{orderId}");
              return new EconomyOperationResultDTO { Success = false, Message = "Order not found" };
         }
 
         if (tx.UserId != userId)
         {
+            SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, $"Reason:UserMismatch OrderId:{orderId} TxUser:{tx.UserId}");
             return new EconomyOperationResultDTO { Success = false, Message = "User mismatch" };
         }
 
@@ -272,12 +276,14 @@ public class EconomyManager : IEconomyService
 
             if (tx.State != TransactionState.Pending)
             {
+                SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, $"Reason:InvalidState State:{tx.State}");
                 return new EconomyOperationResultDTO { Success = false, Message = "Invalid state" };
             }
 
             // Verify receipt (Mock Signature Validation)
             if (!ValidateReceipt(receiptToken, orderId))
             {
+                SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, "Reason:InvalidSignature");
                 return new EconomyOperationResultDTO { Success = false, Message = "Invalid receipt signature" };
             }
 
@@ -306,6 +312,12 @@ public class EconomyManager : IEconomyService
 
     public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity, string? operationId)
     {
+        if (!CheckRateLimit(character.Id))
+        {
+             SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id, "Reason:RateLimitExceeded");
+             return new EconomyOperationResultDTO { Success = false, Message = "Rate limit exceeded" };
+        }
+
         if (quantity <= 0 || quantity > 999)
             return new EconomyOperationResultDTO { Success = false, Message = "Invalid quantity (1-999)" };
 
@@ -357,6 +369,7 @@ public class EconomyManager : IEconomyService
         if (!_shopItems.TryGetValue(shopItemId, out var itemDef))
         {
             if (tx != null) { lock (tx) tx.State = TransactionState.Failed; }
+            SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id, $"Reason:ItemNotFound Item:{shopItemId}");
             return new EconomyOperationResultDTO { Success = false, Message = "Item not found" };
         }
 
@@ -365,6 +378,7 @@ public class EconomyManager : IEconomyService
         if (!character.TryConsumePremiumCurrency(totalCost))
         {
             if (tx != null) { lock (tx) tx.State = TransactionState.Failed; }
+            SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id, $"Reason:InsufficientFunds Cost:{totalCost} Has:{character.PremiumCurrency}");
             return new EconomyOperationResultDTO { Success = false, Message = "Insufficient funds" };
         }
 
@@ -550,6 +564,9 @@ public class EconomyManager : IEconomyService
                 Console.Error.WriteLine($"[CRITICAL] LEDGER WRITE FAILED: {ex.Message} | Data: {line}");
             }
         }
+
+        // Audit via SecurityLogger as well
+        SecurityLogger.LogSecurityEvent($"Economy_{type}", userId, $"{details} | Delta:{delta} NewBalance:{newBalance}");
     }
 
     private void TryCleanup()
