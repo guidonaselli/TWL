@@ -58,6 +58,10 @@ public class EconomyManager : IEconomyService
     private const int CLEANUP_INTERVAL = 100;
     private const double EXPIRATION_MINUTES = 10.0;
 
+    private static readonly System.Text.RegularExpressions.Regex _ledgerRegex = new(
+        @"^([^,]+),([^,]+),([^,]+),(.+),([^,]+),([^,]+)$",
+        System.Text.RegularExpressions.RegexOptions.Compiled);
+
     public class EconomyMetrics
     {
         public int ReplayedTransactionCount { get; set; }
@@ -109,14 +113,13 @@ public class EconomyManager : IEconomyService
         int count = 0;
         try
         {
-            var lines = File.ReadAllLines(_ledgerFile);
-            var regex = new System.Text.RegularExpressions.Regex(@"^([^,]+),([^,]+),([^,]+),(.+),([^,]+),([^,]+)$");
+            var lines = File.ReadLines(_ledgerFile);
 
             foreach (var line in lines)
             {
                 if (string.IsNullOrWhiteSpace(line) || line.StartsWith("Timestamp")) continue;
 
-                var match = regex.Match(line);
+                var match = _ledgerRegex.Match(line);
                 if (!match.Success) continue;
 
                 var timestampStr = match.Groups[1].Value;
