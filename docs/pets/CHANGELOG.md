@@ -7,6 +7,7 @@
 - **Logic**: "Ride" mechanics (Stats boost + Visual).
 - **Persistence**: Re-hydration of `PetDefinition` after loading from save.
 - **Combat**: Update Revive logic to remove Gold option in-combat; enforce Skill/Item usage only.
+- **Logic**: Amity Penalty update (reduce from -10 to -1 per KO).
 
 ### Added
 - **System**: `PetService` for Capture, Revive, and Amity management.

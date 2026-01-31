@@ -28,18 +28,25 @@ This document serves as the Single Source of Truth (SSOT) for gameplay logic and
     *   Deducted upon successful entry.
 
 ## 3. Player Death Penalty
-**Severity**: **Softcore (V1)**
+**Severity**: **Softcore / Mid-Core (Production V1)**
 
-*   **Consequences**:
+*   **Consequences** (applied on server-confirmed death only):
     *   **Respawn**: At the nearest "Safe Spawn" or defined bind point.
-    *   **No Experience Loss** (V1).
-    *   **No Durability Loss** (V1).
+    *   **Experience Loss (Leve)**:
+        *   Loss: **1% of the EXP progress within the current level** (never de-levels).
+        *   Floor: cannot drop below 0% progress in the current level.
+        *   Notes: No irreversible stat loss.
+    *   **Durability Loss (Leve)**:
+        *   Each equipped item loses **1 durability** per death.
+        *   *Exceptions*: Starter gear and cosmetics can be flagged `Indestructible=true`.
+        *   If an item reaches 0 durability, it becomes `Broken` (stats disabled) until repaired (no deletion).
+    *   **Optional**: A short post-death debuff/cooldown is allowed, but must be explicitly defined if implemented.
+
 *   **Pets**:
-    *   Pet Death (KO) -> **Revive Restricted**.
-        *   **In-Combat**: Can ONLY be revived via **Water Skill (Revive)** or **Revive Items** (1HP, 100HP, 500HP variants).
-        *   **NO Gold Revive** in combat.
-    *   Combat End while KO -> **Amity Loss** (Already implemented).
-    *   Excessive Damage (>= 1.5x MaxHP) -> **Despawn** (Already implemented).
+    *   Pet KO -> can be revived during combat.
+        *   **Restricted**: Via **Water Skill (Revive)** or **Revive Items** (1/100/500 HP) only. NO Gold Revive.
+    *   Combat End while KO -> **Amity -1**.
+    *   Excessive Damage (>= 1.5x MaxHP in a single hit) -> **Despawn to spawn** (cannot be revived during combat).
 
 ## 4. PvP Scope
 **Type**: **Open World with Opt-In**
