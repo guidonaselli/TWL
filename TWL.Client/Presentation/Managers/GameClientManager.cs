@@ -28,14 +28,12 @@ public class GameClientManager
 
     public NetworkClient NetworkClient { get; }
 
-    public GameClientManager()
+    public GameClientManager(ILogger<NetworkClient> log)
     {
-        var log = ClientBootstrap.Services.GetRequiredService<ILogger<NetworkClient>>();
         var ip = "localhost";
         var port = 7777;
-        var gameClientManager = this;
 
-        NetworkClient = new NetworkClient(ip, port, gameClientManager, log);
+        NetworkClient = new NetworkClient(ip, port, this, log);
         var allies = new List<Character>();
         var enemies = new List<Character>();
         // Initialize example characters

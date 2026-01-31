@@ -30,7 +30,7 @@ namespace TWL.Client.Presentation.UI
         private Texture2D? _background;
 
         // --- Estado del Menú Principal ---
-        private readonly List<string> _options = new() { Loc.T("UI_Login"), Loc.T("UI_LoadGame"), Loc.T("UI_Exit") };
+        private readonly List<string> _options = new() { Loc.T("UI_Login"), Loc.T("UI_Exit") };
         private int _mainMenuSelectedIndex;
 
         // --- Estado del Formulario de Login ---
@@ -136,22 +136,7 @@ namespace TWL.Client.Presentation.UI
                 case 0: // Login
                     _currentState = MenuState.ShowingLogin;
                     break;
-                case 1: // Load Game
-                    if (_persistence.SaveExists())
-                    {
-                        var data = _persistence.LoadGame();
-                        if (data != null)
-                        {
-                            _scenes.ChangeScene("Gameplay", data);
-                        }
-                    }
-                    else
-                    {
-                        // Optional: Show "No save game found" feedback
-                        Console.WriteLine(Loc.T("UI_NoSave"));
-                    }
-                    break;
-                case 2: // Exit
+                case 1: // Exit
                     Environment.Exit(0);
                     break;
             }

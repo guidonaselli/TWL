@@ -8,17 +8,13 @@
         <UseMonoGame>true</UseMonoGame>
         <MonoGamePlatform>DesktopGL</MonoGamePlatform>
 
-        <!-- Ejecutamos el pipeline manualmente -->
-        <AutoRestoreMGCBTool>false</AutoRestoreMGCBTool>
-        <MGCBUseGlobalTool>false</MGCBUseGlobalTool>
-        <MonoGameContentBuilderSkip>false</MonoGameContentBuilderSkip>
+        <!-- MGCB pipeline no corre en net10.0; usamos assets pre-compilados -->
+        <MonoGameContentBuilderSkip>true</MonoGameContentBuilderSkip>
     </PropertyGroup>
 
     <ItemGroup>
-        <PackageReference Include="MonoGame.Framework.Content.Pipeline" Version="3.8.4.1" />
         <PackageReference Include="MonoGame.Framework.DesktopGL" Version="3.8.4.1" />
         <PackageReference Include="MonoGame.Extended" Version="5.3.1" />
-        <PackageReference Include="MonoGame.Extended.Content.Pipeline" Version="5.3.1" />
         <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="10.0.2" />
         <PackageReference Include="Microsoft.Extensions.Logging" Version="10.0.2" />
         <PackageReference Include="Microsoft.Extensions.Hosting.Abstractions" Version="10.0.2" />
@@ -28,8 +24,12 @@
         <PackageReference Include="MessagePack" Version="3.1.4" />
     </ItemGroup>
 
+    <!-- Assets pre-compilados por MGCB (Fonts, Sprites, Maps, Tilesets, UI) -->
     <ItemGroup>
-        <MonoGameContentReference Include="Content\Content.mgcb" />
+        <Content Include="Content\bin\DesktopGL\Content\**\*.*">
+            <Link>Content\%(RecursiveDir)%(Filename)%(Extension)</Link>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+        </Content>
     </ItemGroup>
 
     <ItemGroup>

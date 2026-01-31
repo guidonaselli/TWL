@@ -22,12 +22,16 @@ namespace TWL.Client
                 {
                     // Registra tus servicios
                     services.AddSingleton(sp => new ContentManager(sp, "Content"));
-                    services.AddSingleton<IAssetLoader, AssetLoader>();
-                    services.AddSingleton<ISceneManager, SceneManager>();
-                    services.AddSingleton<IGameManager, GameManager>();
+                    services.AddSingleton<AssetLoader>();
+                    services.AddSingleton<IAssetLoader>(sp => sp.GetRequiredService<AssetLoader>());
+                    services.AddSingleton<SceneManager>();
+                    services.AddSingleton<ISceneManager>(sp => sp.GetRequiredService<SceneManager>());
+                    services.AddSingleton<GameManager>();
+                    services.AddSingleton<IGameManager>(sp => sp.GetRequiredService<GameManager>());
                     services.AddSingleton<GameSessionManager>();
                     services.AddSingleton<GameClientManager>();
-                    services.AddSingleton<INetworkChannel, LoopbackChannel>();
+                    services.AddSingleton<LoopbackChannel>();
+                    services.AddSingleton<INetworkChannel>(sp => sp.GetRequiredService<LoopbackChannel>());
                     services.AddSingleton<SettingsManager>();
                     services.AddSingleton<PersistenceManager>();
                     services.AddLogging();

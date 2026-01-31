@@ -1,4 +1,10 @@
 # CORE ROADMAP
+
+> **JULES-CONTEXT**: This is the master technical roadmap. When picking tasks, follow the
+> priority order (P0 before P1) and the daily rotation schedule in section 5. Each task
+> must produce: working code, tests, and a brief doc update. Never skip server-side validation.
+> Reference: `GAMEPLAY_CONTRACTS.md` for system rules, `CONTENT_RULES.md` for data rules.
+
 > Roadmap principal para Core Server, Arquitectura, Red, y Sistemas Base.
 
 ## 0) Principios no negociables (Invariantes)
@@ -92,7 +98,7 @@ Objetivo: contenido continuo, tooling, operaciones, monetización segura (item m
 - [ ] **INV-004**: Validador de items/recipes/loot tables (IDs, referencias, constraints).
 
 ### 4.7 ECONOMY: ALCHEMY / CRAFT / MARKET (P1/P2)
-- [ ] **ECO-001**: Alchemy (Compound) System: Tier + Material Logic (WLO-like).
+- [ ] **ECO-001**: Alchemy (Compound) System: Tier + Material Logic (Resonance-based crafting).
 - [ ] **ECO-002**: Manufacturing System: Blueprints + Workbench interactions.
 - [ ] **ECO-003**: RNG del compound auditable + métricas de éxito/fallo.
 - [ ] **ECO-004**: Anti-dupe: doble consumo/rollback parcial/imposible.

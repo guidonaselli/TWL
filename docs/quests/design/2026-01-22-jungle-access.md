@@ -1,62 +1,112 @@
-# Design: Jungle Access & Training
+# Design: Puerto Roca Transition - Act 2 Entry
 
-**Date:** 2024-05-23
-**Focus:** Region Transition (Jungle), Tool Gating, Training System Introduction
-**Status:** In Progress
+> **JULES-CONTEXT**: This document defines the quest chain that transitions players from
+> Isla Brisa to Puerto Roca. It introduces tool-gating mechanics and the concept of
+> region unlocks. This is the bridge between tutorial and open game.
+> Prerequisite: All Isla Brisa main quests (1001-1018) completed.
 
-## Overview
-This update implements the transition from the "Beach" (Initial Hub) to the "Jungle Fringe" (Next Zone). It gates this transition behind a tool check (Axe) used on an environmental obstacle (Vines). It also introduces the concept of "Training" via a sidequest to build a Training Dummy.
+**Level Range:** 5-8
+**Region:** Puerto Roca approach (Maps 1000-1012)
+**Narrative Theme:** Arriving in civilization, proving yourself, becoming a citizen.
 
-## Systems Introduced
-*   **Tool Gating:** Interacting with objects requiring specific items *without* consuming them (e.g., cutting vines with an axe).
-*   **Crafting Sidequest:** A dedicated crafting quest that doesn't just progress the main story.
+---
 
-## Quests
+## Narrative Summary
 
-### 1017: The Way Out (Main)
-*   **Prerequisites:** 1016 (Primitive Tools)
-*   **NPC:** Old Hermit
-*   **Description:** "The Hermit says the path to the jungle is blocked by thick overgrowth. He suggests using your new Stone Axe to clear a path."
-*   **Objectives:**
-    *   Talk to Old Hermit (Context).
-*   **Rewards:** EXP.
+After building a boat and crossing the strait, the player arrives at Puerto Roca - a
+bustling port city built by generations of shipwreck survivors. The player must register
+as a citizen, prove their worth through tasks for the city guard, and establish themselves
+in this new community.
 
-### 1018: Cutting the Path (Main)
-*   **Prerequisites:** 1017
-*   **NPC:** (Auto/Environment)
-*   **Description:** "Cut the Thick Vines blocking the path inland."
-*   **Objectives:**
-    *   **Craft** "ThickVines" (Requires Stone Axe). *Note: Uses "Craft" type to trigger checking of required items, but sets `ConsumeRequiredItems: false`.*
-*   **Rewards:**
-    *   EXP: 100
-    *   Item: 204 (Jungle Fruit - Flavor item, first taste of new region).
+---
 
-### 2001: Training Basics (Side)
-*   **Prerequisites:** 1016
-*   **NPC:** Survivalist
-*   **Description:** "You need to keep your skills sharp. The Survivalist suggests building a Training Dummy."
-*   **Objectives:**
-    *   **Collect** "DrySticks" x5.
-    *   **Collect** "DriftwoodPile" x2.
-    *   **Craft** "TrainingDummy" at "OldWorkbench".
-*   **Rewards:**
-    *   EXP: 150
-    *   Item: 205 (Training Manual - flavor).
+## Quest Chain: "Ciudadano Nuevo"
 
-## Interactions
+### Quest 1100: Llegada al Muelle
+- **NPC:** Capitana Riel (Start + End)
+- **Map:** 1001 (El Muelle)
+- **Description:** "The docks are busy. A stern woman in a harbor master's uniform blocks your path."
+- **Objectives:**
+  - Talk to Capitana Riel (Type: `Talk`, Target: `npc_riel`, Count: 1)
+  - Show Resonance Shard (Type: `ShowItem`, Target: `item_resonance_shard`, Count: 1)
+- **Rewards:** 100 EXP, 25 Gold
+- **OnComplete:** Unlocks Quest 1101, grants Temporary Dock Pass (flag)
+- **Narrative:** Riel is skeptical but intrigued by the Resonance Shard. She directs
+  the player to the Mayor for registration.
 
-### ThickVines
-*   **Type:** Craft (with `ConsumeRequiredItems: false`)
-*   **RequiredQuestId:** 1018 (Must be on the quest to clear them)
-*   **RequiredItems:** Stone Axe (203)
-*   **RewardItems:** None (Quest gives reward).
+### Quest 1101: Registro Civil
+- **NPC:** Alcalde Fuentes (Start + End)
+- **Map:** 1000 (Plaza Mayor)
+- **Description:** "The Mayor requires proof of good character before granting citizenship."
+- **Objectives:**
+  - Talk to Alcalde Fuentes (Type: `Talk`, Target: `npc_fuentes`, Count: 1)
+  - Deliver Letter from Capitana Maren (Type: `DeliverItem`, Target: `item_maren_letter`, Count: 1)
+- **Rewards:** 150 EXP, 50 Gold
+- **OnComplete:** Unlocks Quest 1102
+- **Note:** `item_maren_letter` is auto-granted when starting this quest (Maren gave it before departure)
 
-### TrainingDummy
-*   **Type:** Craft
-*   **RequiredItems:** DrySticks (201, wait need to check ID) x5, Driftwood (20x) x2.
-*   **RewardItems:** Training Dummy Item (206? or just quest trigger).
-    *   *Correction:* In WLO, crafting usually puts an item in inventory or places furniture. Here, we'll give a "Training Dummy" furniture item (206).
-*   **RequiredQuestId:** 2001.
+### Quest 1102: Prueba de Valor
+- **Prerequisite:** Quest 1101
+- **NPC:** Sargento Bravo (Start + End)
+- **Map:** 1002 (Sendero Norte)
+- **Description:** "The Sergeant doesn't trust newcomers. Prove yourself by clearing bandits from the north road."
+- **Objectives:**
+  - Defeat Forest Bandits (Type: `Kill`, Target: `mob_forest_bandit`, Count: 8)
+  - Defeat Bandit Leader (Type: `Kill`, Target: `mob_bandit_leader`, Count: 1)
+- **Rewards:** 250 EXP, 75 Gold, 1x Iron Sword (ItemId: 110, ATK +8)
+- **OnComplete:** Unlocks Quest 1103
 
-## Technical Changes
-*   Added `ConsumeRequiredItems` boolean to `InteractionDefinition` to support "Tool Checks".
+### Quest 1103: Juramento de Ciudadania
+- **Prerequisite:** Quest 1102
+- **NPC:** Alcalde Fuentes (Start + End)
+- **Map:** 1000 (Plaza Mayor)
+- **Description:** "The Mayor is impressed. He offers citizenship and access to all city services."
+- **Objectives:**
+  - Talk to Alcalde Fuentes (Type: `Talk`, Target: `npc_fuentes`, Count: 1)
+- **Rewards:** 300 EXP, 100 Gold, Citizenship Flag (`citizen_puerto_roca = true`)
+- **OnComplete:** Unlocks all Puerto Roca services (marketplace, guild, advanced crafting)
+- **Narrative:** The player swears an oath to protect the city. This is a significant
+  milestone - the first time the player belongs to a community larger than the camp.
+
+---
+
+## Puerto Roca Sidequests (Unlocked with Citizenship)
+
+### Quest 2010: Pesca del Dia
+- **NPC:** Pescador Viejo (El Muelle)
+- **Map:** 1001
+- **Description:** "An old fisherman offers to teach you his craft."
+- **Objectives:**
+  - Craft Fishing Rod (Type: `Craft`, Target: `item_fishing_rod`, Count: 1)
+  - Catch Raw Fish (Type: `Fish`, Target: `item_raw_fish`, Count: 3)
+- **Rewards:** 100 EXP, 30 Gold, Fishing skill unlocked
+
+### Quest 2011: Aprendiz de Alquimia
+- **NPC:** Alquimista Luna
+- **Map:** 1000
+- **Description:** "Luna needs herb samples from the forest. In exchange, she'll teach you alchemy basics."
+- **Objectives:**
+  - Collect Healing Herbs (Type: `Collect`, Target: `item_healing_herb`, Count: 5)
+  - Collect Moonpetal (Type: `Collect`, Target: `item_moonpetal`, Count: 2)
+- **Rewards:** 120 EXP, 40 Gold, Alchemy tutorial unlocked
+
+### Quest 3001: Entrenamiento de Combate
+- **NPC:** Sargento Bravo
+- **Map:** 1012 (Cuartel de la Guardia)
+- **Description:** "The Sergeant offers advanced combat training to citizens."
+- **Objectives:**
+  - Defeat Training Dummy (Type: `Kill`, Target: `obj_training_dummy`, Count: 3)
+  - Win Sparring Match (Type: `Kill`, Target: `npc_sparring_partner`, Count: 1)
+- **Rewards:** 200 EXP, 50 Gold, Skill: "Power Strike" (basic combat skill)
+
+---
+
+## Quest Flow Diagram
+
+```
+[Isla Brisa Complete] -> 1100 -> 1101 -> 1102 -> 1103 [Citizenship]
+                                                    |
+                          +-------------------------+-------------------------+
+                          |                         |                         |
+                        2010 (Fishing)          2011 (Alchemy)          3001 (Combat)
+```

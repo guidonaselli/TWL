@@ -16,7 +16,7 @@ namespace TWL.Client.Presentation.Core
         private readonly GameManager  _gameManager;
         private readonly GameClientManager _gameClientManager;
         private readonly LoopbackChannel _net;
-        private readonly Logger<Game1> _log;
+        private readonly ILogger<Game1> _log;
         private readonly SettingsManager _settings;
         private readonly AssetLoader _assets;
         private readonly PersistenceManager _persistence;
@@ -30,7 +30,7 @@ namespace TWL.Client.Presentation.Core
             GameClientManager gameClientManager,
             LoopbackChannel net,
             SettingsManager settings,
-            Logger<Game1> log,
+            ILogger<Game1> log,
             PersistenceManager persistence)
         {
             _scenes = scenes;

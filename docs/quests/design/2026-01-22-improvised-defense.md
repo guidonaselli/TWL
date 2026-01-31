@@ -1,32 +1,43 @@
-# Quest Design: Improvised Defense
+# Design: Equipment Introduction - Defensa Improvisada (Quest 1004)
 
-## Overview
-**Date:** 2024-05-22
-**Objective:** Introduce interaction mechanics (searching/collecting) and basic weapon acquisition.
-**Level Range:** 1-5
-**Prerequisites:** Quest 1003 (Reporting In)
+> **JULES-CONTEXT**: This document details the first equipment quest. It introduces the
+> crafting-via-gathering pattern: collect materials -> NPC crafts item -> equip reward.
+> Reference: `2026-01-22-intro-arc.md` Quest 1004 for canonical definition.
 
-## Progression
-This quest serves as the first "equipment" quest, giving the player a weapon to start combat training.
+**Quest ID:** 1004
+**Mechanic Focus:** Equipment acquisition, BindOnAcquire, first weapon.
 
-## Quest Chain
+---
 
-### 1004: Improvised Defense
-*   **Start NPC:** Blacksmith (Village)
-*   **Description:** "The wilds are dangerous. I can make you a weapon, but I need materials. Find some driftwood on the beach."
-*   **Objectives:**
-    1.  **Talk** to **Blacksmith**: "Ask about a weapon."
-    2.  **Collect** (Search) **Driftwood**: "Find suitable wood on the beach." (Interact with "DriftwoodPile")
-    3.  **Talk** to **Blacksmith**: "Hand over the materials."
-*   **Rewards:**
-    *   **Exp:** 50
-    *   **Gold:** 0
-    *   **Items:**
-        *   `Wooden Sword` (ID: 103, Qty: 1)
+## Design Intent
 
-## Technical Implementation
-*   **New Interaction:** Uses `InteractRequest` opcode.
-*   **Logic:**
-    *   "Talk" objective checks `InteractRequest { TargetName: "Blacksmith" }`.
-    *   "Collect" objective checks `InteractRequest { TargetName: "DriftwoodPile" }` (simulated collection).
-*   **Validation:** Server-authoritative `TryProgress` in `PlayerQuestComponent`.
+This quest is the player's first contact with the equipment system. It must:
+1. Teach that NPCs can craft items from gathered materials
+2. Introduce the equipment slot concept (weapon)
+3. Gate combat content behind having a weapon
+4. Set up the pet sidequest branch (Quest 1008)
+
+## Implementation Notes
+
+### Server-Side
+- Reward item `Wooden Sword` (ID: 103) must have:
+  - `BindOnAcquire: true` (cannot be traded)
+  - `UniquePerCharacter: true` (idempotent - re-completing doesn't grant duplicate)
+  - `SlotType: Weapon`
+  - `Stats: { ATK: 3 }`
+- Validate via `PlayerQuestComponent.TryProgress` using `InteractRequest` opcode
+- Collecting driftwood uses `Collect` objective type with `item_driftwood` target
+
+### Client-Side
+- After claiming reward, auto-open equipment panel showing the new weapon
+- Play equip animation/sound feedback
+- Show tooltip: "Press E to open Equipment"
+
+### Interaction Flow
+```
+Player -> Talk to Ruk (npc_ruk) -> Quest accepted
+Player -> Gather 5x Driftwood from beach objects
+Player -> Talk to Ruk again -> Ruk "crafts" the sword
+Server -> Grant Wooden Sword (103) -> Quest complete
+Client -> Show equip tutorial prompt
+```
