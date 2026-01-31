@@ -1,20 +1,13 @@
-# Skills Changelog
-> Tracks changes to Skill System, Effects, and Calculation logic.
+# Skills System Changelog
 
 ## [Unreleased]
 
-### Missing to Production
-- **Progression**: `StageUpgradeRules` (Rank-based evolution) needs dedicated verification tests.
-- **Mechanics**:
-    - Complex Targeting (Row/Column/Cross) support in `StandardCombatResolver`.
-    - Goddess Skills: Hardcoded `GrantGoddessSkills` needs to be moved to a Quest/Event trigger system.
-- **Content**:
-    - Full implementation of `Water`, `Fire`, `Wind` skill packs (currently stubbed).
+### Missing
+- **Content Integrity**: Tests failing for Skill Keys (Localization).
+- **Validation**: `StageUpgradeRules` logic is implemented but lacks specific unit tests.
+- **Complex Scopes**: Row/Column targeting logic is stubbed.
 
-### Added
-- **System**: `SkillService` with JSON-based definitions.
-- **Effects**: Basic Status Effects (`Buff`, `Debuff`, `Seal`, `Cleanse`, `Dispel`).
-- **Logic**: `StandardCombatResolver` implementing Elemental Multipliers (Water > Fire > Wind > Earth).
-
-### Known Issues
-- `AquaImpact` test formerly returned 0 damage (Fixed in previous iterations, now monitoring).
+### Existing
+- **System**: `SkillService` handles learning and upgrading.
+- **Logic**: `SkillRegistry` loads definitions. `StandardCombatResolver` applies damage/effects.
+- **Progression**: Mastery-by-Use (Rank) and Stage Evolution logic is present in `ServerCharacter.ReplaceSkill`.

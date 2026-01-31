@@ -7,24 +7,25 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-### Missing to Production (Critical Gaps)
-- **Persistence Layer**: Currently using `FilePlayerRepository` (JSON). **Must migrate to PostgreSQL** (P0) to prevent data loss and support atomic transactions.
-- **Content Integrity**: 8/292 tests failing. `quests.json` has missing IDs/Keys. `Puerto Roca` questline is broken.
-- **Security**: No authoritative Movement Validation (Anti-Speedhack). No Packet Replay protection.
-- **Market System**: "Hybrid Market" (Centralized Listings + Stalls) is not implemented.
-- **Instance Isolation**: Dungeon maps are currently shared world. Need dynamic instance cloning for Parties.
-- **Pet Systems**: Amity logic and Death penalties (Amity loss on KO) are missing.
+### Missing to Production (Prioritized)
+- **Persistence**: Migration from JSON files to PostgreSQL (Critical).
+- **Economy**: Hybrid Market System (Centralized Ledger + Player Stalls).
+- **World**: Instance Isolation (Dungeon copies) + Daily Lockouts (5/day).
+- **Social**: Party and Guild Systems.
+- **Security**: Authoritative Movement Validation & Anti-Cheat Handshakes.
+- **Content**: Fixes for failing Quest/Skill Validation Tests (8 failures).
 
 ### Added
-- **Core Architecture**: `GameServer` loop (50ms tick), `ClientSession` pipeline, and `PacketHandler`.
-- **Test Harness Fixes**: Fixed `FileNotFoundException` in `TWL.Tests` by correctly resolving `Content/Data` paths (PR #FixTests).
-- **Documentation**: Added `docs/PRODUCTION_GAP_ANALYSIS.md` detailing the path to Vertical Slice.
+- **Docs**: Comprehensive `GAMEPLAY_CONTRACTS.md` defining strict rules for Market, PvP, and Death.
+- **Audit**: `PRODUCTION_GAP_ANALYSIS.md` detailed report.
 
 ### Changed
-- **Combat**: Refactored `CombatManager` to support `LastAttackerId` for Quest credit.
-- **Networking**: Updated `ClientSession` to use `Mediator` pattern for Skills and Interactions.
-- **World**: `WorldTriggerService` now handles basic Map Transitions.
+- **Tests**: Content Validation logic updated to better detect missing keys.
 
-### Known Issues
-- **Test Failures**: `JungleQuestTests` (Loc mismatch), `PuertoRocaQuestTests` (Missing Data), `HiddenRuinsQuestTests` (Logic).
-- **Performance**: `GameServer` uses manual dependency injection; scaling will require a DI Container Refactor.
+## [0.1.0] - 2024-05-01
+### Added
+- Initial Vertical Slice implementation.
+- Basic Combat System (Turn-based).
+- Quest Engine (Linear chains).
+- Pet System (Basic Capture & Stats).
+- File-based Persistence.
