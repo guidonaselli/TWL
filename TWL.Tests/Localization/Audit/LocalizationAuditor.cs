@@ -56,6 +56,7 @@ namespace TWL.Tests.Localization.Audit
         public List<string> AllowedFolders { get; set; } = new();
         public List<string> RequiredLanguages { get; set; } = new();
         public List<string> UiScanRoots { get; set; } = new();
+        public List<string> IgnoredFiles { get; set; } = new();
     }
 
         public AuditResults RunAudit()
@@ -268,8 +269,9 @@ namespace TWL.Tests.Localization.Audit
 
             foreach (var file in files)
             {
-                // Check allowed folders
+                // Check allowed folders and ignored files
                 if (_config.AllowedFolders.Any(ignored => file.Contains(Path.DirectorySeparatorChar + ignored + Path.DirectorySeparatorChar))) continue;
+                if (_config.IgnoredFiles.Any(ignored => Path.GetFileName(file) == ignored)) continue;
 
                 var lines = File.ReadAllLines(file);
                 for (int i = 0; i < lines.Length; i++)

@@ -6,10 +6,10 @@ using TWL.Tests.Localization.Audit.Reporters;
 
 namespace TWL.Tests.Localization
 {
-    public class LocalizationAuditTests
+    public class LocalizationValidationTests
     {
         [Fact]
-        public void RunLocalizationAudit()
+        public void RunLocalizationValidation()
         {
             // Setup paths
             var solutionRoot = FindSolutionRoot();
@@ -28,12 +28,13 @@ namespace TWL.Tests.Localization
 
             // Fail if there are ERRORS
             var errorCount = 0;
+            Console.WriteLine($"Localization Audit Findings ({results.Findings.Count}):");
             foreach (var finding in results.Findings)
             {
+                Console.WriteLine($"[{finding.Severity}] {finding.Code}: {finding.Message} ({finding.File}:{finding.Location})");
                 if (finding.Severity == "ERROR")
                 {
                     errorCount++;
-                    // Log error to console (or test output)
                 }
             }
 
