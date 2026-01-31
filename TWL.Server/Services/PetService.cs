@@ -3,6 +3,7 @@ using System.Linq;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Services;
 
 namespace TWL.Server.Services;
@@ -20,6 +21,16 @@ public class PetService : IPetService
         _petManager = petManager;
         _combatManager = combatManager;
         _random = random;
+
+        _combatManager.OnCombatantDeath += HandlePetDeath;
+    }
+
+    private void HandlePetDeath(ServerCombatant victim)
+    {
+        if (victim is ServerPet pet)
+        {
+            pet.Die();
+        }
     }
 
     public string CreatePet(int ownerId, int definitionId)
@@ -199,6 +210,23 @@ public class PetService : IPetService
             _combatManager.RegisterCombatant(newPet);
         }
 
+        return true;
+    }
+
+    public bool UseUtility(int ownerId, string petInstanceId, PetUtilityType type)
+    {
+        var pet = GetPet(ownerId, petInstanceId);
+        if (pet == null) return false;
+
+        float value = pet.GetUtilityValue(type);
+        if (value <= 0) return false;
+
+        // Apply utility logic
+        // For now just return true as "Activated"
+        // Actual mounting logic would involve Player state change (Speed mod)
+        // Gathering would involve looting.
+
+        // TODO: Emit event or apply effect
         return true;
     }
 
