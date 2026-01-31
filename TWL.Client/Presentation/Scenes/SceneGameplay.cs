@@ -48,6 +48,7 @@ namespace TWL.Client.Presentation.Scenes
         private Vector2          _clickTarget;
         private Point?           _lastTargetTile;
         private readonly PersistenceManager _persistence;
+        private KeyboardState _prevKeyboardState;
 
         public SceneGameplay(
             ContentManager    content,
@@ -117,6 +118,7 @@ namespace TWL.Client.Presentation.Scenes
 
             _playerView = new PlayerView(_player);
             _ui = new UiGameplay(_player);
+            _prevKeyboardState = Keyboard.GetState();
 
             EventBus.Subscribe<BattleStarted>(   e => Scenes.ChangeScene("Battle",    e) );
             EventBus.Subscribe<BattleFinished>( e => OnBattleFinished(e)               );
@@ -166,7 +168,7 @@ namespace TWL.Client.Presentation.Scenes
                                     MouseState ms,
                                     KeyboardState ks)
         {
-            if (ks.IsKeyDown(Keys.I))
+            if (ks.IsKeyDown(Keys.I) && !_prevKeyboardState.IsKeyDown(Keys.I))
                 _ui.ToggleInventory();
 
             if (ks.IsKeyDown(Keys.B))
@@ -213,6 +215,7 @@ namespace TWL.Client.Presentation.Scenes
             _playerView.Update(gt);
             _mapRenderer.Update(gt);
             _ui.Update(gt, ms, ks);
+            _prevKeyboardState = ks;
 
             base.Update(gt, ms, ks);
         }

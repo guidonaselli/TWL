@@ -33,6 +33,8 @@ namespace TWL.Client.Presentation.UI
             _invWindow = new UiInventoryWindow(
                 new Rectangle(40,40,320,480),
                 _player.Inventory);
+            _invWindow.Visible = false;
+            _invWindow.Active = false;
             AddWindow(_invWindow);
         }
 

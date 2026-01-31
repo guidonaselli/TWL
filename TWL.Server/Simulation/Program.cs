@@ -24,8 +24,8 @@ Host.CreateDefaultBuilder(args)
     // 1) Config: appsettings + ServerConfig.json + SerilogSettings.json
     .ConfigureAppConfiguration(cb =>
     {
-        cb.AddJsonFile("ServerConfig.json", false, true)
-            .AddJsonFile("SerilogSettings.json", false, true);
+        cb.AddJsonFile("Persistence/ServerConfig.json", false, true)
+            .AddJsonFile("Persistence/SerilogSettings.json", false, true);
     })
     // 2) Logging
     .UseSerilog((ctx, lc) => lc.ReadFrom.Configuration(ctx.Configuration))

@@ -2,6 +2,7 @@ using System.Linq;
 using System.Net.Sockets;
 using System.Text;
 using System.Text.Json;
+using TWL.Server.Architecture.Observability;
 using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Features.Combat;
 using TWL.Server.Features.Interactions;
@@ -112,7 +113,11 @@ public class ClientSession
                 {
                     _metrics?.RecordNetMessageProcessed();
                     var sw = System.Diagnostics.Stopwatch.StartNew();
-                    await HandleMessageAsync(netMsg);
+
+                    var traceId = Guid.NewGuid().ToString();
+                    PipelineLogger.LogStage(traceId, "NetworkReceive", 0, $"Op:{netMsg.Op} Size:{read}");
+
+                    await HandleMessageAsync(netMsg, traceId);
                     sw.Stop();
                     _metrics?.RecordMessageProcessingTime(sw.ElapsedTicks);
                 }
@@ -144,7 +149,7 @@ public class ClientSession
         }
     }
 
-    private async Task HandleMessageAsync(NetMessage msg)
+    private async Task HandleMessageAsync(NetMessage msg, string traceId)
     {
         if (msg == null) return;
 
@@ -155,10 +160,12 @@ public class ClientSession
             _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
             _metrics?.RecordValidationError();
             SecurityLogger.LogSecurityEvent("RateLimitExceeded", UserId, $"Opcode: {msg.Op}");
+            PipelineLogger.LogStage(traceId, "Validate", swValidate.Elapsed.TotalMilliseconds, "Failed: RateLimit");
             return;
         }
         swValidate.Stop();
         _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
+        PipelineLogger.LogStage(traceId, "Validate", swValidate.Elapsed.TotalMilliseconds, "Success");
 
         var swResolve = System.Diagnostics.Stopwatch.StartNew();
         switch (msg.Op)
@@ -197,6 +204,7 @@ public class ClientSession
         }
         swResolve.Stop();
         _metrics?.RecordPipelineResolveDuration(swResolve.ElapsedTicks);
+        PipelineLogger.LogStage(traceId, "Resolve", swResolve.Elapsed.TotalMilliseconds, $"Op:{msg.Op}");
     }
 
     private async Task HandlePetActionAsync(string payload)
