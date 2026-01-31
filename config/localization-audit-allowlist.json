@@ -48,5 +48,10 @@
     "TWL.Client/Presentation/Views",
     "TWL.Client/Presentation/Components",
     "TWL.Client/Presentation/Managers"
+  ],
+  "IgnoredFiles": [
+    "AssetLoader.cs",
+    "GameClientManager.cs",
+    "ClientCombatManager.cs"
   ]
 }

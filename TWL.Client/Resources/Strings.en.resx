@@ -9,20 +9,38 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SKILL_RockSmash" xml:space="preserve">
-    <value>Rock Smash</value>
+  <data name="SKILL_RockSmashI" xml:space="preserve">
+    <value>Rock Smash I</value>
+  </data>
+  <data name="SKILL_RockSmashII" xml:space="preserve">
+    <value>Rock Smash II</value>
+  </data>
+  <data name="SKILL_RockSmashIII" xml:space="preserve">
+    <value>Rock Smash III</value>
   </data>
   <data name="SKILL_BoulderCrush" xml:space="preserve">
     <value>Boulder Crush</value>
   </data>
-  <data name="SKILL_StoneBullet" xml:space="preserve">
-    <value>Stone Bullet</value>
+  <data name="SKILL_StoneBulletI" xml:space="preserve">
+    <value>Stone Bullet I</value>
+  </data>
+  <data name="SKILL_StoneBulletII" xml:space="preserve">
+    <value>Stone Bullet II</value>
+  </data>
+  <data name="SKILL_StoneBulletIII" xml:space="preserve">
+    <value>Stone Bullet III</value>
   </data>
   <data name="SKILL_RollingStone" xml:space="preserve">
     <value>Rolling Stone</value>
   </data>
-  <data name="SKILL_GaiasProtection" xml:space="preserve">
-    <value>Gaia's Protection</value>
+  <data name="SKILL_GaiasProtectionI" xml:space="preserve">
+    <value>Gaia's Protection I</value>
+  </data>
+  <data name="SKILL_GaiasProtectionII" xml:space="preserve">
+    <value>Gaia's Protection II</value>
+  </data>
+  <data name="SKILL_GaiasProtectionIII" xml:space="preserve">
+    <value>Gaia's Protection III</value>
   </data>
   <data name="SKILL_Entangle" xml:space="preserve">
     <value>Entangle</value>
