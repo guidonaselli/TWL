@@ -20,6 +20,8 @@ public class GameServer
     // Accesores para DB o lógic
     public DbService DB { get; private set; }
     public PetManager PetManager { get; private set; }
+    public MonsterManager MonsterManager { get; private set; }
+    public NpcManager NpcManager { get; private set; }
     public ServerQuestManager QuestManager { get; private set; }
     public CombatManager CombatManager { get; private set; }
     public InteractionManager InteractionManager { get; private set; }
@@ -57,6 +59,12 @@ public class GameServer
 
         PetManager = new PetManager();
         PetManager.Load("Content/Data/pets.json");
+
+        MonsterManager = new MonsterManager();
+        MonsterManager.Load("Content/Data/monsters.json");
+
+        NpcManager = new NpcManager();
+        NpcManager.Load("Content/Data/npcs.json");
 
         QuestManager = new ServerQuestManager();
         QuestManager.Load("Content/Data/quests.json");

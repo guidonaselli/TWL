@@ -22,6 +22,10 @@ public class PetDefinition
     public int RebirthSkillId; // skill si renace
     public string RebirthSprite;
 
+    // Asset paths (new)
+    public string SpritePath;
+    public string PortraitPath;
+
     // Legacy/Simple support
     public List<int> SkillIds; // skill fijos
 

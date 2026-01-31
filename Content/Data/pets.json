@@ -340,5 +340,100 @@
       "LevelLimit": 5,
       "BaseChance": 0.6
     }
+  },
+  {
+    "PetTypeId": 1011,
+    "Name": "Tiny Sea Otter",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Water",
+    "SpritePath": "Pets/pet_tiny_sea_otter_64_spritesheet.png",
+    "PortraitPath": "Portraits/pet_tiny_sea_otter_portrait_256.png",
+    "BaseHp": 80,
+    "BaseStr": 6,
+    "BaseCon": 6,
+    "BaseInt": 5,
+    "BaseWis": 5,
+    "BaseAgi": 8,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 7.0,
+      "SpGrowthPerLevel": 2.0,
+      "StrWeight": 20,
+      "ConWeight": 20,
+      "IntWeight": 20,
+      "WisWeight": 20,
+      "AgiWeight": 20
+    },
+    "Utilities": [
+      { "Type": "Gathering", "Value": 1.1, "RequiredLevel": 5, "RequiredAmity": 20 }
+    ],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.6
+    }
+  },
+  {
+    "PetTypeId": 1012,
+    "Name": "Leaf-wing Gecko",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Earth",
+    "SpritePath": "Pets/pet_leaf_wing_gecko_64_spritesheet.png",
+    "PortraitPath": "Portraits/pet_leaf_wing_gecko_portrait_256.png",
+    "BaseHp": 70,
+    "BaseStr": 4,
+    "BaseCon": 5,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 12,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 6.0,
+      "SpGrowthPerLevel": 3.0,
+      "StrWeight": 15,
+      "ConWeight": 15,
+      "IntWeight": 15,
+      "WisWeight": 15,
+      "AgiWeight": 40
+    },
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.6
+    }
+  },
+  {
+    "PetTypeId": 1013,
+    "Name": "Pebble Turtle",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Earth",
+    "SpritePath": "Pets/pet_pebble_turtle_64_spritesheet.png",
+    "PortraitPath": "Portraits/pet_pebble_turtle_portrait_256.png",
+    "BaseHp": 100,
+    "BaseStr": 5,
+    "BaseCon": 12,
+    "BaseInt": 3,
+    "BaseWis": 6,
+    "BaseAgi": 2,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 10.0,
+      "SpGrowthPerLevel": 2.0,
+      "StrWeight": 20,
+      "ConWeight": 40,
+      "IntWeight": 10,
+      "WisWeight": 20,
+      "AgiWeight": 10
+    },
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.6
+    }
   }
 ]
