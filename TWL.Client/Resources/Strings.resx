@@ -9,32 +9,68 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="SKILL_RockSmash" xml:space="preserve">
-    <value>Rock Smash</value>
+  <data name="SKILL_RockSmashI" xml:space="preserve">
+    <value>Rock Smash I</value>
+  </data>
+  <data name="SKILL_RockSmashII" xml:space="preserve">
+    <value>Rock Smash II</value>
+  </data>
+  <data name="SKILL_RockSmashIII" xml:space="preserve">
+    <value>Rock Smash III</value>
   </data>
   <data name="SKILL_BoulderCrush" xml:space="preserve">
     <value>Boulder Crush</value>
   </data>
-  <data name="SKILL_StoneBullet" xml:space="preserve">
-    <value>Stone Bullet</value>
+  <data name="SKILL_StoneBulletI" xml:space="preserve">
+    <value>Stone Bullet I</value>
+  </data>
+  <data name="SKILL_StoneBulletII" xml:space="preserve">
+    <value>Stone Bullet II</value>
+  </data>
+  <data name="SKILL_StoneBulletIII" xml:space="preserve">
+    <value>Stone Bullet III</value>
   </data>
   <data name="SKILL_RollingStone" xml:space="preserve">
     <value>Rolling Stone</value>
   </data>
-  <data name="SKILL_GaiasProtection" xml:space="preserve">
-    <value>Gaia's Protection</value>
+  <data name="SKILL_GaiasProtectionI" xml:space="preserve">
+    <value>Gaia's Protection I</value>
+  </data>
+  <data name="SKILL_GaiasProtectionII" xml:space="preserve">
+    <value>Gaia's Protection II</value>
+  </data>
+  <data name="SKILL_GaiasProtectionIII" xml:space="preserve">
+    <value>Gaia's Protection III</value>
   </data>
   <data name="SKILL_Entangle" xml:space="preserve">
     <value>Entangle</value>
   </data>
-  <data name="SKILL_AquaImpact" xml:space="preserve">
-    <value>Aqua Impact</value>
+  <data name="SKILL_AquaImpactI" xml:space="preserve">
+    <value>Aqua Impact I</value>
   </data>
-  <data name="SKILL_WaterBall" xml:space="preserve">
-    <value>Water Ball</value>
+  <data name="SKILL_AquaImpactII" xml:space="preserve">
+    <value>Aqua Impact II</value>
   </data>
-  <data name="SKILL_AquaRecover" xml:space="preserve">
-    <value>Aqua Recover</value>
+  <data name="SKILL_AquaImpactIII" xml:space="preserve">
+    <value>Aqua Impact III</value>
+  </data>
+  <data name="SKILL_WaterBallI" xml:space="preserve">
+    <value>Water Ball I</value>
+  </data>
+  <data name="SKILL_WaterBallII" xml:space="preserve">
+    <value>Water Ball II</value>
+  </data>
+  <data name="SKILL_WaterBallIII" xml:space="preserve">
+    <value>Water Ball III</value>
+  </data>
+  <data name="SKILL_AquaRecoverI" xml:space="preserve">
+    <value>Aqua Recover I</value>
+  </data>
+  <data name="SKILL_AquaRecoverII" xml:space="preserve">
+    <value>Aqua Recover II</value>
+  </data>
+  <data name="SKILL_AquaRecoverIII" xml:space="preserve">
+    <value>Aqua Recover III</value>
   </data>
   <data name="SKILL_Shrink" xml:space="preserve">
     <value>Shrink</value>
@@ -57,14 +93,32 @@
   <data name="SKILL_FairyBlessing" xml:space="preserve">
     <value>Fairy's Blessing</value>
   </data>
-  <data name="SKILL_FlameSmash" xml:space="preserve">
-    <value>Flame Smash</value>
+  <data name="SKILL_FlameSmashI" xml:space="preserve">
+    <value>Flame Smash I</value>
   </data>
-  <data name="SKILL_Fireball" xml:space="preserve">
-    <value>Fireball</value>
+  <data name="SKILL_FlameSmashII" xml:space="preserve">
+    <value>Flame Smash II</value>
   </data>
-  <data name="SKILL_FieryWill" xml:space="preserve">
-    <value>Fiery Will</value>
+  <data name="SKILL_FlameSmashIII" xml:space="preserve">
+    <value>Flame Smash III</value>
+  </data>
+  <data name="SKILL_FireballI" xml:space="preserve">
+    <value>Fireball I</value>
+  </data>
+  <data name="SKILL_FireballII" xml:space="preserve">
+    <value>Fireball II</value>
+  </data>
+  <data name="SKILL_FireballIII" xml:space="preserve">
+    <value>Fireball III</value>
+  </data>
+  <data name="SKILL_FieryWillI" xml:space="preserve">
+    <value>Fiery Will I</value>
+  </data>
+  <data name="SKILL_FieryWillII" xml:space="preserve">
+    <value>Fiery Will II</value>
+  </data>
+  <data name="SKILL_FieryWillIII" xml:space="preserve">
+    <value>Fiery Will III</value>
   </data>
   <data name="UI_Login" xml:space="preserve">
     <value>Login</value>

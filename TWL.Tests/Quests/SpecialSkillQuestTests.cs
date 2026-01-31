@@ -144,7 +144,7 @@ public class SpecialSkillQuestTests : IDisposable
         Assert.Contains(2003, _session.Character.KnownSkills);
 
         // Manually remove skill but keep flag to simulate corruption or just verifying flag check
-        lock(_session.Character.KnownSkills) { _session.Character.KnownSkills.Clear(); }
+        _session.Character.SkillMastery.Clear();
 
         // Act
         _session.GrantGoddessSkills();

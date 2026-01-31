@@ -75,7 +75,6 @@ public class SkillEvolutionTests
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Str = 10 };
 
         attacker.SkillMastery[2001] = new SkillMastery { Rank = 2, UsageCount = 10 };
-        attacker.KnownSkills.Add(2001);
 
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Con = 5 };
         manager.AddCharacter(attacker);

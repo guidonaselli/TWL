@@ -34,8 +34,8 @@ public class AutoBattleTests
         // Skills:
         // 10: Damage
         // 11: Dispel
-        actor.KnownSkills.Add(10);
-        actor.KnownSkills.Add(11);
+        actor.LearnSkill(10);
+        actor.LearnSkill(11);
 
         _skillCatalogMock.Setup(x => x.GetSkillById(10)).Returns(new Skill { SkillId = 10, SpCost = 5, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }, TargetType = SkillTargetType.SingleEnemy });
         _skillCatalogMock.Setup(x => x.GetSkillById(11)).Returns(new Skill { SkillId = 11, SpCost = 5, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Dispel } }, TargetType = SkillTargetType.SingleEnemy });
@@ -56,7 +56,7 @@ public class AutoBattleTests
         var enemy = new ServerCharacter { Id = 3, Name = "Enemy", Con = 10, Hp = 50 };
 
         // Skills: 10 (Damage)
-        actor.KnownSkills.Add(10);
+        actor.LearnSkill(10);
         _skillCatalogMock.Setup(x => x.GetSkillById(10)).Returns(new Skill
         {
             SkillId = 10,
@@ -83,7 +83,7 @@ public class AutoBattleTests
          var actor = new ServerCharacter { Id = 1, Name = "Actor", Sp = 100 };
          var enemy = new ServerCharacter { Id = 3, Name = "Enemy", Con = 10, Hp = 50 };
 
-         actor.KnownSkills.Add(10);
+         actor.LearnSkill(10);
          _skillCatalogMock.Setup(x => x.GetSkillById(10)).Returns(new Skill { SkillId = 10, SpCost = 5, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }, TargetType = SkillTargetType.SingleEnemy });
 
          var action1 = _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy }, 123, AutoBattlePolicy.Balanced);
@@ -104,7 +104,7 @@ public class AutoBattleTests
         ally.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.Seal, 0, 3, null), new StatusEngine());
 
         // Skills: Cleanse (12)
-        actor.KnownSkills.Add(12);
+        actor.LearnSkill(12);
         _skillCatalogMock.Setup(x => x.GetSkillById(12)).Returns(new Skill
         {
             SkillId = 12, SpCost = 5,
@@ -132,8 +132,8 @@ public class AutoBattleTests
         // 20: Cheap Damage (5 SP)
         // 21: Expensive Damage (15 SP) -> Remainder 5 < 10. Skip.
 
-        actor.KnownSkills.Add(20);
-        actor.KnownSkills.Add(21);
+        actor.LearnSkill(20);
+        actor.LearnSkill(21);
         _skillCatalogMock.Setup(x => x.GetSkillById(20)).Returns(new Skill { SkillId = 20, SpCost = 5, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }, TargetType = SkillTargetType.SingleEnemy });
         _skillCatalogMock.Setup(x => x.GetSkillById(21)).Returns(new Skill { SkillId = 21, SpCost = 15, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }, TargetType = SkillTargetType.SingleEnemy });
 
@@ -155,7 +155,7 @@ public class AutoBattleTests
         ally.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 3, "Def") { ConflictGroup = "Buff_Def" }, new StatusEngine());
 
         // Skills: Buff Def (Cost 10, ConflictGroup "Buff_Def")
-        actor.KnownSkills.Add(30);
+        actor.LearnSkill(30);
         _skillCatalogMock.Setup(x => x.GetSkillById(30)).Returns(new Skill
         {
             SkillId = 30, SpCost = 10,

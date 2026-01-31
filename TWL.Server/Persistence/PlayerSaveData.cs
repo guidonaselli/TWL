@@ -34,7 +34,15 @@ public class ServerCharacterData
     public float Y { get; set; }
     public List<Item> Inventory { get; set; } = new();
     public List<ServerPetData> Pets { get; set; } = new();
+    public List<SkillMasteryData> Skills { get; set; } = new();
     public string ActivePetInstanceId { get; set; }
+}
+
+public class SkillMasteryData
+{
+    public int SkillId { get; set; }
+    public int Rank { get; set; }
+    public int UsageCount { get; set; }
 }
 
 public class QuestData

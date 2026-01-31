@@ -54,7 +54,8 @@ public class DailySkillsTests
     public void AutoBattle_Selects_Seal_WhenEnemyDangerous()
     {
         // Arrange
-        var actor = new ServerCharacter { Id = 1, Sp = 100, KnownSkills = new List<int> { 100 } };
+        var actor = new ServerCharacter { Id = 1, Sp = 100 };
+        actor.LearnSkill(100);
         // Enemy: Con=10->Hp100, Str=25->Atk50, Int=25->Mat50
         var enemy = new ServerCharacter { Id = 2, Hp = 100, Con = 10, Str = 25, Int = 25 };
         var ally = new ServerCharacter { Id = 3, Hp = 100, Con = 10 };
@@ -81,7 +82,8 @@ public class DailySkillsTests
     public void AutoBattle_Selects_Buff_WhenAllyUnbuffed()
     {
         // Arrange
-        var actor = new ServerCharacter { Id = 1, Sp = 100, KnownSkills = new List<int> { 200 } };
+        var actor = new ServerCharacter { Id = 1, Sp = 100 };
+        actor.LearnSkill(200);
         var enemy = new ServerCharacter { Id = 2, Hp = 10 };
         var ally = new ServerCharacter { Id = 3, Hp = 100, Con = 10 }; // Needs buff
 
@@ -109,7 +111,8 @@ public class DailySkillsTests
     public void AutoBattle_Skips_Buff_IfAllyHasIt()
     {
         // Arrange
-        var actor = new ServerCharacter { Id = 1, Sp = 100, KnownSkills = new List<int> { 200 } };
+        var actor = new ServerCharacter { Id = 1, Sp = 100 };
+        actor.LearnSkill(200);
         var ally = new ServerCharacter { Id = 3, Hp = 100 };
         // Ally already has Agi Buff
         ally.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 3, "Agi"), new StatusEngine());

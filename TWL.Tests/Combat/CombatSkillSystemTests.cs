@@ -194,7 +194,7 @@ public class CombatSkillSystemTests
          _mockCatalog.AddSkill(skill2);
 
          var sChar = new TWL.Server.Simulation.Networking.ServerCharacter();
-         sChar.KnownSkills.Add(80);
+         sChar.LearnSkill(80);
 
          // Simulate usage
          // Usage 1 -> Rank 1
