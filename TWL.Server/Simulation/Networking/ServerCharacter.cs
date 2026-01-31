@@ -96,6 +96,7 @@ public class ServerCharacter : ServerCombatant
 
     public int MaxInventorySlots { get; set; } = 100;
 
+    private readonly Dictionary<int, long> _itemTotalQuantities = new();
     private readonly List<Item> _inventory = new();
     public IReadOnlyList<Item> Inventory
     {
@@ -291,6 +292,8 @@ public class ServerCharacter : ServerCombatant
             if (existing != null)
             {
                 existing.Quantity += quantity;
+                if (!_itemTotalQuantities.ContainsKey(itemId)) _itemTotalQuantities[itemId] = 0;
+                _itemTotalQuantities[itemId] += quantity;
                 IsDirty = true;
                 OnItemAdded?.Invoke(existing, quantity);
                 return true;
@@ -300,6 +303,8 @@ public class ServerCharacter : ServerCombatant
                 if (_inventory.Count >= MaxInventorySlots) return false;
                 var newItem = new Item { ItemId = itemId, Quantity = quantity, Policy = policy, BoundToId = boundToId };
                 _inventory.Add(newItem);
+                if (!_itemTotalQuantities.ContainsKey(itemId)) _itemTotalQuantities[itemId] = 0;
+                _itemTotalQuantities[itemId] += quantity;
                 IsDirty = true;
                 OnItemAdded?.Invoke(newItem, quantity);
                 return true;
@@ -311,15 +316,7 @@ public class ServerCharacter : ServerCombatant
     {
         lock (_inventory)
         {
-            long total = 0;
-            foreach (var item in _inventory)
-            {
-                if (item.ItemId == itemId)
-                {
-                    total += item.Quantity;
-                }
-            }
-            return total >= quantity;
+            return _itemTotalQuantities.TryGetValue(itemId, out long total) && total >= quantity;
         }
     }
 
@@ -349,6 +346,7 @@ public class ServerCharacter : ServerCombatant
 
             // Remove from candidates
             int remainingToRemove = quantity;
+            long totalRemoved = 0;
             foreach (var item in candidates)
             {
                 if (remainingToRemove <= 0) break;
@@ -356,12 +354,23 @@ public class ServerCharacter : ServerCombatant
                 int toTake = System.Math.Min(item.Quantity, remainingToRemove);
                 item.Quantity -= toTake;
                 remainingToRemove -= toTake;
+                totalRemoved += toTake;
 
                 if (item.Quantity <= 0)
                 {
                     _inventory.Remove(item);
                 }
             }
+
+            if (_itemTotalQuantities.TryGetValue(itemId, out long currentTotal))
+            {
+                long newTotal = currentTotal - totalRemoved;
+                if (newTotal <= 0)
+                    _itemTotalQuantities.Remove(itemId);
+                else
+                    _itemTotalQuantities[itemId] = newTotal;
+            }
+
             IsDirty = true;
             return true;
         }
@@ -497,8 +506,17 @@ public class ServerCharacter : ServerCombatant
         lock (_inventory)
         {
             _inventory.Clear();
+            _itemTotalQuantities.Clear();
             if (data.Inventory != null)
+            {
                 _inventory.AddRange(data.Inventory);
+                foreach (var item in _inventory)
+                {
+                    if (!_itemTotalQuantities.ContainsKey(item.ItemId))
+                        _itemTotalQuantities[item.ItemId] = 0;
+                    _itemTotalQuantities[item.ItemId] += item.Quantity;
+                }
+            }
         }
 
         lock (_pets)

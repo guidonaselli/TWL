@@ -106,4 +106,25 @@ public class ServerCharacterTests
         Assert.False(result);
         Assert.Equal(5, character.Inventory.First(i => i.ItemId == 101).Quantity);
     }
+
+    [Fact]
+    public void HasItem_ShouldWorkWithMultipleStacksAndPolicies()
+    {
+        var character = new ServerCharacter { Id = 1, Name = "Test" };
+        character.AddItem(101, 5, BindPolicy.Unbound);
+        character.AddItem(101, 5, BindPolicy.CharacterBound); // Should be a separate stack/item in list
+
+        // Ensure we have 2 items
+        // Note: AddItem logic:
+        // var existing = _inventory.Find(i => i.ItemId == itemId && i.Policy == policy && i.BoundToId == boundToId);
+        // The second AddItem has different policy, so it creates a new item.
+
+        Assert.Equal(2, character.Inventory.Count);
+        Assert.True(character.HasItem(101, 10)); // Total 10
+
+        character.RemoveItem(101, 6); // Removes 6 total
+
+        Assert.True(character.HasItem(101, 4));
+        Assert.False(character.HasItem(101, 5));
+    }
 }
