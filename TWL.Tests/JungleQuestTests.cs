@@ -13,7 +13,7 @@ public class JungleQuestTests
         // Arrange
         var questManager = new ServerQuestManager();
         // Path might vary depending on where tests run.
-        // Assuming running from TWL.Tests/bin/Debug/net8.0/
+        // Assuming running from TWL.Tests/bin/Debug/net10.0/
         // We need to go up 4 levels to root: ../../../../Content/Data/quests.json
         // Or we can try to find it.
 

@@ -24,7 +24,7 @@ public class QuestRuinsExpansionTests
         _questComponent = new PlayerQuestComponent(_questManager);
 
         // Load Real Data
-        // Adjust path to find Content/Data from bin/Debug/net8.0/
+        // Adjust path to find Content/Data from bin/Debug/net10.0/
         string contentPath = Path.Combine("..", "..", "..", "..", "Content", "Data");
         // If running in CI or specific env, fallback
         if (!Directory.Exists(contentPath)) contentPath = Path.Combine("Content", "Data");

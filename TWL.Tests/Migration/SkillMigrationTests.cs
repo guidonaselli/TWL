@@ -12,7 +12,7 @@ public class SkillMigrationTests
     public void CanonicalIds_MapTo_NewNames()
     {
         // Load the real server skills.json
-        // Adjust path to find repo root from bin/Debug/net8.0
+        // Adjust path to find repo root from bin/Debug/net10.0
         var path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
 
         Assert.True(File.Exists(path), $"skills.json not found at {path}");

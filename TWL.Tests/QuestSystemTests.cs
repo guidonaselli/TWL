@@ -106,12 +106,12 @@ public class QuestSystemTests
     public void LoadRealQuests_ShouldLoadCorrectly()
     {
         var qm = new ServerQuestManager();
-        // Assuming the test runs from bin/Debug/net8.0, we need to point to Content
+        // Assuming the test runs from bin/Debug/net10.0, we need to point to Content
         // But usually Content is copied or we need to go up folders.
         // Let's rely on the file existing in Content/Data/quests.json relative to repo root
         // Tests usually run in a temp folder.
 
-        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json"); // Relative from TWL.Tests/bin/Debug/net8.0
+        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json"); // Relative from TWL.Tests/bin/Debug/net10.0
         if (!System.IO.File.Exists(path))
         {
              // Fallback for different test runners

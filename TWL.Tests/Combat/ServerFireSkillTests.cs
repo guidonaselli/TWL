@@ -19,7 +19,7 @@ public class ServerFireSkillTests
         string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
         if (!File.Exists(path))
         {
-             // Try going up one more level if running from bin/Debug/net8.0
+             // Try going up one more level if running from bin/Debug/net10.0
              path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
         }
 
