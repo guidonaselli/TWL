@@ -2,29 +2,24 @@ using System;
 
 namespace TWL.Shared.Services;
 
-/// <summary>
-/// Defines a contract for scheduling world events and loops.
-/// Allows decoupling the game loop implementation from consumers.
-/// </summary>
 public interface IWorldScheduler
 {
-    /// <summary>
-    /// Starts the scheduler loop.
-    /// </summary>
     void Start();
-
-    /// <summary>
-    /// Stops the scheduler loop.
-    /// </summary>
     void Stop();
 
     /// <summary>
-    /// Schedules an action to be executed after a specified delay.
+    /// The current monotonic tick count of the world.
+    /// Increments by 1 every fixed time step (e.g. 50ms).
     /// </summary>
-    void Schedule(Action action, TimeSpan delay, string name = "Unnamed");
+    long CurrentTick { get; }
 
     /// <summary>
-    /// Schedules an action to be executed repeatedly at a specified interval.
+    /// Event fired every world tick.
+    /// Subscribers should be lightweight to avoid stalling the loop.
+    /// Argument is the CurrentTick.
     /// </summary>
+    event Action<long> OnTick;
+
+    void Schedule(Action action, TimeSpan delay, string name = "Unnamed");
     void ScheduleRepeating(Action action, TimeSpan interval, string name = "Unnamed");
 }

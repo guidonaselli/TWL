@@ -17,6 +17,14 @@ public class WorldScheduler : IWorldScheduler, IDisposable
     private readonly List<ScheduledTask> _scheduledTasks = new();
     private readonly object _lock = new();
 
+    private const int TickRateMs = 50; // 20 TPS
+    private const int MaxTicksPerFrame = 10; // Avoid spiral of death (max 500ms catchup)
+
+    private long _currentTick;
+    public long CurrentTick => _currentTick;
+
+    public event Action<long>? OnTick;
+
     private class ScheduledTask
     {
         public Action Action { get; set; } = () => { };
@@ -85,45 +93,98 @@ public class WorldScheduler : IWorldScheduler, IDisposable
 
     private async Task LoopAsync(CancellationToken token)
     {
+        var stopwatch = System.Diagnostics.Stopwatch.StartNew();
+        double accumulator = 0;
+        long lastMs = 0;
+
         while (!token.IsCancellationRequested)
         {
-            var sw = System.Diagnostics.Stopwatch.StartNew();
-            int tasksCount = 0;
-            try
-            {
-                tasksCount = ProcessTasks();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error in WorldScheduler loop");
-            }
-            sw.Stop();
+            long currentMs = stopwatch.ElapsedMilliseconds;
+            double frameTime = currentMs - lastMs;
+            lastMs = currentMs;
 
-            var elapsed = sw.ElapsedMilliseconds;
-            _metrics.RecordWorldLoopTick(elapsed, tasksCount);
+            // Cap frame time to avoid spiral of death
+            if (frameTime > 250) frameTime = 250;
 
-            if (elapsed > 50)
+            accumulator += frameTime;
+
+            int ticksProcessed = 0;
+            while (accumulator >= TickRateMs && ticksProcessed < MaxTicksPerFrame)
             {
-                _logger.LogWarning("Slow World Loop Tick: {Duration}ms", elapsed);
-                _metrics.RecordSlowWorldTick(elapsed);
+                try
+                {
+                    ProcessTick();
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Critical Error in WorldScheduler ProcessTick");
+                }
+
+                accumulator -= TickRateMs;
+                ticksProcessed++;
             }
 
-            try
+            // If we are still behind, discard the accumulator to catch up
+            if (accumulator >= TickRateMs)
             {
-                // Simple fixed delay loop (not fixed timestep, but good enough for now)
-                // Ideally we subtract elapsed time from delay to maintain 20 TPS
-                var delay = 50 - (int)elapsed;
-                if (delay < 1) delay = 1;
-                await Task.Delay(delay, token);
+                _logger.LogWarning("WorldScheduler skipping ticks to catch up. Accumulator: {Accumulator}ms", accumulator);
+                accumulator = 0;
             }
-            catch (OperationCanceledException)
+
+            // Sleep to yield CPU
+            var sleepTime = TickRateMs - (int)accumulator;
+            if (sleepTime > 0)
             {
-                break;
+                try
+                {
+                    await Task.Delay(sleepTime, token);
+                }
+                catch (OperationCanceledException)
+                {
+                    break;
+                }
+            }
+            else
+            {
+                // Yield to prevent thread starvation if we are running hot
+                await Task.Yield();
             }
         }
     }
 
-    private int ProcessTasks()
+    private void ProcessTick()
+    {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
+        _currentTick++;
+
+        // 1. Invoke Event Listeners
+        try
+        {
+            OnTick?.Invoke(_currentTick);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error executing OnTick listeners");
+        }
+
+        // 2. Process Legacy Scheduled Tasks
+        // Note: This is still checking time, not ticks, to respect the DateTime.UtcNow semantic of the existing Schedule API.
+        // It's checked every tick now, which is consistent.
+        int tasksCount = ProcessScheduledTasks();
+
+        sw.Stop();
+        var elapsed = sw.ElapsedMilliseconds;
+
+        // Metrics
+        _metrics.RecordWorldLoopTick(elapsed, tasksCount);
+        if (elapsed > TickRateMs)
+        {
+             _logger.LogWarning("Slow World Loop Tick: {Duration}ms > {Limit}ms", elapsed, TickRateMs);
+             _metrics.RecordSlowWorldTick(elapsed);
+        }
+    }
+
+    private int ProcessScheduledTasks()
     {
         var now = DateTime.UtcNow;
         var tasksToRun = new List<ScheduledTask>();
@@ -132,7 +193,6 @@ public class WorldScheduler : IWorldScheduler, IDisposable
         lock (_lock)
         {
             queueDepth = _scheduledTasks.Count;
-            // Iterate backwards to allow safe removal
             for (int i = _scheduledTasks.Count - 1; i >= 0; i--)
             {
                 var task = _scheduledTasks[i];
@@ -143,6 +203,8 @@ public class WorldScheduler : IWorldScheduler, IDisposable
                     if (task.Interval.HasValue)
                     {
                         // Schedule next run
+                        // Prevent drift by adding interval to previous NextRun, or set to Now + Interval?
+                        // Now + Interval is safer against burst execution after lag.
                         task.NextRun = now.Add(task.Interval.Value);
                     }
                     else
@@ -173,7 +235,7 @@ public class WorldScheduler : IWorldScheduler, IDisposable
             }
         }
 
-        return queueDepth; // Return initial queue depth for observability
+        return queueDepth;
     }
 
     public void Dispose()

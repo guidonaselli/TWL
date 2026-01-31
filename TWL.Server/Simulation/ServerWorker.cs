@@ -47,12 +47,15 @@ public class ServerWorker : IHostedService
         _log.LogInformation("Starting World Scheduler...");
         _worldScheduler.Start();
 
-        // Metrics Reporter (1 min interval)
-        _worldScheduler.ScheduleRepeating(() =>
+        // Metrics Reporter (1 min interval = 1200 ticks at 20 TPS)
+        _worldScheduler.OnTick += (tick) =>
         {
-            var snap = _metrics.GetSnapshot();
-            _log.LogInformation(snap.ToString());
-        }, TimeSpan.FromMinutes(1));
+            if (tick % 1200 == 0)
+            {
+                var snap = _metrics.GetSnapshot();
+                _log.LogInformation(snap.ToString());
+            }
+        };
 
         _log.LogInformation("Starting persistence service...");
         _playerService.Start();
