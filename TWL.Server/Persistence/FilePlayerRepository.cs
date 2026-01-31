@@ -47,4 +47,40 @@ public class FilePlayerRepository : IPlayerRepository
             return null;
         }
     }
+
+    public async Task SaveAsync(int userId, PlayerSaveData data)
+    {
+        var filePath = Path.Combine(_saveDirectory, $"{userId}.json");
+        var tmpPath = filePath + ".tmp";
+
+        using (var stream = new FileStream(tmpPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true))
+        {
+            await JsonSerializer.SerializeAsync(stream, data, _jsonOptions);
+        }
+
+        // Atomic move
+        File.Move(tmpPath, filePath, overwrite: true);
+    }
+
+    public async Task<PlayerSaveData?> LoadAsync(int userId)
+    {
+        var filePath = Path.Combine(_saveDirectory, $"{userId}.json");
+        if (!File.Exists(filePath))
+        {
+            return null;
+        }
+
+        try
+        {
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true))
+            {
+                return await JsonSerializer.DeserializeAsync<PlayerSaveData>(stream, _jsonOptions);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading save for user {userId}: {ex.Message}");
+            return null;
+        }
+    }
 }
