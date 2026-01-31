@@ -1,4 +1,5 @@
 using Microsoft.Xna.Framework;
+using TWL.Shared.Domain.Skills;
 
 namespace TWL.Shared.Domain.Characters;
 
@@ -119,11 +120,11 @@ public abstract class Character
             if (KnownSkills.Contains(skill.SkillId)) continue;
 
             var ok =
-                Str >= skill.StrRequirement &&
-                Con >= skill.ConRequirement &&
-                Int >= skill.IntRequirement &&
-                Wis >= skill.WisRequirement &&
-                Agi >= skill.AgiRequirement;
+                Str >= skill.Requirements.Str &&
+                Con >= skill.Requirements.Con &&
+                Int >= skill.Requirements.Int &&
+                Wis >= skill.Requirements.Wis &&
+                Agi >= skill.Requirements.Agi;
 
             if (ok) KnownSkills.Add(skill.SkillId);
         }
