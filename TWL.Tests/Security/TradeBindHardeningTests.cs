@@ -1,17 +1,14 @@
-using System;
-using System.IO;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Models;
-using Xunit;
 
 namespace TWL.Tests.Security;
 
 public class TradeBindHardeningTests
 {
-    private readonly TradeManager _tradeManager;
     private readonly ServerCharacter _alice;
     private readonly ServerCharacter _bob;
+    private readonly TradeManager _tradeManager;
 
     public TradeBindHardeningTests()
     {
@@ -80,7 +77,10 @@ public class TradeBindHardeningTests
         finally
         {
             economy.Dispose();
-            if (File.Exists(tempLedger)) File.Delete(tempLedger);
+            if (File.Exists(tempLedger))
+            {
+                File.Delete(tempLedger);
+            }
         }
     }
 }

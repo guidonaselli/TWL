@@ -1,25 +1,22 @@
-using System;
-using System.Collections.Generic;
-
 namespace TWL.Shared.Domain.Quests;
 
 public sealed record ObjectiveDefinition(
     string Type,
     string TargetName,
-    int    RequiredCount,
+    int RequiredCount,
     string Description,
-    int?   DataId = null);
+    int? DataId = null);
 
 public sealed record ItemReward(int ItemId, int Quantity);
 
 public sealed record ItemRequirement(int ItemId, int Quantity);
 
 public sealed record RewardDefinition(
-    int                      Exp,
-    int                      Gold,
+    int Exp,
+    int Gold,
     IReadOnlyList<ItemReward> Items,
-    int?                     PetUnlockId = null,
-    int?                     GrantSkillId = null);
+    int? PetUnlockId = null,
+    int? GrantSkillId = null);
 
 public sealed record InstanceRules(
     string InstanceId,
@@ -29,15 +26,15 @@ public sealed record InstanceRules(
 
 public sealed record QuestDefinition
 {
-    public required int QuestId                     { get; init; }
-    public required string Title                    { get; init; }
-    public string? TitleKey                         { get; init; }
-    public required string Description              { get; init; }
-    public string? DescriptionKey                   { get; init; }
-    public IReadOnlyList<int> Requirements          { get; init; } = [];
+    public required int QuestId { get; init; }
+    public required string Title { get; init; }
+    public string? TitleKey { get; init; }
+    public required string Description { get; init; }
+    public string? DescriptionKey { get; init; }
+    public IReadOnlyList<int> Requirements { get; init; } = [];
     public required IReadOnlyList<ObjectiveDefinition> Objectives { get; init; }
-    public required RewardDefinition Rewards        { get; init; }
-    public string? OnStartScript    { get; init; }
+    public required RewardDefinition Rewards { get; init; }
+    public string? OnStartScript { get; init; }
     public string? OnProgressScript { get; init; }
     public string? OnCompleteScript { get; init; }
 

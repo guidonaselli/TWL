@@ -1,7 +1,7 @@
-using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.Skills;
 using TWL.Tests.Mocks;
 
 namespace TWL.Tests.Combat;
@@ -15,7 +15,7 @@ public class CombatResolverTests
         // FixedFloat 0.5 returns min + (diff/2) -> 1.0 variance for (0.95, 1.05)
         var mockRandom = new MockRandomService { FixedFloat = 0.5f };
 
-        var resolver = new StandardCombatResolver(mockRandom, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
+        var resolver = new StandardCombatResolver(mockRandom, SkillRegistry.Instance);
 
         var attacker = new ServerCharacter { Str = 10 };
         var target = new ServerCharacter();
@@ -38,7 +38,7 @@ public class CombatResolverTests
         // FixedFloat 1.0 returns max -> 1.05 variance
         var mockRandom = new MockRandomService { FixedFloat = 1.0f };
 
-        var resolver = new StandardCombatResolver(mockRandom, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
+        var resolver = new StandardCombatResolver(mockRandom, SkillRegistry.Instance);
 
         var attacker = new ServerCharacter { Str = 10 };
         var target = new ServerCharacter();
@@ -60,7 +60,7 @@ public class CombatResolverTests
         // FixedFloat 0.0 returns min -> 0.95 variance
         var mockRandom = new MockRandomService { FixedFloat = 0.0f };
 
-        var resolver = new StandardCombatResolver(mockRandom, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
+        var resolver = new StandardCombatResolver(mockRandom, SkillRegistry.Instance);
 
         var attacker = new ServerCharacter { Str = 10 };
         var target = new ServerCharacter();

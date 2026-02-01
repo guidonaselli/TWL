@@ -1,30 +1,26 @@
-using System.Collections.Generic;
-using System.IO;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
-using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
 public class HousingQuestTests
 {
-    private readonly ServerQuestManager _questManager;
-    private readonly PlayerQuestComponent _playerQuests;
     private readonly ServerCharacter _character;
+    private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public HousingQuestTests()
     {
         _questManager = new ServerQuestManager();
 
         // Locate quests.json
-        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
+        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json");
         if (!File.Exists(path))
         {
-             // Try valid fallback if running from root
-             path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
+            // Try valid fallback if running from root
+            path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json");
         }
 
         Assert.True(File.Exists(path), $"Quest file not found at {Path.GetFullPath(path)}");
@@ -43,7 +39,7 @@ public class HousingQuestTests
     public void HousingChain_Should_Progress_Correctly()
     {
         // --- QUEST 9001: Housing Dreams ---
-        int q1 = 9001;
+        var q1 = 9001;
         Assert.True(_playerQuests.CanStartQuest(q1), "Should start 9001");
         Assert.True(_playerQuests.StartQuest(q1));
 
@@ -54,7 +50,7 @@ public class HousingQuestTests
         Assert.True(_playerQuests.ClaimReward(q1));
 
         // --- QUEST 9002: Building Blocks ---
-        int q2 = 9002;
+        var q2 = 9002;
         Assert.True(_playerQuests.CanStartQuest(q2), "Should start 9002 after 9001");
         Assert.True(_playerQuests.StartQuest(q2));
 
@@ -71,7 +67,7 @@ public class HousingQuestTests
         Assert.True(_playerQuests.ClaimReward(q2));
 
         // --- QUEST 9003: The Price of Land ---
-        int q3 = 9003;
+        var q3 = 9003;
         Assert.True(_playerQuests.CanStartQuest(q3), "Should start 9003 after 9002");
         Assert.True(_playerQuests.StartQuest(q3));
 
@@ -85,7 +81,7 @@ public class HousingQuestTests
         Assert.True(_playerQuests.ClaimReward(q3));
 
         // --- QUEST 9004: Landowner ---
-        int q4 = 9004;
+        var q4 = 9004;
         Assert.True(_playerQuests.CanStartQuest(q4), "Should start 9004 after 9003");
         Assert.True(_playerQuests.StartQuest(q4));
 

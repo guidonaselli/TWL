@@ -1,3 +1,5 @@
 namespace TWL.Server.Architecture.Pipeline;
 
-public interface ICommand<out TResult> { }
+public interface ICommand<out TResult>
+{
+}

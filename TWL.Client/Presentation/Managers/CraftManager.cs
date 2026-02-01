@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.IO;
-using System.Text.Json;
+﻿using System.Text.Json;
 using TWL.Client.Presentation.Crafting;
 using TWL.Shared.Domain.Characters;
 
@@ -8,8 +6,8 @@ namespace TWL.Client.Managers;
 
 public class CraftManager
 {
-    private readonly Dictionary<int, CraftRecipe> _recipes;
     private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
+    private readonly Dictionary<int, CraftRecipe> _recipes;
 
     public CraftManager()
     {
@@ -20,12 +18,18 @@ public class CraftManager
 
     public void LoadRecipesFromJson(string path)
     {
-        if (!File.Exists(path)) throw new FileNotFoundException($"Recipes file not found at path: {path}");
+        if (!File.Exists(path))
+        {
+            throw new FileNotFoundException($"Recipes file not found at path: {path}");
+        }
 
         var jsonContent = File.ReadAllText(path);
         var recipeDefinitions = JsonSerializer.Deserialize<List<RecipeDefinition>>(jsonContent, _jsonOptions);
 
-        if (recipeDefinitions == null) return;
+        if (recipeDefinitions == null)
+        {
+            return;
+        }
 
         _recipes.Clear();
         foreach (var definition in recipeDefinitions)
@@ -45,14 +49,20 @@ public class CraftManager
 
     public bool CanCraft(int recipeId, Inventory inv)
     {
-        if (!_recipes.TryGetValue(recipeId, out var recipe)) return false;
+        if (!_recipes.TryGetValue(recipeId, out var recipe))
+        {
+            return false;
+        }
 
         foreach (var requirement in recipe.RequiredItems)
         {
             var itemId = requirement.Key;
             var requiredQuantity = requirement.Value;
 
-            if (!inv.HasItem(itemId, requiredQuantity)) return false;
+            if (!inv.HasItem(itemId, requiredQuantity))
+            {
+                return false;
+            }
         }
 
         return true;
@@ -60,7 +70,10 @@ public class CraftManager
 
     public bool CraftItem(int recipeId, Inventory inv)
     {
-        if (!CanCraft(recipeId, inv)) return false;
+        if (!CanCraft(recipeId, inv))
+        {
+            return false;
+        }
 
         var recipe = _recipes[recipeId];
 
@@ -78,13 +91,7 @@ public class CraftManager
         return true;
     }
 
-    public IEnumerable<CraftRecipe> GetAllRecipes()
-    {
-        return _recipes.Values;
-    }
+    public IEnumerable<CraftRecipe> GetAllRecipes() => _recipes.Values;
 
-    public CraftRecipe GetRecipe(int recipeId)
-    {
-        return _recipes.TryGetValue(recipeId, out var recipe) ? recipe : null;
-    }
+    public CraftRecipe GetRecipe(int recipeId) => _recipes.TryGetValue(recipeId, out var recipe) ? recipe : null;
 }

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TWL.Shared.Domain.Characters;
@@ -9,13 +6,14 @@ namespace TWL.Server.Simulation.Managers;
 
 public class MonsterManager
 {
-    private readonly Dictionary<int, MonsterDefinition> _definitions = new();
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         IncludeFields = true,
         Converters = { new JsonStringEnumConverter() }
     };
+
+    private readonly Dictionary<int, MonsterDefinition> _definitions = new();
 
     public void Load(string path)
     {
@@ -38,8 +36,10 @@ public class MonsterManager
                     {
                         Console.WriteLine($"Warning: Duplicate monster ID {def.MonsterId}");
                     }
+
                     _definitions[def.MonsterId] = def;
                 }
+
                 Console.WriteLine($"Loaded {_definitions.Count} monster definitions.");
             }
         }
@@ -49,8 +49,5 @@ public class MonsterManager
         }
     }
 
-    public virtual MonsterDefinition? GetDefinition(int monsterId)
-    {
-        return _definitions.GetValueOrDefault(monsterId);
-    }
+    public virtual MonsterDefinition? GetDefinition(int monsterId) => _definitions.GetValueOrDefault(monsterId);
 }

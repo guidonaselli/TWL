@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Skills;
 using TWL.Shared.Services;
@@ -65,9 +62,10 @@ public class StatusEngine : IStatusEngine
                     }
                     else
                     {
-                         // Just refresh if max stack reached
-                         existing.TurnsRemaining = Math.Max(existing.TurnsRemaining, newEffect.TurnsRemaining);
+                        // Just refresh if max stack reached
+                        existing.TurnsRemaining = Math.Max(existing.TurnsRemaining, newEffect.TurnsRemaining);
                     }
+
                     break;
             }
         }
@@ -85,7 +83,7 @@ public class StatusEngine : IStatusEngine
         }
         else
         {
-            for (int i = effects.Count - 1; i >= 0; i--)
+            for (var i = effects.Count - 1; i >= 0; i--)
             {
                 if (match(effects[i]))
                 {
@@ -97,7 +95,7 @@ public class StatusEngine : IStatusEngine
 
     public void Tick(IList<StatusEffectInstance> effects)
     {
-        for (int i = effects.Count - 1; i >= 0; i--)
+        for (var i = effects.Count - 1; i >= 0; i--)
         {
             var effect = effects[i];
             effect.TurnsRemaining--;

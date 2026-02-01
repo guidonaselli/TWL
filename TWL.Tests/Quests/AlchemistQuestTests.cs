@@ -1,30 +1,26 @@
-using System.Collections.Generic;
-using System.IO;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
-using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
 public class AlchemistQuestTests
 {
-    private readonly ServerQuestManager _questManager;
-    private readonly PlayerQuestComponent _playerQuests;
     private readonly ServerCharacter _character;
+    private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public AlchemistQuestTests()
     {
         _questManager = new ServerQuestManager();
 
         // Locate quests.json
-        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
+        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json");
         if (!File.Exists(path))
         {
-             // Try valid fallback if running from root
-             path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
+            // Try valid fallback if running from root
+            path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json");
         }
 
         Assert.True(File.Exists(path), $"Quest file not found at {Path.GetFullPath(path)}");
@@ -74,7 +70,7 @@ public class AlchemistQuestTests
         Assert.True(_playerQuests.StartQuest(2003));
 
         // Objective: Craft 1 Minor Potion
-        updated = _playerQuests.TryProgress("Craft", "Minor Potion", 1);
+        updated = _playerQuests.TryProgress("Craft", "Minor Potion");
         Assert.Single(updated);
         Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[2003]);
 

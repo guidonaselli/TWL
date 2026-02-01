@@ -1,6 +1,4 @@
-using System.Collections.Generic;
 using TWL.Shared.Domain.Models;
-using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
 
 namespace TWL.Server.Persistence;

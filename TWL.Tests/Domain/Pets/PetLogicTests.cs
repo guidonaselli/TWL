@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using Xunit;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 
@@ -16,9 +14,9 @@ public class PetLogicTests
             Name = "Test",
             SkillSet = new List<PetSkillSet>
             {
-                new PetSkillSet { SkillId = 101, UnlockLevel = 5, UnlockAmity = 0 },
-                new PetSkillSet { SkillId = 102, UnlockLevel = 10, UnlockAmity = 60 },
-                new PetSkillSet { SkillId = 103, UnlockLevel = 1, UnlockAmity = 0, RequiresRebirth = true }
+                new() { SkillId = 101, UnlockLevel = 5, UnlockAmity = 0 },
+                new() { SkillId = 102, UnlockLevel = 10, UnlockAmity = 60 },
+                new() { SkillId = 103, UnlockLevel = 1, UnlockAmity = 0, RequiresRebirth = true }
             }
         };
         var pet = new ServerPet(def); // Level 1, Amity 50
@@ -56,7 +54,7 @@ public class PetLogicTests
         var pet = new ServerPet(def);
         pet.Level = 100;
 
-        bool result = pet.TryRebirth();
+        var result = pet.TryRebirth();
         Assert.True(result);
         Assert.Equal(1, pet.Level);
         Assert.True(pet.HasRebirthed);

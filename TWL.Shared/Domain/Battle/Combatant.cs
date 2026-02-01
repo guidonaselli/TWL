@@ -1,9 +1,17 @@
 using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.Skills;
 
 namespace TWL.Shared.Domain.Battle;
 
 public class Combatant
 {
+    public Combatant(Character character)
+    {
+        Character = character;
+        Atb = 0;
+        IsDefending = false;
+    }
+
     public int BattleId { get; set; } // Unique ID within the battle
     public Character Character { get; private set; }
     public double Atb { get; set; } // 0 to 100
@@ -13,14 +21,7 @@ public class Combatant
 
     public Dictionary<int, int> SkillRanks { get; set; } = new();
 
-    public List<StatusEffectInstance> StatusEffects { get; private set; } = new();
-
-    public Combatant(Character character)
-    {
-        Character = character;
-        Atb = 0;
-        IsDefending = false;
-    }
+    public List<StatusEffectInstance> StatusEffects { get; } = new();
 
     public void AddStatusEffect(StatusEffectInstance effect)
     {
@@ -37,10 +38,7 @@ public class Combatant
         }
     }
 
-    public void RemoveStatusEffect(TWL.Shared.Domain.Skills.SkillEffectTag tag)
-    {
-        StatusEffects.RemoveAll(e => e.Tag == tag);
-    }
+    public void RemoveStatusEffect(SkillEffectTag tag) => StatusEffects.RemoveAll(e => e.Tag == tag);
 
     public void ResetTurn()
     {
@@ -48,8 +46,5 @@ public class Combatant
         IsDefending = false;
     }
 
-    public bool IsReady()
-    {
-        return Atb >= 100;
-    }
+    public bool IsReady() => Atb >= 100;
 }

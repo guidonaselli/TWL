@@ -6,10 +6,7 @@ namespace TWL.Server.Services.World.Handlers;
 
 public class MapTransitionHandler : ITriggerHandler
 {
-    public bool CanHandle(string triggerType)
-    {
-        return triggerType == WorldConstants.TriggerTypes.MapTransition;
-    }
+    public bool CanHandle(string triggerType) => triggerType == WorldConstants.TriggerTypes.MapTransition;
 
     public void ExecuteEnter(ServerCharacter character, ServerTrigger trigger, IWorldTriggerService context)
     {
@@ -28,8 +25,6 @@ public class MapTransitionHandler : ITriggerHandler
         }
     }
 
-    public void ExecuteInteract(ServerCharacter character, ServerTrigger trigger, IWorldTriggerService context)
-    {
+    public void ExecuteInteract(ServerCharacter character, ServerTrigger trigger, IWorldTriggerService context) =>
         ExecuteEnter(character, trigger, context);
-    }
 }

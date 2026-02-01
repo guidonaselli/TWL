@@ -1,7 +1,5 @@
 using System.Diagnostics;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.Models;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace TWL.Tests.Benchmarks;
@@ -21,8 +19,8 @@ public class InventoryBenchmarkTests
         var character = new ServerCharacter();
         character.MaxInventorySlots = 10000;
 
-        int itemCount = 5000;
-        for (int i = 0; i < itemCount; i++)
+        var itemCount = 5000;
+        for (var i = 0; i < itemCount; i++)
         {
             character.AddItem(i, 10);
         }
@@ -32,8 +30,8 @@ public class InventoryBenchmarkTests
 
         var stopwatch = Stopwatch.StartNew();
 
-        int iterations = 100000;
-        for (int i = 0; i < iterations; i++)
+        var iterations = 100000;
+        for (var i = 0; i < iterations; i++)
         {
             // Check for an item at the end of the list
             character.HasItem(itemCount - 1, 1);

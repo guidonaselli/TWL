@@ -1,5 +1,4 @@
 ﻿using Npgsql;
-using System.Threading.Tasks;
 
 namespace TWL.Server.Persistence.Database;
 
@@ -64,7 +63,11 @@ public class DbService : IDisposable
         cmd.Parameters.AddWithValue("p", passHash);
 
         var result = await cmd.ExecuteScalarAsync();
-        if (result == null) return -1;
+        if (result == null)
+        {
+            return -1;
+        }
+
         return Convert.ToInt32(result);
     }
 
@@ -74,7 +77,9 @@ public class DbService : IDisposable
         {
             if (disposing)
                 // Dispose managed resources if needed
+            {
                 Console.WriteLine("Database connection disposed.");
+            }
 
             // Free unmanaged resources if any
             _disposed = true;

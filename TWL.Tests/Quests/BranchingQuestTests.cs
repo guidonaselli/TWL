@@ -1,16 +1,15 @@
-using System.Collections.Generic;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
 public class BranchingQuestTests
 {
-    private readonly ServerQuestManager _questManager;
     private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public BranchingQuestTests()
     {
@@ -18,23 +17,23 @@ public class BranchingQuestTests
         // Create mock data
         var quests = new List<QuestDefinition>
         {
-            new QuestDefinition
+            new()
             {
                 QuestId = 1,
                 Title = "Path A",
                 Description = "A",
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "A", 1, "Talk") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "A", 1, "Talk") },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 MutualExclusionGroup = "Path",
                 FlagsSet = new List<string> { "Done_A" },
                 BlockedByFlags = new List<string> { "Done_B" }
             },
-            new QuestDefinition
+            new()
             {
                 QuestId = 2,
                 Title = "Path B",
                 Description = "B",
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "B", 1, "Talk") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "B", 1, "Talk") },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 MutualExclusionGroup = "Path",
                 FlagsSet = new List<string> { "Done_B" },
@@ -42,8 +41,8 @@ public class BranchingQuestTests
             }
         };
 
-        string json = System.Text.Json.JsonSerializer.Serialize(quests);
-        System.IO.File.WriteAllText("test_quests_branching.json", json);
+        var json = JsonSerializer.Serialize(quests);
+        File.WriteAllText("test_quests_branching.json", json);
         _questManager.Load("test_quests_branching.json");
 
         _playerQuests = new PlayerQuestComponent(_questManager);

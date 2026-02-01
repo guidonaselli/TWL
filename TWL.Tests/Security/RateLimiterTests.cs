@@ -1,7 +1,5 @@
-using System.Threading;
 using TWL.Server.Security;
 using TWL.Shared.Net.Network;
-using Xunit;
 
 namespace TWL.Tests.Security;
 
@@ -14,7 +12,7 @@ public class RateLimiterTests
         limiter.SetPolicy(Opcode.MoveRequest, 10, 10);
 
         // Should allow 10 requests immediately
-        for (int i = 0; i < 10; i++)
+        for (var i = 0; i < 10; i++)
         {
             Assert.True(limiter.Check(Opcode.MoveRequest), $"Request {i} failed");
         }

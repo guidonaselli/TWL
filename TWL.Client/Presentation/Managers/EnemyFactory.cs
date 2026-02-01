@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TWL.Client.Presentation.Services;
 using TWL.Shared.Domain.Characters;
 

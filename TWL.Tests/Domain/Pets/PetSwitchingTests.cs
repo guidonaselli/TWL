@@ -1,4 +1,3 @@
-using Xunit;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 
@@ -18,7 +17,7 @@ public class PetSwitchingTests
         Assert.Null(chara.ActivePetInstanceId);
 
         // Set Active
-        bool result = chara.SetActivePet(pet.InstanceId);
+        var result = chara.SetActivePet(pet.InstanceId);
         Assert.True(result);
         Assert.Equal(pet.InstanceId, chara.ActivePetInstanceId);
         Assert.Equal(pet, chara.GetActivePet());
@@ -29,7 +28,7 @@ public class PetSwitchingTests
     {
         var chara = new ServerCharacter();
 
-        bool result = chara.SetActivePet("some-guid");
+        var result = chara.SetActivePet("some-guid");
         Assert.False(result);
         Assert.Null(chara.ActivePetInstanceId);
     }
@@ -43,7 +42,7 @@ public class PetSwitchingTests
         chara.AddPet(pet);
         chara.SetActivePet(pet.InstanceId);
 
-        bool result = chara.SetActivePet(null);
+        var result = chara.SetActivePet(null);
         Assert.True(result);
         Assert.Null(chara.ActivePetInstanceId);
     }

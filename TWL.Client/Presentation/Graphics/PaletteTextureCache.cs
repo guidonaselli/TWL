@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework.Graphics;
 
 namespace TWL.Client.Presentation.Graphics;
@@ -8,10 +7,7 @@ public static class PaletteTextureCache
     // Key: "AssetPath_ColorHash" -> Texture
     private static readonly Dictionary<string, Texture2D> _cache = new();
 
-    public static Texture2D? Get(string key)
-    {
-        return _cache.TryGetValue(key, out var tex) ? tex : null;
-    }
+    public static Texture2D? Get(string key) => _cache.TryGetValue(key, out var tex) ? tex : null;
 
     public static void Add(string key, Texture2D tex)
     {
@@ -27,6 +23,7 @@ public static class PaletteTextureCache
         {
             tex.Dispose();
         }
+
         _cache.Clear();
     }
 }

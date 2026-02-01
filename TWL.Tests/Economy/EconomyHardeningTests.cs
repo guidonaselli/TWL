@@ -1,17 +1,13 @@
-using System;
-using System.IO;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.DTO;
-using Xunit;
 
 namespace TWL.Tests.Economy;
 
 public class EconomyHardeningTests : IDisposable
 {
-    private string _tempLedger;
-    private EconomyManager _economy;
-    private ServerCharacter _character;
+    private readonly ServerCharacter _character;
+    private readonly EconomyManager _economy;
+    private readonly string _tempLedger;
 
     public EconomyHardeningTests()
     {
@@ -31,7 +27,13 @@ public class EconomyHardeningTests : IDisposable
         _economy?.Dispose();
         if (File.Exists(_tempLedger))
         {
-            try { File.Delete(_tempLedger); } catch { }
+            try
+            {
+                File.Delete(_tempLedger);
+            }
+            catch
+            {
+            }
         }
     }
 
@@ -39,7 +41,7 @@ public class EconomyHardeningTests : IDisposable
     public void RateLimit_ShouldBlockExcessiveRequests()
     {
         // Limit is 10 per minute by default
-        for (int i = 0; i < 10; i++)
+        for (var i = 0; i < 10; i++)
         {
             var result = _economy.InitiatePurchase(_character.Id, "gems_100");
             Assert.NotNull(result);

@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TWL.Shared.Domain.Quests;
 
 namespace TWL.Server.Simulation.Managers;
@@ -57,17 +54,24 @@ public static class QuestValidator
         return errors;
     }
 
-    private static void ValidateQuest(QuestDefinition quest, Dictionary<int, QuestDefinition> lookup, List<string> errors)
+    private static void ValidateQuest(QuestDefinition quest, Dictionary<int, QuestDefinition> lookup,
+        List<string> errors)
     {
         // 1. Basic Metadata
         if (string.IsNullOrWhiteSpace(quest.Title))
+        {
             errors.Add($"Quest {quest.QuestId}: Title is missing.");
+        }
 
         if (string.IsNullOrWhiteSpace(quest.Description))
+        {
             errors.Add($"Quest {quest.QuestId}: Description is missing.");
+        }
 
         if (quest.TimeLimitSeconds.HasValue && quest.TimeLimitSeconds.Value <= 0)
+        {
             errors.Add($"Quest {quest.QuestId}: TimeLimitSeconds must be positive.");
+        }
 
         // 2. Requirements (Prerequisites)
         if (quest.Requirements != null)
@@ -101,7 +105,7 @@ public static class QuestValidator
         }
         else
         {
-            for (int i = 0; i < quest.Objectives.Count; i++)
+            for (var i = 0; i < quest.Objectives.Count; i++)
             {
                 var obj = quest.Objectives[i];
                 ValidateObjective(quest.QuestId, i, obj, errors);
@@ -130,8 +134,8 @@ public static class QuestValidator
 
         if (string.IsNullOrWhiteSpace(obj.TargetName) && !obj.DataId.HasValue)
         {
-             // Enforce TargetName OR DataId
-             errors.Add($"Quest {questId} Obj {index}: TargetName or DataId is missing.");
+            // Enforce TargetName OR DataId
+            errors.Add($"Quest {questId} Obj {index}: TargetName or DataId is missing.");
         }
 
         if (obj.RequiredCount <= 0)
@@ -153,15 +157,29 @@ public static class QuestValidator
 
     private static void ValidateRewards(int questId, RewardDefinition rewards, List<string> errors)
     {
-        if (rewards.Exp < 0) errors.Add($"Quest {questId}: Exp reward cannot be negative.");
-        if (rewards.Gold < 0) errors.Add($"Quest {questId}: Gold reward cannot be negative.");
+        if (rewards.Exp < 0)
+        {
+            errors.Add($"Quest {questId}: Exp reward cannot be negative.");
+        }
+
+        if (rewards.Gold < 0)
+        {
+            errors.Add($"Quest {questId}: Gold reward cannot be negative.");
+        }
 
         if (rewards.Items != null)
         {
             foreach (var item in rewards.Items)
             {
-                if (item.ItemId <= 0) errors.Add($"Quest {questId}: Invalid ItemReward ID {item.ItemId}.");
-                if (item.Quantity <= 0) errors.Add($"Quest {questId}: Invalid ItemReward Quantity {item.Quantity}.");
+                if (item.ItemId <= 0)
+                {
+                    errors.Add($"Quest {questId}: Invalid ItemReward ID {item.ItemId}.");
+                }
+
+                if (item.Quantity <= 0)
+                {
+                    errors.Add($"Quest {questId}: Invalid ItemReward Quantity {item.Quantity}.");
+                }
             }
         }
     }

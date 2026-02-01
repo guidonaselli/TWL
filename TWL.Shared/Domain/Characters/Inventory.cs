@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using TWL.Shared.Domain.Models;
 
 namespace TWL.Shared.Domain.Characters;
@@ -21,22 +19,30 @@ public class Inventory
         get => _slots.AsReadOnly();
         set
         {
-            if (value == null) return;
+            if (value == null)
+            {
+                return;
+            }
+
             _slots.Clear();
             foreach (var slot in value)
+            {
                 if (slot != null)
+                {
                     _slots.Add(slot);
+                }
+            }
         }
     }
 
-    public void AddItem(int itemId, int quantity)
-    {
-        AddItem(itemId, quantity, BindPolicy.Unbound, null);
-    }
+    public void AddItem(int itemId, int quantity) => AddItem(itemId, quantity, BindPolicy.Unbound, null);
 
     public void AddItem(int itemId, int quantity, BindPolicy policy, int? boundToId)
     {
-        if (quantity <= 0) return;
+        if (quantity <= 0)
+        {
+            return;
+        }
 
         // Try to find an existing stack that matches exactly
         var existing = _slots.FirstOrDefault(s => s.ItemId == itemId && s.Policy == policy && s.BoundToId == boundToId);
@@ -53,20 +59,23 @@ public class Inventory
 
     public bool HasItem(int itemId, int requiredQuantity)
     {
-        if (requiredQuantity <= 0) return false;
+        if (requiredQuantity <= 0)
+        {
+            return false;
+        }
 
-        long total = _slots.Where(s => s.ItemId == itemId).Sum(s => (long)s.Quantity);
+        var total = _slots.Where(s => s.ItemId == itemId).Sum(s => (long)s.Quantity);
         return total >= requiredQuantity;
     }
 
-    public bool RemoveItem(int itemId, int quantity)
-    {
-        return RemoveItem(itemId, quantity, null);
-    }
+    public bool RemoveItem(int itemId, int quantity) => RemoveItem(itemId, quantity, null);
 
     public bool RemoveItem(int itemId, int quantity, BindPolicy? policyFilter)
     {
-        if (quantity <= 0) return false;
+        if (quantity <= 0)
+        {
+            return false;
+        }
 
         var candidates = _slots.Where(s => s.ItemId == itemId).ToList();
         if (policyFilter.HasValue)
@@ -74,15 +83,22 @@ public class Inventory
             candidates = candidates.Where(s => s.Policy == policyFilter.Value).ToList();
         }
 
-        long totalAvailable = candidates.Sum(s => (long)s.Quantity);
-        if (totalAvailable < quantity) return false;
+        var totalAvailable = candidates.Sum(s => (long)s.Quantity);
+        if (totalAvailable < quantity)
+        {
+            return false;
+        }
 
-        int remaining = quantity;
+        var remaining = quantity;
 
         foreach (var slot in candidates)
         {
-            if (remaining <= 0) break;
-            int toTake = System.Math.Min(slot.Quantity, remaining);
+            if (remaining <= 0)
+            {
+                break;
+            }
+
+            var toTake = Math.Min(slot.Quantity, remaining);
 
             slot.Quantity -= toTake;
             remaining -= toTake;
@@ -96,8 +112,5 @@ public class Inventory
         return true;
     }
 
-    public int GetItemCount(int itemId)
-    {
-        return _slots.Where(s => s.ItemId == itemId).Sum(s => s.Quantity);
-    }
+    public int GetItemCount(int itemId) => _slots.Where(s => s.ItemId == itemId).Sum(s => s.Quantity);
 }

@@ -1,4 +1,3 @@
-using Xunit;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Models;
 
@@ -42,7 +41,7 @@ public class ServerCharacterHardeningTests
         var character = new ServerCharacter { Id = 789 };
 
         // Act
-        character.AddItem(3, 1, BindPolicy.Unbound);
+        character.AddItem(3, 1);
 
         // Assert
         var items = character.GetItems(3);

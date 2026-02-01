@@ -1,8 +1,5 @@
-using Xunit;
-using TWL.Shared.Domain.Skills;
 using TWL.Shared.Constants;
-using System.IO;
-using System;
+using TWL.Shared.Domain.Skills;
 
 namespace TWL.Tests.Migration;
 
@@ -13,7 +10,7 @@ public class SkillMigrationTests
     {
         // Load the real server skills.json
         // Adjust path to find repo root from bin/Debug/net10.0
-        var path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
+        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/skills.json");
 
         Assert.True(File.Exists(path), $"skills.json not found at {path}");
 

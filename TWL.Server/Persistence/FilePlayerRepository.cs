@@ -4,8 +4,8 @@ namespace TWL.Server.Persistence;
 
 public class FilePlayerRepository : IPlayerRepository
 {
-    private readonly string _saveDirectory;
     private static readonly JsonSerializerOptions _jsonOptions = new() { WriteIndented = true };
+    private readonly string _saveDirectory;
 
     public FilePlayerRepository(string saveDirectory = "Data/Saves")
     {
@@ -42,13 +42,13 @@ public class FilePlayerRepository : IPlayerRepository
         var filePath = Path.Combine(_saveDirectory, $"{userId}.json");
         var tmpPath = filePath + ".tmp";
 
-        using (var stream = new FileStream(tmpPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, useAsync: true))
+        using (var stream = new FileStream(tmpPath, FileMode.Create, FileAccess.Write, FileShare.None, 4096, true))
         {
             await JsonSerializer.SerializeAsync(stream, data, _jsonOptions);
         }
 
         // Atomic move
-        File.Move(tmpPath, filePath, overwrite: true);
+        File.Move(tmpPath, filePath, true);
     }
 
     public async Task<PlayerSaveData?> LoadAsync(int userId)
@@ -61,7 +61,7 @@ public class FilePlayerRepository : IPlayerRepository
 
         try
         {
-            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, useAsync: true))
+            using (var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read, 4096, true))
             {
                 return await JsonSerializer.DeserializeAsync<PlayerSaveData>(stream, _jsonOptions);
             }

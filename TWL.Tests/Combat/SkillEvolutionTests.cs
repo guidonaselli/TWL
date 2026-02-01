@@ -1,9 +1,7 @@
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.Skills;
-using TWL.Shared.Services;
-using Xunit;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.Skills;
 using TWL.Tests.Mocks;
 
 namespace TWL.Tests.Combat;
@@ -49,7 +47,7 @@ public class SkillEvolutionTests
     {
         var mockRng = new MockRandomService(1.0f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance, new StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Str = 10 };
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Con = 5 };
@@ -70,7 +68,7 @@ public class SkillEvolutionTests
     {
         var mockRng = new MockRandomService(1.0f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance, new StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Str = 10 };
 
@@ -93,7 +91,7 @@ public class SkillEvolutionTests
     {
         var mockRng = new MockRandomService(1.0f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance, new StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 10, Str = 10 }; // SP 10
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Con = 5 };

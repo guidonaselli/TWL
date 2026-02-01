@@ -1,18 +1,17 @@
-using System;
 using Microsoft.Extensions.Logging;
 using TWL.Shared.Services;
 
 namespace TWL.Server.Services;
 
 /// <summary>
-/// A seedable, thread-safe implementation of IRandomService.
-/// Allows for deterministic behavior when a seed is provided.
+///     A seedable, thread-safe implementation of IRandomService.
+///     Allows for deterministic behavior when a seed is provided.
 /// </summary>
 public class SeedableRandomService : IRandomService
 {
-    private readonly Random _random;
     private readonly object _lock = new();
     private readonly ILogger<SeedableRandomService> _logger;
+    private readonly Random _random;
 
     public SeedableRandomService(ILogger<SeedableRandomService> logger, int? seed = null)
     {
@@ -38,6 +37,7 @@ public class SeedableRandomService : IRandomService
             {
                 _logger.LogTrace("RNG NextFloat: {Value}", val);
             }
+
             return val;
         }
     }
@@ -46,11 +46,12 @@ public class SeedableRandomService : IRandomService
     {
         lock (_lock)
         {
-            float val = min + (max - min) * _random.NextSingle();
+            var val = min + (max - min) * _random.NextSingle();
             if (_logger.IsEnabled(LogLevel.Trace))
             {
                 _logger.LogTrace("RNG NextFloat({Min}, {Max}): {Value}", min, max, val);
             }
+
             return val;
         }
     }
@@ -59,11 +60,12 @@ public class SeedableRandomService : IRandomService
     {
         lock (_lock)
         {
-            int val = _random.Next(min, max);
+            var val = _random.Next(min, max);
             if (_logger.IsEnabled(LogLevel.Trace))
             {
                 _logger.LogTrace("RNG Next({Min}, {Max}): {Value}", min, max, val);
             }
+
             return val;
         }
     }

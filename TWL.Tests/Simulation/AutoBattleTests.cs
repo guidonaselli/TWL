@@ -1,18 +1,16 @@
 using Moq;
-using System.Collections.Generic;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
-using Xunit;
 
 namespace TWL.Tests.Simulation;
 
 public class AutoBattleTests
 {
-    private readonly Mock<ISkillCatalog> _skillCatalogMock;
     private readonly AutoBattleService _service;
+    private readonly Mock<ISkillCatalog> _skillCatalogMock;
 
     public AutoBattleTests()
     {
@@ -29,7 +27,7 @@ public class AutoBattleTests
 
         var enemy = new ServerCharacter { Id = 3, Name = "Enemy", Con = 10, Hp = 50 };
         // Enemy has buff
-        enemy.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.Shield, 10, 3, null), new StatusEngine());
+        enemy.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.Shield, 10, 3), new StatusEngine());
 
         // Skills:
         // 10: Damage
@@ -37,11 +35,20 @@ public class AutoBattleTests
         actor.LearnSkill(10);
         actor.LearnSkill(11);
 
-        _skillCatalogMock.Setup(x => x.GetSkillById(10)).Returns(new Skill { SkillId = 10, SpCost = 5, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }, TargetType = SkillTargetType.SingleEnemy });
-        _skillCatalogMock.Setup(x => x.GetSkillById(11)).Returns(new Skill { SkillId = 11, SpCost = 5, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Dispel } }, TargetType = SkillTargetType.SingleEnemy });
+        _skillCatalogMock.Setup(x => x.GetSkillById(10)).Returns(new Skill
+        {
+            SkillId = 10, SpCost = 5, Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Damage } },
+            TargetType = SkillTargetType.SingleEnemy
+        });
+        _skillCatalogMock.Setup(x => x.GetSkillById(11)).Returns(new Skill
+        {
+            SkillId = 11, SpCost = 5, Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Dispel } },
+            TargetType = SkillTargetType.SingleEnemy
+        });
 
         // Act
-        var action = _service.SelectAction(actor, new List<ServerCharacter> { ally }, new List<ServerCharacter> { enemy }, 12345, AutoBattlePolicy.Balanced);
+        var action = _service.SelectAction(actor, new List<ServerCharacter> { ally },
+            new List<ServerCharacter> { enemy }, 12345);
 
         // Assert
         Assert.Equal(CombatActionType.Skill, action.Type);
@@ -61,7 +68,7 @@ public class AutoBattleTests
         {
             SkillId = 10,
             SpCost = 5,
-            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } },
+            Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Damage } },
             TargetType = SkillTargetType.SingleEnemy
         });
 
@@ -69,7 +76,8 @@ public class AutoBattleTests
         actor.SetSkillCooldown(10, 1);
 
         // Act
-        var action = _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy }, 12345, AutoBattlePolicy.Aggressive);
+        var action = _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy },
+            12345, AutoBattlePolicy.Aggressive);
 
         // Assert
         // Should fallback to Attack (Id 0 usually implicit) or at least NOT use skill 10
@@ -80,18 +88,24 @@ public class AutoBattleTests
     [Fact]
     public void SelectAction_Deterministic()
     {
-         var actor = new ServerCharacter { Id = 1, Name = "Actor", Sp = 100 };
-         var enemy = new ServerCharacter { Id = 3, Name = "Enemy", Con = 10, Hp = 50 };
+        var actor = new ServerCharacter { Id = 1, Name = "Actor", Sp = 100 };
+        var enemy = new ServerCharacter { Id = 3, Name = "Enemy", Con = 10, Hp = 50 };
 
-         actor.LearnSkill(10);
-         _skillCatalogMock.Setup(x => x.GetSkillById(10)).Returns(new Skill { SkillId = 10, SpCost = 5, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }, TargetType = SkillTargetType.SingleEnemy });
+        actor.LearnSkill(10);
+        _skillCatalogMock.Setup(x => x.GetSkillById(10)).Returns(new Skill
+        {
+            SkillId = 10, SpCost = 5, Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Damage } },
+            TargetType = SkillTargetType.SingleEnemy
+        });
 
-         var action1 = _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy }, 123, AutoBattlePolicy.Balanced);
-         var action2 = _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy }, 123, AutoBattlePolicy.Balanced);
+        var action1 =
+            _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy }, 123);
+        var action2 =
+            _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy }, 123);
 
-         Assert.Equal(action1.Type, action2.Type);
-         Assert.Equal(action1.SkillId, action2.SkillId);
-         Assert.Equal(action1.TargetId, action2.TargetId);
+        Assert.Equal(action1.Type, action2.Type);
+        Assert.Equal(action1.SkillId, action2.SkillId);
+        Assert.Equal(action1.TargetId, action2.TargetId);
     }
 
     [Fact]
@@ -101,19 +115,20 @@ public class AutoBattleTests
         var actor = new ServerCharacter { Id = 1, Name = "Actor", Sp = 100 };
         var ally = new ServerCharacter { Id = 2, Name = "Ally", Con = 10, Hp = 100 };
         // Ally has Seal debuff
-        ally.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.Seal, 0, 3, null), new StatusEngine());
+        ally.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.Seal, 0, 3), new StatusEngine());
 
         // Skills: Cleanse (12)
         actor.LearnSkill(12);
         _skillCatalogMock.Setup(x => x.GetSkillById(12)).Returns(new Skill
         {
             SkillId = 12, SpCost = 5,
-            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Cleanse } },
+            Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Cleanse } },
             TargetType = SkillTargetType.SingleAlly
         });
 
         // Act
-        var action = _service.SelectAction(actor, new List<ServerCharacter> { ally }, new List<ServerCharacter>(), 123, AutoBattlePolicy.Supportive);
+        var action = _service.SelectAction(actor, new List<ServerCharacter> { ally }, new List<ServerCharacter>(), 123,
+            AutoBattlePolicy.Supportive);
 
         // Assert
         Assert.Equal(CombatActionType.Skill, action.Type);
@@ -134,11 +149,20 @@ public class AutoBattleTests
 
         actor.LearnSkill(20);
         actor.LearnSkill(21);
-        _skillCatalogMock.Setup(x => x.GetSkillById(20)).Returns(new Skill { SkillId = 20, SpCost = 5, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }, TargetType = SkillTargetType.SingleEnemy });
-        _skillCatalogMock.Setup(x => x.GetSkillById(21)).Returns(new Skill { SkillId = 21, SpCost = 15, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }, TargetType = SkillTargetType.SingleEnemy });
+        _skillCatalogMock.Setup(x => x.GetSkillById(20)).Returns(new Skill
+        {
+            SkillId = 20, SpCost = 5, Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Damage } },
+            TargetType = SkillTargetType.SingleEnemy
+        });
+        _skillCatalogMock.Setup(x => x.GetSkillById(21)).Returns(new Skill
+        {
+            SkillId = 21, SpCost = 15, Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Damage } },
+            TargetType = SkillTargetType.SingleEnemy
+        });
 
         // Act
-        var action = _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy }, 123, AutoBattlePolicy.Balanced);
+        var action =
+            _service.SelectAction(actor, new List<ServerCharacter>(), new List<ServerCharacter> { enemy }, 123);
 
         // Assert
         Assert.Equal(20, action.SkillId); // Picks cheap one
@@ -152,19 +176,23 @@ public class AutoBattleTests
         var ally = new ServerCharacter { Id = 2, Name = "Ally", Con = 10, Hp = 100 };
 
         // Ally already has "Buff_Def"
-        ally.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 3, "Def") { ConflictGroup = "Buff_Def" }, new StatusEngine());
+        ally.AddStatusEffect(
+            new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 3, "Def") { ConflictGroup = "Buff_Def" },
+            new StatusEngine());
 
         // Skills: Buff Def (Cost 10, ConflictGroup "Buff_Def")
         actor.LearnSkill(30);
         _skillCatalogMock.Setup(x => x.GetSkillById(30)).Returns(new Skill
         {
             SkillId = 30, SpCost = 10,
-            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.BuffStats, Param = "Def", ConflictGroup = "Buff_Def" } },
+            Effects = new List<SkillEffect>
+                { new() { Tag = SkillEffectTag.BuffStats, Param = "Def", ConflictGroup = "Buff_Def" } },
             TargetType = SkillTargetType.SingleAlly
         });
 
         // Act
-        var action = _service.SelectAction(actor, new List<ServerCharacter> { ally }, new List<ServerCharacter>(), 123, AutoBattlePolicy.Supportive);
+        var action = _service.SelectAction(actor, new List<ServerCharacter> { ally }, new List<ServerCharacter>(), 123,
+            AutoBattlePolicy.Supportive);
 
         // Assert
         // Should NOT pick skill 30 because conflict exists.

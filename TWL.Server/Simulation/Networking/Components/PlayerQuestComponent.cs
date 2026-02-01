@@ -1,36 +1,40 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.Globalization;
 using TWL.Server.Persistence;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Domain.Models;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using TWL.Server.Simulation.Networking;
 
 namespace TWL.Server.Simulation.Networking.Components;
 
 public class PlayerQuestComponent
 {
-    private readonly ServerQuestManager _questManager;
-    private readonly PetManager _petManager;
     private readonly object _lock = new();
+    private readonly PetManager _petManager;
+    private readonly ServerQuestManager _questManager;
+
+    private ServerCharacter? _character;
+
+    public PlayerQuestComponent(ServerQuestManager questManager, PetManager? petManager = null)
+    {
+        _questManager = questManager;
+        _petManager = petManager;
+    }
 
     public bool IsDirty { get; set; }
 
     // QuestId -> State
-    public Dictionary<int, QuestState> QuestStates { get; private set; } = new();
+    public Dictionary<int, QuestState> QuestStates { get; } = new();
 
     // QuestId -> List of counts per objective
-    public Dictionary<int, List<int>> QuestProgress { get; private set; } = new();
+    public Dictionary<int, List<int>> QuestProgress { get; } = new();
 
     // Player Flags
-    public HashSet<string> Flags { get; private set; } = new();
+    public HashSet<string> Flags { get; } = new();
 
-    public Dictionary<int, DateTime> QuestCompletionTimes { get; private set; } = new();
-    public Dictionary<int, DateTime> QuestStartTimes { get; private set; } = new();
+    public Dictionary<int, DateTime> QuestCompletionTimes { get; } = new();
+    public Dictionary<int, DateTime> QuestStartTimes { get; } = new();
 
-    private ServerCharacter? _character;
     public ServerCharacter? Character
     {
         get => _character;
@@ -42,6 +46,7 @@ public class PlayerQuestComponent
                 _character.OnPetAdded -= HandlePetAdded;
                 _character.OnTradeCommitted -= HandleTradeCommitted;
             }
+
             _character = value;
             if (_character != null)
             {
@@ -60,31 +65,45 @@ public class PlayerQuestComponent
 
             foreach (var kvp in QuestStates)
             {
-                if (kvp.Value != QuestState.InProgress) continue;
+                if (kvp.Value != QuestState.InProgress)
+                {
+                    continue;
+                }
 
                 var questId = kvp.Key;
                 var def = _questManager.GetDefinition(questId);
-                if (def == null) continue;
+                if (def == null)
+                {
+                    continue;
+                }
 
-                for (int i = 0; i < def.Objectives.Count; i++)
+                for (var i = 0; i < def.Objectives.Count; i++)
                 {
                     var obj = def.Objectives[i];
                     if (!string.Equals(obj.Type, "PetAcquired", StringComparison.OrdinalIgnoreCase))
+                    {
                         continue;
+                    }
 
-                    bool match = false;
+                    var match = false;
                     if (obj.DataId.HasValue)
                     {
-                        if (obj.DataId.Value == pet.DefinitionId) match = true;
+                        if (obj.DataId.Value == pet.DefinitionId)
+                        {
+                            match = true;
+                        }
                     }
                     else
                     {
-                        if (string.Equals(obj.TargetName, pet.Name, StringComparison.OrdinalIgnoreCase)) match = true;
+                        if (string.Equals(obj.TargetName, pet.Name, StringComparison.OrdinalIgnoreCase))
+                        {
+                            match = true;
+                        }
                     }
 
                     if (match)
                     {
-                         if (QuestProgress[questId][i] < obj.RequiredCount)
+                        if (QuestProgress[questId][i] < obj.RequiredCount)
                         {
                             UpdateProgressInternal(questId, i, 1);
                         }
@@ -102,24 +121,37 @@ public class PlayerQuestComponent
 
             foreach (var kvp in QuestStates)
             {
-                if (kvp.Value != QuestState.InProgress) continue;
+                if (kvp.Value != QuestState.InProgress)
+                {
+                    continue;
+                }
 
                 var questId = kvp.Key;
                 var def = _questManager.GetDefinition(questId);
-                if (def == null) continue;
+                if (def == null)
+                {
+                    continue;
+                }
 
-                for (int i = 0; i < def.Objectives.Count; i++)
+                for (var i = 0; i < def.Objectives.Count; i++)
                 {
                     var obj = def.Objectives[i];
                     if (!string.Equals(obj.Type, "Trade", StringComparison.OrdinalIgnoreCase))
+                    {
                         continue;
+                    }
 
                     // Match Target (Person we traded WITH)
                     if (!string.Equals(obj.TargetName, target.Name, StringComparison.OrdinalIgnoreCase))
+                    {
                         continue;
+                    }
 
                     // Match Item
-                    if (obj.DataId.HasValue && obj.DataId.Value != itemId) continue;
+                    if (obj.DataId.HasValue && obj.DataId.Value != itemId)
+                    {
+                        continue;
+                    }
 
                     if (QuestProgress[questId][i] < obj.RequiredCount)
                     {
@@ -130,12 +162,6 @@ public class PlayerQuestComponent
         }
     }
 
-    public PlayerQuestComponent(ServerQuestManager questManager, PetManager? petManager = null)
-    {
-        _questManager = questManager;
-        _petManager = petManager;
-    }
-
     private bool CheckGating(QuestDefinition def)
     {
         if (Character == null)
@@ -143,23 +169,27 @@ public class PlayerQuestComponent
             // If there are gating requirements but no character attached, we must fail.
             // If there are NO requirements, we allow it (backward compatibility for tests).
             if (def.RequiredLevel > 1 ||
-               (def.RequiredStats != null && def.RequiredStats.Count > 0) ||
-               (def.RequiredItems != null && def.RequiredItems.Count > 0))
+                (def.RequiredStats != null && def.RequiredStats.Count > 0) ||
+                (def.RequiredItems != null && def.RequiredItems.Count > 0))
             {
                 return false;
             }
+
             return true;
         }
 
         // Level Check
-        if (Character.Level < def.RequiredLevel) return false;
+        if (Character.Level < def.RequiredLevel)
+        {
+            return false;
+        }
 
         // Stat Checks
         if (def.RequiredStats != null)
         {
             foreach (var stat in def.RequiredStats)
             {
-                int charStat = 0;
+                var charStat = 0;
                 switch (stat.Key.ToLower())
                 {
                     case "str": charStat = Character.Str; break;
@@ -167,9 +197,12 @@ public class PlayerQuestComponent
                     case "int": charStat = Character.Int; break;
                     case "wis": charStat = Character.Wis; break;
                     case "agi": charStat = Character.Agi; break;
-                    default: break;
                 }
-                if (charStat < stat.Value) return false;
+
+                if (charStat < stat.Value)
+                {
+                    return false;
+                }
             }
         }
 
@@ -178,7 +211,10 @@ public class PlayerQuestComponent
         {
             foreach (var itemReq in def.RequiredItems)
             {
-                if (!Character.HasItem(itemReq.ItemId, itemReq.Quantity)) return false;
+                if (!Character.HasItem(itemReq.ItemId, itemReq.Quantity))
+                {
+                    return false;
+                }
             }
         }
 
@@ -192,12 +228,18 @@ public class PlayerQuestComponent
             CheckFailures();
 
             var def = _questManager.GetDefinition(questId);
-            if (def == null) return false;
+            if (def == null)
+            {
+                return false;
+            }
 
             // Blocked By Flags
             foreach (var blockedFlag in def.BlockedByFlags)
             {
-                if (Flags.Contains(blockedFlag)) return false;
+                if (Flags.Contains(blockedFlag))
+                {
+                    return false;
+                }
             }
 
             // Repeatability Checks
@@ -205,61 +247,91 @@ public class PlayerQuestComponent
             {
                 if (QuestStates[questId] == QuestState.Failed)
                 {
-                     // Failed quests can be retried immediately (or we could add cooldown here)
+                    // Failed quests can be retried immediately (or we could add cooldown here)
                 }
                 else if (QuestStates[questId] != QuestState.RewardClaimed)
                 {
-                     // Still in progress or just completed but not claimed
-                     return false;
+                    // Still in progress or just completed but not claimed
+                    return false;
                 }
                 else
                 {
                     // Reward Claimed - Check Repeatability
-                    if (def.Repeatability == QuestRepeatability.None) return false;
+                    if (def.Repeatability == QuestRepeatability.None)
+                    {
+                        return false;
+                    }
 
                     if (QuestCompletionTimes.TryGetValue(questId, out var completionTime))
                     {
-                         if (def.Repeatability == QuestRepeatability.Daily)
-                         {
-                             if (completionTime.Date == DateTime.UtcNow.Date) return false;
-                         }
-                         else if (def.Repeatability == QuestRepeatability.Weekly)
-                         {
-                             var cal = System.Globalization.CultureInfo.InvariantCulture.Calendar;
-                             var week1 = cal.GetWeekOfYear(completionTime, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                             var week2 = cal.GetWeekOfYear(DateTime.UtcNow, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                             if (week1 == week2 && completionTime.Year == DateTime.UtcNow.Year) return false;
-                         }
-                         else if (def.Repeatability == QuestRepeatability.Cooldown)
-                         {
-                             if (def.RepeatCooldown.HasValue)
-                             {
-                                 if (DateTime.UtcNow < completionTime + def.RepeatCooldown.Value) return false;
-                             }
-                         }
+                        if (def.Repeatability == QuestRepeatability.Daily)
+                        {
+                            if (completionTime.Date == DateTime.UtcNow.Date)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (def.Repeatability == QuestRepeatability.Weekly)
+                        {
+                            var cal = CultureInfo.InvariantCulture.Calendar;
+                            var week1 = cal.GetWeekOfYear(completionTime, CalendarWeekRule.FirstFourDayWeek,
+                                DayOfWeek.Monday);
+                            var week2 = cal.GetWeekOfYear(DateTime.UtcNow, CalendarWeekRule.FirstFourDayWeek,
+                                DayOfWeek.Monday);
+                            if (week1 == week2 && completionTime.Year == DateTime.UtcNow.Year)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (def.Repeatability == QuestRepeatability.Cooldown)
+                        {
+                            if (def.RepeatCooldown.HasValue)
+                            {
+                                if (DateTime.UtcNow < completionTime + def.RepeatCooldown.Value)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
                     }
                 }
             }
 
             foreach (var reqId in def.Requirements)
             {
-                if (!QuestStates.ContainsKey(reqId)) return false;
+                if (!QuestStates.ContainsKey(reqId))
+                {
+                    return false;
+                }
+
                 var state = QuestStates[reqId];
                 if (state != QuestState.Completed && state != QuestState.RewardClaimed)
+                {
                     return false;
+                }
             }
 
             foreach (var flag in def.RequiredFlags)
             {
-                if (!Flags.Contains(flag)) return false;
+                if (!Flags.Contains(flag))
+                {
+                    return false;
+                }
             }
 
             if (!string.IsNullOrEmpty(def.AntiAbuseRules))
             {
                 if (def.AntiAbuseRules.Contains("UniquePerCharacter"))
                 {
-                    if (QuestStates.ContainsKey(questId)) return false;
-                    if (QuestCompletionTimes.ContainsKey(questId)) return false;
+                    if (QuestStates.ContainsKey(questId))
+                    {
+                        return false;
+                    }
+
+                    if (QuestCompletionTimes.ContainsKey(questId))
+                    {
+                        return false;
+                    }
                 }
             }
 
@@ -271,7 +343,8 @@ public class PlayerQuestComponent
                     if (kvp.Value == QuestState.InProgress)
                     {
                         var otherDef = _questManager.GetDefinition(kvp.Key);
-                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup, StringComparison.OrdinalIgnoreCase))
+                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup,
+                                StringComparison.OrdinalIgnoreCase))
                         {
                             return false;
                         }
@@ -287,15 +360,14 @@ public class PlayerQuestComponent
                     if (kvp.Value == QuestState.InProgress)
                     {
                         var otherDef = _questManager.GetDefinition(kvp.Key);
-                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup, StringComparison.OrdinalIgnoreCase))
+                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup,
+                                StringComparison.OrdinalIgnoreCase))
                         {
                             return false;
                         }
                     }
                 }
             }
-
-
 
 
             // Exclusivity: Special Category
@@ -307,7 +379,8 @@ public class PlayerQuestComponent
                     {
                         var otherDef = _questManager.GetDefinition(kvp.Key);
                         // Enforce exclusivity only within the same category (e.g. can't do 2 Dragon quests, but can do Dragon + Fairy)
-                        if (otherDef != null && string.Equals(otherDef.SpecialCategory, def.SpecialCategory, StringComparison.OrdinalIgnoreCase))
+                        if (otherDef != null && string.Equals(otherDef.SpecialCategory, def.SpecialCategory,
+                                StringComparison.OrdinalIgnoreCase))
                         {
                             return false;
                         }
@@ -320,7 +393,10 @@ public class PlayerQuestComponent
             {
                 // Infrastructure for Party Gating
                 // As Party system is not fully integrated yet, we assume character is Solo.
-                if (def.PartyRules.Contains("MustBeInParty")) return false;
+                if (def.PartyRules.Contains("MustBeInParty"))
+                {
+                    return false;
+                }
                 // If rule is "SoloOnly", we pass.
             }
 
@@ -329,10 +405,16 @@ public class PlayerQuestComponent
             {
                 // Infrastructure for Guild Gating
                 // As Guild system is not fully integrated yet, we assume character is Guildless.
-                if (def.GuildRules.Contains("MustBeInGuild")) return false;
+                if (def.GuildRules.Contains("MustBeInGuild"))
+                {
+                    return false;
+                }
             }
 
-            if (!CheckGating(def)) return false;
+            if (!CheckGating(def))
+            {
+                return false;
+            }
 
             return true;
         }
@@ -345,19 +427,32 @@ public class PlayerQuestComponent
             CheckFailures();
 
             var def = _questManager.GetDefinition(questId);
-            if (def == null) return false;
+            if (def == null)
+            {
+                return false;
+            }
 
             // Blocked By Flags
             foreach (var blockedFlag in def.BlockedByFlags)
             {
-                if (Flags.Contains(blockedFlag)) return false;
+                if (Flags.Contains(blockedFlag))
+                {
+                    return false;
+                }
             }
 
             // Anti-Abuse: UniquePerCharacter
             if (!string.IsNullOrEmpty(def.AntiAbuseRules) && def.AntiAbuseRules.Contains("UniquePerCharacter"))
             {
-                if (QuestStates.ContainsKey(questId)) return false;
-                if (QuestCompletionTimes.ContainsKey(questId)) return false;
+                if (QuestStates.ContainsKey(questId))
+                {
+                    return false;
+                }
+
+                if (QuestCompletionTimes.ContainsKey(questId))
+                {
+                    return false;
+                }
             }
 
             // Exclusivity: Mutual Exclusion Group
@@ -368,7 +463,8 @@ public class PlayerQuestComponent
                     if (kvp.Value == QuestState.InProgress)
                     {
                         var otherDef = _questManager.GetDefinition(kvp.Key);
-                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup, StringComparison.OrdinalIgnoreCase))
+                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup,
+                                StringComparison.OrdinalIgnoreCase))
                         {
                             return false;
                         }
@@ -386,7 +482,8 @@ public class PlayerQuestComponent
                     {
                         var otherDef = _questManager.GetDefinition(kvp.Key);
                         // Enforce exclusivity only within the same category
-                        if (otherDef != null && string.Equals(otherDef.SpecialCategory, def.SpecialCategory, StringComparison.OrdinalIgnoreCase))
+                        if (otherDef != null && string.Equals(otherDef.SpecialCategory, def.SpecialCategory,
+                                StringComparison.OrdinalIgnoreCase))
                         {
                             return false;
                         }
@@ -399,7 +496,7 @@ public class PlayerQuestComponent
             {
                 if (QuestStates[questId] == QuestState.Failed)
                 {
-                     // Failed quests can be retried
+                    // Failed quests can be retried
                 }
                 else if (QuestStates[questId] != QuestState.RewardClaimed)
                 {
@@ -407,28 +504,42 @@ public class PlayerQuestComponent
                 }
                 else
                 {
-                    if (def.Repeatability == QuestRepeatability.None) return false;
+                    if (def.Repeatability == QuestRepeatability.None)
+                    {
+                        return false;
+                    }
 
                     if (QuestCompletionTimes.TryGetValue(questId, out var completionTime))
                     {
-                         if (def.Repeatability == QuestRepeatability.Daily)
-                         {
-                             if (completionTime.Date == DateTime.UtcNow.Date) return false;
-                         }
-                         else if (def.Repeatability == QuestRepeatability.Weekly)
-                         {
-                             var cal = System.Globalization.CultureInfo.InvariantCulture.Calendar;
-                             var week1 = cal.GetWeekOfYear(completionTime, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                             var week2 = cal.GetWeekOfYear(DateTime.UtcNow, System.Globalization.CalendarWeekRule.FirstFourDayWeek, DayOfWeek.Monday);
-                             if (week1 == week2 && completionTime.Year == DateTime.UtcNow.Year) return false;
-                         }
-                         else if (def.Repeatability == QuestRepeatability.Cooldown)
-                         {
-                             if (def.RepeatCooldown.HasValue)
-                             {
-                                 if (DateTime.UtcNow < completionTime + def.RepeatCooldown.Value) return false;
-                             }
-                         }
+                        if (def.Repeatability == QuestRepeatability.Daily)
+                        {
+                            if (completionTime.Date == DateTime.UtcNow.Date)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (def.Repeatability == QuestRepeatability.Weekly)
+                        {
+                            var cal = CultureInfo.InvariantCulture.Calendar;
+                            var week1 = cal.GetWeekOfYear(completionTime, CalendarWeekRule.FirstFourDayWeek,
+                                DayOfWeek.Monday);
+                            var week2 = cal.GetWeekOfYear(DateTime.UtcNow, CalendarWeekRule.FirstFourDayWeek,
+                                DayOfWeek.Monday);
+                            if (week1 == week2 && completionTime.Year == DateTime.UtcNow.Year)
+                            {
+                                return false;
+                            }
+                        }
+                        else if (def.Repeatability == QuestRepeatability.Cooldown)
+                        {
+                            if (def.RepeatCooldown.HasValue)
+                            {
+                                if (DateTime.UtcNow < completionTime + def.RepeatCooldown.Value)
+                                {
+                                    return false;
+                                }
+                            }
+                        }
                     }
                 }
             }
@@ -436,18 +547,30 @@ public class PlayerQuestComponent
             // Check Requirements (Quest Chains)
             foreach (var reqId in def.Requirements)
             {
-                if (!QuestStates.ContainsKey(reqId)) return false;
+                if (!QuestStates.ContainsKey(reqId))
+                {
+                    return false;
+                }
+
                 var state = QuestStates[reqId];
                 if (state != QuestState.Completed && state != QuestState.RewardClaimed)
+                {
                     return false;
+                }
             }
 
             foreach (var flag in def.RequiredFlags)
             {
-                if (!Flags.Contains(flag)) return false;
+                if (!Flags.Contains(flag))
+                {
+                    return false;
+                }
             }
 
-            if (!CheckGating(def)) return false;
+            if (!CheckGating(def))
+            {
+                return false;
+            }
 
             QuestStates[questId] = QuestState.InProgress;
             QuestProgress[questId] = new List<int>(new int[def.Objectives.Count]); // Init with zeros
@@ -469,18 +592,29 @@ public class PlayerQuestComponent
 
     private void UpdateProgressInternal(int questId, int objectiveIndex, int amount)
     {
-        if (!QuestStates.ContainsKey(questId) || QuestStates[questId] != QuestState.InProgress) return;
+        if (!QuestStates.ContainsKey(questId) || QuestStates[questId] != QuestState.InProgress)
+        {
+            return;
+        }
 
         var def = _questManager.GetDefinition(questId);
-        if (def == null) return;
+        if (def == null)
+        {
+            return;
+        }
 
-        if (objectiveIndex < 0 || objectiveIndex >= def.Objectives.Count) return;
+        if (objectiveIndex < 0 || objectiveIndex >= def.Objectives.Count)
+        {
+            return;
+        }
 
         var currentList = QuestProgress[questId];
         currentList[objectiveIndex] += amount;
 
         if (currentList[objectiveIndex] > def.Objectives[objectiveIndex].RequiredCount)
+        {
             currentList[objectiveIndex] = def.Objectives[objectiveIndex].RequiredCount;
+        }
 
         CheckCompletion(questId);
         IsDirty = true;
@@ -489,11 +623,14 @@ public class PlayerQuestComponent
     private void CheckCompletion(int questId)
     {
         var def = _questManager.GetDefinition(questId);
-        if (def == null) return;
+        if (def == null)
+        {
+            return;
+        }
 
         var counts = QuestProgress[questId];
-        bool allComplete = true;
-        for (int i = 0; i < def.Objectives.Count; i++)
+        var allComplete = true;
+        for (var i = 0; i < def.Objectives.Count; i++)
         {
             if (counts[i] < def.Objectives[i].RequiredCount)
             {
@@ -515,19 +652,35 @@ public class PlayerQuestComponent
             CheckFailures();
 
             if (!QuestStates.ContainsKey(questId) || QuestStates[questId] != QuestState.Completed)
+            {
                 return false;
+            }
 
             var def = _questManager.GetDefinition(questId);
             if (def != null)
             {
-                foreach (var f in def.FlagsSet) Flags.Add(f);
-                foreach (var f in def.FlagsClear) Flags.Remove(f);
+                foreach (var f in def.FlagsSet)
+                {
+                    Flags.Add(f);
+                }
+
+                foreach (var f in def.FlagsClear)
+                {
+                    Flags.Remove(f);
+                }
 
                 if (Character != null)
                 {
                     // Grant Rewards
-                    if (def.Rewards.Exp > 0) Character.AddExp(def.Rewards.Exp);
-                    if (def.Rewards.Gold > 0) Character.AddGold(def.Rewards.Gold);
+                    if (def.Rewards.Exp > 0)
+                    {
+                        Character.AddExp(def.Rewards.Exp);
+                    }
+
+                    if (def.Rewards.Gold > 0)
+                    {
+                        Character.AddGold(def.Rewards.Gold);
+                    }
 
                     if (def.Rewards.Items != null)
                     {
@@ -566,7 +719,9 @@ public class PlayerQuestComponent
         lock (_lock)
         {
             if (!QuestStates.ContainsKey(questId) || QuestStates[questId] != QuestState.InProgress)
+            {
                 return false;
+            }
 
             QuestStates[questId] = QuestState.Failed;
             IsDirty = true;
@@ -581,10 +736,16 @@ public class PlayerQuestComponent
 
         foreach (var kvp in QuestStates)
         {
-            if (kvp.Value != QuestState.InProgress) continue;
+            if (kvp.Value != QuestState.InProgress)
+            {
+                continue;
+            }
 
             var def = _questManager.GetDefinition(kvp.Key);
-            if (def == null) continue;
+            if (def == null)
+            {
+                continue;
+            }
 
             if (def.Expiry.HasValue && now > def.Expiry.Value)
             {
@@ -610,7 +771,7 @@ public class PlayerQuestComponent
     }
 
     /// <summary>
-    /// Attempts to progress any active quest that matches the given type and target.
+    ///     Attempts to progress any active quest that matches the given type and target.
     /// </summary>
     /// <returns>List of QuestIds that were updated.</returns>
     public List<int> TryProgress(string type, string targetName, int amount = 1)
@@ -621,15 +782,13 @@ public class PlayerQuestComponent
     }
 
     /// <summary>
-    /// Optimized overload to check multiple types at once and use an existing collection.
+    ///     Optimized overload to check multiple types at once and use an existing collection.
     /// </summary>
-    public void TryProgress(ICollection<int> output, string targetName, params string[] types)
-    {
+    public void TryProgress(ICollection<int> output, string targetName, params string[] types) =>
         TryProgress(output, targetName, 1, types);
-    }
 
     /// <summary>
-    /// Optimized overload to check multiple types at once and use an existing collection with amount.
+    ///     Optimized overload to check multiple types at once and use an existing collection with amount.
     /// </summary>
     public void TryProgress(ICollection<int> output, string targetName, int amount, params string[] types)
     {
@@ -642,24 +801,32 @@ public class PlayerQuestComponent
             // Dictionary enumeration is safe against value modifications in .NET Core+.
             foreach (var kvp in QuestStates)
             {
-                if (kvp.Value != QuestState.InProgress) continue;
+                if (kvp.Value != QuestState.InProgress)
+                {
+                    continue;
+                }
 
                 var questId = kvp.Key;
                 var def = _questManager.GetDefinition(questId);
-                if (def == null) continue;
+                if (def == null)
+                {
+                    continue;
+                }
 
-                bool changed = false;
-                for (int i = 0; i < def.Objectives.Count; i++)
+                var changed = false;
+                for (var i = 0; i < def.Objectives.Count; i++)
                 {
                     var obj = def.Objectives[i];
 
                     // Match TargetName first (fast string check)
                     if (!string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase))
+                    {
                         continue;
+                    }
 
                     // Match Type
-                    bool typeMatch = false;
-                    for (int t = 0; t < types.Length; t++)
+                    var typeMatch = false;
+                    for (var t = 0; t < types.Length; t++)
                     {
                         if (string.Equals(obj.Type, types[t], StringComparison.OrdinalIgnoreCase))
                         {
@@ -695,28 +862,42 @@ public class PlayerQuestComponent
 
             foreach (var kvp in QuestStates)
             {
-                if (kvp.Value != QuestState.InProgress) continue;
+                if (kvp.Value != QuestState.InProgress)
+                {
+                    continue;
+                }
 
                 var questId = kvp.Key;
                 var def = _questManager.GetDefinition(questId);
-                if (def == null) continue;
+                if (def == null)
+                {
+                    continue;
+                }
 
-                for (int i = 0; i < def.Objectives.Count; i++)
+                for (var i = 0; i < def.Objectives.Count; i++)
                 {
                     var obj = def.Objectives[i];
                     if (!string.Equals(obj.Type, "Collect", StringComparison.OrdinalIgnoreCase) &&
                         !string.Equals(obj.Type, "CollectItem", StringComparison.OrdinalIgnoreCase))
+                    {
                         continue;
+                    }
 
-                    bool match = false;
+                    var match = false;
                     if (obj.DataId.HasValue)
                     {
-                        if (obj.DataId.Value == item.ItemId) match = true;
+                        if (obj.DataId.Value == item.ItemId)
+                        {
+                            match = true;
+                        }
                     }
                     else
                     {
                         // Fallback to Name match if DataId not specified
-                        if (string.Equals(obj.TargetName, item.Name, StringComparison.OrdinalIgnoreCase)) match = true;
+                        if (string.Equals(obj.TargetName, item.Name, StringComparison.OrdinalIgnoreCase))
+                        {
+                            match = true;
+                        }
                     }
 
                     if (match)
@@ -739,30 +920,49 @@ public class PlayerQuestComponent
         {
             CheckFailures();
 
-            if (Character == null) return updatedQuests;
+            if (Character == null)
+            {
+                return updatedQuests;
+            }
 
             foreach (var kvp in QuestStates)
             {
-                if (kvp.Value != QuestState.InProgress) continue;
+                if (kvp.Value != QuestState.InProgress)
+                {
+                    continue;
+                }
 
                 var questId = kvp.Key;
                 var def = _questManager.GetDefinition(questId);
-                if (def == null) continue;
+                if (def == null)
+                {
+                    continue;
+                }
 
-                bool changed = false;
-                for (int i = 0; i < def.Objectives.Count; i++)
+                var changed = false;
+                for (var i = 0; i < def.Objectives.Count; i++)
                 {
                     var obj = def.Objectives[i];
 
                     // Handle Deliver Item
                     if (string.Equals(obj.Type, "Deliver", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (!string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase)) continue;
-                        if (!obj.DataId.HasValue) continue;
+                        if (!string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
+
+                        if (!obj.DataId.HasValue)
+                        {
+                            continue;
+                        }
 
                         var required = obj.RequiredCount;
                         var current = QuestProgress[questId][i];
-                        if (current >= required) continue;
+                        if (current >= required)
+                        {
+                            continue;
+                        }
 
                         var needed = required - current;
                         var itemId = obj.DataId.Value;
@@ -773,7 +973,7 @@ public class PlayerQuestComponent
 
                         if (totalInv > 0)
                         {
-                            var toRemove = Math.Min(needed, (int)totalInv);
+                            var toRemove = Math.Min(needed, totalInv);
                             if (Character.RemoveItem(itemId, toRemove))
                             {
                                 UpdateProgressInternal(questId, i, toRemove);
@@ -784,11 +984,17 @@ public class PlayerQuestComponent
                     // Handle Pay Gold
                     else if (string.Equals(obj.Type, "PayGold", StringComparison.OrdinalIgnoreCase))
                     {
-                        if (!string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase)) continue;
+                        if (!string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            continue;
+                        }
 
                         var required = obj.RequiredCount;
                         var current = QuestProgress[questId][i];
-                        if (current >= required) continue;
+                        if (current >= required)
+                        {
+                            continue;
+                        }
 
                         var needed = required - current;
 
@@ -808,6 +1014,7 @@ public class PlayerQuestComponent
                 }
             }
         }
+
         return updatedQuests;
     }
 
@@ -824,7 +1031,7 @@ public class PlayerQuestComponent
                 StartTimes = new Dictionary<int, DateTime>(QuestStartTimes)
             };
 
-            foreach(var kvp in QuestProgress)
+            foreach (var kvp in QuestProgress)
             {
                 data.Progress[kvp.Key] = new List<int>(kvp.Value);
             }
@@ -849,7 +1056,7 @@ public class PlayerQuestComponent
             QuestProgress.Clear();
             if (data.Progress != null)
             {
-                foreach(var kvp in data.Progress)
+                foreach (var kvp in data.Progress)
                 {
                     QuestProgress[kvp.Key] = new List<int>(kvp.Value);
                 }
@@ -858,7 +1065,10 @@ public class PlayerQuestComponent
             Flags.Clear();
             if (data.Flags != null)
             {
-                foreach(var f in data.Flags) Flags.Add(f);
+                foreach (var f in data.Flags)
+                {
+                    Flags.Add(f);
+                }
             }
 
             QuestCompletionTimes.Clear();
@@ -890,10 +1100,16 @@ public class PlayerQuestComponent
         {
             foreach (var kvp in QuestStates)
             {
-                if (kvp.Value != QuestState.InProgress) continue;
+                if (kvp.Value != QuestState.InProgress)
+                {
+                    continue;
+                }
 
                 var def = _questManager.GetDefinition(kvp.Key);
-                if (def == null) continue;
+                if (def == null)
+                {
+                    continue;
+                }
 
                 // Check if quest is bound to this instance
                 if (def.InstanceRules != null &&
@@ -907,6 +1123,7 @@ public class PlayerQuestComponent
                 }
             }
         }
+
         return failedQuests;
     }
 
@@ -918,10 +1135,16 @@ public class PlayerQuestComponent
 
             foreach (var kvp in QuestStates)
             {
-                if (kvp.Value != QuestState.InProgress) continue;
+                if (kvp.Value != QuestState.InProgress)
+                {
+                    continue;
+                }
 
                 var def = _questManager.GetDefinition(kvp.Key);
-                if (def == null) continue;
+                if (def == null)
+                {
+                    continue;
+                }
 
                 if (def.FailConditions != null)
                 {
@@ -946,38 +1169,25 @@ public class PlayerQuestComponent
         }
     }
 
-    public List<int> HandleCraft(string itemName, int quantity = 1)
-    {
-        return TryProgress("Craft", itemName, quantity);
-    }
+    public List<int> HandleCraft(string itemName, int quantity = 1) => TryProgress("Craft", itemName, quantity);
 
-    public List<int> HandleCompound(string resultName, int quantity = 1)
-    {
-        return TryProgress("Compound", resultName, quantity);
-    }
+    public List<int> HandleCompound(string resultName, int quantity = 1) =>
+        TryProgress("Compound", resultName, quantity);
 
-    public List<int> HandleForge(string resultName, int quantity = 1)
-    {
-        return TryProgress("Forge", resultName, quantity);
-    }
+    public List<int> HandleForge(string resultName, int quantity = 1) => TryProgress("Forge", resultName, quantity);
 
-    public List<int> HandleEventParticipation(string eventName)
-    {
-        return TryProgress("EventParticipation", eventName, 1);
-    }
+    public List<int> HandleEventParticipation(string eventName) => TryProgress("EventParticipation", eventName);
 
     public List<int> HandleEscort(string npcName, bool success)
     {
         if (success)
         {
-            return TryProgress("Escort", npcName, 1);
+            return TryProgress("Escort", npcName);
         }
-        else
-        {
-            // If escort failed (e.g. timeout), trigger failure manually or via existing FailCondition check
-            // For now, let's assume HandleCombatantDeath covers the death case.
-            // If failure is due to timeout/distance, we might need a separate call.
-            return new List<int>();
-        }
+
+        // If escort failed (e.g. timeout), trigger failure manually or via existing FailCondition check
+        // For now, let's assume HandleCombatantDeath covers the death case.
+        // If failure is due to timeout/distance, we might need a separate call.
+        return new List<int>();
     }
 }

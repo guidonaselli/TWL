@@ -1,135 +1,145 @@
 // File: TWL.Client/Presentation/Map/Pathfinder.cs
-using System;
-using System.Collections.Generic;
-using System.Linq;
+
 using Microsoft.Xna.Framework;
 
-namespace TWL.Client.Presentation.Map
+namespace TWL.Client.Presentation.Map;
+
+/// <summary>A* path-finder para mapas basados en <see cref="TileMap" />.</summary>
+public sealed class Pathfinder
 {
-    /// <summary>A* path-finder para mapas basados en <see cref="TileMap"/>.</summary>
-    public sealed class Pathfinder
+    private readonly HashSet<Point> _closed = new();
+    private readonly Dictionary<Point, Node> _nodes = new();
+
+    // Reused collections to avoid allocations per pathfind call
+    private readonly PriorityQueue<Node, int> _open = new();
+    private readonly TileMap _tileMap;
+
+    public Pathfinder(TileMap tileMap)
     {
-        private readonly TileMap _tileMap;
+        _tileMap = tileMap;
+    }
 
-        // Reused collections to avoid allocations per pathfind call
-        private readonly PriorityQueue<Node, int> _open = new();
-        private readonly Dictionary<Point, Node> _nodes = new();
-        private readonly HashSet<Point> _closed = new();
+    /// <summary>
+    ///     Devuelve la lista de tiles (incluido <paramref name="start" /> y <paramref name="goal" />) o
+    ///     una lista vacía si no existe trayecto.
+    /// </summary>
+    public List<Point> FindPath(Point start, Point goal)
+    {
+        _open.Clear();
+        _nodes.Clear();
+        _closed.Clear();
 
-        public Pathfinder(TileMap tileMap) => _tileMap = tileMap;
+        var startNode = new Node(start, null, 0, Heuristic(start, goal));
+        _open.Enqueue(startNode, startNode.F);
+        _nodes.Add(start, startNode);
 
-        /// <summary>Devuelve la lista de tiles (incluido <paramref name="start"/> y <paramref name="goal"/>) o
-        /// una lista vacía si no existe trayecto.</summary>
-        public List<Point> FindPath(Point start, Point goal)
+        while (_open.Count > 0)
         {
-            _open.Clear();
-            _nodes.Clear();
-            _closed.Clear();
+            var current = _open.Dequeue();
 
-            var startNode = new Node(start, null, g: 0, h: Heuristic(start, goal));
-            _open.Enqueue(startNode, startNode.F);
-            _nodes.Add(start, startNode);
-
-            while (_open.Count > 0)
+            if (_closed.Contains(current.Pos))
             {
-                var current = _open.Dequeue();
+                continue;
+            }
 
-                if (_closed.Contains(current.Pos))
-                    continue;
+            if (current.Pos == goal)
+            {
+                return BuildPath(current);
+            }
 
-                if (current.Pos == goal)
-                    return BuildPath(current);
+            _closed.Add(current.Pos);
 
-                _closed.Add(current.Pos);
-
-                foreach (var nPos in GetNeighbors(current.Pos))
+            foreach (var nPos in GetNeighbors(current.Pos))
+            {
+                if (_tileMap.IsBlocked(nPos) || _closed.Contains(nPos))
                 {
-                    if (_tileMap.IsBlocked(nPos) || _closed.Contains(nPos))
-                        continue;
+                    continue;
+                }
 
-                    var newG = current.G + 1;
+                var newG = current.G + 1;
 
-                    if (!_nodes.TryGetValue(nPos, out var neighborNode))
-                    {
-                        neighborNode = new Node(nPos, current, newG, Heuristic(nPos, goal));
-                        _nodes.Add(nPos, neighborNode);
-                        _open.Enqueue(neighborNode, neighborNode.F);
-                    }
-                    else if (newG < neighborNode.G)
-                    {
-                        neighborNode.G = newG;
-                        neighborNode.Parent = current;
-                        _open.Enqueue(neighborNode, neighborNode.F);
-                    }
+                if (!_nodes.TryGetValue(nPos, out var neighborNode))
+                {
+                    neighborNode = new Node(nPos, current, newG, Heuristic(nPos, goal));
+                    _nodes.Add(nPos, neighborNode);
+                    _open.Enqueue(neighborNode, neighborNode.F);
+                }
+                else if (newG < neighborNode.G)
+                {
+                    neighborNode.G = newG;
+                    neighborNode.Parent = current;
+                    _open.Enqueue(neighborNode, neighborNode.F);
                 }
             }
-
-            return new(); // sin camino
         }
 
-        /* ---------- helpers ---------- */
+        return new List<Point>(); // sin camino
+    }
 
-        private static int Heuristic(Point a, Point b) =>
-            Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y);      // distancia Manhattan
+    /* ---------- helpers ---------- */
 
-        private static NeighborEnumerator GetNeighbors(Point p) => new(p);
+    private static int Heuristic(Point a, Point b) =>
+        Math.Abs(a.X - b.X) + Math.Abs(a.Y - b.Y); // distancia Manhattan
 
-        private struct NeighborEnumerator
+    private static NeighborEnumerator GetNeighbors(Point p) => new(p);
+
+    private static List<Point> BuildPath(Node endNode)
+    {
+        var path = new List<Point>();
+        var current = endNode;
+        while (current is not null)
         {
-            private readonly Point _p;
-            private int _index;
-
-            public NeighborEnumerator(Point p)
-            {
-                _p = p;
-                _index = -1;
-            }
-
-            public Point Current => _index switch
-            {
-                0 => new Point(_p.X, _p.Y - 1), // Norte
-                1 => new Point(_p.X, _p.Y + 1), // Sur
-                2 => new Point(_p.X - 1, _p.Y), // Oeste
-                3 => new Point(_p.X + 1, _p.Y), // Este
-                _ => default
-            };
-
-            public bool MoveNext() => ++_index < 4;
-
-            public NeighborEnumerator GetEnumerator() => this;
+            path.Add(current.Pos);
+            current = current.Parent;
         }
 
-        private static List<Point> BuildPath(Node endNode)
+        path.Reverse();
+        return path;
+    }
+
+    private struct NeighborEnumerator
+    {
+        private readonly Point _p;
+        private int _index;
+
+        public NeighborEnumerator(Point p)
         {
-            var path    = new List<Point>();
-            var current = endNode;
-            while (current is not null)
-            {
-                path.Add(current.Pos);
-                current = current.Parent;
-            }
-            path.Reverse();
-            return path;
+            _p = p;
+            _index = -1;
         }
 
-        /* ---------- nodo interno ---------- */
-
-        private sealed class Node
+        public Point Current => _index switch
         {
-            public Point Pos       { get; }
-            public Node? Parent    { get; set; }
-            public int   G         { get; set; }   // coste desde el inicio
-            private readonly int _h;               // heurística
+            0 => new Point(_p.X, _p.Y - 1), // Norte
+            1 => new Point(_p.X, _p.Y + 1), // Sur
+            2 => new Point(_p.X - 1, _p.Y), // Oeste
+            3 => new Point(_p.X + 1, _p.Y), // Este
+            _ => default
+        };
 
-            public int F => G + _h;                // función de evaluación
+        public bool MoveNext() => ++_index < 4;
 
-            public Node(Point pos, Node? parent, int g, int h)
-            {
-                Pos    = pos;
-                Parent = parent;
-                G      = g;
-                _h     = h;
-            }
+        public NeighborEnumerator GetEnumerator() => this;
+    }
+
+    /* ---------- nodo interno ---------- */
+
+    private sealed class Node
+    {
+        private readonly int _h; // heurística
+
+        public Node(Point pos, Node? parent, int g, int h)
+        {
+            Pos = pos;
+            Parent = parent;
+            G = g;
+            _h = h;
         }
+
+        public Point Pos { get; }
+        public Node? Parent { get; set; }
+        public int G { get; set; } // coste desde el inicio
+
+        public int F => G + _h; // función de evaluación
     }
 }

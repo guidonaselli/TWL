@@ -1,20 +1,16 @@
-using System.Collections.Generic;
-using System.IO;
 using TWL.Server.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
-using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
 public class QuestInfrastructureTests
 {
-    private readonly ServerQuestManager _questManager;
-    private readonly PlayerQuestComponent _playerQuests;
     private readonly InstanceService _instanceService;
+    private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public QuestInfrastructureTests()
     {
@@ -22,8 +18,11 @@ public class QuestInfrastructureTests
 
         // Load the infrastructure test file
         // Assumes file was created in Content/Data/infrastructure_test.json relative to execution
-        string path = "../../../Content/Data/infrastructure_test.json";
-        if (!File.Exists(path)) path = "Content/Data/infrastructure_test.json";
+        var path = "../../../Content/Data/infrastructure_test.json";
+        if (!File.Exists(path))
+        {
+            path = "Content/Data/infrastructure_test.json";
+        }
 
         if (File.Exists(path))
         {
@@ -37,20 +36,6 @@ public class QuestInfrastructureTests
         _instanceService = new InstanceService(metrics);
     }
 
-    // Subclass for testing
-    public class TestClientSession : ClientSession
-    {
-        public TestClientSession(PlayerQuestComponent component)
-        {
-            this.QuestComponent = component;
-            // Initialize other necessary fields if ClientSession methods depend on them
-            // Character is needed for some checks?
-            // HandleInstanceCompletion checks: if (Character == null) return;
-
-            this.Character = new ServerCharacter { Id = 1, Name = "TestPlayer" };
-        }
-    }
-
     [Fact]
     public void Questline_FullFlow_WithInstance()
     {
@@ -61,8 +46,8 @@ public class QuestInfrastructureTests
         // If file load failed, this returns false
         if (_questManager.GetDefinition(9001) == null)
         {
-             // Skip test if file not found (e.g. during certain CI runs if paths differ)
-             return;
+            // Skip test if file not found (e.g. during certain CI runs if paths differ)
+            return;
         }
 
         Assert.True(_playerQuests.StartQuest(9001));
@@ -98,7 +83,10 @@ public class QuestInfrastructureTests
     {
         var session = new TestClientSession(_playerQuests);
 
-        if (_questManager.GetDefinition(9001) == null) return;
+        if (_questManager.GetDefinition(9001) == null)
+        {
+            return;
+        }
 
         // Start Q9001 & Finish
         _playerQuests.StartQuest(9001);
@@ -113,5 +101,19 @@ public class QuestInfrastructureTests
 
         // Verify Quest Failed
         Assert.Equal(QuestState.Failed, _playerQuests.QuestStates[9002]);
+    }
+
+    // Subclass for testing
+    public class TestClientSession : ClientSession
+    {
+        public TestClientSession(PlayerQuestComponent component)
+        {
+            QuestComponent = component;
+            // Initialize other necessary fields if ClientSession methods depend on them
+            // Character is needed for some checks?
+            // HandleInstanceCompletion checks: if (Character == null) return;
+
+            Character = new ServerCharacter { Id = 1, Name = "TestPlayer" };
+        }
     }
 }

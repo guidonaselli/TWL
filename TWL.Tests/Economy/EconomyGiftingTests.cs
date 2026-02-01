@@ -1,18 +1,15 @@
-using System;
-using System.IO;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Models;
-using Xunit;
 
 namespace TWL.Tests.Economy;
 
 public class EconomyGiftingTests : IDisposable
 {
-    private string _tempLedger;
-    private EconomyManager _economy;
+    private readonly EconomyManager _economy;
+    private readonly ServerCharacter _receiver;
+    private readonly string _tempLedger;
     private ServerCharacter _giver;
-    private ServerCharacter _receiver;
 
     public EconomyGiftingTests()
     {
@@ -41,7 +38,13 @@ public class EconomyGiftingTests : IDisposable
         _economy?.Dispose();
         if (File.Exists(_tempLedger))
         {
-            try { File.Delete(_tempLedger); } catch { }
+            try
+            {
+                File.Delete(_tempLedger);
+            }
+            catch
+            {
+            }
         }
     }
 

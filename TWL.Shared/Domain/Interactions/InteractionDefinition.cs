@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TWL.Shared.Domain.Quests;
 
 namespace TWL.Shared.Domain.Interactions;

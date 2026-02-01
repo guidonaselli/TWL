@@ -1,16 +1,8 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.Json;
-using System.Threading;
-using System.Threading.Tasks;
-using TWL.Server.Domain.World;
-using TWL.Shared.Domain.World;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
-using TWL.Shared.Net.Messages;
+using TWL.Shared.Domain.World;
 using TWL.Shared.Net.Network;
 
 namespace TWL.Server.Simulation.Managers;
@@ -24,9 +16,9 @@ public enum EncounterSource
 
 public class SpawnManager
 {
-    private readonly MonsterManager _monsterManager;
     private readonly CombatManager _combatManager;
     private readonly Dictionary<int, ZoneSpawnConfig> _configs = new();
+    private readonly MonsterManager _monsterManager;
     private readonly ConcurrentDictionary<int, float> _playerSteps = new(); // PlayerId -> Steps
 
     private int _nextEncounterId = 1;
@@ -62,25 +54,36 @@ public class SpawnManager
                 Console.WriteLine($"Error loading spawn config {file}: {ex.Message}");
             }
         }
+
         Console.WriteLine($"Loaded {_configs.Count} spawn configs.");
     }
 
     public void OnPlayerMoved(ClientSession session)
     {
-        if (session.Character == null) return;
+        if (session.Character == null)
+        {
+            return;
+        }
 
-        int mapId = session.Character.MapId;
-        if (mapId == 0) mapId = 1001; // Default for testing if not set
+        var mapId = session.Character.MapId;
+        if (mapId == 0)
+        {
+            mapId = 1001; // Default for testing if not set
+        }
 
         if (!_configs.TryGetValue(mapId, out var config))
         {
             // Console.WriteLine($"No config for map {mapId}");
             return;
         }
-        if (!config.RandomEncounterEnabled) return;
 
-        int pid = session.Character.Id;
-        float steps = _playerSteps.GetOrAdd(pid, 0f);
+        if (!config.RandomEncounterEnabled)
+        {
+            return;
+        }
+
+        var pid = session.Character.Id;
+        var steps = _playerSteps.GetOrAdd(pid, 0f);
 
         // Use move packet delta if possible, but currently we just know "moved".
         // session.Character X/Y are updated *before* this call in ClientSession.HandleMoveAsync.
@@ -103,7 +106,10 @@ public class SpawnManager
 
     public void StartEncounter(ClientSession session, ZoneSpawnConfig config, EncounterSource source)
     {
-        if (session.Character == null) return;
+        if (session.Character == null)
+        {
+            return;
+        }
 
         // Check if already in combat
         if (_combatManager.GetCombatant(session.Character.Id) != null)
@@ -114,16 +120,19 @@ public class SpawnManager
 
         // 1. Select Monsters
         var mobs = SelectMonsters(config, session.Character);
-        if (mobs.Count == 0) return;
+        if (mobs.Count == 0)
+        {
+            return;
+        }
 
         // 2. Create Encounter
-        int encounterId = Interlocked.Increment(ref _nextEncounterId);
-        int seed = Random.Shared.Next();
+        var encounterId = Interlocked.Increment(ref _nextEncounterId);
+        var seed = Random.Shared.Next();
 
         var serverMobs = new List<ServerCharacter>();
-        int mobIdCounter = -1000 * encounterId; // distinct negative IDs for mobs
+        var mobIdCounter = -1000 * encounterId; // distinct negative IDs for mobs
 
-        for (int i = 0; i < mobs.Count; i++)
+        for (var i = 0; i < mobs.Count; i++)
         {
             var def = mobs[i];
             var mob = new ServerCharacter
@@ -156,15 +165,16 @@ public class SpawnManager
             EncounterId = encounterId,
             Source = source.ToString(),
             Seed = seed,
-            Monsters = serverMobs.Select((m, index) => new {
+            Monsters = serverMobs.Select((m, index) => new
+            {
                 m.Id,
                 m.Name,
                 m.Hp,
                 m.MaxHp,
                 m.Level,
                 m.CharacterElement,
-                MonsterId = mobs[index].MonsterId,
-                SpritePath = mobs[index].SpritePath
+                mobs[index].MonsterId,
+                mobs[index].SpritePath
             }).ToList()
         };
 
@@ -183,7 +193,7 @@ public class SpawnManager
 
         // Gather all allowed monsters based on player position
         var candidates = new List<MonsterDefinition>();
-        int totalWeight = 0;
+        var totalWeight = 0;
 
         foreach (var region in config.SpawnRegions)
         {
@@ -203,14 +213,20 @@ public class SpawnManager
             }
         }
 
-        if (candidates.Count == 0) return list;
+        if (candidates.Count == 0)
+        {
+            return list;
+        }
 
         // Pick 1-3 based on weight
-        int count = Random.Shared.Next(1, 4);
-        for (int i = 0; i < count; i++)
+        var count = Random.Shared.Next(1, 4);
+        for (var i = 0; i < count; i++)
         {
             var pick = SelectWeighted(candidates, totalWeight);
-            if (pick != null) list.Add(pick);
+            if (pick != null)
+            {
+                list.Add(pick);
+            }
         }
 
         return list;
@@ -218,14 +234,18 @@ public class SpawnManager
 
     private MonsterDefinition? SelectWeighted(List<MonsterDefinition> candidates, int totalWeight)
     {
-        int roll = Random.Shared.Next(0, totalWeight);
-        int current = 0;
+        var roll = Random.Shared.Next(0, totalWeight);
+        var current = 0;
         foreach (var def in candidates)
         {
-            int w = def.EncounterWeight > 0 ? def.EncounterWeight : 1;
+            var w = def.EncounterWeight > 0 ? def.EncounterWeight : 1;
             current += w;
-            if (roll < current) return def;
+            if (roll < current)
+            {
+                return def;
+            }
         }
+
         return candidates.LastOrDefault();
     }
 

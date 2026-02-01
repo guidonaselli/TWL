@@ -1,5 +1,4 @@
 using Microsoft.Xna.Framework;
-using TWL.Shared.Domain.Skills;
 
 namespace TWL.Shared.Domain.Characters;
 
@@ -88,36 +87,45 @@ public abstract class Character
 
     public bool ConsumeSp(int cost)
     {
-        if (Sp < cost) return false;
+        if (Sp < cost)
+        {
+            return false;
+        }
+
         Sp -= cost;
-        if (Sp < 0) Sp = 0;
+        if (Sp < 0)
+        {
+            Sp = 0;
+        }
+
         return true;
     }
 
-    public void Heal(int amount)
-    {
-        Health = Math.Min(MaxHealth, Health + amount);
-    }
+    public void Heal(int amount) => Health = Math.Min(MaxHealth, Health + amount);
 
-    public void TakeDamage(int amount)
-    {
-        Health = Math.Max(0, Health - amount);
-    }
+    public void TakeDamage(int amount) => Health = Math.Max(0, Health - amount);
 
-    public void RestoreMana(int amount)
-    {
-        Sp = Math.Min(MaxSp, Sp + amount);
-    }
+    public void RestoreMana(int amount) => Sp = Math.Min(MaxSp, Sp + amount);
 
     public void CheckNewSkills(ISkillCatalog skills)
     {
         foreach (var id in skills.GetAllSkillIds())
         {
             var skill = skills.GetSkillById(id);
-            if (skill == null) continue;
+            if (skill == null)
+            {
+                continue;
+            }
 
-            if (skill.Element != CharacterElement) continue;
-            if (KnownSkills.Contains(skill.SkillId)) continue;
+            if (skill.Element != CharacterElement)
+            {
+                continue;
+            }
+
+            if (KnownSkills.Contains(skill.SkillId))
+            {
+                continue;
+            }
 
             var ok =
                 Str >= skill.Requirements.Str &&
@@ -126,7 +134,10 @@ public abstract class Character
                 Wis >= skill.Requirements.Wis &&
                 Agi >= skill.Requirements.Agi;
 
-            if (ok) KnownSkills.Add(skill.SkillId);
+            if (ok)
+            {
+                KnownSkills.Add(skill.SkillId);
+            }
         }
     }
 }

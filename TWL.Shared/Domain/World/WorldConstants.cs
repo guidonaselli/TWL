@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace TWL.Shared.Domain.World;
 
 public static class WorldConstants

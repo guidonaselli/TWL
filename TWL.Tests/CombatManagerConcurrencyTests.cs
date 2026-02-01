@@ -1,12 +1,8 @@
-using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Tests.Mocks;
 using TWL.Shared.Domain.Requests;
-using System.Threading.Tasks;
-using System.Collections.Generic;
-using System.Threading;
-using System;
+using TWL.Shared.Domain.Skills;
+using TWL.Tests.Mocks;
 using Xunit.Abstractions;
 
 namespace TWL.Tests;
@@ -24,9 +20,9 @@ public class CombatManagerConcurrencyTests
     public void CombatManager_ConcurrentAccess_ShouldNotCrash()
     {
         var random = new MockRandomService();
-        var resolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
-        bool running = true;
+        var resolver = new StandardCombatResolver(random, SkillRegistry.Instance);
+        var manager = new CombatManager(resolver, random, SkillRegistry.Instance, new StatusEngine());
+        var running = true;
         var exceptions = new List<Exception>();
 
         // Setup initial characters
@@ -36,7 +32,7 @@ public class CombatManagerConcurrencyTests
         var tasks = new List<Task>();
 
         // Task 1: UseSkill loop (Readers)
-        for (int i = 0; i < 20; i++)
+        for (var i = 0; i < 20; i++)
         {
             tasks.Add(Task.Run(() =>
             {
@@ -49,7 +45,11 @@ public class CombatManagerConcurrencyTests
                 }
                 catch (Exception ex)
                 {
-                    lock (exceptions) exceptions.Add(ex);
+                    lock (exceptions)
+                    {
+                        exceptions.Add(ex);
+                    }
+
                     running = false;
                 }
             }));
@@ -67,20 +67,24 @@ public class CombatManagerConcurrencyTests
             }
             catch (Exception ex)
             {
-                lock (exceptions) exceptions.Add(ex);
+                lock (exceptions)
+                {
+                    exceptions.Add(ex);
+                }
+
                 running = false;
             }
         }));
 
         // Task 2: Add/Remove loop (Writers)
-        for (int i = 0; i < 10; i++)
+        for (var i = 0; i < 10; i++)
         {
-            int tIndex = i;
+            var tIndex = i;
             tasks.Add(Task.Run(() =>
             {
                 try
                 {
-                    int idCounter = 100 + (tIndex * 10000);
+                    var idCounter = 100 + tIndex * 10000;
                     while (running)
                     {
                         var id = idCounter++;
@@ -90,7 +94,11 @@ public class CombatManagerConcurrencyTests
                 }
                 catch (Exception ex)
                 {
-                    lock (exceptions) exceptions.Add(ex);
+                    lock (exceptions)
+                    {
+                        exceptions.Add(ex);
+                    }
+
                     running = false;
                 }
             }));

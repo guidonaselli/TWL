@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using TWL.Shared.Domain.Requests;
+﻿using TWL.Shared.Domain.Requests;
 
 namespace TWL.Client.Presentation.Quests;
 
@@ -25,8 +23,5 @@ public class Quest
         Objectives = new List<QuestObjective>();
     }
 
-    public bool IsAllObjectivesCompleted()
-    {
-        return Objectives.All(o => o.IsCompleted);
-    }
+    public bool IsAllObjectivesCompleted() => Objectives.All(o => o.IsCompleted);
 }

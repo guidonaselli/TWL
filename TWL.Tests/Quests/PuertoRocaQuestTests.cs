@@ -1,11 +1,7 @@
-using System.IO;
 using TWL.Server.Simulation.Managers;
-using TWL.Server.Simulation.Networking.Components;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.Quests;
+using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Requests;
-using Xunit;
-using System.Collections.Generic;
 
 namespace TWL.Tests.Quests;
 
@@ -14,19 +10,29 @@ public class PuertoRocaQuestTests
     private string GetContentPath(string filename)
     {
         // Try standard test runner location first
-        string path = Path.Combine("..", "..", "..", "..", "Content", "Data", filename);
-        if (File.Exists(path)) return path;
+        var path = Path.Combine("..", "..", "..", "..", "Content", "Data", filename);
+        if (File.Exists(path))
+        {
+            return path;
+        }
 
         // Try current directory
         path = Path.Combine("Content", "Data", filename);
-        if (File.Exists(path)) return path;
+        if (File.Exists(path))
+        {
+            return path;
+        }
 
         // Try absolute path resolution relative to repo root (assuming we are in a subfolder)
         var current = new DirectoryInfo(Directory.GetCurrentDirectory());
         while (current != null)
         {
             var target = Path.Combine(current.FullName, "Content", "Data", filename);
-            if (File.Exists(target)) return target;
+            if (File.Exists(target))
+            {
+                return target;
+            }
+
             current = current.Parent;
         }
 

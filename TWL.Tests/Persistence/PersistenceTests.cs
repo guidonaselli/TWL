@@ -1,8 +1,5 @@
-using System;
-using System.IO;
 using TWL.Server.Persistence;
 using TWL.Server.Simulation.Networking;
-using Xunit;
 
 namespace TWL.Tests.Persistence;
 
@@ -19,11 +16,13 @@ public class PersistenceTests : IDisposable
     public void Dispose()
     {
         if (Directory.Exists(_testDir))
+        {
             Directory.Delete(_testDir, true);
+        }
     }
 
     [Fact]
-    public async System.Threading.Tasks.Task Repo_SaveAndLoad_CharacterData()
+    public async Task Repo_SaveAndLoad_CharacterData()
     {
         var repo = new FilePlayerRepository(_testDir);
         var data = new PlayerSaveData

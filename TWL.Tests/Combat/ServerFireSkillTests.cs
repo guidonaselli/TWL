@@ -1,13 +1,9 @@
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.Skills;
-using TWL.Shared.Services;
-using Xunit;
-using TWL.Shared.Domain.Requests;
-using TWL.Tests.Mocks;
-using System.IO;
-using System.Linq;
 using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.Skills;
+using TWL.Tests.Mocks;
 
 namespace TWL.Tests.Combat;
 
@@ -16,11 +12,11 @@ public class ServerFireSkillTests
     public ServerFireSkillTests()
     {
         // Adjust path logic to be robust
-        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
+        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/skills.json");
         if (!File.Exists(path))
         {
-             // Try going up one more level if running from bin/Debug/net10.0
-             path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
+            // Try going up one more level if running from bin/Debug/net10.0
+            path = Path.Combine(AppContext.BaseDirectory, "Content/Data/skills.json");
         }
 
         if (File.Exists(path))
@@ -35,20 +31,22 @@ public class ServerFireSkillTests
     {
         if (SkillRegistry.Instance.GetSkillById(4001) == null)
         {
-             // Fallback if file not loaded correctly in test env
-             return;
+            // Fallback if file not loaded correctly in test env
+            return;
         }
 
         // Use 0.5f to get exactly 1.0 multiplier from NextFloat(0.95, 1.05)
         var mockRng = new MockRandomService(0.5f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance, new StatusEngine());
 
-        var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Str = 20, Agi = 10, CharacterElement = Element.Fire };
+        var attacker = new ServerCharacter
+            { Id = 1, Name = "Attacker", Sp = 100, Str = 20, Agi = 10, CharacterElement = Element.Fire };
         // Atk = 40.
         // Skill 4001 (Flame Smash) Scaling: 1.2 * Atk = 48.
 
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Con = 5, Agi = 10, CharacterElement = Element.Wind };
+        var target = new ServerCharacter
+            { Id = 2, Name = "Target", Hp = 100, Con = 5, Agi = 10, CharacterElement = Element.Wind };
         // Def = 10.
         // Element: Fire vs Wind => 1.5x Multiplier.
 
@@ -72,11 +70,14 @@ public class ServerFireSkillTests
     [Fact]
     public void FieryWill_ShouldBuffAtk()
     {
-        if (SkillRegistry.Instance.GetSkillById(4201) == null) return;
+        if (SkillRegistry.Instance.GetSkillById(4201) == null)
+        {
+            return;
+        }
 
         var mockRng = new MockRandomService(1.0f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance, new StatusEngine());
 
         var caster = new ServerCharacter { Id = 1, Name = "Caster", Sp = 100, Int = 20, Str = 10 };
         // Base Atk = Str * 2 = 20.

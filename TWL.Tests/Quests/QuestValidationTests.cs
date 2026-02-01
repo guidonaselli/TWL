@@ -1,10 +1,6 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Domain.Quests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
@@ -20,7 +16,7 @@ public class QuestValidationTests
             Description = "Description",
             Objectives = new List<ObjectiveDefinition>
             {
-                new ObjectiveDefinition("Talk", "Target", 1, "Desc", null)
+                new("Talk", "Target", 1, "Desc")
             },
             Rewards = new RewardDefinition(10, 10, new List<ItemReward>())
         };
@@ -37,7 +33,7 @@ public class QuestValidationTests
             QuestId = 1,
             Title = "Q1",
             Description = "D1",
-            Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D", null) },
+            Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
             Rewards = new RewardDefinition(0, 0, null)
         };
         var q2 = new QuestDefinition
@@ -45,7 +41,7 @@ public class QuestValidationTests
             QuestId = 1, // Duplicate
             Title = "Q2",
             Description = "D2",
-            Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D", null) },
+            Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
             Rewards = new RewardDefinition(0, 0, null)
         };
 
@@ -62,7 +58,7 @@ public class QuestValidationTests
             Title = "Q1",
             Description = "D1",
             Requirements = new List<int> { 999 }, // Missing
-            Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D", null) },
+            Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
             Rewards = new RewardDefinition(0, 0, null)
         };
 
@@ -80,7 +76,7 @@ public class QuestValidationTests
             Description = "D1",
             Objectives = new List<ObjectiveDefinition>
             {
-                new ObjectiveDefinition("InvalidType", "T", 1, "D", null)
+                new("InvalidType", "T", 1, "D")
             },
             Rewards = new RewardDefinition(0, 0, null)
         };
@@ -99,7 +95,7 @@ public class QuestValidationTests
             Description = "D1",
             Objectives = new List<ObjectiveDefinition>
             {
-                new ObjectiveDefinition("Deliver", "Target", 1, "Desc", null) // No DataId
+                new("Deliver", "Target", 1, "Desc") // No DataId
             },
             Rewards = new RewardDefinition(0, 0, null)
         };
@@ -125,6 +121,7 @@ public class QuestValidationTests
                 questsPath = candidate;
                 break;
             }
+
             dir = dir.Parent;
         }
 
@@ -132,7 +129,8 @@ public class QuestValidationTests
 
         // Parse and validate
         var json = File.ReadAllText(questsPath);
-        var quests = System.Text.Json.JsonSerializer.Deserialize<List<QuestDefinition>>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var quests = JsonSerializer.Deserialize<List<QuestDefinition>>(json,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         Assert.NotNull(quests);
 
@@ -140,9 +138,14 @@ public class QuestValidationTests
         if (errors.Count > 0)
         {
             // Dump errors to help debugging
-            foreach(var err in errors) Console.WriteLine(err);
+            foreach (var err in errors)
+            {
+                Console.WriteLine(err);
+            }
+
             throw new Exception("Production Data Validation Failed:\n" + string.Join("\n", errors));
         }
+
         Assert.Empty(errors);
     }
 }

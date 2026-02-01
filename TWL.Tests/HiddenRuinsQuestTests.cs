@@ -1,20 +1,16 @@
-using System.Collections.Generic;
-using System.IO;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
-using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests;
 
 public class HiddenRuinsQuestTests
 {
-    private ServerQuestManager _questManager;
-    private InteractionManager _interactionManager;
-    private ServerCharacter _character;
-    private PlayerQuestComponent _questComponent;
+    private readonly ServerCharacter _character;
+    private readonly InteractionManager _interactionManager;
+    private readonly PlayerQuestComponent _questComponent;
+    private readonly ServerQuestManager _questManager;
 
     public HiddenRuinsQuestTests()
     {
@@ -24,8 +20,11 @@ public class HiddenRuinsQuestTests
         _questComponent = new PlayerQuestComponent(_questManager);
 
         // Load Real Data
-        string contentPath = Path.Combine("..", "..", "..", "..", "Content", "Data");
-        if (!Directory.Exists(contentPath)) contentPath = Path.Combine("Content", "Data");
+        var contentPath = Path.Combine("..", "..", "..", "..", "Content", "Data");
+        if (!Directory.Exists(contentPath))
+        {
+            contentPath = Path.Combine("Content", "Data");
+        }
 
         _questManager.Load(Path.Combine(contentPath, "quests.json"));
         _interactionManager.Load(Path.Combine(contentPath, "interactions.json"));

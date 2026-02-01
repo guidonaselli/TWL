@@ -1,18 +1,16 @@
-using System;
 using System.Net.Sockets;
-using System.Threading.Tasks;
 using System.Text.Json;
-using TWL.Server.Persistence.Database;
-using TWL.Server.Persistence.Services;
-using TWL.Server.Simulation.Managers;
-using TWL.Server.Simulation.Networking;
-using TWL.Shared.Net.Network;
-using TWL.Shared.Services;
-using TWL.Server.Services.World;
-using TWL.Shared.Domain.Characters;
-using Xunit;
 using Moq;
 using TWL.Server.Persistence;
+using TWL.Server.Persistence.Database;
+using TWL.Server.Persistence.Services;
+using TWL.Server.Services;
+using TWL.Server.Services.World;
+using TWL.Server.Simulation.Managers;
+using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Characters;
+using TWL.Shared.Net.Network;
+using TWL.Shared.Services;
 
 namespace TWL.Tests.Reliability;
 
@@ -32,17 +30,19 @@ public class PipelineGranularMetricsTests
         var mockRandom = new Mock<IRandomService>();
         var mockCombatResolver = new Mock<ICombatResolver>();
         var mockStatusEngine = new Mock<IStatusEngine>();
-        var combatManager = new CombatManager(mockCombatResolver.Object, mockRandom.Object, mockSkillCatalog.Object, mockStatusEngine.Object);
+        var combatManager = new CombatManager(mockCombatResolver.Object, mockRandom.Object, mockSkillCatalog.Object,
+            mockStatusEngine.Object);
         var mockInteract = new Mock<InteractionManager>();
         var mockPlayerRepo = new Mock<IPlayerRepository>();
         var playerService = new PlayerService(mockPlayerRepo.Object, metrics);
         var mockEconomy = new Mock<IEconomyService>();
-        var petService = new TWL.Server.Services.PetService(playerService, mockPet.Object, combatManager, mockRandom.Object);
+        var petService = new PetService(playerService, mockPet.Object, combatManager, mockRandom.Object);
         var mockWorldTrigger = new Mock<IWorldTriggerService>();
         var spawnManager = new SpawnManager(new MonsterManager(), combatManager);
 
-        int port = 9124; // Use different port
-        var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object, playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object, spawnManager);
+        var port = 9124; // Use different port
+        var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
+            playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object, spawnManager);
 
         server.Start();
 
@@ -58,9 +58,13 @@ public class PipelineGranularMetricsTests
             await stream.WriteAsync(bytes, 0, bytes.Length);
 
             // Wait for processing
-            for(int i=0; i<20; i++)
+            for (var i = 0; i < 20; i++)
             {
-                if(metrics.GetSnapshot().NetMessagesProcessed > 0) break;
+                if (metrics.GetSnapshot().NetMessagesProcessed > 0)
+                {
+                    break;
+                }
+
                 await Task.Delay(100);
             }
 
@@ -70,7 +74,8 @@ public class PipelineGranularMetricsTests
             Assert.True(snapshot.NetMessagesProcessed > 0, "Messages processed");
 
             // Check Granular Metrics
-            Assert.True(snapshot.PipelineValidateDurationTicks > 0, $"Expected PipelineValidateDurationTicks > 0, got {snapshot.PipelineValidateDurationTicks}");
+            Assert.True(snapshot.PipelineValidateDurationTicks > 0,
+                $"Expected PipelineValidateDurationTicks > 0, got {snapshot.PipelineValidateDurationTicks}");
             Assert.True(snapshot.PipelineResolveDurationTicks >= 0, "Resolve duration should be recorded");
         }
         finally

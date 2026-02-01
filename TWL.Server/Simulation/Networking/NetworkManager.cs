@@ -6,10 +6,10 @@ namespace TWL.Server.Simulation.Networking;
 
 public class NetworkManager
 {
-    private volatile List<IClientConnection> _clients = new();
     private readonly object _clientsLock = new();
     private readonly GameServer _gameServer;
     private CancellationTokenSource _cancellationTokenSource;
+    private volatile List<IClientConnection> _clients = new();
     private bool _isRunning;
     private TcpListener _listener;
 
@@ -21,7 +21,9 @@ public class NetworkManager
     public void Start(int port)
     {
         if (_isRunning)
+        {
             return;
+        }
 
         _isRunning = true;
         _cancellationTokenSource = new CancellationTokenSource();
@@ -35,7 +37,9 @@ public class NetworkManager
     public void Stop()
     {
         if (!_isRunning)
+        {
             return;
+        }
 
         _isRunning = false;
         _cancellationTokenSource.Cancel();
@@ -48,7 +52,10 @@ public class NetworkManager
             _clients = new List<IClientConnection>();
         }
 
-        foreach (var client in clientsSnapshot) client.Disconnect();
+        foreach (var client in clientsSnapshot)
+        {
+            client.Disconnect();
+        }
 
         Console.WriteLine("Network manager stopped");
     }
@@ -104,7 +111,9 @@ public class NetworkManager
         // Benchmarks confirm 0 allocations vs O(N) allocations with lock/ToArray approach.
         var clients = _clients;
         foreach (var client in clients)
+        {
             _ = client.SendMessageAsync(data);
+        }
     }
 }
 
@@ -124,6 +133,39 @@ public class ClientConnection : IClientConnection
         _stream = tcpClient.GetStream();
     }
 
+    public async Task SendMessageAsync(byte[] data)
+    {
+        try
+        {
+            if (_tcpClient.Connected && _stream.CanWrite)
+            {
+                await _stream.WriteAsync(data, 0, data.Length);
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending message: {ex.Message}");
+            Disconnect();
+        }
+    }
+
+    public void Disconnect()
+    {
+        try
+        {
+            _stream?.Close();
+            _tcpClient?.Close();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error disconnecting client: {ex.Message}");
+        }
+        finally
+        {
+            _networkManager.RemoveClient(this);
+        }
+    }
+
     public async Task ProcessMessagesAsync(CancellationToken token)
     {
         try
@@ -135,7 +177,9 @@ public class ClientConnection : IClientConnection
                 var bytesRead = await _stream.ReadAsync(buffer, 0, buffer.Length, token);
 
                 if (bytesRead == 0)
+                {
                     break; // Client disconnected
+                }
 
                 await ProcessMessageAsync(buffer, bytesRead);
             }
@@ -166,36 +210,6 @@ public class ClientConnection : IClientConnection
         catch (Exception ex)
         {
             Console.WriteLine($"Error sending response: {ex.Message}");
-        }
-    }
-
-    public async Task SendMessageAsync(byte[] data)
-    {
-        try
-        {
-            if (_tcpClient.Connected && _stream.CanWrite) await _stream.WriteAsync(data, 0, data.Length);
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error sending message: {ex.Message}");
-            Disconnect();
-        }
-    }
-
-    public void Disconnect()
-    {
-        try
-        {
-            _stream?.Close();
-            _tcpClient?.Close();
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error disconnecting client: {ex.Message}");
-        }
-        finally
-        {
-            _networkManager.RemoveClient(this);
         }
     }
 }

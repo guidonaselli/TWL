@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using Xunit;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
@@ -14,23 +10,18 @@ namespace TWL.Tests.Quests;
 
 public class TestClientSession : ClientSession
 {
-    public TestClientSession() : base() { }
+    public void SetCharacter(ServerCharacter c) => Character = c;
+    public void SetQuestComponent(PlayerQuestComponent qc) => QuestComponent = qc;
 
-    public void SetCharacter(ServerCharacter c) { Character = c; }
-    public void SetQuestComponent(PlayerQuestComponent qc) { QuestComponent = qc; }
-
-    public new void GrantGoddessSkills()
-    {
-        base.GrantGoddessSkills();
-    }
+    public new void GrantGoddessSkills() => base.GrantGoddessSkills();
 }
 
 public class SpecialSkillQuestTests : IDisposable
 {
-    private ServerQuestManager _questManager;
-    private TestClientSession _session;
-    private ServerCharacter _character;
-    private string _tempQuestFile;
+    private readonly ServerCharacter _character;
+    private readonly ServerQuestManager _questManager;
+    private readonly TestClientSession _session;
+    private readonly string _tempQuestFile;
 
     public SpecialSkillQuestTests()
     {
@@ -38,7 +29,7 @@ public class SpecialSkillQuestTests : IDisposable
         var quests = new List<QuestDefinition>
         {
             // SSQ 1: Dragon
-            new QuestDefinition
+            new()
             {
                 QuestId = 8001,
                 Title = "Dragon Quest",
@@ -46,7 +37,7 @@ public class SpecialSkillQuestTests : IDisposable
                 Requirements = new List<int>(),
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Kill", "Dragon", 1, "Kill the Dragon")
+                    new("Kill", "Dragon", 1, "Kill the Dragon")
                 },
                 Rewards = new RewardDefinition(1000, 100, new List<ItemReward>(), null, 8001),
                 Type = "SpecialSkill",
@@ -55,7 +46,7 @@ public class SpecialSkillQuestTests : IDisposable
                 RequiredLevel = 10
             },
             // SSQ 2: Fairy (Different Category)
-            new QuestDefinition
+            new()
             {
                 QuestId = 8002,
                 Title = "Fairy Quest",
@@ -63,7 +54,7 @@ public class SpecialSkillQuestTests : IDisposable
                 Requirements = new List<int>(),
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Instance", "Fairy Woods", 1, "Clear Fairy Woods")
+                    new("Instance", "Fairy Woods", 1, "Clear Fairy Woods")
                 },
                 Rewards = new RewardDefinition(1000, 100, new List<ItemReward>(), null, 8002),
                 Type = "SpecialSkill",
@@ -72,7 +63,7 @@ public class SpecialSkillQuestTests : IDisposable
                 RequiredLevel = 10
             },
             // SSQ 3: Another Dragon (Same Category) - to test exclusivity
-            new QuestDefinition
+            new()
             {
                 QuestId = 8003,
                 Title = "Another Dragon Quest",
@@ -80,7 +71,7 @@ public class SpecialSkillQuestTests : IDisposable
                 Requirements = new List<int>(),
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Kill", "Wyvern", 1, "Kill Wyvern")
+                    new("Kill", "Wyvern", 1, "Kill Wyvern")
                 },
                 Rewards = new RewardDefinition(1000, 100, new List<ItemReward>(), null, 8003),
                 Type = "SpecialSkill",
@@ -90,7 +81,7 @@ public class SpecialSkillQuestTests : IDisposable
             }
         };
 
-        File.WriteAllText(_tempQuestFile, System.Text.Json.JsonSerializer.Serialize(quests));
+        File.WriteAllText(_tempQuestFile, JsonSerializer.Serialize(quests));
 
         _questManager = new ServerQuestManager();
         _questManager.Load(_tempQuestFile);
@@ -99,7 +90,7 @@ public class SpecialSkillQuestTests : IDisposable
         {
             Id = 1,
             Name = "Tester",
-            CharacterElement = Element.Fire,
+            CharacterElement = Element.Fire
             // Level 20, // Stats are set via LoadSaveData or default, need to check how to set level manually
             // ServerCharacter sets Level to 1 by default. ExpToNextLevel is calculated.
             // I'll cheat by setting Exp enough to level up, or just bypass StartQuest level check if I can?
@@ -122,7 +113,9 @@ public class SpecialSkillQuestTests : IDisposable
     public void Dispose()
     {
         if (File.Exists(_tempQuestFile))
+        {
             File.Delete(_tempQuestFile);
+        }
     }
 
     [Fact]
@@ -168,11 +161,11 @@ public class SpecialSkillQuestTests : IDisposable
     public void StartQuest_UniquePerCharacter_CanOnlyStartOnce()
     {
         // 1. Start Quest 8001
-        bool started = _session.QuestComponent.StartQuest(8001);
+        var started = _session.QuestComponent.StartQuest(8001);
         Assert.True(started, "Should start first time");
 
         // 2. Try start again while InProgress
-        bool startedAgain = _session.QuestComponent.StartQuest(8001);
+        var startedAgain = _session.QuestComponent.StartQuest(8001);
         Assert.False(startedAgain, "Should not start while InProgress");
 
         // 3. Complete and Claim
@@ -180,7 +173,7 @@ public class SpecialSkillQuestTests : IDisposable
         _session.QuestComponent.ClaimReward(8001);
 
         // 4. Try start again after Completion
-        bool startedAfterComplete = _session.QuestComponent.StartQuest(8001);
+        var startedAfterComplete = _session.QuestComponent.StartQuest(8001);
         Assert.False(startedAfterComplete, "Should not start again due to UniquePerCharacter rule");
     }
 
@@ -192,7 +185,8 @@ public class SpecialSkillQuestTests : IDisposable
 
         // 2. Try Start Another Dragon Quest 8003
         // Should fail because another "Dragon" category quest is InProgress
-        Assert.False(_session.QuestComponent.StartQuest(8003), "Should not start 8003 while 8001 (same category) is active");
+        Assert.False(_session.QuestComponent.StartQuest(8003),
+            "Should not start 8003 while 8001 (same category) is active");
 
         // 3. Try Start Fairy Quest 8002
         // Should succeed because it is "Fairy" category (different)

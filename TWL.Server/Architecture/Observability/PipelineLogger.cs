@@ -1,7 +1,4 @@
-using System;
-using System.IO;
 using System.Threading.Channels;
-using System.Threading.Tasks;
 
 namespace TWL.Server.Architecture.Observability;
 
@@ -26,15 +23,16 @@ public static class PipelineLogger
     public static void LogStage(string traceId, string stage, double durationMs, string details = "")
     {
         var timestamp = DateTime.UtcNow.ToString("O");
-        var logEntry = $"[PIPELINE] [{timestamp}] [TraceID:{traceId}] [Stage:{stage}] Duration:{durationMs:F2}ms {details}";
+        var logEntry =
+            $"[PIPELINE] [{timestamp}] [TraceID:{traceId}] [Stage:{stage}] Duration:{durationMs:F2}ms {details}";
         _logChannel.Writer.TryWrite(logEntry);
     }
 
     public static void LogEvent(string traceId, string eventName, string details = "")
     {
-         var timestamp = DateTime.UtcNow.ToString("O");
-         var logEntry = $"[PIPELINE] [{timestamp}] [TraceID:{traceId}] [Event:{eventName}] {details}";
-         _logChannel.Writer.TryWrite(logEntry);
+        var timestamp = DateTime.UtcNow.ToString("O");
+        var logEntry = $"[PIPELINE] [{timestamp}] [TraceID:{traceId}] [Event:{eventName}] {details}";
+        _logChannel.Writer.TryWrite(logEntry);
     }
 
     private static async Task WriteLoopAsync()
@@ -51,6 +49,7 @@ public static class PipelineLogger
                 {
                     await writer.WriteLineAsync(msg);
                 }
+
                 await writer.FlushAsync();
             }
         }

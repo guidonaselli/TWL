@@ -1,15 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Domain.Battle;
-using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Events;
-using TWL.Shared.Domain.Models;
 using TWL.Shared.Domain.Skills;
 using TWL.Shared.Net;
 using TWL.Shared.Net.Abstractions;
@@ -27,31 +22,31 @@ public enum BattleUiState
 
 public sealed class SceneBattle : SceneBase, IPayloadReceiver
 {
-    private OfflineCombatManager _combat = null!;
     private readonly IAssetLoader _assets;
-
-    private SpriteFont _font = null!;
-    private Texture2D _whiteTexture = null!;
-    private BattleStarted _payload = null!;
-    private string _status = "Battle start!";
-
-    // UI State
-    private BattleUiState _uiState = BattleUiState.Idle;
-    private int _menuIndex = 0; // 0: Attack, 1: Skill, 2: Defend
-    private int _skillIndex = 0;
-    private int _targetIndex = 0;
-    private List<Combatant> _potentialTargets = new();
-    private CombatActionType _selectedActionType;
-    private int _selectedSkillId;
 
     // Skills
     private List<(string Name, int Id)> _availableSkills = new();
+    private OfflineCombatManager _combat = null!;
 
-    // Result State
-    private BattleFinished _result = null!;
+    private SpriteFont _font = null!;
 
     // Input Debounce
     private KeyboardState _lastKs;
+    private int _menuIndex; // 0: Attack, 1: Skill, 2: Defend
+    private BattleStarted _payload = null!;
+    private List<Combatant> _potentialTargets = new();
+
+    // Result State
+    private BattleFinished _result = null!;
+    private CombatActionType _selectedActionType;
+    private int _selectedSkillId;
+    private int _skillIndex;
+    private string _status = "Battle start!";
+    private int _targetIndex;
+
+    // UI State
+    private BattleUiState _uiState = BattleUiState.Idle;
+    private Texture2D _whiteTexture = null!;
 
     public SceneBattle(ContentManager content,
         GraphicsDevice gd,
@@ -75,24 +70,27 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         var player = _payload.Allies.FirstOrDefault();
         if (player != null)
         {
-             // For vertical slice, if no skills are known, give defaults.
-             if (player.KnownSkills.Count == 0)
-             {
-                 player.KnownSkills.Add(1); // Power Strike
-                 player.KnownSkills.Add(23); // Flame Strike (Data)
-                 player.KnownSkills.Add(20); // Fireball (Data)
-                 player.KnownSkills.Add(3); // Heal
-                 player.KnownSkills.Add(4); // Focus
-             }
+            // For vertical slice, if no skills are known, give defaults.
+            if (player.KnownSkills.Count == 0)
+            {
+                player.KnownSkills.Add(1); // Power Strike
+                player.KnownSkills.Add(23); // Flame Strike (Data)
+                player.KnownSkills.Add(20); // Fireball (Data)
+                player.KnownSkills.Add(3); // Heal
+                player.KnownSkills.Add(4); // Focus
+            }
 
-             _availableSkills = player.KnownSkills.Select(id => (GetSkillName(id), id)).ToList();
+            _availableSkills = player.KnownSkills.Select(id => (GetSkillName(id), id)).ToList();
         }
     }
 
     private string GetSkillName(int id)
     {
         var skill = SkillRegistry.Instance.GetSkillById(id);
-        if (skill != null) return skill.Name;
+        if (skill != null)
+        {
+            return skill.Name;
+        }
 
         switch (id)
         {
@@ -128,7 +126,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         MouseState ms,
         KeyboardState ks)
     {
-        float dt = (float)gt.ElapsedGameTime.TotalSeconds;
+        var dt = (float)gt.ElapsedGameTime.TotalSeconds;
 
         if (_uiState == BattleUiState.Result)
         {
@@ -141,7 +139,9 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         {
             _combat.Tick(dt);
             if (_uiState != BattleUiState.Result)
-                 _status = _combat.LastMessage;
+            {
+                _status = _combat.LastMessage;
+            }
 
             // Input Handling
             if (_combat.State == LocalBattleState.AwaitingInput)
@@ -157,7 +157,9 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
             else
             {
                 if (_uiState != BattleUiState.Result)
-                     _uiState = BattleUiState.Idle;
+                {
+                    _uiState = BattleUiState.Idle;
+                }
             }
         }
 
@@ -168,15 +170,34 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
     {
         if (JustPressed(ks, Keys.Up))
         {
-            if (_uiState == BattleUiState.Menu) _menuIndex = (_menuIndex - 1 + 3) % 3;
-            else if (_uiState == BattleUiState.SkillSelection) _skillIndex = (_skillIndex - 1 + _availableSkills.Count) % _availableSkills.Count;
-            else if (_uiState == BattleUiState.TargetSelection) _targetIndex = (_targetIndex - 1 + _potentialTargets.Count) % _potentialTargets.Count;
+            if (_uiState == BattleUiState.Menu)
+            {
+                _menuIndex = (_menuIndex - 1 + 3) % 3;
+            }
+            else if (_uiState == BattleUiState.SkillSelection)
+            {
+                _skillIndex = (_skillIndex - 1 + _availableSkills.Count) % _availableSkills.Count;
+            }
+            else if (_uiState == BattleUiState.TargetSelection)
+            {
+                _targetIndex = (_targetIndex - 1 + _potentialTargets.Count) % _potentialTargets.Count;
+            }
         }
+
         if (JustPressed(ks, Keys.Down))
         {
-            if (_uiState == BattleUiState.Menu) _menuIndex = (_menuIndex + 1) % 3;
-            else if (_uiState == BattleUiState.SkillSelection) _skillIndex = (_skillIndex + 1) % _availableSkills.Count;
-            else if (_uiState == BattleUiState.TargetSelection) _targetIndex = (_targetIndex + 1) % _potentialTargets.Count;
+            if (_uiState == BattleUiState.Menu)
+            {
+                _menuIndex = (_menuIndex + 1) % 3;
+            }
+            else if (_uiState == BattleUiState.SkillSelection)
+            {
+                _skillIndex = (_skillIndex + 1) % _availableSkills.Count;
+            }
+            else if (_uiState == BattleUiState.TargetSelection)
+            {
+                _targetIndex = (_targetIndex + 1) % _potentialTargets.Count;
+            }
         }
 
         if (JustPressed(ks, Keys.Enter) || JustPressed(ks, Keys.Space))
@@ -193,9 +214,13 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
 
                     List<Combatant> targets;
                     if (_selectedSkillId == 3 || _selectedSkillId == 4) // Heal or Focus
+                    {
                         targets = _combat.Battle.Allies.Where(a => a.Character.IsAlive()).ToList();
+                    }
                     else
+                    {
                         targets = _combat.Battle.Enemies.Where(e => e.Character.IsAlive()).ToList();
+                    }
 
                     StartTargetSelection(targets);
                 }
@@ -211,9 +236,13 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
             if (_uiState == BattleUiState.TargetSelection)
             {
                 if (_selectedActionType == CombatActionType.Skill)
+                {
                     _uiState = BattleUiState.SkillSelection;
+                }
                 else
+                {
                     _uiState = BattleUiState.Menu;
+                }
             }
             else if (_uiState == BattleUiState.SkillSelection)
             {
@@ -231,7 +260,10 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
     private void SelectMenuOption()
     {
         var actor = _combat.Battle.CurrentTurnCombatant;
-        if (actor == null) return;
+        if (actor == null)
+        {
+            return;
+        }
 
         switch (_menuIndex)
         {
@@ -247,12 +279,13 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
                 // In party play, we need to do this. For single player, it's already set in ReceivePayload but doing it again is safer.
                 if (actor.Character.KnownSkills.Count == 0)
                 {
-                     // Fallback
-                     actor.Character.KnownSkills.Add(1);
-                     actor.Character.KnownSkills.Add(23);
-                     actor.Character.KnownSkills.Add(20);
-                     actor.Character.KnownSkills.Add(3);
+                    // Fallback
+                    actor.Character.KnownSkills.Add(1);
+                    actor.Character.KnownSkills.Add(23);
+                    actor.Character.KnownSkills.Add(20);
+                    actor.Character.KnownSkills.Add(3);
                 }
+
                 _availableSkills = actor.Character.KnownSkills.Select(id => (GetSkillName(id), id)).ToList();
 
                 _uiState = BattleUiState.SkillSelection;
@@ -266,7 +299,11 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
 
     private void StartTargetSelection(List<Combatant> targets)
     {
-        if (targets.Count == 0) return;
+        if (targets.Count == 0)
+        {
+            return;
+        }
+
         _potentialTargets = targets;
         _targetIndex = 0;
         _uiState = BattleUiState.TargetSelection;
@@ -289,10 +326,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         _uiState = BattleUiState.Idle;
     }
 
-    private bool JustPressed(KeyboardState ks, Keys key)
-    {
-        return ks.IsKeyDown(key) && _lastKs.IsKeyUp(key);
-    }
+    private bool JustPressed(KeyboardState ks, Keys key) => ks.IsKeyDown(key) && _lastKs.IsKeyUp(key);
 
     public override void Draw(SpriteBatch sb)
     {
@@ -302,20 +336,21 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
 
         if (_uiState == BattleUiState.Result)
         {
-             string msg = _result.Victory ? "YOU WON! Press Enter" : "YOU LOST... Press Enter";
-             if (_result.Victory)
-             {
-                 msg += $"\nEXP Gained: {_result.ExpGained}";
-                 if (_result.Loot.Count > 0)
-                 {
-                     msg += "\nLoot: " + string.Join(", ", _result.Loot.Select(i => i.Name));
-                 }
-             }
-             sb.DrawString(_font, msg, new Vector2(200, 200), Color.Yellow);
-             return;
+            var msg = _result.Victory ? "YOU WON! Press Enter" : "YOU LOST... Press Enter";
+            if (_result.Victory)
+            {
+                msg += $"\nEXP Gained: {_result.ExpGained}";
+                if (_result.Loot.Count > 0)
+                {
+                    msg += "\nLoot: " + string.Join(", ", _result.Loot.Select(i => i.Name));
+                }
+            }
+
+            sb.DrawString(_font, msg, new Vector2(200, 200), Color.Yellow);
+            return;
         }
 
-        int startY = 60;
+        var startY = 60;
 
         // Allies
         DrawGroup(sb, _combat.Battle.Allies, new Vector2(50, startY), Color.LightGreen);
@@ -334,23 +369,30 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         }
         else if (_uiState == BattleUiState.TargetSelection)
         {
-             // Draw menu or skill menu depending on what we are selecting targets for
-             if (_selectedActionType == CombatActionType.Skill)
-                 DrawSkillMenu(sb, new Vector2(150, 300));
-             else
-                 DrawMenu(sb, new Vector2(50, 300));
+            // Draw menu or skill menu depending on what we are selecting targets for
+            if (_selectedActionType == CombatActionType.Skill)
+            {
+                DrawSkillMenu(sb, new Vector2(150, 300));
+            }
+            else
+            {
+                DrawMenu(sb, new Vector2(50, 300));
+            }
         }
     }
 
     private void DrawGroup(SpriteBatch sb, List<Combatant> group, Vector2 pos, Color color)
     {
-        float y = pos.Y;
+        var y = pos.Y;
         foreach (var c in group)
         {
-            string hp = $"{c.Character.Health}/{c.Character.MaxHealth}";
-            string sp = $"{c.Character.Sp}/{c.Character.MaxSp}";
-            string name = c.Character.Name;
-            if (!c.Character.IsAlive()) name += " (Dead)";
+            var hp = $"{c.Character.Health}/{c.Character.MaxHealth}";
+            var sp = $"{c.Character.Sp}/{c.Character.MaxSp}";
+            var name = c.Character.Name;
+            if (!c.Character.IsAlive())
+            {
+                name += " (Dead)";
+            }
 
             sb.DrawString(_font, $"{name}  HP:{hp}  SP:{sp}", new Vector2(pos.X, y), color);
 
@@ -358,15 +400,16 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
             DrawBar(sb, new Rectangle((int)pos.X, (int)y + 20, 100, 5), c.Atb / 100.0, Color.Yellow);
 
             // Draw HP Bar
-            double hpPct = (double)c.Character.Health / c.Character.MaxHealth;
+            var hpPct = (double)c.Character.Health / c.Character.MaxHealth;
             DrawBar(sb, new Rectangle((int)pos.X + 110, (int)y + 20, 50, 5), hpPct, Color.Red);
 
             // Draw SP Bar (Only for Allies usually, but simple to draw for all)
-            double spPct = (double)c.Character.Sp / c.Character.MaxSp;
+            var spPct = (double)c.Character.Sp / c.Character.MaxSp;
             DrawBar(sb, new Rectangle((int)pos.X + 110, (int)y + 28, 50, 3), spPct, Color.Blue);
 
             // Target Indicator
-            if (_uiState == BattleUiState.TargetSelection && _potentialTargets.Count > _targetIndex && _potentialTargets[_targetIndex] == c)
+            if (_uiState == BattleUiState.TargetSelection && _potentialTargets.Count > _targetIndex &&
+                _potentialTargets[_targetIndex] == c)
             {
                 sb.DrawString(_font, "<--", new Vector2(pos.X + 200, y), Color.White);
             }
@@ -380,7 +423,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         // Background
         sb.Draw(_whiteTexture, rect, Color.Gray);
         // Foreground
-        int width = (int)(rect.Width * Math.Clamp(pct, 0, 1));
+        var width = (int)(rect.Width * Math.Clamp(pct, 0, 1));
         sb.Draw(_whiteTexture, new Rectangle(rect.X, rect.Y, width, rect.Height), color);
     }
 
@@ -390,9 +433,9 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         sb.Draw(_whiteTexture, new Rectangle((int)pos.X - 10, (int)pos.Y - 10, 150, 100), Color.DarkSlateGray * 0.9f);
 
         string[] options = { "Attack", "Skill", "Defend" };
-        for (int i = 0; i < options.Length; i++)
+        for (var i = 0; i < options.Length; i++)
         {
-            Color c = (_uiState == BattleUiState.Menu && _menuIndex == i) ? Color.Yellow : Color.Gray;
+            var c = _uiState == BattleUiState.Menu && _menuIndex == i ? Color.Yellow : Color.Gray;
             sb.DrawString(_font, options[i], new Vector2(pos.X, pos.Y + i * 25), c);
         }
     }
@@ -400,12 +443,12 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
     private void DrawSkillMenu(SpriteBatch sb, Vector2 pos)
     {
         // Background box
-        int h = _availableSkills.Count * 25 + 20;
+        var h = _availableSkills.Count * 25 + 20;
         sb.Draw(_whiteTexture, new Rectangle((int)pos.X - 10, (int)pos.Y - 10, 200, h), Color.DarkSlateGray * 0.9f);
 
-        for (int i = 0; i < _availableSkills.Count; i++)
+        for (var i = 0; i < _availableSkills.Count; i++)
         {
-            Color c = (_uiState == BattleUiState.SkillSelection && _skillIndex == i) ? Color.Yellow : Color.Gray;
+            var c = _uiState == BattleUiState.SkillSelection && _skillIndex == i ? Color.Yellow : Color.Gray;
             sb.DrawString(_font, _availableSkills[i].Name, new Vector2(pos.X, pos.Y + i * 25), c);
         }
     }

@@ -1,12 +1,9 @@
-using System;
-using System.IO;
-
 namespace TWL.Server.Security;
 
 public static class SecurityLogger
 {
-    private static readonly object _lock = new();
     private const string LogFile = "security_audit.log";
+    private static readonly object _lock = new();
 
     public static void LogSecurityEvent(string eventType, int userId, string details, string correlationId = null)
     {

@@ -1,20 +1,16 @@
-using System.Collections.Generic;
-using System.Linq;
 using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
-using TWL.Shared.Services;
-using Xunit;
 
 namespace TWL.Tests.Skills;
 
 public class DailySkillsTests
 {
-    private readonly Mock<ISkillCatalog> _skillCatalogMock;
     private readonly AutoBattleService _autoBattle;
+    private readonly Mock<ISkillCatalog> _skillCatalogMock;
 
     public DailySkillsTests()
     {
@@ -60,17 +56,19 @@ public class DailySkillsTests
         var enemy = new ServerCharacter { Id = 2, Hp = 100, Con = 10, Str = 25, Int = 25 };
         var ally = new ServerCharacter { Id = 3, Hp = 100, Con = 10 };
 
-        var sealSkill = new Skill {
+        var sealSkill = new Skill
+        {
             SkillId = 100,
             SpCost = 10,
             TargetType = SkillTargetType.SingleEnemy,
-            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Seal } }
+            Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Seal } }
         };
 
         _skillCatalogMock.Setup(x => x.GetSkillById(100)).Returns(sealSkill);
 
         // Act
-        var action = _autoBattle.SelectAction(actor, new List<ServerCharacter> { ally }, new List<ServerCharacter> { enemy }, 12345, AutoBattlePolicy.Supportive);
+        var action = _autoBattle.SelectAction(actor, new List<ServerCharacter> { ally },
+            new List<ServerCharacter> { enemy }, 12345, AutoBattlePolicy.Supportive);
 
         // Assert
         Assert.Equal(CombatActionType.Skill, action.Type);
@@ -87,19 +85,22 @@ public class DailySkillsTests
         var enemy = new ServerCharacter { Id = 2, Hp = 10 };
         var ally = new ServerCharacter { Id = 3, Hp = 100, Con = 10 }; // Needs buff
 
-        var buffSkill = new Skill {
+        var buffSkill = new Skill
+        {
             SkillId = 200,
             SpCost = 10,
             TargetType = SkillTargetType.SingleAlly,
-            Effects = new List<SkillEffect> {
-                new SkillEffect { Tag = SkillEffectTag.BuffStats, Param = "Agi" }
+            Effects = new List<SkillEffect>
+            {
+                new() { Tag = SkillEffectTag.BuffStats, Param = "Agi" }
             }
         };
 
         _skillCatalogMock.Setup(x => x.GetSkillById(200)).Returns(buffSkill);
 
         // Act
-        var action = _autoBattle.SelectAction(actor, new List<ServerCharacter> { ally }, new List<ServerCharacter> { enemy }, 12345, AutoBattlePolicy.Supportive);
+        var action = _autoBattle.SelectAction(actor, new List<ServerCharacter> { ally },
+            new List<ServerCharacter> { enemy }, 12345, AutoBattlePolicy.Supportive);
 
         // Assert
         Assert.Equal(CombatActionType.Skill, action.Type);
@@ -117,19 +118,22 @@ public class DailySkillsTests
         // Ally already has Agi Buff
         ally.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 3, "Agi"), new StatusEngine());
 
-        var buffSkill = new Skill {
+        var buffSkill = new Skill
+        {
             SkillId = 200,
             SpCost = 10,
             TargetType = SkillTargetType.SingleAlly,
-            Effects = new List<SkillEffect> {
-                new SkillEffect { Tag = SkillEffectTag.BuffStats, Param = "Agi" }
+            Effects = new List<SkillEffect>
+            {
+                new() { Tag = SkillEffectTag.BuffStats, Param = "Agi" }
             }
         };
 
         _skillCatalogMock.Setup(x => x.GetSkillById(200)).Returns(buffSkill);
 
         // Act
-        var action = _autoBattle.SelectAction(actor, new List<ServerCharacter> { ally }, new List<ServerCharacter> { }, 12345, AutoBattlePolicy.Supportive);
+        var action = _autoBattle.SelectAction(actor, new List<ServerCharacter> { ally }, new List<ServerCharacter>(),
+            12345, AutoBattlePolicy.Supportive);
 
         // Assert
         Assert.NotEqual(CombatActionType.Skill, action.Type);

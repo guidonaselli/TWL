@@ -1,10 +1,6 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using TWL.Server.Services;
 using TWL.Server.Simulation.Managers;
-using Xunit;
 
 namespace TWL.Tests.Server.Services;
 
@@ -16,7 +12,7 @@ public class WorldSchedulerTests
         using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, new ServerMetrics());
         scheduler.Start();
 
-        bool executed = false;
+        var executed = false;
         var tcs = new TaskCompletionSource<bool>();
 
         scheduler.Schedule(() =>
@@ -36,12 +32,9 @@ public class WorldSchedulerTests
         using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, new ServerMetrics());
         scheduler.Start();
 
-        int count = 0;
+        var count = 0;
 
-        scheduler.ScheduleRepeating(() =>
-        {
-            Interlocked.Increment(ref count);
-        }, TimeSpan.FromMilliseconds(50));
+        scheduler.ScheduleRepeating(() => { Interlocked.Increment(ref count); }, TimeSpan.FromMilliseconds(50));
 
         await Task.Delay(170); // Should run at roughly 50, 100, 150. (3 times)
         // Timing is loose in tests, so check at least 2.
@@ -55,10 +48,11 @@ public class WorldSchedulerTests
         using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, new ServerMetrics());
         scheduler.Start();
 
-        long startTick = scheduler.CurrentTick;
+        var startTick = scheduler.CurrentTick;
         await Task.Delay(200); // Expect ~4 ticks (50ms each)
 
-        Assert.True(scheduler.CurrentTick > startTick, $"Expected tick to increment from {startTick}, got {scheduler.CurrentTick}");
+        Assert.True(scheduler.CurrentTick > startTick,
+            $"Expected tick to increment from {startTick}, got {scheduler.CurrentTick}");
     }
 
     [Fact]
@@ -70,7 +64,7 @@ public class WorldSchedulerTests
         long capturedTick = -1;
         var tcs = new TaskCompletionSource<bool>();
 
-        scheduler.OnTick += (tick) =>
+        scheduler.OnTick += tick =>
         {
             capturedTick = tick;
             tcs.TrySetResult(true);

@@ -1,15 +1,17 @@
+using Microsoft.Extensions.Logging.Abstractions;
+using TWL.Server.Architecture.Pipeline;
+using TWL.Server.Domain.World;
+using TWL.Server.Features.Combat;
+using TWL.Server.Features.Interactions;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
 using TWL.Server.Services.World;
-using TWL.Server.Domain.World;
+using TWL.Server.Services.World.Handlers;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Server.Architecture.Pipeline;
-using TWL.Server.Features.Combat;
-using TWL.Server.Features.Interactions;
-using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.Skills;
 
 namespace TWL.Server.Simulation;
 
@@ -47,10 +49,10 @@ public class GameServer
         PlayerService.Start();
 
         // 2) Carga definiciones (items, quests, skills)
-        if (System.IO.File.Exists("Content/Data/skills.json"))
+        if (File.Exists("Content/Data/skills.json"))
         {
-            var json = System.IO.File.ReadAllText("Content/Data/skills.json");
-            TWL.Shared.Domain.Skills.SkillRegistry.Instance.LoadSkills(json);
+            var json = File.ReadAllText("Content/Data/skills.json");
+            SkillRegistry.Instance.LoadSkills(json);
             Console.WriteLine("Skills loaded.");
         }
         else
@@ -73,10 +75,10 @@ public class GameServer
         InteractionManager = new InteractionManager();
         InteractionManager.Load("Content/Data/interactions.json");
 
-        var random = new SeedableRandomService(Microsoft.Extensions.Logging.Abstractions.NullLogger<SeedableRandomService>.Instance);
-        var combatResolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
+        var random = new SeedableRandomService(NullLogger<SeedableRandomService>.Instance);
+        var combatResolver = new StandardCombatResolver(random, SkillRegistry.Instance);
         var statusEngine = new StatusEngine();
-        CombatManager = new CombatManager(combatResolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance, statusEngine);
+        CombatManager = new CombatManager(combatResolver, random, SkillRegistry.Instance, statusEngine);
 
         PetService = new PetService(PlayerService, PetManager, CombatManager, random);
         EconomyManager = new EconomyManager();
@@ -85,14 +87,14 @@ public class GameServer
         SpawnManager.Load("Content/Data/spawns");
 
         // Init World System
-        var mapLoader = new MapLoader(Microsoft.Extensions.Logging.Abstractions.NullLogger<MapLoader>.Instance);
-        var worldTriggerService = new WorldTriggerService(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldTriggerService>.Instance, Metrics);
-        worldTriggerService.RegisterHandler(new TWL.Server.Services.World.Handlers.MapTransitionHandler());
+        var mapLoader = new MapLoader(NullLogger<MapLoader>.Instance);
+        var worldTriggerService = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, Metrics);
+        worldTriggerService.RegisterHandler(new MapTransitionHandler());
 
         // Load Maps
-        if (System.IO.Directory.Exists("Content/Maps"))
+        if (Directory.Exists("Content/Maps"))
         {
-            var mapFiles = System.IO.Directory.GetFiles("Content/Maps", "*.tmx", System.IO.SearchOption.AllDirectories);
+            var mapFiles = Directory.GetFiles("Content/Maps", "*.tmx", SearchOption.AllDirectories);
             var loadedMaps = new List<ServerMap>();
             foreach (var file in mapFiles)
             {
@@ -101,31 +103,33 @@ public class GameServer
                     var map = mapLoader.LoadMap(file);
                     loadedMaps.Add(map);
                 }
-                catch (System.Exception ex)
+                catch (Exception ex)
                 {
-                    System.Console.WriteLine($"Failed to load map {file}: {ex.Message}");
+                    Console.WriteLine($"Failed to load map {file}: {ex.Message}");
                 }
             }
+
             worldTriggerService.LoadMaps(loadedMaps);
-            System.Console.WriteLine($"Loaded {loadedMaps.Count} maps.");
+            Console.WriteLine($"Loaded {loadedMaps.Count} maps.");
         }
         else
         {
-             System.Console.WriteLine("Warning: Content/Maps not found.");
+            Console.WriteLine("Warning: Content/Maps not found.");
         }
 
-        var scheduler = new WorldScheduler(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldScheduler>.Instance, Metrics);
+        var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, Metrics);
         scheduler.Start();
 
         PopulateTestWorld();
 
         // Setup Mediator
         var mediator = new Mediator();
-        mediator.Register<UseSkillCommand, CombatResult>(new UseSkillHandler(CombatManager));
-        mediator.Register<InteractCommand, InteractResult>(new InteractHandler(InteractionManager));
+        mediator.Register(new UseSkillHandler(CombatManager));
+        mediator.Register(new InteractHandler(InteractionManager));
 
         // 3) Inicia Network
-        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager, PlayerService, EconomyManager, Metrics, PetService, worldTriggerService, SpawnManager);
+        _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager,
+            PlayerService, EconomyManager, Metrics, PetService, worldTriggerService, SpawnManager);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");

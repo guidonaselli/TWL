@@ -1,4 +1,3 @@
-using Xunit;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
@@ -7,17 +6,10 @@ namespace TWL.Tests.Domain.Skills;
 
 public class SkillSystemTests_Burn
 {
-    private class TestCharacter : Character
-    {
-        public TestCharacter(string name, Element element) : base(name, element)
-        {
-        }
-    }
-
     [Fact]
     public void TestBurnEffect_AppliedAndProcesses()
     {
-        string json = @"[
+        var json = @"[
           {
             ""SkillId"": 900, ""Name"": ""Burner"", ""SpCost"": 10, ""Element"": ""Fire"", ""Branch"": ""Magical"", ""TargetType"": ""SingleEnemy"",
             ""Effects"": [ { ""Tag"": ""Burn"", ""Value"": 10, ""Duration"": 2, ""Chance"": 1.0 } ]
@@ -40,7 +32,7 @@ public class SkillSystemTests_Burn
         };
 
         // 1. Cast Skill
-        string result = battle.ResolveAction(action);
+        var result = battle.ResolveAction(action);
 
         // Verify Burn Applied
         var targetCombatant = battle.Enemies[0];
@@ -48,7 +40,7 @@ public class SkillSystemTests_Burn
         Assert.Equal(SkillEffectTag.Burn, targetCombatant.StatusEffects[0].Tag);
 
         // 2. Process Turn End (Simulate)
-        string log = battle.ProcessStatusEffects(targetCombatant);
+        var log = battle.ProcessStatusEffects(targetCombatant);
 
         Assert.Contains("takes 10 burn damage", log);
         Assert.Equal(90, target.Health);
@@ -60,5 +52,12 @@ public class SkillSystemTests_Burn
         Assert.Equal(80, target.Health);
         Assert.Contains("wore off", log);
         Assert.Empty(targetCombatant.StatusEffects);
+    }
+
+    private class TestCharacter : Character
+    {
+        public TestCharacter(string name, Element element) : base(name, element)
+        {
+        }
     }
 }

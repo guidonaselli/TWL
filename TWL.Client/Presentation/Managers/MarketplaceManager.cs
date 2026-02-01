@@ -1,6 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using TWL.Client.Presentation.Services;
 using TWL.Shared.Domain.Characters;
-using TWL.Client.Presentation.Services;
 
 namespace TWL.Client.Presentation.Managers;
 
@@ -74,14 +73,14 @@ public class MarketplaceManager
         buyerInventory.AddItem(listing.ItemId, qty);
         listing.Quantity -= qty;
 
-        if (listing.Quantity <= 0) _listings.Remove(listingId);
+        if (listing.Quantity <= 0)
+        {
+            _listings.Remove(listingId);
+        }
 
         status = Loc.T("UI_MARKET_PURCHASE_SUCCESS");
         return true;
     }
 
-    public IReadOnlyCollection<Listing> GetAllListings()
-    {
-        return _listings.Values;
-    }
+    public IReadOnlyCollection<Listing> GetAllListings() => _listings.Values;
 }

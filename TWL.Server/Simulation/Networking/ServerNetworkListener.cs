@@ -28,7 +28,10 @@ public class ServerNetworkListener
             case ClientMessageType.UseSkill:
                 // Deserializamos la petición
                 var req = JsonSerializer.Deserialize<UseSkillRequest>(msg.Payload, _jsonOptions);
-                if (req == null) return;
+                if (req == null)
+                {
+                    return;
+                }
 
                 var combatResult = _combatManager.UseSkill(req);
 
@@ -49,8 +52,5 @@ public class ServerNetworkListener
         }
     }
 
-    private void SendToClient(int playerId, ServerMessage msg)
-    {
-        _network.SendMessageToClient(playerId, msg);
-    }
+    private void SendToClient(int playerId, ServerMessage msg) => _network.SendMessageToClient(playerId, msg);
 }

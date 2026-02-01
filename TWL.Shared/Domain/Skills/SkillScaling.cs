@@ -2,8 +2,15 @@ namespace TWL.Shared.Domain.Skills;
 
 public enum StatType
 {
-    Str, Con, Int, Wis, Agi,
-    Atk, Def, Mat, Mdf,
+    Str,
+    Con,
+    Int,
+    Wis,
+    Agi,
+    Atk,
+    Def,
+    Mat,
+    Mdf,
     Spd
 }
 

@@ -1,35 +1,33 @@
-using System.IO;
 using System.Text.Json;
 
-namespace TWL.Tests.Localization.Audit.Reporters
+namespace TWL.Tests.Localization.Audit.Reporters;
+
+public class JsonReporter
 {
-    public class JsonReporter
+    private readonly string _artifactsPath;
+
+    public JsonReporter(string artifactsPath)
     {
-        private readonly string _artifactsPath;
+        _artifactsPath = artifactsPath;
+    }
 
-        public JsonReporter(string artifactsPath)
+    public void GenerateReports(AuditResults results)
+    {
+        var options = new JsonSerializerOptions { WriteIndented = true };
+
+        var indexData = new
         {
-            _artifactsPath = artifactsPath;
-        }
+            results.ResourceKeys,
+            results.UsedKeys,
+            HardcodedCandidates = results.HardcodedStrings
+        };
 
-        public void GenerateReports(AuditResults results)
-        {
-            var options = new JsonSerializerOptions { WriteIndented = true };
+        File.WriteAllText(
+            Path.Combine(_artifactsPath, "localization-index.json"),
+            JsonSerializer.Serialize(indexData, options));
 
-            var indexData = new
-            {
-                ResourceKeys = results.ResourceKeys,
-                UsedKeys = results.UsedKeys,
-                HardcodedCandidates = results.HardcodedStrings
-            };
-
-            File.WriteAllText(
-                Path.Combine(_artifactsPath, "localization-index.json"),
-                JsonSerializer.Serialize(indexData, options));
-
-            File.WriteAllText(
-                Path.Combine(_artifactsPath, "localization-report.json"),
-                JsonSerializer.Serialize(results.Findings, options));
-        }
+        File.WriteAllText(
+            Path.Combine(_artifactsPath, "localization-report.json"),
+            JsonSerializer.Serialize(results.Findings, options));
     }
 }

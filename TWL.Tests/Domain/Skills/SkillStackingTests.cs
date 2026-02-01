@@ -1,4 +1,3 @@
-using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
@@ -8,8 +7,8 @@ namespace TWL.Tests.Domain.Skills;
 
 public class SkillStackingTests
 {
-    private ServerCharacter _character;
-    private StatusEngine _engine;
+    private readonly ServerCharacter _character;
+    private readonly StatusEngine _engine;
 
     public SkillStackingTests()
     {

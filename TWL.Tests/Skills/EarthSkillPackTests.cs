@@ -1,7 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Reflection;
 using Moq;
 using TWL.Server.Simulation.Managers;
@@ -11,7 +7,6 @@ using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Domain.Skills;
 using TWL.Shared.Services;
-using Xunit;
 
 namespace TWL.Tests.Skills;
 
@@ -19,37 +14,37 @@ public class TestServerCharacter : ServerCharacter
 {
     public void TickStatus(IStatusEngine engine)
     {
-         // Access protected _statusEffects via subclass
-         // But _statusEffects is List<StatusEffectInstance>, and engine.Tick takes IList.
-         // List implements IList.
-         // We need to lock as well.
-         // Since we can't access _statusLock (it's protected? yes), we can use it.
-         // Wait, checking ServerCombatant.cs: protected readonly object _statusLock = new();
-         // Yes, it is protected.
+        // Access protected _statusEffects via subclass
+        // But _statusEffects is List<StatusEffectInstance>, and engine.Tick takes IList.
+        // List implements IList.
+        // We need to lock as well.
+        // Since we can't access _statusLock (it's protected? yes), we can use it.
+        // Wait, checking ServerCombatant.cs: protected readonly object _statusLock = new();
+        // Yes, it is protected.
 
-         // Reflection might be needed if I can't access _statusLock directly from subclass if it was private, but it is protected.
-         // Let's assume it is accessible.
-         // Wait, I saw it was protected in ServerCombatant.cs
+        // Reflection might be needed if I can't access _statusLock directly from subclass if it was private, but it is protected.
+        // Let's assume it is accessible.
+        // Wait, I saw it was protected in ServerCombatant.cs
 
-         // Actually, check ServerCombatant.cs again.
-         // protected readonly List<StatusEffectInstance> _statusEffects = new();
-         // protected readonly object _statusLock = new();
-         // Yes.
+        // Actually, check ServerCombatant.cs again.
+        // protected readonly List<StatusEffectInstance> _statusEffects = new();
+        // protected readonly object _statusLock = new();
+        // Yes.
 
-         lock (_statusLock)
-         {
-             engine.Tick(_statusEffects);
-         }
+        lock (_statusLock)
+        {
+            engine.Tick(_statusEffects);
+        }
     }
 }
 
 public class EarthSkillPackTests
 {
-    private readonly ISkillCatalog _skillCatalog;
+    private readonly CombatManager _combatManager;
     private readonly Mock<IRandomService> _randomMock;
     private readonly Mock<ICombatResolver> _resolverMock;
+    private readonly ISkillCatalog _skillCatalog;
     private readonly StatusEngine _statusEngine;
-    private readonly CombatManager _combatManager;
 
     public EarthSkillPackTests()
     {
@@ -62,7 +57,8 @@ public class EarthSkillPackTests
         // Or better, reset it? No clear reset method.
 
         // Let's use reflection to instantiate private constructor.
-        var ctor = typeof(SkillRegistry).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+        var ctor = typeof(SkillRegistry).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null,
+            Type.EmptyTypes, null);
         var registry = (SkillRegistry)ctor.Invoke(null);
         registry.LoadSkills(json);
         _skillCatalog = registry;
@@ -72,7 +68,9 @@ public class EarthSkillPackTests
         _randomMock.Setup(r => r.NextFloat(It.IsAny<float>(), It.IsAny<float>())).Returns(1.0f);
 
         _resolverMock = new Mock<ICombatResolver>();
-        _resolverMock.Setup(r => r.CalculateDamage(It.IsAny<ServerCombatant>(), It.IsAny<ServerCombatant>(), It.IsAny<UseSkillRequest>()))
+        _resolverMock.Setup(r =>
+                r.CalculateDamage(It.IsAny<ServerCombatant>(), It.IsAny<ServerCombatant>(),
+                    It.IsAny<UseSkillRequest>()))
             .Returns(10); // Fixed damage
 
         _statusEngine = new StatusEngine();
@@ -175,7 +173,8 @@ public class EarthSkillPackTests
         attacker.LearnSkill(1210); // Entangle
 
         // Force resist via immunity
-        defender.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 1.0f, 10, "SealResist"), _statusEngine);
+        defender.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 1.0f, 10, "SealResist"),
+            _statusEngine);
 
         // Act
         var request = new UseSkillRequest { PlayerId = attacker.Id, TargetId = defender.Id, SkillId = 1210 };

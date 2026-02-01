@@ -1,16 +1,15 @@
-using System.Collections.Generic;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests;
 
 public class QuestSystemTests
 {
-    private readonly ServerQuestManager _questManager;
     private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public QuestSystemTests()
     {
@@ -18,7 +17,7 @@ public class QuestSystemTests
         // Create mock data
         var quests = new List<QuestDefinition>
         {
-            new QuestDefinition
+            new()
             {
                 QuestId = 1,
                 Title = "Test Quest 1",
@@ -26,11 +25,11 @@ public class QuestSystemTests
                 Requirements = new List<int>(),
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Kill", "Slime", 2, "Kill 2 Slimes")
+                    new("Kill", "Slime", 2, "Kill 2 Slimes")
                 },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>())
             },
-            new QuestDefinition
+            new()
             {
                 QuestId = 2,
                 Title = "Test Quest 2",
@@ -38,14 +37,14 @@ public class QuestSystemTests
                 Requirements = new List<int> { 1 },
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Talk", "Npc", 1, "Talk")
+                    new("Talk", "Npc", 1, "Talk")
                 },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>())
             }
         };
 
-        string json = System.Text.Json.JsonSerializer.Serialize(quests);
-        System.IO.File.WriteAllText("test_quests.json", json);
+        var json = JsonSerializer.Serialize(quests);
+        File.WriteAllText("test_quests.json", json);
         _questManager.Load("test_quests.json");
 
         _playerQuests = new PlayerQuestComponent(_questManager);
@@ -54,7 +53,7 @@ public class QuestSystemTests
     [Fact]
     public void StartQuest_ShouldSucceed_WhenRequirementsMet()
     {
-        bool result = _playerQuests.StartQuest(1);
+        var result = _playerQuests.StartQuest(1);
         Assert.True(result);
         Assert.Equal(QuestState.InProgress, _playerQuests.QuestStates[1]);
     }
@@ -62,7 +61,7 @@ public class QuestSystemTests
     [Fact]
     public void StartQuest_ShouldFail_WhenRequirementsNotMet()
     {
-        bool result = _playerQuests.StartQuest(2); // Requires 1 completed
+        var result = _playerQuests.StartQuest(2); // Requires 1 completed
         Assert.False(result);
         Assert.False(_playerQuests.QuestStates.ContainsKey(2));
     }
@@ -86,7 +85,7 @@ public class QuestSystemTests
         _playerQuests.StartQuest(1);
         _playerQuests.UpdateProgress(1, 0, 2); // Complete it
 
-        bool result = _playerQuests.ClaimReward(1);
+        var result = _playerQuests.ClaimReward(1);
         Assert.True(result);
         Assert.Equal(QuestState.RewardClaimed, _playerQuests.QuestStates[1]);
     }
@@ -98,7 +97,7 @@ public class QuestSystemTests
         _playerQuests.UpdateProgress(1, 0, 2);
         _playerQuests.ClaimReward(1);
 
-        bool result = _playerQuests.StartQuest(2);
+        var result = _playerQuests.StartQuest(2);
         Assert.True(result);
     }
 
@@ -111,15 +110,16 @@ public class QuestSystemTests
         // Let's rely on the file existing in Content/Data/quests.json relative to repo root
         // Tests usually run in a temp folder.
 
-        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json"); // Relative from TWL.Tests/bin/Debug/net10.0
-        if (!System.IO.File.Exists(path))
+        var path = Path.Combine(AppContext.BaseDirectory,
+            "Content/Data/quests.json"); // Relative from TWL.Tests/bin/Debug/net10.0
+        if (!File.Exists(path))
         {
-             // Fallback for different test runners
-             path = "Content/Data/quests.json";
+            // Fallback for different test runners
+            path = "Content/Data/quests.json";
         }
 
         // Ensure we can find the file, otherwise skip or fail
-        if (System.IO.File.Exists(path))
+        if (File.Exists(path))
         {
             qm.Load(path);
             var q1 = qm.GetDefinition(1001);
@@ -163,10 +163,16 @@ public class QuestSystemTests
     public void BasicChain_ShouldWork_EndToEnd()
     {
         var qm = new ServerQuestManager();
-        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
-        if (!System.IO.File.Exists(path)) path = "Content/Data/quests.json";
+        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json");
+        if (!File.Exists(path))
+        {
+            path = "Content/Data/quests.json";
+        }
 
-        if (!System.IO.File.Exists(path)) return; // Skip if file not found in test env
+        if (!File.Exists(path))
+        {
+            return; // Skip if file not found in test env
+        }
 
         qm.Load(path);
         var pq = new PlayerQuestComponent(qm);
@@ -187,10 +193,11 @@ public class QuestSystemTests
         Assert.True(pq.StartQuest(1002));
 
         // Collect 5 Madera
-        for (int i = 0; i < 5; i++)
+        for (var i = 0; i < 5; i++)
         {
-             updated = pq.TryProgress("Collect", "Madera");
+            updated = pq.TryProgress("Collect", "Madera");
         }
+
         Assert.Single(updated); // Last one implies update
 
         Assert.Equal(QuestState.Completed, pq.QuestStates[1002]);

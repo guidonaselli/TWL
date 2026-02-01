@@ -1,11 +1,8 @@
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.Skills;
-using TWL.Shared.Services;
-using Xunit;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.Skills;
 using TWL.Tests.Mocks;
-using System.IO;
 
 namespace TWL.Tests.Combat;
 
@@ -13,7 +10,7 @@ public class ServerEarthSkillTests
 {
     public ServerEarthSkillTests()
     {
-        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
+        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/skills.json");
 
 
         if (File.Exists(path))
@@ -26,11 +23,14 @@ public class ServerEarthSkillTests
     [Fact]
     public void RockSmash_ShouldDealDamage()
     {
-        if (SkillRegistry.Instance.GetSkillById(1001) == null) return;
+        if (SkillRegistry.Instance.GetSkillById(1001) == null)
+        {
+            return;
+        }
 
         var mockRng = new MockRandomService(0.5f);
         var resolver = new StandardCombatResolver(mockRng, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRng, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRng, SkillRegistry.Instance, new StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Str = 20, Agi = 10 };
         // Atk = 40.

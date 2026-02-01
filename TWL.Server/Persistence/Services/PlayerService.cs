@@ -1,7 +1,6 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using TWL.Server.Architecture.Observability;
-using TWL.Server.Persistence;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 
@@ -17,19 +16,19 @@ public class PersistenceMetrics
 
 public class PlayerService
 {
-    public PersistenceMetrics Metrics { get; } = new();
-
     private readonly IPlayerRepository _repo;
     private readonly ServerMetrics _serverMetrics;
     private readonly ConcurrentDictionary<int, ClientSession> _sessions = new();
-    private CancellationTokenSource? _cts;
     private Task? _backgroundTask;
+    private CancellationTokenSource? _cts;
 
     public PlayerService(IPlayerRepository repo, ServerMetrics serverMetrics)
     {
         _repo = repo;
         _serverMetrics = serverMetrics;
     }
+
+    public PersistenceMetrics Metrics { get; } = new();
 
     public void Start()
     {
@@ -63,7 +62,9 @@ public class PlayerService
                 await Task.Delay(TimeSpan.FromSeconds(30), token);
                 await FlushAllDirtyAsync();
             }
-            catch (OperationCanceledException) { }
+            catch (OperationCanceledException)
+            {
+            }
             catch (Exception ex)
             {
                 PersistenceLogger.LogEvent("FlushLoopError", ex.Message, errors: 1);
@@ -86,10 +87,13 @@ public class PlayerService
             .Where(s => s.Character != null && (s.Character.IsDirty || s.QuestComponent.IsDirty))
             .ToList();
 
-        if (dirtySessions.Count == 0) return;
+        if (dirtySessions.Count == 0)
+        {
+            return;
+        }
 
-        int savedCount = 0;
-        int errorCount = 0;
+        var savedCount = 0;
+        var errorCount = 0;
 
         // Limit concurrency to avoid thread pool starvation
         var parallelOptions = new ParallelOptions { MaxDegreeOfParallelism = 20 };
@@ -125,8 +129,10 @@ public class PlayerService
 
             _serverMetrics.RecordPersistenceFlush(sw.ElapsedMilliseconds, errorCount);
 
-            PersistenceLogger.LogEvent("FlushComplete", "Batch flush finished", count: savedCount, durationMs: sw.ElapsedMilliseconds, errors: errorCount);
-            PipelineLogger.LogStage(flushId, "PersistBatch", sw.Elapsed.TotalMilliseconds, $"Count:{savedCount} Errors:{errorCount}");
+            PersistenceLogger.LogEvent("FlushComplete", "Batch flush finished", savedCount, sw.ElapsedMilliseconds,
+                errorCount);
+            PipelineLogger.LogStage(flushId, "PersistBatch", sw.Elapsed.TotalMilliseconds,
+                $"Count:{savedCount} Errors:{errorCount}");
         }
     }
 
@@ -151,10 +157,7 @@ public class PlayerService
         }
     }
 
-    public void UnregisterSession(int userId)
-    {
-        _sessions.TryRemove(userId, out _);
-    }
+    public void UnregisterSession(int userId) => _sessions.TryRemove(userId, out _);
 
     public ClientSession? GetSession(int userId)
     {
@@ -168,19 +171,16 @@ public class PlayerService
         return _repo.Load(userId);
     }
 
-    public async Task<PlayerSaveData?> LoadDataAsync(int userId)
-    {
-        return await _repo.LoadAsync(userId);
-    }
+    public async Task<PlayerSaveData?> LoadDataAsync(int userId) => await _repo.LoadAsync(userId);
 
-    public void SaveSession(ClientSession session)
-    {
-       SaveSessionAsync(session).GetAwaiter().GetResult();
-    }
+    public void SaveSession(ClientSession session) => SaveSessionAsync(session).GetAwaiter().GetResult();
 
     public async Task SaveSessionAsync(ClientSession session)
     {
-        if (session.Character == null) return;
+        if (session.Character == null)
+        {
+            return;
+        }
 
         var charData = session.Character.GetSaveData();
         var questData = session.QuestComponent.GetSaveData();

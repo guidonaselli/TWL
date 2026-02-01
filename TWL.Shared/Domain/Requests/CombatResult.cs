@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using TWL.Shared.Domain.Battle;
 
 namespace TWL.Shared.Domain.Requests;

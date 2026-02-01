@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using Moq;
-using Xunit;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
@@ -9,23 +6,24 @@ using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.Skills;
 using TWL.Shared.Services;
 
 namespace TWL.Tests.PetTests;
 
 public class PetSystemTests : IDisposable
 {
-    private Mock<IPlayerRepository> _mockRepo;
-    private Mock<IStatusEngine> _mockStatusEngine;
-    private Mock<ICombatResolver> _mockResolver;
-    private Mock<ISkillCatalog> _mockSkills;
-    private Mock<IRandomService> _mockRandom;
+    private readonly CombatManager _combatManager;
+    private readonly ServerMetrics _metrics;
+    private readonly Mock<IRandomService> _mockRandom;
+    private readonly Mock<IPlayerRepository> _mockRepo;
+    private readonly Mock<ICombatResolver> _mockResolver;
+    private readonly Mock<ISkillCatalog> _mockSkills;
+    private readonly Mock<IStatusEngine> _mockStatusEngine;
+    private readonly PetManager _petManager;
+    private readonly PetService _petService;
 
-    private PlayerService _playerService;
-    private PetManager _petManager;
-    private CombatManager _combatManager;
-    private PetService _petService;
-    private ServerMetrics _metrics;
+    private readonly PlayerService _playerService;
 
     public PetSystemTests()
     {
@@ -34,8 +32,8 @@ public class PetSystemTests : IDisposable
         _playerService = new PlayerService(_mockRepo.Object, _metrics);
 
         _petManager = new PetManager();
-        System.IO.Directory.CreateDirectory("Content/Data");
-        System.IO.File.WriteAllText("Content/Data/pets_test.json", @"
+        Directory.CreateDirectory("Content/Data");
+        File.WriteAllText("Content/Data/pets_test.json", @"
 [
   {
     ""PetTypeId"": 9999,
@@ -66,14 +64,17 @@ public class PetSystemTests : IDisposable
         _mockSkills = new Mock<ISkillCatalog>();
         _mockRandom = new Mock<IRandomService>();
 
-        _combatManager = new CombatManager(_mockResolver.Object, _mockRandom.Object, _mockSkills.Object, _mockStatusEngine.Object);
+        _combatManager = new CombatManager(_mockResolver.Object, _mockRandom.Object, _mockSkills.Object,
+            _mockStatusEngine.Object);
         _petService = new PetService(_playerService, _petManager, _combatManager, _mockRandom.Object);
     }
 
     public void Dispose()
     {
-        if (System.IO.File.Exists("Content/Data/pets_test.json"))
-            System.IO.File.Delete("Content/Data/pets_test.json");
+        if (File.Exists("Content/Data/pets_test.json"))
+        {
+            File.Delete("Content/Data/pets_test.json");
+        }
     }
 
     [Fact]
@@ -115,7 +116,7 @@ public class PetSystemTests : IDisposable
         var def = _petManager.GetDefinition(9999);
         var pet = new ServerPet(def);
 
-        int hpLvl1 = pet.MaxHp;
+        var hpLvl1 = pet.MaxHp;
 
         pet.AddExp(200); // Level up -> 2
 
@@ -135,9 +136,12 @@ public class PetSystemTests : IDisposable
         var attacker = new ServerCharacter { Id = 1, Str = 50 };
         _combatManager.RegisterCombatant(attacker);
 
-        _mockSkills.Setup(s => s.GetSkillById(1)).Returns(new TWL.Shared.Domain.Skills.Skill { SkillId = 1, SpCost = 0, Effects = new List<TWL.Shared.Domain.Skills.SkillEffect>() });
-        _mockResolver.Setup(r => r.CalculateDamage(It.IsAny<ServerCombatant>(), It.IsAny<ServerCombatant>(), It.IsAny<UseSkillRequest>()))
-                     .Returns(50);
+        _mockSkills.Setup(s => s.GetSkillById(1))
+            .Returns(new Skill { SkillId = 1, SpCost = 0, Effects = new List<SkillEffect>() });
+        _mockResolver.Setup(r =>
+                r.CalculateDamage(It.IsAny<ServerCombatant>(), It.IsAny<ServerCombatant>(),
+                    It.IsAny<UseSkillRequest>()))
+            .Returns(50);
 
         // Act
         var result = _combatManager.UseSkill(new UseSkillRequest { PlayerId = 1, TargetId = -100, SkillId = 1 });
@@ -154,8 +158,10 @@ public class PetSystemTests : IDisposable
 // Helper to expose setting Character
 public class ClientSessionForTest : ClientSession
 {
-    public ClientSessionForTest() : base() {
+    public ClientSessionForTest()
+    {
         UserId = 1;
     }
-    public void SetCharacter(ServerCharacter c) { Character = c; }
+
+    public void SetCharacter(ServerCharacter c) => Character = c;
 }

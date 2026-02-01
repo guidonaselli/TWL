@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using Xunit;
 using TWL.Shared.Domain.Characters;
 
 namespace TWL.Tests.Domain;
@@ -8,16 +5,12 @@ namespace TWL.Tests.Domain;
 public class ElementValidationTests
 {
     [Fact]
-    public void PlayerCharacter_ThrowsOnNoneElement()
-    {
+    public void PlayerCharacter_ThrowsOnNoneElement() =>
         Assert.Throws<ArgumentException>(() => new PlayerCharacter(Guid.NewGuid(), "TestPlayer", Element.None));
-    }
 
     [Fact]
-    public void PetCharacter_ThrowsOnNoneElement()
-    {
+    public void PetCharacter_ThrowsOnNoneElement() =>
         Assert.Throws<ArgumentException>(() => new PetCharacter("TestPet", Element.None));
-    }
 
     [Fact]
     public void MonsterDefinition_WithNoneElement_RequiresQuestOnlyTag()
@@ -33,7 +26,7 @@ public class ElementValidationTests
         };
 
         // Simulating the validator check
-        bool isValid = ValidateMonster(def, out var error);
+        var isValid = ValidateMonster(def, out var error);
         Assert.False(isValid, "Monster with Element.None should fail without QuestOnly tag.");
         Assert.Contains("QuestOnly", error);
 
@@ -53,6 +46,7 @@ public class ElementValidationTests
                 return false;
             }
         }
+
         return true;
     }
 }

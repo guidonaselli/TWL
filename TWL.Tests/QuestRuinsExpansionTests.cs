@@ -1,20 +1,16 @@
-using System.Collections.Generic;
-using System.IO;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
-using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests;
 
 public class QuestRuinsExpansionTests
 {
-    private ServerQuestManager _questManager;
-    private InteractionManager _interactionManager;
-    private ServerCharacter _character;
-    private PlayerQuestComponent _questComponent;
+    private readonly ServerCharacter _character;
+    private readonly InteractionManager _interactionManager;
+    private readonly PlayerQuestComponent _questComponent;
+    private readonly ServerQuestManager _questManager;
 
     public QuestRuinsExpansionTests()
     {
@@ -25,18 +21,18 @@ public class QuestRuinsExpansionTests
 
         // Load Real Data
         // Adjust path to find Content/Data from bin/Debug/net10.0/
-        string contentPath = Path.Combine("..", "..", "..", "..", "Content", "Data");
+        var contentPath = Path.Combine("..", "..", "..", "..", "Content", "Data");
         // If running in CI or specific env, fallback
-        if (!Directory.Exists(contentPath)) contentPath = Path.Combine("Content", "Data");
+        if (!Directory.Exists(contentPath))
+        {
+            contentPath = Path.Combine("Content", "Data");
+        }
 
         _questManager.Load(Path.Combine(contentPath, "quests.json"));
         _interactionManager.Load(Path.Combine(contentPath, "interactions.json"));
     }
 
-    private void SetQuestCompleted(int questId)
-    {
-        _questComponent.QuestStates[questId] = QuestState.Completed;
-    }
+    private void SetQuestCompleted(int questId) => _questComponent.QuestStates[questId] = QuestState.Completed;
 
     [Fact]
     public void SecretsOfTheRuins_Chain_Progression()
@@ -96,7 +92,7 @@ public class QuestRuinsExpansionTests
         Assert.True(_questComponent.StartQuest(2203), "Should be able to start 2203");
 
         // Gather 5 Wings
-        for (int i = 0; i < 5; i++)
+        for (var i = 0; i < 5; i++)
         {
             var result = _interactionManager.ProcessInteraction(_character, _questComponent, "BatNest");
             Assert.NotNull(result);

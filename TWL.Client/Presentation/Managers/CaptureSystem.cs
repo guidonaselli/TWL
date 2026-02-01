@@ -1,5 +1,4 @@
-﻿using System;
-using TWL.Shared.Domain.Characters;
+﻿using TWL.Shared.Domain.Characters;
 
 namespace TWL.Client.Presentation.Managers;
 
@@ -10,13 +9,17 @@ public class CaptureSystem
 
     public bool TryCapture(PlayerCharacter player, EnemyCharacter enemy, Inventory playerInventory)
     {
-        if (_enemyCharacter.IsCapturable == false)
+        if (!_enemyCharacter.IsCapturable)
+        {
             return false;
+        }
 
         // Condición: HP del enemigo < 30%
         var hpRatio = (float)enemy.Health / enemy.MaxHealth;
         if (hpRatio > 0.3f)
+        {
             return false;
+        }
 
         // Consumo el PetCaptureItem
         playerInventory.RemoveItem(999, 1);

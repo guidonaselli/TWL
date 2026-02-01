@@ -1,9 +1,6 @@
-using System.Collections.Generic;
-using System.Linq;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Skills;
-using Xunit;
 
 namespace TWL.Tests.Server.Simulation.Managers;
 
@@ -27,8 +24,10 @@ public class StatusEngineTests
     public void Apply_Conflict_PriorityWins()
     {
         var list = new List<StatusEffectInstance>();
-        var weakEffect = new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 3) { ConflictGroup = "Group1", Priority = 1 };
-        var strongEffect = new StatusEffectInstance(SkillEffectTag.BuffStats, 20, 3) { ConflictGroup = "Group1", Priority = 2 };
+        var weakEffect = new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 3)
+            { ConflictGroup = "Group1", Priority = 1 };
+        var strongEffect = new StatusEffectInstance(SkillEffectTag.BuffStats, 20, 3)
+            { ConflictGroup = "Group1", Priority = 2 };
 
         _engine.Apply(list, weakEffect);
         Assert.Single(list);
@@ -43,8 +42,10 @@ public class StatusEngineTests
     public void Apply_Conflict_LowPriorityIgnored()
     {
         var list = new List<StatusEffectInstance>();
-        var strongEffect = new StatusEffectInstance(SkillEffectTag.BuffStats, 20, 3) { ConflictGroup = "Group1", Priority = 2 };
-        var weakEffect = new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 3) { ConflictGroup = "Group1", Priority = 1 };
+        var strongEffect = new StatusEffectInstance(SkillEffectTag.BuffStats, 20, 3)
+            { ConflictGroup = "Group1", Priority = 2 };
+        var weakEffect = new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 3)
+            { ConflictGroup = "Group1", Priority = 1 };
 
         _engine.Apply(list, strongEffect);
         _engine.Apply(list, weakEffect);
@@ -57,8 +58,10 @@ public class StatusEngineTests
     public void Apply_Stacking_RefreshDuration()
     {
         var list = new List<StatusEffectInstance>();
-        var effect1 = new StatusEffectInstance(SkillEffectTag.Burn, 10, 3) { StackingPolicy = StackingPolicy.RefreshDuration, Param = "Fire" };
-        var effect2 = new StatusEffectInstance(SkillEffectTag.Burn, 10, 5) { StackingPolicy = StackingPolicy.RefreshDuration, Param = "Fire" };
+        var effect1 = new StatusEffectInstance(SkillEffectTag.Burn, 10, 3)
+            { StackingPolicy = StackingPolicy.RefreshDuration, Param = "Fire" };
+        var effect2 = new StatusEffectInstance(SkillEffectTag.Burn, 10, 5)
+            { StackingPolicy = StackingPolicy.RefreshDuration, Param = "Fire" };
 
         _engine.Apply(list, effect1);
         _engine.Apply(list, effect2);
@@ -72,8 +75,8 @@ public class StatusEngineTests
     {
         var list = new List<StatusEffectInstance>
         {
-            new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 1),
-            new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 2)
+            new(SkillEffectTag.BuffStats, 10, 1),
+            new(SkillEffectTag.BuffStats, 10, 2)
         };
 
         _engine.Tick(list);

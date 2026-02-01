@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TWL.Shared.Domain.Characters;
@@ -9,13 +6,14 @@ namespace TWL.Server.Simulation.Managers;
 
 public class NpcManager
 {
-    private readonly Dictionary<int, NpcDefinition> _definitions = new();
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         IncludeFields = true,
         Converters = { new JsonStringEnumConverter() }
     };
+
+    private readonly Dictionary<int, NpcDefinition> _definitions = new();
 
     public void Load(string path)
     {
@@ -38,8 +36,10 @@ public class NpcManager
                     {
                         Console.WriteLine($"Warning: Duplicate NPC ID {def.NpcId}");
                     }
+
                     _definitions[def.NpcId] = def;
                 }
+
                 Console.WriteLine($"Loaded {_definitions.Count} NPC definitions.");
             }
         }
@@ -49,8 +49,5 @@ public class NpcManager
         }
     }
 
-    public virtual NpcDefinition? GetDefinition(int npcId)
-    {
-        return _definitions.GetValueOrDefault(npcId);
-    }
+    public virtual NpcDefinition? GetDefinition(int npcId) => _definitions.GetValueOrDefault(npcId);
 }

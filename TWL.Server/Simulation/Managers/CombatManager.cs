@@ -1,6 +1,4 @@
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
@@ -16,14 +14,13 @@ namespace TWL.Server.Simulation.Managers;
 public class CombatManager
 {
     private readonly ConcurrentDictionary<int, ServerCombatant> _combatants;
-    private readonly ICombatResolver _resolver;
     private readonly IRandomService _random;
+    private readonly ICombatResolver _resolver;
     private readonly ISkillCatalog _skills;
     private readonly IStatusEngine _statusEngine;
 
-    public event Action<ServerCombatant>? OnCombatantDeath;
-
-    public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills, IStatusEngine statusEngine)
+    public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
+        IStatusEngine statusEngine)
     {
         _combatants = new ConcurrentDictionary<int, ServerCombatant>();
         _resolver = resolver;
@@ -32,15 +29,11 @@ public class CombatManager
         _statusEngine = statusEngine;
     }
 
-    public virtual void RegisterCombatant(ServerCombatant combatant)
-    {
-        _combatants[combatant.Id] = combatant;
-    }
+    public event Action<ServerCombatant>? OnCombatantDeath;
 
-    public virtual void UnregisterCombatant(int id)
-    {
-        _combatants.TryRemove(id, out _);
-    }
+    public virtual void RegisterCombatant(ServerCombatant combatant) => _combatants[combatant.Id] = combatant;
+
+    public virtual void UnregisterCombatant(int id) => _combatants.TryRemove(id, out _);
 
     public virtual ServerCombatant? GetCombatant(int id)
     {
@@ -71,10 +64,15 @@ public class CombatManager
         // 1) Obtenemos los objetos server-side
         if (!_combatants.TryGetValue(request.PlayerId, out var attacker) ||
             !_combatants.TryGetValue(request.TargetId, out var target))
+        {
             return null;
+        }
 
         var skill = _skills.GetSkillById(request.SkillId);
-        if (skill == null) return null;
+        if (skill == null)
+        {
+            return null;
+        }
 
         if (attacker.IsSkillOnCooldown(skill.SkillId))
         {
@@ -92,26 +90,33 @@ public class CombatManager
 
         foreach (var effect in skill.Effects)
         {
-            float chance = effect.Chance;
+            var chance = effect.Chance;
 
             if (skill.HitRules != null && effect.Tag == SkillEffectTag.Seal)
             {
                 // Basic formula: Base + (Int - Wis)*0.01 (clamped)
-                float statDiff = (attacker.Int - target.Wis) * 0.01f;
+                var statDiff = (attacker.Int - target.Wis) * 0.01f;
                 chance = skill.HitRules.BaseChance + statDiff;
-                if (chance < skill.HitRules.MinChance) chance = skill.HitRules.MinChance;
-                if (chance > skill.HitRules.MaxChance) chance = skill.HitRules.MaxChance;
+                if (chance < skill.HitRules.MinChance)
+                {
+                    chance = skill.HitRules.MinChance;
+                }
+
+                if (chance > skill.HitRules.MaxChance)
+                {
+                    chance = skill.HitRules.MaxChance;
+                }
             }
 
-            bool resist = false;
-            int finalDuration = effect.Duration;
-            float finalValue = effect.Value;
+            var resist = false;
+            var finalDuration = effect.Duration;
+            var finalValue = effect.Value;
 
             if (effect.ResistanceTags != null && effect.ResistanceTags.Count > 0)
             {
                 foreach (var tag in effect.ResistanceTags)
                 {
-                    float resistance = target.GetResistance(tag);
+                    var resistance = target.GetResistance(tag);
 
                     // Immunity Check
                     if (resistance >= 1.0f)
@@ -125,7 +130,7 @@ public class CombatManager
                     {
                         if (effect.Outcome == OutcomeModel.Partial)
                         {
-                            finalDuration = System.Math.Max(1, finalDuration / 2);
+                            finalDuration = Math.Max(1, finalDuration / 2);
                             finalValue *= 0.5f;
                         }
                         else
@@ -151,7 +156,7 @@ public class CombatManager
                     case SkillEffectTag.Damage:
                         break;
                     case SkillEffectTag.Heal:
-                        int healAmount = _resolver.CalculateHeal(attacker, target, request);
+                        var healAmount = _resolver.CalculateHeal(attacker, target, request);
                         healAmount += (int)finalValue;
                         target.Heal(healAmount);
                         break;
@@ -171,7 +176,7 @@ public class CombatManager
             }
         }
 
-        int finalDamage = _resolver.CalculateDamage(attacker, target, request);
+        var finalDamage = _resolver.CalculateDamage(attacker, target, request);
         newTargetHp = target.ApplyDamage(finalDamage);
 
         if (finalDamage > 0)
@@ -204,7 +209,10 @@ public class CombatManager
 
     private void CheckSkillEvolution(ServerCombatant combatant, Skill skill)
     {
-        if (skill.StageUpgradeRules == null) return;
+        if (skill.StageUpgradeRules == null)
+        {
+            return;
+        }
 
         if (combatant.SkillMastery.TryGetValue(skill.SkillId, out var mastery))
         {
@@ -218,8 +226,5 @@ public class CombatManager
         }
     }
 
-    public List<ServerCombatant> GetAllCombatants()
-    {
-        return _combatants.Values.ToList();
-    }
+    public List<ServerCombatant> GetAllCombatants() => _combatants.Values.ToList();
 }

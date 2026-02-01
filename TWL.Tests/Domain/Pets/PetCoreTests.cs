@@ -1,8 +1,5 @@
-using System.Collections.Generic;
-using Xunit;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
-using TWL.Server.Simulation.Managers;
 
 namespace TWL.Tests.Domain.Pets;
 
@@ -64,17 +61,17 @@ public class PetCoreTests
             {
                 CurveType = GrowthCurveType.EarlyPeaker,
                 StrWeight = 100,
-                ConWeight=0,
-                IntWeight=0,
-                WisWeight=0,
-                AgiWeight=0
+                ConWeight = 0,
+                IntWeight = 0,
+                WisWeight = 0,
+                AgiWeight = 0
             }
         };
         var earlyPet = new ServerPet(earlyDef);
 
         earlyPet.Level = 20;
         earlyPet.RecalculateStats();
-        int strLevel20 = earlyPet.Str;
+        var strLevel20 = earlyPet.Str;
 
         // LateBloomer
         var lateDef = new PetDefinition
@@ -86,22 +83,23 @@ public class PetCoreTests
             {
                 CurveType = GrowthCurveType.LateBloomer,
                 StrWeight = 100,
-                ConWeight=0,
-                IntWeight=0,
-                WisWeight=0,
-                AgiWeight=0
+                ConWeight = 0,
+                IntWeight = 0,
+                WisWeight = 0,
+                AgiWeight = 0
             }
         };
         var latePet = new ServerPet(lateDef);
 
         latePet.Level = 20;
         latePet.RecalculateStats();
-        int lateStrLevel20 = latePet.Str;
+        var lateStrLevel20 = latePet.Str;
 
         // Early peaker should have more stats early on compared to late bloomer
         // EarlyPeaker: <40 -> 1.2x. LateBloomer: <40 -> 0.8x.
 
-        Assert.True(strLevel20 > lateStrLevel20, $"EarlyPeaker Str {strLevel20} should be > LateBloomer Str {lateStrLevel20}");
+        Assert.True(strLevel20 > lateStrLevel20,
+            $"EarlyPeaker Str {strLevel20} should be > LateBloomer Str {lateStrLevel20}");
     }
 
     [Fact]
@@ -117,17 +115,17 @@ public class PetCoreTests
                 BaseChance = 0.5f
             }
         };
-        int playerLevel = 5;
+        var playerLevel = 5;
 
-        bool canCapture = playerLevel >= def.CaptureRules.LevelLimit;
+        var canCapture = playerLevel >= def.CaptureRules.LevelLimit;
         Assert.False(canCapture, "Should fail level requirement");
 
         playerLevel = 15;
         canCapture = playerLevel >= def.CaptureRules.LevelLimit;
         Assert.True(canCapture);
 
-        float roll = 0.6f;
-        bool success = roll <= def.CaptureRules.BaseChance;
+        var roll = 0.6f;
+        var success = roll <= def.CaptureRules.BaseChance;
         Assert.False(success, "Roll 0.6 > 0.5 should fail");
 
         roll = 0.4f;
@@ -146,7 +144,7 @@ public class PetCoreTests
         Assert.Single(character.Pets);
         Assert.Equal("pet1", character.ActivePetInstanceId);
 
-        bool removed = character.RemovePet("pet1");
+        var removed = character.RemovePet("pet1");
 
         Assert.True(removed);
         Assert.Empty(character.Pets);

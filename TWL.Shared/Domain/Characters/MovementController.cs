@@ -35,13 +35,17 @@ public class MovementController
         }
 
         if (moveDir.LengthSquared() > 0)
+        {
             Vector2.Normalize(moveDir);
+        }
 
         var nextPos = player.Position + moveDir * player.MovementSpeed;
 
         // Call a public collision check (make sure PlayerCharacter.IsColliding is public)
         if (!player.IsColliding(nextPos))
+        {
             player.Position = nextPos;
+        }
 
         // Clamp the position using publicly exposed map information
         float maxX = player.MapWidth * player.TileWidth - player.TileWidth;

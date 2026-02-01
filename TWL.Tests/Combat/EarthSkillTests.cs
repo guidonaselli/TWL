@@ -1,15 +1,14 @@
-using System.Collections.Generic;
-using System.Linq;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
-using Xunit;
 
 namespace TWL.Tests.Combat;
 
 public class EarthTestCharacter : Character
 {
-    public EarthTestCharacter(string name, Element element = Element.Earth) : base(name, element) { }
+    public EarthTestCharacter(string name, Element element = Element.Earth) : base(name, element)
+    {
+    }
 }
 
 public class EarthSkillTests
@@ -69,9 +68,10 @@ public class EarthSkillTests
     [Fact]
     public void RockSmash_ShouldDealDamage_BasedOnStrAndAtk()
     {
-        var attacker = new EarthTestCharacter("EarthUser", Element.Earth) { Str = 20, Sp = 100, Agi = 10 };
+        var attacker = new EarthTestCharacter("EarthUser") { Str = 20, Sp = 100, Agi = 10 };
         // Atk = 20*2 = 40.
-        var defender = new EarthTestCharacter("Target", Element.Water) { Con = 5, Health = 100, MaxHealth = 100, Agi = 10 };
+        var defender = new EarthTestCharacter("Target", Element.Water)
+            { Con = 5, Health = 100, MaxHealth = 100, Agi = 10 };
         // Def = 5*2 = 10.
 
         var battle = new BattleInstance(new[] { attacker }, new[] { defender });
@@ -109,8 +109,9 @@ public class EarthSkillTests
     public void EarthBarrier_ShouldIncreaseDefense_AndReduceDamage()
     {
         // Setup
-        var attacker = new EarthTestCharacter("Attacker", Element.Earth) { Str = 20, Sp = 100, Agi = 10 };
-        var defender = new EarthTestCharacter("Defender", Element.Water) { Con = 0, Wis = 20, Health = 1000, MaxHealth = 1000, Sp = 100, Agi = 20 }; // Faster
+        var attacker = new EarthTestCharacter("Attacker") { Str = 20, Sp = 100, Agi = 10 };
+        var defender = new EarthTestCharacter("Defender", Element.Water)
+            { Con = 0, Wis = 20, Health = 1000, MaxHealth = 1000, Sp = 100, Agi = 20 }; // Faster
 
         var battle = new BattleInstance(new[] { attacker }, new[] { defender });
 
@@ -152,11 +153,12 @@ public class EarthSkillTests
 
         battle.ResolveAction(attackAction);
 
-        int damageDealt = 1000 - defender.Health;
+        var damageDealt = 1000 - defender.Health;
 
         // Unbuffed comparison
-        var attacker2 = new EarthTestCharacter("Attacker2", Element.Earth) { Str = 20, Agi = 20 };
-        var defender2 = new EarthTestCharacter("Defender2", Element.Water) { Con = 0, Health = 1000, MaxHealth = 1000, Agi = 10 };
+        var attacker2 = new EarthTestCharacter("Attacker2") { Str = 20, Agi = 20 };
+        var defender2 = new EarthTestCharacter("Defender2", Element.Water)
+            { Con = 0, Health = 1000, MaxHealth = 1000, Agi = 10 };
         var battle2 = new BattleInstance(new[] { attacker2 }, new[] { defender2 });
         battle2.Tick(100f);
 
@@ -166,15 +168,16 @@ public class EarthSkillTests
             ActorId = battle2.Allies[0].BattleId,
             TargetId = battle2.Enemies[0].BattleId
         });
-        int damageUnbuffed = 1000 - defender2.Health;
+        var damageUnbuffed = 1000 - defender2.Health;
 
-        Assert.True(damageDealt < damageUnbuffed, $"Buffed Damage ({damageDealt}) should be less than Unbuffed ({damageUnbuffed})");
+        Assert.True(damageDealt < damageUnbuffed,
+            $"Buffed Damage ({damageDealt}) should be less than Unbuffed ({damageUnbuffed})");
     }
 
     [Fact]
     public void Seal_ShouldPreventAction()
     {
-        var attacker = new EarthTestCharacter("SealedGuy", Element.Earth) { Agi = 20 };
+        var attacker = new EarthTestCharacter("SealedGuy") { Agi = 20 };
         var defender = new EarthTestCharacter("Target", Element.Water) { Agi = 10 };
         var battle = new BattleInstance(new[] { attacker }, new[] { defender });
 

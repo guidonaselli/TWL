@@ -10,8 +10,10 @@ public interface IScene
     void Initialize();
     void LoadContent();
     void UnloadContent();
+
     void Update(GameTime time,
         MouseState mouse,
         KeyboardState keyboard);
+
     void Draw(SpriteBatch spriteBatch);
 }

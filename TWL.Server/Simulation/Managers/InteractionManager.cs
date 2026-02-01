@@ -1,19 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Interactions;
-using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
 
 namespace TWL.Server.Simulation.Managers;
 
 public class InteractionManager
 {
-    private readonly Dictionary<string, List<InteractionDefinition>> _interactions = new();
     private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
+    private readonly Dictionary<string, List<InteractionDefinition>> _interactions = new();
 
     public void Load(string path)
     {
@@ -33,15 +29,20 @@ public class InteractionManager
                 {
                     _interactions[def.TargetName] = new List<InteractionDefinition>();
                 }
+
                 _interactions[def.TargetName].Add(def);
             }
         }
+
         Console.WriteLine($"Loaded interactions for {_interactions.Count} targets from {path}");
     }
 
     public string? ProcessInteraction(ServerCharacter character, PlayerQuestComponent questComponent, string targetName)
     {
-        if (character == null) return null;
+        if (character == null)
+        {
+            return null;
+        }
 
         if (!_interactions.TryGetValue(targetName, out var definitions))
         {
@@ -62,7 +63,7 @@ public class InteractionManager
             }
 
             // Check Required Items
-            bool hasAll = true;
+            var hasAll = true;
             if (def.RequiredItems != null)
             {
                 foreach (var req in def.RequiredItems)
@@ -75,7 +76,10 @@ public class InteractionManager
                 }
             }
 
-            if (!hasAll) continue; // Try next definition
+            if (!hasAll)
+            {
+                continue; // Try next definition
+            }
 
             // Consume Items
             if (def.ConsumeRequiredItems && def.RequiredItems != null)

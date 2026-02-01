@@ -1,7 +1,5 @@
-using System;
-using System.Collections.Generic;
+using System.Text.Json;
 using Moq;
-using Xunit;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
@@ -15,27 +13,24 @@ namespace TWL.Tests.Services;
 // Helper to expose setting Character for tests
 public class ClientSessionForTest : ClientSession
 {
-    public ClientSessionForTest() : base() { }
-
-    public void SetUserId(int id) { UserId = id; }
-    public void SetCharacter(ServerCharacter c) { Character = c; }
+    public void SetUserId(int id) => UserId = id;
+    public void SetCharacter(ServerCharacter c) => Character = c;
 }
 
 public class PetServiceTests : IDisposable
 {
-    private Mock<IPlayerRepository> _mockRepo;
-    private Mock<IStatusEngine> _mockStatusEngine;
-    private Mock<ICombatResolver> _mockResolver;
-    private Mock<ISkillCatalog> _mockSkills;
-    private Mock<IRandomService> _mockRandom;
-
-    private PlayerService _playerService;
-    private PetManager _petManager;
-    private CombatManager _combatManager;
-    private PetService _petService;
-    private ServerMetrics _metrics;
-
     private const string TestFile = "Content/Data/pets_service_test.json";
+    private readonly CombatManager _combatManager;
+    private readonly ServerMetrics _metrics;
+    private readonly Mock<IRandomService> _mockRandom;
+    private readonly Mock<IPlayerRepository> _mockRepo;
+    private readonly Mock<ICombatResolver> _mockResolver;
+    private readonly Mock<ISkillCatalog> _mockSkills;
+    private readonly Mock<IStatusEngine> _mockStatusEngine;
+    private readonly PetManager _petManager;
+    private readonly PetService _petService;
+
+    private readonly PlayerService _playerService;
 
     public PetServiceTests()
     {
@@ -60,16 +55,16 @@ public class PetServiceTests : IDisposable
         };
         var tempDef = new PetDefinition
         {
-             PetTypeId = 101,
-             Name = "Temp Pet",
-             IsTemporary = true,
-             DurationSeconds = 1,
-             GrowthModel = new PetGrowthModel()
+            PetTypeId = 101,
+            Name = "Temp Pet",
+            IsTemporary = true,
+            DurationSeconds = 1,
+            GrowthModel = new PetGrowthModel()
         };
 
-        var options = new System.Text.Json.JsonSerializerOptions { IncludeFields = true };
-        System.IO.Directory.CreateDirectory("Content/Data");
-        System.IO.File.WriteAllText(TestFile, System.Text.Json.JsonSerializer.Serialize(new List<PetDefinition> { def, tempDef }, options));
+        var options = new JsonSerializerOptions { IncludeFields = true };
+        Directory.CreateDirectory("Content/Data");
+        File.WriteAllText(TestFile, JsonSerializer.Serialize(new List<PetDefinition> { def, tempDef }, options));
         _petManager.Load(TestFile);
 
         _mockStatusEngine = new Mock<IStatusEngine>();
@@ -77,14 +72,17 @@ public class PetServiceTests : IDisposable
         _mockSkills = new Mock<ISkillCatalog>();
         _mockRandom = new Mock<IRandomService>();
 
-        _combatManager = new CombatManager(_mockResolver.Object, _mockRandom.Object, _mockSkills.Object, _mockStatusEngine.Object);
+        _combatManager = new CombatManager(_mockResolver.Object, _mockRandom.Object, _mockSkills.Object,
+            _mockStatusEngine.Object);
         _petService = new PetService(_playerService, _petManager, _combatManager, _mockRandom.Object);
     }
 
     public void Dispose()
     {
-        if (System.IO.File.Exists(TestFile))
-            System.IO.File.Delete(TestFile);
+        if (File.Exists(TestFile))
+        {
+            File.Delete(TestFile);
+        }
     }
 
     [Fact]
@@ -92,7 +90,10 @@ public class PetServiceTests : IDisposable
     {
         // Arrange
         var chara = new ServerCharacter { Id = 1, Name = "Trainer" };
-        while(chara.Level < 5) chara.AddExp(1000); // Level up to 5
+        while (chara.Level < 5)
+        {
+            chara.AddExp(1000); // Level up to 5
+        }
 
         chara.AddItem(999, 1); // Required Item
 
@@ -197,7 +198,8 @@ public class PetServiceTests : IDisposable
         // Arrange
         var chara = new ServerCharacter { Id = 1 };
         chara.AddGold(1000);
-        var pet = new ServerPet(new PetDefinition { PetTypeId = 100 }) { InstanceId = "pet1", Level = 10, IsDead = true };
+        var pet = new ServerPet(new PetDefinition { PetTypeId = 100 })
+            { InstanceId = "pet1", Level = 10, IsDead = true };
         chara.AddPet(pet);
 
         var session = new ClientSessionForTest();
@@ -223,7 +225,7 @@ public class PetServiceTests : IDisposable
         var pet = new ServerPet(def);
         pet.Amity = 50;
         pet.RecalculateStats();
-        int baseStr = pet.Str;
+        var baseStr = pet.Str;
 
         // Rebellious (< 20)
         pet.ChangeAmity(-40); // 10
@@ -238,23 +240,23 @@ public class PetServiceTests : IDisposable
     [Fact]
     public void TemporaryPet_Expiry()
     {
-         var def = new PetDefinition
-         {
-             PetTypeId = 101,
-             IsTemporary = true,
-             DurationSeconds = 1 // 1 second duration
-         };
-         var pet = new ServerPet(def);
+        var def = new PetDefinition
+        {
+            PetTypeId = 101,
+            IsTemporary = true,
+            DurationSeconds = 1 // 1 second duration
+        };
+        var pet = new ServerPet(def);
 
-         Assert.NotNull(pet.ExpirationTime);
-         Assert.False(pet.IsExpired);
+        Assert.NotNull(pet.ExpirationTime);
+        Assert.False(pet.IsExpired);
 
-         // Wait slightly (in real test we shouldn't sleep ideally but for 1s it's okay-ish)
-         // Since ServerPet uses DateTime.UtcNow directly, we can't mock time easily.
-         // We'll manually set ExpirationTime for test stability.
+        // Wait slightly (in real test we shouldn't sleep ideally but for 1s it's okay-ish)
+        // Since ServerPet uses DateTime.UtcNow directly, we can't mock time easily.
+        // We'll manually set ExpirationTime for test stability.
 
-         pet.ExpirationTime = DateTime.UtcNow.AddSeconds(-1);
-         Assert.True(pet.IsExpired);
+        pet.ExpirationTime = DateTime.UtcNow.AddSeconds(-1);
+        Assert.True(pet.IsExpired);
     }
 
     [Fact]

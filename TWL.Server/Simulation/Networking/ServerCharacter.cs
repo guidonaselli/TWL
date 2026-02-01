@@ -1,7 +1,3 @@
-using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
 using TWL.Server.Persistence;
 using TWL.Shared.Domain.Models;
 
@@ -12,13 +8,40 @@ namespace TWL.Server.Simulation.Networking;
 /// </summary>
 public class ServerCharacter : ServerCombatant
 {
+    private readonly List<Item> _inventory = new();
+
+    private readonly Dictionary<int, long> _itemTotalQuantities = new();
+
+    private readonly List<ServerPet> _pets = new();
+    private readonly object _progressLock = new();
+
+    private int _exp;
+
+    private int _gold;
+
     // Override IsDirty to include pets
     private bool _isDirty;
+
+    private long _premiumCurrency;
+
+    public ServerCharacter()
+    {
+        Str = 8;
+        Con = 8;
+        Int = 8;
+        Wis = 8;
+        Agi = 8;
+    }
+
     public new bool IsDirty
     {
         get
         {
-            if (_isDirty || base.IsDirty) return true;
+            if (_isDirty || base.IsDirty)
+            {
+                return true;
+            }
+
             lock (_pets)
             {
                 return _pets.Any(p => p.IsDirty);
@@ -32,31 +55,19 @@ public class ServerCharacter : ServerCombatant
             {
                 lock (_pets)
                 {
-                    foreach (var p in _pets) p.IsDirty = false;
+                    foreach (var p in _pets)
+                    {
+                        p.IsDirty = false;
+                    }
                 }
             }
         }
     }
 
-    // Stats & Progression
-    public event Action<Item, int>? OnItemAdded;
-    public event Action<ServerPet>? OnPetAdded;
-    public event Action<ServerCharacter, int, int>? OnTradeCommitted;
-
     public ICollection<int> KnownSkills => SkillMastery.Keys;
     public int Level { get; private set; } = 1;
-    public void SetLevel(int level) => Level = level; // For mobs
     public int ExpToNextLevel { get; private set; } = 100;
-    public int StatPoints { get; private set; } = 0;
-
-    public ServerCharacter()
-    {
-        Str = 8;
-        Con = 8;
-        Int = 8;
-        Wis = 8;
-        Agi = 8;
-    }
+    public int StatPoints { get; private set; }
 
     public string ActivePetInstanceId { get; private set; }
     public DateTime LastPetSwitchTime { get; set; } = DateTime.MinValue;
@@ -64,26 +75,24 @@ public class ServerCharacter : ServerCombatant
     // Legacy/Alias support if needed, but preferable to use MaxHp from base
     public int MaxHealth => MaxHp;
 
-    private int _exp;
-    private readonly object _progressLock = new();
-
     public int Exp
     {
         get
         {
-            lock (_progressLock) return _exp;
+            lock (_progressLock)
+            {
+                return _exp;
+            }
         }
         init => _exp = value;
     }
 
-    private int _gold;
     public int Gold
     {
         get => _gold;
         init => _gold = value;
     }
 
-    private long _premiumCurrency;
     public long PremiumCurrency
     {
         get => Interlocked.Read(ref _premiumCurrency);
@@ -97,8 +106,6 @@ public class ServerCharacter : ServerCombatant
 
     public int MaxInventorySlots { get; set; } = 100;
 
-    private readonly Dictionary<int, long> _itemTotalQuantities = new();
-    private readonly List<Item> _inventory = new();
     public IReadOnlyList<Item> Inventory
     {
         get
@@ -121,6 +128,23 @@ public class ServerCharacter : ServerCombatant
         }
     }
 
+    public IReadOnlyList<ServerPet> Pets
+    {
+        get
+        {
+            lock (_pets)
+            {
+                return _pets.ToArray();
+            }
+        }
+    }
+
+    // Stats & Progression
+    public event Action<Item, int>? OnItemAdded;
+    public event Action<ServerPet>? OnPetAdded;
+    public event Action<ServerCharacter, int, int>? OnTradeCommitted;
+    public void SetLevel(int level) => Level = level; // For mobs
+
     public override void ReplaceSkill(int oldId, int newId)
     {
         if (SkillMastery.TryRemove(oldId, out _))
@@ -136,21 +160,10 @@ public class ServerCharacter : ServerCombatant
         {
             return false;
         }
+
         SkillMastery.TryAdd(skillId, new SkillMastery());
         IsDirty = true;
         return true;
-    }
-
-    private readonly List<ServerPet> _pets = new();
-    public IReadOnlyList<ServerPet> Pets
-    {
-        get
-        {
-            lock (_pets)
-            {
-                return _pets.ToArray();
-            }
-        }
     }
 
     public void AddPet(ServerPet pet)
@@ -163,17 +176,18 @@ public class ServerCharacter : ServerCombatant
         }
     }
 
-    public void NotifyTradeCommitted(ServerCharacter target, int itemId, int quantity)
-    {
+    public void NotifyTradeCommitted(ServerCharacter target, int itemId, int quantity) =>
         OnTradeCommitted?.Invoke(target, itemId, quantity);
-    }
 
     public bool RemovePet(string instanceId)
     {
         lock (_pets)
         {
             var pet = _pets.Find(p => p.InstanceId == instanceId);
-            if (pet == null) return false;
+            if (pet == null)
+            {
+                return false;
+            }
 
             _pets.Remove(pet);
 
@@ -199,7 +213,10 @@ public class ServerCharacter : ServerCombatant
             }
 
             var pet = _pets.Find(p => p.InstanceId == instanceId);
-            if (pet == null) return false; // Pet not owned
+            if (pet == null)
+            {
+                return false; // Pet not owned
+            }
 
             ActivePetInstanceId = instanceId;
             IsDirty = true;
@@ -211,7 +228,11 @@ public class ServerCharacter : ServerCombatant
     {
         lock (_pets)
         {
-            if (string.IsNullOrEmpty(ActivePetInstanceId)) return null;
+            if (string.IsNullOrEmpty(ActivePetInstanceId))
+            {
+                return null;
+            }
+
             return _pets.Find(p => p.InstanceId == ActivePetInstanceId);
         }
     }
@@ -228,6 +249,7 @@ public class ServerCharacter : ServerCombatant
                 ExpToNextLevel = (int)(ExpToNextLevel * 1.2);
                 StatPoints += 3;
             }
+
             IsDirty = true;
         }
     }
@@ -240,15 +262,22 @@ public class ServerCharacter : ServerCombatant
 
     public bool TryConsumeGold(int amount)
     {
-        if (amount < 0) return false;
+        if (amount < 0)
+        {
+            return false;
+        }
+
         int initial, current;
         do
         {
             initial = _gold;
-            if (initial < amount) return false;
+            if (initial < amount)
+            {
+                return false;
+            }
+
             current = initial - amount;
-        }
-        while (Interlocked.CompareExchange(ref _gold, current, initial) != initial);
+        } while (Interlocked.CompareExchange(ref _gold, current, initial) != initial);
 
         IsDirty = true;
         return true;
@@ -262,15 +291,22 @@ public class ServerCharacter : ServerCombatant
 
     public bool TryConsumePremiumCurrency(long amount)
     {
-        if (amount < 0) return false;
+        if (amount < 0)
+        {
+            return false;
+        }
+
         long initial, current;
         do
         {
             initial = Interlocked.Read(ref _premiumCurrency);
-            if (initial < amount) return false;
+            if (initial < amount)
+            {
+                return false;
+            }
+
             current = initial - amount;
-        }
-        while (Interlocked.CompareExchange(ref _premiumCurrency, current, initial) != initial);
+        } while (Interlocked.CompareExchange(ref _premiumCurrency, current, initial) != initial);
 
         IsDirty = true;
         return true;
@@ -293,23 +329,33 @@ public class ServerCharacter : ServerCombatant
             if (existing != null)
             {
                 existing.Quantity += quantity;
-                if (!_itemTotalQuantities.ContainsKey(itemId)) _itemTotalQuantities[itemId] = 0;
+                if (!_itemTotalQuantities.ContainsKey(itemId))
+                {
+                    _itemTotalQuantities[itemId] = 0;
+                }
+
                 _itemTotalQuantities[itemId] += quantity;
                 IsDirty = true;
                 OnItemAdded?.Invoke(existing, quantity);
                 return true;
             }
-            else
+
+            if (_inventory.Count >= MaxInventorySlots)
             {
-                if (_inventory.Count >= MaxInventorySlots) return false;
-                var newItem = new Item { ItemId = itemId, Quantity = quantity, Policy = policy, BoundToId = boundToId };
-                _inventory.Add(newItem);
-                if (!_itemTotalQuantities.ContainsKey(itemId)) _itemTotalQuantities[itemId] = 0;
-                _itemTotalQuantities[itemId] += quantity;
-                IsDirty = true;
-                OnItemAdded?.Invoke(newItem, quantity);
-                return true;
+                return false;
             }
+
+            var newItem = new Item { ItemId = itemId, Quantity = quantity, Policy = policy, BoundToId = boundToId };
+            _inventory.Add(newItem);
+            if (!_itemTotalQuantities.ContainsKey(itemId))
+            {
+                _itemTotalQuantities[itemId] = 0;
+            }
+
+            _itemTotalQuantities[itemId] += quantity;
+            IsDirty = true;
+            OnItemAdded?.Invoke(newItem, quantity);
+            return true;
         }
     }
 
@@ -317,14 +363,11 @@ public class ServerCharacter : ServerCombatant
     {
         lock (_inventory)
         {
-            return _itemTotalQuantities.TryGetValue(itemId, out long total) && total >= quantity;
+            return _itemTotalQuantities.TryGetValue(itemId, out var total) && total >= quantity;
         }
     }
 
-    public bool RemoveItem(int itemId, int quantity)
-    {
-        return RemoveItem(itemId, quantity, null);
-    }
+    public bool RemoveItem(int itemId, int quantity) => RemoveItem(itemId, quantity, null);
 
     public bool RemoveItem(int itemId, int quantity, BindPolicy? policyFilter)
     {
@@ -337,22 +380,32 @@ public class ServerCharacter : ServerCombatant
             {
                 if (item.ItemId == itemId)
                 {
-                    if (policyFilter.HasValue && item.Policy != policyFilter.Value) continue;
+                    if (policyFilter.HasValue && item.Policy != policyFilter.Value)
+                    {
+                        continue;
+                    }
+
                     total += item.Quantity;
                     candidates.Add(item);
                 }
             }
 
-            if (total < quantity) return false;
+            if (total < quantity)
+            {
+                return false;
+            }
 
             // Remove from candidates
-            int remainingToRemove = quantity;
+            var remainingToRemove = quantity;
             long totalRemoved = 0;
             foreach (var item in candidates)
             {
-                if (remainingToRemove <= 0) break;
+                if (remainingToRemove <= 0)
+                {
+                    break;
+                }
 
-                int toTake = System.Math.Min(item.Quantity, remainingToRemove);
+                var toTake = Math.Min(item.Quantity, remainingToRemove);
                 item.Quantity -= toTake;
                 remainingToRemove -= toTake;
                 totalRemoved += toTake;
@@ -363,13 +416,17 @@ public class ServerCharacter : ServerCombatant
                 }
             }
 
-            if (_itemTotalQuantities.TryGetValue(itemId, out long currentTotal))
+            if (_itemTotalQuantities.TryGetValue(itemId, out var currentTotal))
             {
-                long newTotal = currentTotal - totalRemoved;
+                var newTotal = currentTotal - totalRemoved;
                 if (newTotal <= 0)
+                {
                     _itemTotalQuantities.Remove(itemId);
+                }
                 else
+                {
                     _itemTotalQuantities[itemId] = newTotal;
+                }
             }
 
             IsDirty = true;
@@ -386,7 +443,11 @@ public class ServerCharacter : ServerCombatant
             {
                 if (item.ItemId == itemId)
                 {
-                    if (policyFilter.HasValue && item.Policy != policyFilter.Value) continue;
+                    if (policyFilter.HasValue && item.Policy != policyFilter.Value)
+                    {
+                        continue;
+                    }
+
                     // Return copies
                     results.Add(new Item
                     {
@@ -400,6 +461,7 @@ public class ServerCharacter : ServerCombatant
                     });
                 }
             }
+
             return results;
         }
     }
@@ -514,7 +576,10 @@ public class ServerCharacter : ServerCombatant
                 foreach (var item in _inventory)
                 {
                     if (!_itemTotalQuantities.ContainsKey(item.ItemId))
+                    {
                         _itemTotalQuantities[item.ItemId] = 0;
+                    }
+
                     _itemTotalQuantities[item.ItemId] += item.Quantity;
                 }
             }

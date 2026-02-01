@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.IO;
-using System.Linq;
 using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace TWL.Tests.Performance;
@@ -27,7 +22,7 @@ public class QuestPerformanceTests
         var quests = new List<QuestDefinition>();
 
         // Create 100 dummy quests
-        for (int i = 1; i <= 100; i++)
+        for (var i = 1; i <= 100; i++)
         {
             quests.Add(new QuestDefinition
             {
@@ -36,9 +31,9 @@ public class QuestPerformanceTests
                 Description = "Desc",
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Talk", "NpcA", 1, "Talk to NPC A"),
-                    new ObjectiveDefinition("Collect", "ItemB", 5, "Collect Item B"),
-                    new ObjectiveDefinition("Interact", "ObjectC", 1, "Interact with C")
+                    new("Talk", "NpcA", 1, "Talk to NPC A"),
+                    new("Collect", "ItemB", 5, "Collect Item B"),
+                    new("Interact", "ObjectC", 1, "Interact with C")
                 },
                 Rewards = new RewardDefinition(100, 50, new List<ItemReward>())
             });
@@ -61,7 +56,7 @@ public class QuestPerformanceTests
         var component = new PlayerQuestComponent(questManager);
 
         // Start all quests
-        for (int i = 1; i <= 100; i++)
+        for (var i = 1; i <= 100; i++)
         {
             component.StartQuest(i);
         }
@@ -71,14 +66,14 @@ public class QuestPerformanceTests
         // for a target name "NpcA"
 
         const int iterations = 1000;
-        string target = "NpcA";
+        var target = "NpcA";
 
         GC.Collect();
         GC.WaitForPendingFinalizers();
         var initialMemory = GC.GetAllocatedBytesForCurrentThread();
         var sw = Stopwatch.StartNew();
 
-        for (int k = 0; k < iterations; k++)
+        for (var k = 0; k < iterations; k++)
         {
             var uniqueUpdates = new HashSet<int>();
 

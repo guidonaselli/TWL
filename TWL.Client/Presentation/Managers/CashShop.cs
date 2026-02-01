@@ -14,7 +14,10 @@ public class CashShop
     public bool SpendCashPoints(PlayerCharacter player, int cost, Inventory playerInventory, int itemId)
     {
         if (player.TwlPoints < cost)
+        {
             return false;
+        }
+
         player.TwlPoints -= cost;
         // Da el item premium
         playerInventory.AddItem(itemId, 1);

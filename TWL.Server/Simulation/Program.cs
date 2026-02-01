@@ -3,7 +3,9 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Serilog;
-using TWL.Server;
+using TWL.Server.Architecture.Pipeline;
+using TWL.Server.Features.Combat;
+using TWL.Server.Features.Interactions;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
@@ -15,10 +17,6 @@ using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
 using TWL.Shared.Services;
-using TWL.Server.Architecture.Pipeline;
-using TWL.Server.Features.Combat;
-using TWL.Server.Features.Interactions;
-using TWL.Shared.Domain.Requests;
 
 Host.CreateDefaultBuilder(args)
     // 1) Config: appsettings + ServerConfig.json + SerilogSettings.json
@@ -43,14 +41,15 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<IRandomService>(sp =>
         {
             var config = sp.GetRequiredService<IConfiguration>();
-            int? seed = config.GetValue<int?>("Server:RandomSeed");
+            var seed = config.GetValue<int?>("Server:RandomSeed");
             return new SeedableRandomService(sp.GetRequiredService<ILogger<SeedableRandomService>>(), seed);
         });
         svcs.AddSingleton<ISkillCatalog>(_ => SkillRegistry.Instance);
         svcs.AddSingleton<IWorldScheduler, WorldScheduler>();
         svcs.AddSingleton<IStatusEngine, StatusEngine>();
         svcs.AddSingleton<IEconomyService, EconomyManager>(); // Use Interface
-        svcs.AddSingleton<EconomyManager>(sp => (EconomyManager)sp.GetRequiredService<IEconomyService>()); // Forward implementation if needed as concrete
+        svcs.AddSingleton<EconomyManager>(sp =>
+            (EconomyManager)sp.GetRequiredService<IEconomyService>()); // Forward implementation if needed as concrete
 
         // World Services
         svcs.AddSingleton<MapLoader>();
@@ -73,11 +72,12 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<PetService>();
 
         // Pipeline / Mediator
-        svcs.AddSingleton<IMediator>(sp => {
+        svcs.AddSingleton<IMediator>(sp =>
+        {
             var mediator = new Mediator();
             // Manual registration of handlers for now
-            mediator.Register<UseSkillCommand, CombatResult>(new UseSkillHandler(sp.GetRequiredService<CombatManager>()));
-            mediator.Register<InteractCommand, InteractResult>(new InteractHandler(sp.GetRequiredService<InteractionManager>()));
+            mediator.Register(new UseSkillHandler(sp.GetRequiredService<CombatManager>()));
+            mediator.Register(new InteractHandler(sp.GetRequiredService<InteractionManager>()));
             return mediator;
         });
 

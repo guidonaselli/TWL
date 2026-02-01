@@ -1,5 +1,3 @@
-using System;
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -7,207 +5,232 @@ using TWL.Client.Presentation.Managers;
 using TWL.Client.Presentation.Services;
 using TWL.Shared.Net.Abstractions;
 
-namespace TWL.Client.Presentation.UI
+namespace TWL.Client.Presentation.UI;
+
+public class UiOptions
 {
-    public class UiOptions
+    private readonly IAssetLoader _assets;
+    private readonly GraphicsDevice _graphicsDevice;
+    private readonly double _inputCooldown = 0.1;
+
+    private readonly List<OptionType> _menuItems = new()
     {
-        private readonly ISceneManager   _scenes;
-        private readonly IAssetLoader    _assets;
-        private readonly GraphicsDevice  _graphicsDevice;
-        private readonly SettingsManager _settings;
+        OptionType.MasterVolume,
+        OptionType.MusicVolume,
+        OptionType.SfxVolume,
+        OptionType.TextSpeed,
+        OptionType.MuteOnUnfocus,
+        OptionType.Back
+    };
 
-        private SpriteFont  _titleFont      = null!;
-        private SpriteFont  _optionFont     = null!;
-        private Texture2D?  _background;
+    private readonly float _optionSpacing = 50f;
+    private readonly ISceneManager _scenes;
+    private readonly SettingsManager _settings;
+    private Texture2D? _background;
+    private SpriteFont _optionFont = null!;
+    private Vector2 _optionsStart;
 
-        private enum OptionType { MasterVolume, MusicVolume, SfxVolume, TextSpeed, MuteOnUnfocus, Back }
-        private readonly List<OptionType> _menuItems = new()
+    private KeyboardState _prevKeyboardState;
+
+    private int _selectedIndex;
+    private double _timeSinceLastInput;
+
+    private SpriteFont _titleFont = null!;
+
+    private Vector2 _titlePosition;
+
+    public UiOptions(ISceneManager scenes, GraphicsDevice graphicsDevice, IAssetLoader assets, SettingsManager settings)
+    {
+        _scenes = scenes;
+        _graphicsDevice = graphicsDevice;
+        _assets = assets;
+        _settings = settings;
+    }
+
+    public void LoadContent()
+    {
+        _titleFont = _assets.Load<SpriteFont>("Fonts/MenuFont");
+        _optionFont = _assets.Load<SpriteFont>("Fonts/DefaultFont");
+        try
         {
-            OptionType.MasterVolume,
-            OptionType.MusicVolume,
-            OptionType.SfxVolume,
-            OptionType.TextSpeed,
-            OptionType.MuteOnUnfocus,
-            OptionType.Back
-        };
-
-        private int _selectedIndex;
-
-        private Vector2 _titlePosition;
-        private Vector2 _optionsStart;
-        private float   _optionSpacing    = 50f;
-
-        private KeyboardState _prevKeyboardState;
-        private double        _inputCooldown    = 0.1;
-        private double        _timeSinceLastInput;
-
-        public UiOptions(ISceneManager scenes, GraphicsDevice graphicsDevice, IAssetLoader assets, SettingsManager settings)
+            _background = _assets.Load<Texture2D>("UI/mainmenu_background");
+        }
+        catch
         {
-            _scenes        = scenes;
-            _graphicsDevice = graphicsDevice;
-            _assets        = assets;
-            _settings      = settings;
+            _background = null;
         }
 
-        public void LoadContent()
+        var vp = _graphicsDevice.Viewport;
+        var titleText = Loc.T("UI_OPTIONS_TITLE");
+        var titleSize = _titleFont.MeasureString(titleText);
+        _titlePosition = new Vector2((vp.Width - titleSize.X) / 2, vp.Height * 0.1f);
+
+        _optionsStart = new Vector2(vp.Width / 2, vp.Height * 0.3f);
+
+        _prevKeyboardState = Keyboard.GetState();
+    }
+
+    public void Update(GameTime gameTime)
+    {
+        _timeSinceLastInput += gameTime.ElapsedGameTime.TotalSeconds;
+        var ks = Keyboard.GetState();
+
+        // Always allow navigation if cooldown passed
+        if (_timeSinceLastInput >= _inputCooldown)
         {
-            _titleFont  = _assets.Load<SpriteFont>("Fonts/MenuFont");
-            _optionFont = _assets.Load<SpriteFont>("Fonts/DefaultFont");
-            try { _background = _assets.Load<Texture2D>("UI/mainmenu_background"); }
-            catch { _background = null; }
+            var inputProcessed = false;
 
-            var vp = _graphicsDevice.Viewport;
-            var titleText = Loc.T("UI_OPTIONS_TITLE");
-            var titleSize = _titleFont.MeasureString(titleText);
-            _titlePosition = new Vector2((vp.Width - titleSize.X) / 2, vp.Height * 0.1f);
-
-            _optionsStart  = new Vector2(vp.Width / 2, vp.Height * 0.3f);
-
-            _prevKeyboardState = Keyboard.GetState();
-        }
-
-        public void Update(GameTime gameTime)
-        {
-            _timeSinceLastInput += gameTime.ElapsedGameTime.TotalSeconds;
-            var ks = Keyboard.GetState();
-
-            // Always allow navigation if cooldown passed
-            if (_timeSinceLastInput >= _inputCooldown)
+            // Vertical Navigation
+            if (ks.IsKeyDown(Keys.Down) && _prevKeyboardState.IsKeyUp(Keys.Down))
             {
-                bool inputProcessed = false;
+                _selectedIndex = (_selectedIndex + 1) % _menuItems.Count;
+                inputProcessed = true;
+            }
+            else if (ks.IsKeyDown(Keys.Up) && _prevKeyboardState.IsKeyUp(Keys.Up))
+            {
+                _selectedIndex = (_selectedIndex - 1 + _menuItems.Count) % _menuItems.Count;
+                inputProcessed = true;
+            }
 
-                // Vertical Navigation
-                if (ks.IsKeyDown(Keys.Down) && _prevKeyboardState.IsKeyUp(Keys.Down))
+            // Horizontal Adjustment (Settings)
+            if (!inputProcessed)
+            {
+                if (ks.IsKeyDown(Keys.Left))
                 {
-                    _selectedIndex = (_selectedIndex + 1) % _menuItems.Count;
+                    AdjustSetting(-1, ks);
                     inputProcessed = true;
                 }
-                else if (ks.IsKeyDown(Keys.Up) && _prevKeyboardState.IsKeyUp(Keys.Up))
+                else if (ks.IsKeyDown(Keys.Right))
                 {
-                    _selectedIndex = (_selectedIndex - 1 + _menuItems.Count) % _menuItems.Count;
+                    AdjustSetting(1, ks);
                     inputProcessed = true;
-                }
-
-                // Horizontal Adjustment (Settings)
-                if (!inputProcessed)
-                {
-                    if (ks.IsKeyDown(Keys.Left))
-                    {
-                        AdjustSetting(-1, ks);
-                        inputProcessed = true;
-                    }
-                    else if (ks.IsKeyDown(Keys.Right))
-                    {
-                        AdjustSetting(1, ks);
-                        inputProcessed = true;
-                    }
-                }
-
-                // Selection / Back
-                if (!inputProcessed)
-                {
-                    if (ks.IsKeyDown(Keys.Enter) && _prevKeyboardState.IsKeyUp(Keys.Enter))
-                    {
-                        var item = _menuItems[_selectedIndex];
-                        if (item == OptionType.Back)
-                        {
-                            _scenes.ChangeScene("MainMenu");
-                        }
-                        else if (item == OptionType.MuteOnUnfocus)
-                        {
-                            _settings.MuteOnUnfocus = !_settings.MuteOnUnfocus;
-                        }
-                        inputProcessed = true;
-                    }
-                    else if (ks.IsKeyDown(Keys.Escape) && _prevKeyboardState.IsKeyUp(Keys.Escape))
-                    {
-                        _scenes.ChangeScene("MainMenu");
-                        inputProcessed = true;
-                    }
-                }
-
-                if (inputProcessed)
-                {
-                    _timeSinceLastInput = 0;
                 }
             }
 
-            _prevKeyboardState = ks;
-        }
-
-        private void AdjustSetting(int direction, KeyboardState currentKs)
-        {
-            var item = _menuItems[_selectedIndex];
-            float deltaVol = 0.05f * direction;
-
-            switch (item)
+            // Selection / Back
+            if (!inputProcessed)
             {
-                case OptionType.MasterVolume:
-                    _settings.MasterVolume = Math.Clamp(_settings.MasterVolume + deltaVol, 0f, 1f);
-                    _settings.ApplyAudioSettings();
-                    break;
-                case OptionType.MusicVolume:
-                    _settings.MusicVolume = Math.Clamp(_settings.MusicVolume + deltaVol, 0f, 1f);
-                    _settings.ApplyAudioSettings();
-                    break;
-                case OptionType.SfxVolume:
-                    _settings.SfxVolume = Math.Clamp(_settings.SfxVolume + deltaVol, 0f, 1f);
-                    _settings.ApplyAudioSettings();
-                    break;
-                case OptionType.TextSpeed:
-                    // Require fresh press for discrete options to avoid zooming through them
-                    if (_prevKeyboardState.IsKeyUp(direction > 0 ? Keys.Right : Keys.Left))
+                if (ks.IsKeyDown(Keys.Enter) && _prevKeyboardState.IsKeyUp(Keys.Enter))
+                {
+                    var item = _menuItems[_selectedIndex];
+                    if (item == OptionType.Back)
                     {
-                        _settings.TextSpeed = Math.Clamp(_settings.TextSpeed + direction, 0, 2);
+                        _scenes.ChangeScene("MainMenu");
                     }
-                    break;
-                case OptionType.MuteOnUnfocus:
-                    if (_prevKeyboardState.IsKeyUp(direction > 0 ? Keys.Right : Keys.Left))
+                    else if (item == OptionType.MuteOnUnfocus)
                     {
                         _settings.MuteOnUnfocus = !_settings.MuteOnUnfocus;
                     }
-                    break;
+
+                    inputProcessed = true;
+                }
+                else if (ks.IsKeyDown(Keys.Escape) && _prevKeyboardState.IsKeyUp(Keys.Escape))
+                {
+                    _scenes.ChangeScene("MainMenu");
+                    inputProcessed = true;
+                }
+            }
+
+            if (inputProcessed)
+            {
+                _timeSinceLastInput = 0;
             }
         }
 
-        public void Draw(SpriteBatch sb)
+        _prevKeyboardState = ks;
+    }
+
+    private void AdjustSetting(int direction, KeyboardState currentKs)
+    {
+        var item = _menuItems[_selectedIndex];
+        var deltaVol = 0.05f * direction;
+
+        switch (item)
         {
-            if (_background != null)
-                sb.Draw(_background,
-                        new Rectangle(0, 0, _graphicsDevice.Viewport.Width, _graphicsDevice.Viewport.Height),
-                        Color.White);
+            case OptionType.MasterVolume:
+                _settings.MasterVolume = Math.Clamp(_settings.MasterVolume + deltaVol, 0f, 1f);
+                _settings.ApplyAudioSettings();
+                break;
+            case OptionType.MusicVolume:
+                _settings.MusicVolume = Math.Clamp(_settings.MusicVolume + deltaVol, 0f, 1f);
+                _settings.ApplyAudioSettings();
+                break;
+            case OptionType.SfxVolume:
+                _settings.SfxVolume = Math.Clamp(_settings.SfxVolume + deltaVol, 0f, 1f);
+                _settings.ApplyAudioSettings();
+                break;
+            case OptionType.TextSpeed:
+                // Require fresh press for discrete options to avoid zooming through them
+                if (_prevKeyboardState.IsKeyUp(direction > 0 ? Keys.Right : Keys.Left))
+                {
+                    _settings.TextSpeed = Math.Clamp(_settings.TextSpeed + direction, 0, 2);
+                }
 
-            var titleText = Loc.T("UI_OPTIONS_TITLE");
-            sb.DrawString(_titleFont, titleText, _titlePosition, Color.CornflowerBlue);
+                break;
+            case OptionType.MuteOnUnfocus:
+                if (_prevKeyboardState.IsKeyUp(direction > 0 ? Keys.Right : Keys.Left))
+                {
+                    _settings.MuteOnUnfocus = !_settings.MuteOnUnfocus;
+                }
 
-            for (int i = 0; i < _menuItems.Count; i++)
-            {
-                var item = _menuItems[i];
-                string text = GetOptionText(item);
+                break;
+        }
+    }
 
-                var size = _optionFont.MeasureString(text);
-                var origin = new Vector2(size.X / 2, 0);
-                var pos   = _optionsStart + new Vector2(0, i * _optionSpacing);
-                var color = i == _selectedIndex ? Color.Yellow : Color.White;
-
-                sb.DrawString(_optionFont, text, pos, color, 0f, origin, 1f, SpriteEffects.None, 0f);
-            }
+    public void Draw(SpriteBatch sb)
+    {
+        if (_background != null)
+        {
+            sb.Draw(_background,
+                new Rectangle(0, 0, _graphicsDevice.Viewport.Width, _graphicsDevice.Viewport.Height),
+                Color.White);
         }
 
-        private string GetOptionText(OptionType item)
-        {
-            return item switch
-            {
-                OptionType.MasterVolume => Loc.TF("UI_OPTIONS_MASTER_VOLUME", _settings.MasterVolume * 100),
-                OptionType.MusicVolume  => Loc.TF("UI_OPTIONS_MUSIC_VOLUME", _settings.MusicVolume * 100),
-                OptionType.SfxVolume    => Loc.TF("UI_OPTIONS_SFX_VOLUME", _settings.SfxVolume * 100),
-                OptionType.TextSpeed    => Loc.TF("UI_OPTIONS_TEXT_SPEED", GetTextSpeedLabel(_settings.TextSpeed)),
-                OptionType.MuteOnUnfocus=> Loc.TF("UI_OPTIONS_MUTE_UNFOCUS", _settings.MuteOnUnfocus ? Loc.T("UI_COMMON_ON") : Loc.T("UI_COMMON_OFF")),
-                OptionType.Back         => Loc.T("UI_COMMON_BACK"),
-                _ => ""
-            };
-        }
+        var titleText = Loc.T("UI_OPTIONS_TITLE");
+        sb.DrawString(_titleFont, titleText, _titlePosition, Color.CornflowerBlue);
 
-        private string GetTextSpeedLabel(int speed) => speed switch { 0 => Loc.T("UI_SPEED_SLOW"), 1 => Loc.T("UI_SPEED_NORMAL"), 2 => Loc.T("UI_SPEED_FAST"), _ => Loc.T("UI_SPEED_NORMAL") };
+        for (var i = 0; i < _menuItems.Count; i++)
+        {
+            var item = _menuItems[i];
+            var text = GetOptionText(item);
+
+            var size = _optionFont.MeasureString(text);
+            var origin = new Vector2(size.X / 2, 0);
+            var pos = _optionsStart + new Vector2(0, i * _optionSpacing);
+            var color = i == _selectedIndex ? Color.Yellow : Color.White;
+
+            sb.DrawString(_optionFont, text, pos, color, 0f, origin, 1f, SpriteEffects.None, 0f);
+        }
+    }
+
+    private string GetOptionText(OptionType item)
+    {
+        return item switch
+        {
+            OptionType.MasterVolume => Loc.TF("UI_OPTIONS_MASTER_VOLUME", _settings.MasterVolume * 100),
+            OptionType.MusicVolume => Loc.TF("UI_OPTIONS_MUSIC_VOLUME", _settings.MusicVolume * 100),
+            OptionType.SfxVolume => Loc.TF("UI_OPTIONS_SFX_VOLUME", _settings.SfxVolume * 100),
+            OptionType.TextSpeed => Loc.TF("UI_OPTIONS_TEXT_SPEED", GetTextSpeedLabel(_settings.TextSpeed)),
+            OptionType.MuteOnUnfocus => Loc.TF("UI_OPTIONS_MUTE_UNFOCUS",
+                _settings.MuteOnUnfocus ? Loc.T("UI_COMMON_ON") : Loc.T("UI_COMMON_OFF")),
+            OptionType.Back => Loc.T("UI_COMMON_BACK"),
+            _ => ""
+        };
+    }
+
+    private string GetTextSpeedLabel(int speed) => speed switch
+    {
+        0 => Loc.T("UI_SPEED_SLOW"), 1 => Loc.T("UI_SPEED_NORMAL"), 2 => Loc.T("UI_SPEED_FAST"),
+        _ => Loc.T("UI_SPEED_NORMAL")
+    };
+
+    private enum OptionType
+    {
+        MasterVolume,
+        MusicVolume,
+        SfxVolume,
+        TextSpeed,
+        MuteOnUnfocus,
+        Back
     }
 }

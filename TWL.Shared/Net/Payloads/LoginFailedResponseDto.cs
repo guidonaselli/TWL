@@ -1,7 +1,6 @@
-namespace TWL.Shared.Net.Payloads
+namespace TWL.Shared.Net.Payloads;
+
+public class LoginFailedResponseDto
 {
-    public class LoginFailedResponseDto
-    {
-        public string ErrorMessage { get; set; }
-    }
+    public string ErrorMessage { get; set; }
 }

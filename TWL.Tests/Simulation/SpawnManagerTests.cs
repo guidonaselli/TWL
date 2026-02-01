@@ -1,27 +1,21 @@
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
-using System.Threading.Tasks;
-using Xunit;
 using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Server.Domain.World;
-using TWL.Shared.Domain.World;
 using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.World;
 using TWL.Shared.Net.Network;
-using TWL.Shared.Net.Messages;
 
 namespace TWL.Tests.Simulation;
 
 public class TestClientSession : ClientSession
 {
-    public NetMessage? LastMessage { get; private set; }
-
     public TestClientSession(ServerCharacter character)
     {
         Character = character;
     }
+
+    public NetMessage? LastMessage { get; private set; }
 
     public override async Task SendAsync(NetMessage msg)
     {
@@ -36,7 +30,7 @@ public class SpawnManagerTests
     public void Load_ShouldLoadConfigs()
     {
         // Arrange
-        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_" + System.Guid.NewGuid());
+        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_" + Guid.NewGuid());
         Directory.CreateDirectory(tempDir);
         var configFile = Path.Combine(tempDir, "1001.spawns.json");
 
@@ -47,7 +41,7 @@ public class SpawnManagerTests
             StepChance = 0.5f,
             SpawnRegions = new List<SpawnRegion>
             {
-                new SpawnRegion { AllowedMonsterIds = new List<int> { 1 } }
+                new() { AllowedMonsterIds = new List<int> { 1 } }
             }
         };
 
@@ -69,10 +63,12 @@ public class SpawnManagerTests
     {
         // Arrange
         var mockMonsters = new Mock<MonsterManager>();
-        mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition { MonsterId = 1, Name = "TestMob", BaseHp = 10 });
+        mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
+            { MonsterId = 1, Name = "TestMob", BaseHp = 10 });
 
         var mockCombat = new Mock<CombatManager>(null, null, null, null);
-        mockCombat.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>())).Verifiable();
+        mockCombat.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()))
+            .Verifiable();
 
         var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object);
 
@@ -84,11 +80,11 @@ public class SpawnManagerTests
             StepChance = 2.0f, // > 1.0 ensures trigger
             SpawnRegions = new List<SpawnRegion>
             {
-                new SpawnRegion { X = 0, Y = 0, Width = 100, Height = 100, AllowedMonsterIds = new List<int> { 1 } }
+                new() { X = 0, Y = 0, Width = 100, Height = 100, AllowedMonsterIds = new List<int> { 1 } }
             }
         };
 
-        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_test_" + System.Guid.NewGuid());
+        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_test_" + Guid.NewGuid());
         Directory.CreateDirectory(tempDir);
         File.WriteAllText(Path.Combine(tempDir, "1001.spawns.json"), JsonSerializer.Serialize(config));
         manager.Load(tempDir);
@@ -101,7 +97,8 @@ public class SpawnManagerTests
         manager.OnPlayerMoved(session);
 
         // Assert
-        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Once);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()),
+            Times.Once);
         Assert.NotNull(session.LastMessage);
         Assert.Equal(Opcode.EncounterStarted, session.LastMessage.Op);
 
@@ -113,7 +110,8 @@ public class SpawnManagerTests
     {
         // Arrange
         var mockMonsters = new Mock<MonsterManager>();
-        mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition { MonsterId = 1, Name = "TestMob", BaseHp = 10 });
+        mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
+            { MonsterId = 1, Name = "TestMob", BaseHp = 10 });
 
         var mockCombat = new Mock<CombatManager>(null, null, null, null);
 
@@ -126,11 +124,11 @@ public class SpawnManagerTests
             StepChance = 2.0f,
             SpawnRegions = new List<SpawnRegion>
             {
-                new SpawnRegion { X = 0, Y = 0, Width = 10, Height = 10, AllowedMonsterIds = new List<int> { 1 } }
+                new() { X = 0, Y = 0, Width = 10, Height = 10, AllowedMonsterIds = new List<int> { 1 } }
             }
         };
 
-        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_test_" + System.Guid.NewGuid());
+        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_test_" + Guid.NewGuid());
         Directory.CreateDirectory(tempDir);
         File.WriteAllText(Path.Combine(tempDir, "1001.spawns.json"), JsonSerializer.Serialize(config));
         manager.Load(tempDir);
@@ -143,8 +141,10 @@ public class SpawnManagerTests
         manager.OnPlayerMoved(session);
 
         // Assert
-        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Never);
-        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Never);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()),
+            Times.Never);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()),
+            Times.Never);
         Assert.Null(session.LastMessage);
 
         Directory.Delete(tempDir, true);
@@ -155,10 +155,12 @@ public class SpawnManagerTests
     {
         // Arrange
         var mockMonsters = new Mock<MonsterManager>();
-        mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition { MonsterId = 1, Name = "TestMob", BaseHp = 10 });
+        mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
+            { MonsterId = 1, Name = "TestMob", BaseHp = 10 });
 
         var mockCombat = new Mock<CombatManager>(null, null, null, null);
-        mockCombat.Setup(c => c.GetCombatant(It.IsAny<int>())).Returns(new ServerCharacter()); // Simulate existing combatant
+        mockCombat.Setup(c => c.GetCombatant(It.IsAny<int>()))
+            .Returns(new ServerCharacter()); // Simulate existing combatant
 
         var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object);
 
@@ -169,11 +171,11 @@ public class SpawnManagerTests
             StepChance = 2.0f,
             SpawnRegions = new List<SpawnRegion>
             {
-                new SpawnRegion { X = 0, Y = 0, Width = 100, Height = 100, AllowedMonsterIds = new List<int> { 1 } }
+                new() { X = 0, Y = 0, Width = 100, Height = 100, AllowedMonsterIds = new List<int> { 1 } }
             }
         };
 
-        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_test_" + System.Guid.NewGuid());
+        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_test_" + Guid.NewGuid());
         Directory.CreateDirectory(tempDir);
         File.WriteAllText(Path.Combine(tempDir, "1001.spawns.json"), JsonSerializer.Serialize(config));
         manager.Load(tempDir);

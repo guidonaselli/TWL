@@ -1,5 +1,3 @@
-using System.Threading.Tasks;
-
 namespace TWL.Server.Simulation.Networking;
 
 public interface IClientConnection

@@ -1,33 +1,22 @@
-using System;
 using System.Diagnostics;
-using System.Threading;
-using System.Threading.Tasks;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
-using TWL.Shared.Domain.DTO;
-using Xunit;
 
 namespace TWL.Tests.Persistence;
 
 public class TestClientSession : ClientSession
 {
-    public TestClientSession(int userId) : base()
+    public TestClientSession(int userId)
     {
         UserId = userId;
     }
 
-    public void SetCharacter(ServerCharacter character)
-    {
-        base.Character = character;
-    }
+    public void SetCharacter(ServerCharacter character) => Character = character;
 
-    public void SetQuestComponent(PlayerQuestComponent component)
-    {
-        base.QuestComponent = component;
-    }
+    public void SetQuestComponent(PlayerQuestComponent component) => QuestComponent = component;
 }
 
 public class MockPlayerRepository : IPlayerRepository
@@ -37,7 +26,10 @@ public class MockPlayerRepository : IPlayerRepository
 
     public async Task SaveAsync(int userId, PlayerSaveData data)
     {
-        if (ShouldThrow) throw new Exception("Simulated disk failure");
+        if (ShouldThrow)
+        {
+            throw new Exception("Simulated disk failure");
+        }
 
         // Mimic I/O delay
         await Task.Delay(5);
@@ -105,9 +97,9 @@ public class PlayerServiceReliabilityTests
     {
         var repo = new MockPlayerRepository();
         var service = new PlayerService(repo, new ServerMetrics());
-        int count = 100;
+        var count = 100;
 
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
             var s = new TestClientSession(i + 100);
             var c = new ServerCharacter { Id = i + 100, Name = $"Bencher_{i}" };
@@ -128,8 +120,10 @@ public class PlayerServiceReliabilityTests
         // With optimization, this should be much faster than 450ms (sequential 5ms * 100).
         // We just ensure it's recorded correctly.
         Assert.True(service.Metrics.LastFlushDurationMs >= 0);
-        Assert.InRange(service.Metrics.LastFlushDurationMs, 0, sw.ElapsedMilliseconds + 20); // Metrics duration should be close to stopwatch
+        Assert.InRange(service.Metrics.LastFlushDurationMs, 0,
+            sw.ElapsedMilliseconds + 20); // Metrics duration should be close to stopwatch
 
-        Console.WriteLine($"Benchmark: Flushed {count} sessions in {sw.ElapsedMilliseconds}ms (Metrics: {service.Metrics.LastFlushDurationMs}ms)");
+        Console.WriteLine(
+            $"Benchmark: Flushed {count} sessions in {sw.ElapsedMilliseconds}ms (Metrics: {service.Metrics.LastFlushDurationMs}ms)");
     }
 }

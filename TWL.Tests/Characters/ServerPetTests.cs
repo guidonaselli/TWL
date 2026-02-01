@@ -1,4 +1,3 @@
-using Xunit;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 
@@ -15,7 +14,7 @@ public class ServerPetTests
             Name = "Test Parrot",
             BaseHp = 30,
             IsQuestUnique = true,
-            SkillIds = new System.Collections.Generic.List<int>(),
+            SkillIds = new List<int>(),
             RebirthSprite = ""
         };
 
@@ -34,11 +33,12 @@ public class ServerPetTests
     [Fact]
     public void AddExp_ShouldLevelUp_WhenExpExceedsThreshold()
     {
-        var def = new PetDefinition {
+        var def = new PetDefinition
+        {
             PetTypeId = 1,
             BaseHp = 10,
             Name = "Test",
-            SkillIds = new System.Collections.Generic.List<int>(),
+            SkillIds = new List<int>(),
             RebirthSprite = ""
         };
         var pet = new ServerPet(def);

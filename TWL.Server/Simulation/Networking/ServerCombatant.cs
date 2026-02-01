@@ -1,6 +1,4 @@
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Threading;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
@@ -11,19 +9,25 @@ namespace TWL.Server.Simulation.Networking;
 public class SkillMastery
 {
     public int Rank { get; set; } = 1;
-    public int UsageCount { get; set; } = 0;
+    public int UsageCount { get; set; }
 }
 
 public abstract class ServerCombatant
 {
-    public int Id;
-    public string Name;
-    public Element CharacterElement { get; set; }
-    public Team Team { get; set; }
+    // Cooldowns (Transient)
+    private readonly ConcurrentDictionary<int, int> _activeCooldowns = new();
+
+    // Status Effects
+    protected readonly List<StatusEffectInstance> _statusEffects = new();
+    protected readonly object _statusLock = new();
 
     // Stats
     protected int _hp;
     protected int _sp;
+    public int Id;
+    public string Name;
+    public Element CharacterElement { get; set; }
+    public Team Team { get; set; }
 
     public virtual int Hp
     {
@@ -44,13 +48,13 @@ public abstract class ServerCombatant
     public int Agi { get; set; }
 
     public virtual int MaxHp => Con * 10; // Default logic, override in Pet
-    public virtual int MaxSp => Int * 5;  // Default logic, override in Pet
+    public virtual int MaxSp => Int * 5; // Default logic, override in Pet
 
     // Derived Battle Stats
-    public virtual int Atk => (Str * 2) + GetStatModifier("Atk");
-    public virtual int Def => (Con * 2) + GetStatModifier("Def");
-    public virtual int Mat => (Int * 2) + GetStatModifier("Mat");
-    public virtual int Mdf => (Wis * 2) + GetStatModifier("Mdf");
+    public virtual int Atk => Str * 2 + GetStatModifier("Atk");
+    public virtual int Def => Con * 2 + GetStatModifier("Def");
+    public virtual int Mat => Int * 2 + GetStatModifier("Mat");
+    public virtual int Mdf => Wis * 2 + GetStatModifier("Mdf");
     public virtual int Spd => Agi + GetStatModifier("Spd");
 
     public int? LastAttackerId { get; set; }
@@ -59,13 +63,6 @@ public abstract class ServerCombatant
 
     // Skills
     public ConcurrentDictionary<int, SkillMastery> SkillMastery { get; protected set; } = new();
-
-    // Cooldowns (Transient)
-    private readonly ConcurrentDictionary<int, int> _activeCooldowns = new();
-
-    // Status Effects
-    protected readonly List<StatusEffectInstance> _statusEffects = new();
-    protected readonly object _statusLock = new();
 
     public IReadOnlyList<StatusEffectInstance> StatusEffects
     {
@@ -80,20 +77,25 @@ public abstract class ServerCombatant
 
     protected int GetStatModifier(string stat)
     {
-        int modifier = 0;
+        var modifier = 0;
         lock (_statusLock)
         {
             foreach (var effect in _statusEffects)
             {
-                if (string.Equals(effect.Param, stat, System.StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(effect.Param, stat, StringComparison.OrdinalIgnoreCase))
                 {
                     if (effect.Tag == SkillEffectTag.BuffStats)
+                    {
                         modifier += (int)effect.Value;
+                    }
                     else if (effect.Tag == SkillEffectTag.DebuffStats)
+                    {
                         modifier -= (int)effect.Value;
+                    }
                 }
             }
         }
+
         return modifier;
     }
 
@@ -108,20 +110,25 @@ public abstract class ServerCombatant
 
     public float GetResistance(string resistanceTag)
     {
-        float modifier = 0f;
+        var modifier = 0f;
         lock (_statusLock)
         {
             foreach (var effect in _statusEffects)
             {
-                if (string.Equals(effect.Param, resistanceTag, System.StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(effect.Param, resistanceTag, StringComparison.OrdinalIgnoreCase))
                 {
                     if (effect.Tag == SkillEffectTag.BuffStats)
+                    {
                         modifier += effect.Value;
+                    }
                     else if (effect.Tag == SkillEffectTag.DebuffStats)
+                    {
                         modifier -= effect.Value;
+                    }
                 }
             }
         }
+
         return modifier;
     }
 
@@ -164,14 +171,12 @@ public abstract class ServerCombatant
         {
             mastery.Rank++;
         }
+
         IsDirty = true;
         return mastery.Rank;
     }
 
-    public bool IsSkillOnCooldown(int skillId)
-    {
-        return _activeCooldowns.TryGetValue(skillId, out int turns) && turns > 0;
-    }
+    public bool IsSkillOnCooldown(int skillId) => _activeCooldowns.TryGetValue(skillId, out var turns) && turns > 0;
 
     public void SetSkillCooldown(int skillId, int turns)
     {
@@ -187,7 +192,7 @@ public abstract class ServerCombatant
         {
             if (kvp.Value > 0)
             {
-                int newValue = kvp.Value - 1;
+                var newValue = kvp.Value - 1;
                 if (newValue <= 0)
                 {
                     _activeCooldowns.TryRemove(kvp.Key, out _);
@@ -209,9 +214,11 @@ public abstract class ServerCombatant
         {
             initialHp = _hp;
             newHp = initialHp - damage;
-            if (newHp < 0) newHp = 0;
-        }
-        while (Interlocked.CompareExchange(ref _hp, newHp, initialHp) != initialHp);
+            if (newHp < 0)
+            {
+                newHp = 0;
+            }
+        } while (Interlocked.CompareExchange(ref _hp, newHp, initialHp) != initialHp);
 
         IsDirty = true;
         return newHp;
@@ -219,15 +226,21 @@ public abstract class ServerCombatant
 
     public virtual int Heal(int amount)
     {
-        if (amount <= 0) return _hp;
+        if (amount <= 0)
+        {
+            return _hp;
+        }
+
         int initialHp, newHp;
         do
         {
             initialHp = _hp;
             newHp = initialHp + amount;
-            if (newHp > MaxHp) newHp = MaxHp;
-        }
-        while (Interlocked.CompareExchange(ref _hp, newHp, initialHp) != initialHp);
+            if (newHp > MaxHp)
+            {
+                newHp = MaxHp;
+            }
+        } while (Interlocked.CompareExchange(ref _hp, newHp, initialHp) != initialHp);
 
         IsDirty = true;
         return newHp;
@@ -239,10 +252,13 @@ public abstract class ServerCombatant
         do
         {
             initialSp = _sp;
-            if (initialSp < amount) return false;
+            if (initialSp < amount)
+            {
+                return false;
+            }
+
             newSp = initialSp - amount;
-        }
-        while (Interlocked.CompareExchange(ref _sp, newSp, initialSp) != initialSp);
+        } while (Interlocked.CompareExchange(ref _sp, newSp, initialSp) != initialSp);
 
         IsDirty = true;
         return true;

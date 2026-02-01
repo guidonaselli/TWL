@@ -1,6 +1,5 @@
-using System;
-using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Managers;
+using TWL.Server.Simulation.Networking;
 
 namespace TWL.Server.Services;
 
@@ -35,8 +34,5 @@ public class InstanceService
         }
     }
 
-    public void FailInstance(ClientSession session, string instanceId)
-    {
-        CompleteInstance(session, instanceId, false);
-    }
+    public void FailInstance(ClientSession session, string instanceId) => CompleteInstance(session, instanceId, false);
 }

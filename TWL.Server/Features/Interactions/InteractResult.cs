@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace TWL.Server.Features.Interactions;
 
 public class InteractResult

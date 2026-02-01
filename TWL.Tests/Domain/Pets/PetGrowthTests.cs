@@ -1,4 +1,3 @@
-using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Domain.Characters;
 
@@ -25,8 +24,8 @@ public class PetGrowthTests
         };
 
         PetGrowthCalculator.CalculateStats(def, 1,
-            out int maxHp, out int maxSp,
-            out int str, out int con, out int int_, out int wis, out int agi);
+            out var maxHp, out var maxSp,
+            out var str, out var con, out var int_, out var wis, out var agi);
 
         Assert.Equal(100, maxHp);
         Assert.Equal(10, str);
@@ -58,10 +57,10 @@ public class PetGrowthTests
         // 15 * 1 / 5 = 3 per stat.
 
         PetGrowthCalculator.CalculateStats(def, 6,
-            out int maxHp, out int maxSp,
-            out int str, out int con, out int int_, out int wis, out int agi);
+            out var maxHp, out var maxSp,
+            out var str, out var con, out var int_, out var wis, out var agi);
 
-        Assert.Equal(150 + (13-10)*5, maxHp);
+        Assert.Equal(150 + (13 - 10) * 5, maxHp);
         Assert.Equal(13, str);
         Assert.Equal(13, con);
         Assert.Equal(13, int_);

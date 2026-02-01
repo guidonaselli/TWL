@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace TWL.Shared.Domain.Skills;
 
 public class SkillEffect

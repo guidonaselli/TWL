@@ -1,10 +1,8 @@
-using System;
 using System.Reflection;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
-using Xunit;
 
 namespace TWL.Tests.Skills;
 
@@ -117,8 +115,13 @@ public class TestClientSession : ClientSession
 
     public void TriggerGrantGoddessSkills()
     {
-        var method = typeof(ClientSession).GetMethod("GrantGoddessSkills", BindingFlags.NonPublic | BindingFlags.Instance);
-        if (method == null) throw new Exception("Method GrantGoddessSkills not found");
+        var method =
+            typeof(ClientSession).GetMethod("GrantGoddessSkills", BindingFlags.NonPublic | BindingFlags.Instance);
+        if (method == null)
+        {
+            throw new Exception("Method GrantGoddessSkills not found");
+        }
+
         method.Invoke(this, null);
     }
 }

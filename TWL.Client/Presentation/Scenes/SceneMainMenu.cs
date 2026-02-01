@@ -7,53 +7,52 @@ using TWL.Client.Presentation.Networking;
 using TWL.Client.Presentation.UI;
 using TWL.Shared.Net.Abstractions;
 
-namespace TWL.Client.Presentation.Scenes
+namespace TWL.Client.Presentation.Scenes;
+
+public sealed class SceneMainMenu : SceneBase
 {
-    public sealed class SceneMainMenu : SceneBase
+    private readonly UiMainMenu _ui;
+
+    public SceneMainMenu(
+        ContentManager content,
+        GraphicsDevice graphicsDevice,
+        ISceneManager scenes,
+        IAssetLoader assets,
+        NetworkClient networkClient,
+        PersistenceManager persistence
+    ) : base(content, graphicsDevice, scenes, assets)
     {
-        private readonly UiMainMenu _ui;
+        // Inicializo mi UI pasando los servicios necesarios
+        _ui = new UiMainMenu(scenes, graphicsDevice, assets, networkClient, persistence);
+    }
 
-        public SceneMainMenu(
-            ContentManager content,
-            GraphicsDevice  graphicsDevice,
-            ISceneManager   scenes,
-            IAssetLoader    assets,
-            NetworkClient   networkClient,
-            PersistenceManager persistence
-        ) : base(content, graphicsDevice, scenes, assets)
-        {
-            // Inicializo mi UI pasando los servicios necesarios
-            _ui = new UiMainMenu(scenes, graphicsDevice, assets, networkClient, persistence);
-        }
+    public override void Initialize()
+    {
+        base.Initialize();
+        // Si necesitas lógica extra al inicializar, aquí va
+    }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-            // Si necesitas lógica extra al inicializar, aquí va
-        }
+    public override void LoadContent()
+    {
+        base.LoadContent();
+        // Cargo la UI (fuentes, fondos, etc)
+        _ui.LoadContent();
+    }
 
-        public override void LoadContent()
-        {
-            base.LoadContent();
-            // Cargo la UI (fuentes, fondos, etc)
-            _ui.LoadContent();
-        }
+    public override void Update(
+        GameTime gameTime,
+        MouseState mouseState,
+        KeyboardState keyboardState
+    )
+    {
+        // Delego la entrada al UI
+        _ui.Update(gameTime);
+    }
 
-        public override void Update(
-            GameTime     gameTime,
-            MouseState   mouseState,
-            KeyboardState keyboardState
-        )
-        {
-            // Delego la entrada al UI
-            _ui.Update(gameTime);
-        }
-
-        public override void Draw(SpriteBatch spriteBatch)
-        {
-            // Aquí Game1.Draw() ya habrá hecho Begin() / Clear()
-            // Simplemente delego el dibujado de la UI
-            _ui.Draw(spriteBatch);
-        }
+    public override void Draw(SpriteBatch spriteBatch)
+    {
+        // Aquí Game1.Draw() ya habrá hecho Begin() / Clear()
+        // Simplemente delego el dibujado de la UI
+        _ui.Draw(spriteBatch);
     }
 }

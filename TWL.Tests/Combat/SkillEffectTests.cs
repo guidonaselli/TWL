@@ -1,22 +1,18 @@
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
-using Xunit;
 
 namespace TWL.Tests.Combat;
 
 public class MockSkillCatalog : ISkillCatalog
 {
-    private Dictionary<int, Skill> _skills = new();
-
-    public void AddSkill(Skill skill)
-    {
-        _skills[skill.SkillId] = skill;
-    }
+    private readonly Dictionary<int, Skill> _skills = new();
 
     public IEnumerable<int> GetAllSkillIds() => _skills.Keys;
 
     public Skill? GetSkillById(int id) => _skills.GetValueOrDefault(id);
+
+    public void AddSkill(Skill skill) => _skills[skill.SkillId] = skill;
 }
 
 public class TestCharacter : Character
@@ -28,8 +24,8 @@ public class TestCharacter : Character
 
 public class SkillEffectTests
 {
-    private readonly MockSkillCatalog _mockCatalog;
     private readonly TestCharacter _actor;
+    private readonly MockSkillCatalog _mockCatalog;
 
     public SkillEffectTests()
     {
@@ -54,7 +50,7 @@ public class SkillEffectTests
             TargetType = SkillTargetType.SingleAlly,
             Effects = new List<SkillEffect>
             {
-                new SkillEffect { Tag = SkillEffectTag.Cleanse }
+                new() { Tag = SkillEffectTag.Cleanse }
             }
         };
 
@@ -98,7 +94,7 @@ public class SkillEffectTests
             TargetType = SkillTargetType.SingleAlly,
             Effects = new List<SkillEffect>
             {
-                new SkillEffect { Tag = SkillEffectTag.Cleanse }
+                new() { Tag = SkillEffectTag.Cleanse }
             }
         };
 
@@ -138,7 +134,7 @@ public class SkillEffectTests
             TargetType = SkillTargetType.Self,
             Effects = new List<SkillEffect>
             {
-                new SkillEffect { Tag = SkillEffectTag.Shield, Value = 50, Duration = 3 }
+                new() { Tag = SkillEffectTag.Shield, Value = 50, Duration = 3 }
             }
         };
         var attackSkill = new Skill
@@ -148,10 +144,10 @@ public class SkillEffectTests
             SpCost = 0,
             TargetType = SkillTargetType.SingleEnemy,
             Branch = SkillBranch.Physical,
-            Scaling = new List<SkillScaling> { new SkillScaling { Stat = StatType.Atk, Coefficient = 1.0f } },
+            Scaling = new List<SkillScaling> { new() { Stat = StatType.Atk, Coefficient = 1.0f } },
             Effects = new List<SkillEffect>
             {
-                new SkillEffect { Tag = SkillEffectTag.Damage }
+                new() { Tag = SkillEffectTag.Damage }
             }
         };
 
@@ -201,10 +197,10 @@ public class SkillEffectTests
             SpCost = 0,
             TargetType = SkillTargetType.SingleEnemy,
             Branch = SkillBranch.Physical,
-            Scaling = new List<SkillScaling> { new SkillScaling { Stat = StatType.Atk, Coefficient = 1.0f } },
+            Scaling = new List<SkillScaling> { new() { Stat = StatType.Atk, Coefficient = 1.0f } },
             Effects = new List<SkillEffect>
             {
-                new SkillEffect { Tag = SkillEffectTag.Damage }
+                new() { Tag = SkillEffectTag.Damage }
             }
         };
         _mockCatalog.AddSkill(attackSkill);
@@ -245,10 +241,10 @@ public class SkillEffectTests
             SpCost = 0,
             TargetType = SkillTargetType.SingleEnemy,
             Branch = SkillBranch.Physical,
-            Scaling = new List<SkillScaling> { new SkillScaling { Stat = StatType.Atk, Coefficient = 1.0f } },
+            Scaling = new List<SkillScaling> { new() { Stat = StatType.Atk, Coefficient = 1.0f } },
             Effects = new List<SkillEffect>
             {
-                new SkillEffect { Tag = SkillEffectTag.Damage }
+                new() { Tag = SkillEffectTag.Damage }
             }
         };
         _mockCatalog.AddSkill(attackSkill);

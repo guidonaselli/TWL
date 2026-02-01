@@ -1,10 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
-using TWL.Shared.Domain.Skills;
-using Xunit;
 
 namespace TWL.Tests.Integration;
 
@@ -30,7 +25,7 @@ public class GameLoopTests
 
         // 2. Tick until Player Turn
         // Player speed 10, Enemy 5. Player should go first.
-        int safety = 0;
+        var safety = 0;
         while (battle.CurrentTurnCombatant == null && safety++ < 1000)
         {
             battle.Tick(0.1f);
@@ -41,7 +36,7 @@ public class GameLoopTests
 
         // 3. Player Attacks
         var action = CombatAction.Attack(battle.CurrentTurnCombatant.BattleId, battle.Enemies[0].BattleId);
-        string result = battle.ResolveAction(action);
+        var result = battle.ResolveAction(action);
 
         Assert.Contains("attacks Slime", result);
         Assert.True(enemy.Health < 50);
@@ -72,6 +67,7 @@ public class GameLoopTests
         {
             battle.Tick(0.1f);
         }
+
         Assert.Equal(player.Name, battle.CurrentTurnCombatant.Character.Name);
 
         action = CombatAction.Attack(battle.CurrentTurnCombatant.BattleId, battle.Enemies[0].BattleId);

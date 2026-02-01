@@ -1,5 +1,4 @@
-using System;
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -15,7 +14,7 @@ public class TileMap
 
     public TileMap(int tileWidth = 32, int tileHeight = 32)
     {
-        TileWidth  = tileWidth;
+        TileWidth = tileWidth;
         TileHeight = tileHeight;
     }
 
@@ -45,11 +44,14 @@ public class TileMap
     }
 
     /// <summary>
-    /// Draws the visible portion of the map using frustum culling.
+    ///     Draws the visible portion of the map using frustum culling.
     /// </summary>
     public void Draw(SpriteBatch spriteBatch, Camera2D camera, GraphicsDevice graphicsDevice)
     {
-        if (_tileSet is null) return;
+        if (_tileSet is null)
+        {
+            return;
+        }
 
         // Calculate visible bounds
         var viewport = graphicsDevice.Viewport;
@@ -109,7 +111,9 @@ public class TileMap
     {
         if (tilePos.Y < 0 || tilePos.Y >= _rows ||
             tilePos.X < 0 || tilePos.X >= _cols)
+        {
             return true;
+        }
 
         // 0 = bloqueado, 1 = libre
         return _mapData[tilePos.Y, tilePos.X] == 0;

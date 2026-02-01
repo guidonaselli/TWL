@@ -1,324 +1,328 @@
 <?xml version='1.0' encoding='utf-8'?>
 <root>
-  <resheader name="resmimetype">
-    <value>text/microsoft-resx</value>
-  </resheader>
-  <resheader name="reader">
-    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <resheader name="writer">
-    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </resheader>
-  <data name="SKILL_RockSmashI" xml:space="preserve">
+    <resheader name="resmimetype">
+        <value>text/microsoft-resx</value>
+    </resheader>
+    <resheader name="reader">
+        <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <resheader name="writer">
+        <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral,
+            PublicKeyToken=b77a5c561934e089
+        </value>
+    </resheader>
+    <data name="SKILL_RockSmashI" xml:space="preserve">
     <value>Rock Smash I</value>
   </data>
-  <data name="SKILL_RockSmashII" xml:space="preserve">
+    <data name="SKILL_RockSmashII" xml:space="preserve">
     <value>Rock Smash II</value>
   </data>
-  <data name="SKILL_RockSmashIII" xml:space="preserve">
+    <data name="SKILL_RockSmashIII" xml:space="preserve">
     <value>Rock Smash III</value>
   </data>
-  <data name="SKILL_BoulderCrush" xml:space="preserve">
+    <data name="SKILL_BoulderCrush" xml:space="preserve">
     <value>Boulder Crush</value>
   </data>
-  <data name="SKILL_StoneBulletI" xml:space="preserve">
+    <data name="SKILL_StoneBulletI" xml:space="preserve">
     <value>Stone Bullet I</value>
   </data>
-  <data name="SKILL_StoneBulletII" xml:space="preserve">
+    <data name="SKILL_StoneBulletII" xml:space="preserve">
     <value>Stone Bullet II</value>
   </data>
-  <data name="SKILL_StoneBulletIII" xml:space="preserve">
+    <data name="SKILL_StoneBulletIII" xml:space="preserve">
     <value>Stone Bullet III</value>
   </data>
-  <data name="SKILL_RollingStone" xml:space="preserve">
+    <data name="SKILL_RollingStone" xml:space="preserve">
     <value>Rolling Stone</value>
   </data>
-  <data name="SKILL_GaiasProtectionI" xml:space="preserve">
+    <data name="SKILL_GaiasProtectionI" xml:space="preserve">
     <value>Gaia's Protection I</value>
   </data>
-  <data name="SKILL_GaiasProtectionII" xml:space="preserve">
+    <data name="SKILL_GaiasProtectionII" xml:space="preserve">
     <value>Gaia's Protection II</value>
   </data>
-  <data name="SKILL_GaiasProtectionIII" xml:space="preserve">
+    <data name="SKILL_GaiasProtectionIII" xml:space="preserve">
     <value>Gaia's Protection III</value>
   </data>
-  <data name="SKILL_Entangle" xml:space="preserve">
+    <data name="SKILL_Entangle" xml:space="preserve">
     <value>Entangle</value>
   </data>
-  <data name="SKILL_AquaImpact" xml:space="preserve">
+    <data name="SKILL_AquaImpact" xml:space="preserve">
     <value>Aqua Impact</value>
   </data>
-  <data name="SKILL_WaterBall" xml:space="preserve">
+    <data name="SKILL_WaterBall" xml:space="preserve">
     <value>Water Ball</value>
   </data>
-  <data name="SKILL_AquaRecover" xml:space="preserve">
+    <data name="SKILL_AquaRecover" xml:space="preserve">
     <value>Aqua Recover</value>
   </data>
-  <data name="SKILL_Shrink" xml:space="preserve">
+    <data name="SKILL_Shrink" xml:space="preserve">
     <value>Shrink</value>
   </data>
-  <data name="SKILL_Blockage" xml:space="preserve">
+    <data name="SKILL_Blockage" xml:space="preserve">
     <value>Blockage</value>
   </data>
-  <data name="SKILL_Hotfire" xml:space="preserve">
+    <data name="SKILL_Hotfire" xml:space="preserve">
     <value>Hotfire</value>
   </data>
-  <data name="SKILL_Vanish" xml:space="preserve">
+    <data name="SKILL_Vanish" xml:space="preserve">
     <value>Vanish</value>
   </data>
-  <data name="SKILL_FairyLight" xml:space="preserve">
+    <data name="SKILL_FairyLight" xml:space="preserve">
     <value>Fairy Light</value>
   </data>
-  <data name="SKILL_DragonSlash" xml:space="preserve">
+    <data name="SKILL_DragonSlash" xml:space="preserve">
     <value>Dragon Slash</value>
   </data>
-  <data name="SKILL_FairyBlessing" xml:space="preserve">
+    <data name="SKILL_FairyBlessing" xml:space="preserve">
     <value>Fairy's Blessing</value>
   </data>
-  <data name="SKILL_FlameSmash" xml:space="preserve">
+    <data name="SKILL_FlameSmash" xml:space="preserve">
     <value>Flame Smash</value>
   </data>
-  <data name="SKILL_Fireball" xml:space="preserve">
+    <data name="SKILL_Fireball" xml:space="preserve">
     <value>Fireball</value>
   </data>
-  <data name="SKILL_FieryWill" xml:space="preserve">
+    <data name="SKILL_FieryWill" xml:space="preserve">
     <value>Fiery Will</value>
   </data>
-  <data name="UI_Login" xml:space="preserve">
+    <data name="UI_Login" xml:space="preserve">
     <value>Login</value>
   </data>
-  <data name="UI_LoadGame" xml:space="preserve">
+    <data name="UI_LoadGame" xml:space="preserve">
     <value>Load Game</value>
   </data>
-  <data name="UI_Exit" xml:space="preserve">
+    <data name="UI_Exit" xml:space="preserve">
     <value>Exit</value>
   </data>
-  <data name="UI_Username" xml:space="preserve">
+    <data name="UI_Username" xml:space="preserve">
     <value>Username: </value>
   </data>
-  <data name="UI_Password" xml:space="preserve">
+    <data name="UI_Password" xml:space="preserve">
     <value>Password: </value>
   </data>
-  <data name="UI_Back" xml:space="preserve">
+    <data name="UI_Back" xml:space="preserve">
     <value>Back</value>
   </data>
-  <data name="UI_Title" xml:space="preserve">
+    <data name="UI_Title" xml:space="preserve">
     <value>The Wonderland</value>
   </data>
-  <data name="UI_NoSave" xml:space="preserve">
+    <data name="UI_NoSave" xml:space="preserve">
     <value>No save game found.</value>
   </data>
-  <data name="UI_OPTIONS_TITLE" xml:space="preserve">
+    <data name="UI_OPTIONS_TITLE" xml:space="preserve">
     <value>Options</value>
   </data>
-  <data name="UI_OPTIONS_MASTER_VOLUME" xml:space="preserve">
+    <data name="UI_OPTIONS_MASTER_VOLUME" xml:space="preserve">
     <value>Master Volume: {0:0}%</value>
   </data>
-  <data name="UI_OPTIONS_MUSIC_VOLUME" xml:space="preserve">
+    <data name="UI_OPTIONS_MUSIC_VOLUME" xml:space="preserve">
     <value>Music Volume: {0:0}%</value>
   </data>
-  <data name="UI_OPTIONS_SFX_VOLUME" xml:space="preserve">
+    <data name="UI_OPTIONS_SFX_VOLUME" xml:space="preserve">
     <value>SFX Volume: {0:0}%</value>
   </data>
-  <data name="UI_OPTIONS_TEXT_SPEED" xml:space="preserve">
+    <data name="UI_OPTIONS_TEXT_SPEED" xml:space="preserve">
     <value>Text Speed: {0}</value>
   </data>
-  <data name="UI_OPTIONS_MUTE_UNFOCUS" xml:space="preserve">
+    <data name="UI_OPTIONS_MUTE_UNFOCUS" xml:space="preserve">
     <value>Mute on Unfocus: {0}</value>
   </data>
-  <data name="UI_COMMON_BACK" xml:space="preserve">
+    <data name="UI_COMMON_BACK" xml:space="preserve">
     <value>Back</value>
   </data>
-  <data name="UI_SPEED_SLOW" xml:space="preserve">
+    <data name="UI_SPEED_SLOW" xml:space="preserve">
     <value>Slow</value>
   </data>
-  <data name="UI_SPEED_NORMAL" xml:space="preserve">
+    <data name="UI_SPEED_NORMAL" xml:space="preserve">
     <value>Normal</value>
   </data>
-  <data name="UI_SPEED_FAST" xml:space="preserve">
+    <data name="UI_SPEED_FAST" xml:space="preserve">
     <value>Fast</value>
   </data>
-  <data name="UI_COMMON_ON" xml:space="preserve">
+    <data name="UI_COMMON_ON" xml:space="preserve">
     <value>On</value>
   </data>
-  <data name="UI_COMMON_OFF" xml:space="preserve">
+    <data name="UI_COMMON_OFF" xml:space="preserve">
     <value>Off</value>
   </data>
-  <data name="UI_Icon" xml:space="preserve">
+    <data name="UI_Icon" xml:space="preserve">
     <value>Icon</value>
   </data>
-  <data name="UI_LevelFormat" xml:space="preserve">
+    <data name="UI_LevelFormat" xml:space="preserve">
     <value>Lv.{0}</value>
   </data>
-  <data name="UI_HpFormat" xml:space="preserve">
+    <data name="UI_HpFormat" xml:space="preserve">
     <value>HP: {0}/{1}</value>
   </data>
-  <data name="UI_SpFormat" xml:space="preserve">
+    <data name="UI_SpFormat" xml:space="preserve">
     <value>SP: {0}/{1}</value>
   </data>
-  <data name="UI_XpFormat" xml:space="preserve">
+    <data name="UI_XpFormat" xml:space="preserve">
     <value>XP: {0}/{1}</value>
   </data>
-  <data name="UI_Minimap" xml:space="preserve">
+    <data name="UI_Minimap" xml:space="preserve">
     <value>Minimap</value>
   </data>
-  <data name="UI_MarketplaceListingFormat" xml:space="preserve">
+    <data name="UI_MarketplaceListingFormat" xml:space="preserve">
     <value>[{0}] Item {1} x{2} Price:{3}</value>
   </data>
-  <data name="ERR_MARKET_LISTING_NOT_FOUND" xml:space="preserve">
+    <data name="ERR_MARKET_LISTING_NOT_FOUND" xml:space="preserve">
     <value>Listing not found.</value>
   </data>
-  <data name="ERR_MARKET_INSUFFICIENT_QTY" xml:space="preserve">
+    <data name="ERR_MARKET_INSUFFICIENT_QTY" xml:space="preserve">
     <value>Not enough quantity in listing.</value>
   </data>
-  <data name="ERR_MARKET_INSUFFICIENT_GOLD" xml:space="preserve">
+    <data name="ERR_MARKET_INSUFFICIENT_GOLD" xml:space="preserve">
     <value>Buyer has insufficient gold.</value>
   </data>
-  <data name="UI_MARKET_PURCHASE_SUCCESS" xml:space="preserve">
+    <data name="UI_MARKET_PURCHASE_SUCCESS" xml:space="preserve">
     <value>Purchase successful!</value>
   </data>
-  <data name="UI_BATTLE_START" xml:space="preserve">
+    <data name="UI_BATTLE_START" xml:space="preserve">
     <value>Battle start!</value>
   </data>
-  <data name="UI_BATTLE_VICTORY" xml:space="preserve">
+    <data name="UI_BATTLE_VICTORY" xml:space="preserve">
     <value>Victory!</value>
   </data>
-  <data name="UI_BATTLE_DEFEAT" xml:space="preserve">
+    <data name="UI_BATTLE_DEFEAT" xml:space="preserve">
     <value>Defeat...</value>
   </data>
-  <data name="ITEM_Potion" xml:space="preserve">
+    <data name="ITEM_Potion" xml:space="preserve">
     <value>Potion</value>
   </data>
-  <data name="SKILL_WindSlashI" xml:space="preserve">
+    <data name="SKILL_WindSlashI" xml:space="preserve">
     <value>Wind Slash I</value>
   </data>
-  <data name="SKILL_WindSlashII" xml:space="preserve">
+    <data name="SKILL_WindSlashII" xml:space="preserve">
     <value>Wind Slash II</value>
   </data>
-  <data name="SKILL_WindSlashIII" xml:space="preserve">
+    <data name="SKILL_WindSlashIII" xml:space="preserve">
     <value>Wind Slash III</value>
   </data>
-  <data name="SKILL_SonicBlade" xml:space="preserve">
+    <data name="SKILL_SonicBlade" xml:space="preserve">
     <value>Sonic Blade</value>
   </data>
-  <data name="SKILL_AirBladeI" xml:space="preserve">
+    <data name="SKILL_AirBladeI" xml:space="preserve">
     <value>Air Blade I</value>
   </data>
-  <data name="SKILL_AirBladeII" xml:space="preserve">
+    <data name="SKILL_AirBladeII" xml:space="preserve">
     <value>Air Blade II</value>
   </data>
-  <data name="SKILL_AirBladeIII" xml:space="preserve">
+    <data name="SKILL_AirBladeIII" xml:space="preserve">
     <value>Air Blade III</value>
   </data>
-  <data name="SKILL_Tornado" xml:space="preserve">
+    <data name="SKILL_Tornado" xml:space="preserve">
     <value>Tornado</value>
   </data>
-  <data name="SKILL_BreezeI" xml:space="preserve">
+    <data name="SKILL_BreezeI" xml:space="preserve">
     <value>Breeze I</value>
   </data>
-  <data name="SKILL_BreezeII" xml:space="preserve">
+    <data name="SKILL_BreezeII" xml:space="preserve">
     <value>Breeze II</value>
   </data>
-  <data name="SKILL_BreezeIII" xml:space="preserve">
+    <data name="SKILL_BreezeIII" xml:space="preserve">
     <value>Breeze III</value>
   </data>
-  <data name="SKILL_Zephyr" xml:space="preserve">
+    <data name="SKILL_Zephyr" xml:space="preserve">
     <value>Zephyr</value>
   </data>
-  <data name="ENEMY_Slime" xml:space="preserve">
+    <data name="ENEMY_Slime" xml:space="preserve">
     <value>Slime</value>
   </data>
-  <data name="ENEMY_Wolf" xml:space="preserve">
+    <data name="ENEMY_Wolf" xml:space="preserve">
     <value>Wolf</value>
   </data>
-  <data name="ENEMY_Bat" xml:space="preserve">
+    <data name="ENEMY_Bat" xml:space="preserve">
     <value>Bat</value>
   </data>
-  <data name="NPC_HarborQuartermaster_Hello" xml:space="preserve">
+    <data name="NPC_HarborQuartermaster_Hello" xml:space="preserve">
     <value>Welcome to the harbor!</value>
   </data>
-  <data name="NPC_HerbalistApprentice_Hello" xml:space="preserve">
+    <data name="NPC_HerbalistApprentice_Hello" xml:space="preserve">
     <value>Need any herbs?</value>
   </data>
-  <data name="NPC_WanderingTinkerer_Hello" xml:space="preserve">
+    <data name="NPC_WanderingTinkerer_Hello" xml:space="preserve">
     <value>I have many gadgets.</value>
   </data>
-  <data name="UI_LoginStatus_Connecting" xml:space="preserve">
+    <data name="UI_LoginStatus_Connecting" xml:space="preserve">
     <value>Connecting...</value>
   </data>
-  <data name="UI_LoginStatus_Connected" xml:space="preserve">
+    <data name="UI_LoginStatus_Connected" xml:space="preserve">
     <value>Connected.</value>
   </data>
-  <data name="UI_LoginStatus_ConnectionFailed" xml:space="preserve">
+    <data name="UI_LoginStatus_ConnectionFailed" xml:space="preserve">
     <value>Connection failed: {0}</value>
   </data>
-  <data name="UI_LoginStatus_UserPassRequired" xml:space="preserve">
+    <data name="UI_LoginStatus_UserPassRequired" xml:space="preserve">
     <value>Username and password are required.</value>
   </data>
-  <data name="UI_LoginStatus_UserTooLong" xml:space="preserve">
+    <data name="UI_LoginStatus_UserTooLong" xml:space="preserve">
     <value>Username is too long.</value>
   </data>
-  <data name="UI_LoginStatus_LoggingIn" xml:space="preserve">
+    <data name="UI_LoginStatus_LoggingIn" xml:space="preserve">
     <value>Logging in...</value>
   </data>
-  <data name="UI_LoginStatus_LoginFailed" xml:space="preserve">
+    <data name="UI_LoginStatus_LoginFailed" xml:space="preserve">
     <value>Login failed.</value>
   </data>
-  <data name="UI_LoginStatus_LoginSuccess" xml:space="preserve">
+    <data name="UI_LoginStatus_LoginSuccess" xml:space="preserve">
     <value>Login successful.</value>
   </data>
-  <data name="SKILL_AquaImpactI" xml:space="preserve">
+    <data name="SKILL_AquaImpactI" xml:space="preserve">
     <value>Aqua Impact I</value>
   </data>
-  <data name="SKILL_AquaImpactII" xml:space="preserve">
+    <data name="SKILL_AquaImpactII" xml:space="preserve">
     <value>Aqua Impact II</value>
   </data>
-  <data name="SKILL_AquaImpactIII" xml:space="preserve">
+    <data name="SKILL_AquaImpactIII" xml:space="preserve">
     <value>Aqua Impact III</value>
   </data>
-  <data name="SKILL_WaterBallI" xml:space="preserve">
+    <data name="SKILL_WaterBallI" xml:space="preserve">
     <value>Water Ball I</value>
   </data>
-  <data name="SKILL_WaterBallII" xml:space="preserve">
+    <data name="SKILL_WaterBallII" xml:space="preserve">
     <value>Water Ball II</value>
   </data>
-  <data name="SKILL_WaterBallIII" xml:space="preserve">
+    <data name="SKILL_WaterBallIII" xml:space="preserve">
     <value>Water Ball III</value>
   </data>
-  <data name="SKILL_AquaRecoverI" xml:space="preserve">
+    <data name="SKILL_AquaRecoverI" xml:space="preserve">
     <value>Aqua Recover I</value>
   </data>
-  <data name="SKILL_AquaRecoverII" xml:space="preserve">
+    <data name="SKILL_AquaRecoverII" xml:space="preserve">
     <value>Aqua Recover II</value>
   </data>
-  <data name="SKILL_AquaRecoverIII" xml:space="preserve">
+    <data name="SKILL_AquaRecoverIII" xml:space="preserve">
     <value>Aqua Recover III</value>
   </data>
-  <data name="SKILL_FlameSmashI" xml:space="preserve">
+    <data name="SKILL_FlameSmashI" xml:space="preserve">
     <value>Flame Smash I</value>
   </data>
-  <data name="SKILL_FlameSmashII" xml:space="preserve">
+    <data name="SKILL_FlameSmashII" xml:space="preserve">
     <value>Flame Smash II</value>
   </data>
-  <data name="SKILL_FlameSmashIII" xml:space="preserve">
+    <data name="SKILL_FlameSmashIII" xml:space="preserve">
     <value>Flame Smash III</value>
   </data>
-  <data name="SKILL_FireballI" xml:space="preserve">
+    <data name="SKILL_FireballI" xml:space="preserve">
     <value>Fireball I</value>
   </data>
-  <data name="SKILL_FireballII" xml:space="preserve">
+    <data name="SKILL_FireballII" xml:space="preserve">
     <value>Fireball II</value>
   </data>
-  <data name="SKILL_FireballIII" xml:space="preserve">
+    <data name="SKILL_FireballIII" xml:space="preserve">
     <value>Fireball III</value>
   </data>
-  <data name="SKILL_FieryWillI" xml:space="preserve">
+    <data name="SKILL_FieryWillI" xml:space="preserve">
     <value>Fiery Will I</value>
   </data>
-  <data name="SKILL_FieryWillII" xml:space="preserve">
+    <data name="SKILL_FieryWillII" xml:space="preserve">
     <value>Fiery Will II</value>
   </data>
-  <data name="SKILL_FieryWillIII" xml:space="preserve">
+    <data name="SKILL_FieryWillIII" xml:space="preserve">
     <value>Fiery Will III</value>
   </data>
 </root>

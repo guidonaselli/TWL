@@ -1,22 +1,20 @@
-using System.Collections.Generic;
-using Xunit;
-using Moq;
 using Microsoft.Extensions.Logging.Abstractions;
-using TWL.Server.Services.World;
+using Moq;
 using TWL.Server.Domain.World;
+using TWL.Server.Services.World;
+using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.World;
 
 namespace TWL.Tests.Server.Services.World;
 
 public class WorldTriggerServiceTests
 {
-    private readonly WorldTriggerService _service;
     private readonly Mock<ITriggerHandler> _handlerMock;
+    private readonly WorldTriggerService _service;
 
     public WorldTriggerServiceTests()
     {
-        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, new TWL.Server.Simulation.Managers.ServerMetrics());
+        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, new ServerMetrics());
         _handlerMock = new Mock<ITriggerHandler>();
     }
 
@@ -71,6 +69,7 @@ public class WorldTriggerServiceTests
 
         _service.CheckTriggers(character);
 
-        _handlerMock.Verify(h => h.ExecuteEnter(It.IsAny<ServerCharacter>(), It.IsAny<ServerTrigger>(), _service), Times.Never);
+        _handlerMock.Verify(h => h.ExecuteEnter(It.IsAny<ServerCharacter>(), It.IsAny<ServerTrigger>(), _service),
+            Times.Never);
     }
 }

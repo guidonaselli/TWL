@@ -1,20 +1,18 @@
-using System.Collections.Generic;
-using System.IO;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Interactions;
 using TWL.Shared.Domain.Quests;
-using Xunit;
 
 namespace TWL.Tests;
 
 public class InteractionTests
 {
-    private InteractionManager _manager;
-    private ServerCharacter _character;
-    private PlayerQuestComponent _questComponent;
-    private ServerQuestManager _questManager;
+    private readonly ServerCharacter _character;
+    private readonly InteractionManager _manager;
+    private readonly PlayerQuestComponent _questComponent;
+    private readonly ServerQuestManager _questManager;
 
     public InteractionTests()
     {
@@ -22,7 +20,8 @@ public class InteractionTests
         _character = new ServerCharacter { Id = 1, Name = "TestPlayer" };
         _questManager = new ServerQuestManager();
         // Setup Quest Manager with dummy data
-        File.WriteAllText("test_quests.json", "[{\"QuestId\": 1016, \"Title\": \"Test\", \"Description\": \"Test\", \"Objectives\": [{\"Type\":\"Talk\",\"TargetName\":\"Dummy\",\"RequiredCount\":1,\"Description\":\"Dummy\"}], \"Rewards\": {\"Exp\":0,\"Gold\":0,\"Items\":[]}}]");
+        File.WriteAllText("test_quests.json",
+            "[{\"QuestId\": 1016, \"Title\": \"Test\", \"Description\": \"Test\", \"Objectives\": [{\"Type\":\"Talk\",\"TargetName\":\"Dummy\",\"RequiredCount\":1,\"Description\":\"Dummy\"}], \"Rewards\": {\"Exp\":0,\"Gold\":0,\"Items\":[]}}]");
         _questManager.Load("test_quests.json");
         _questComponent = new PlayerQuestComponent(_questManager);
     }
@@ -33,11 +32,11 @@ public class InteractionTests
         // Setup Interaction
         var interactions = new List<InteractionDefinition>
         {
-            new InteractionDefinition
+            new()
             {
                 TargetName = "Rock",
                 Type = "Gather",
-                RewardItems = new List<ItemReward> { new ItemReward(201, 1) }
+                RewardItems = new List<ItemReward> { new(201, 1) }
             }
         };
         SaveInteractions(interactions);
@@ -56,11 +55,11 @@ public class InteractionTests
         // Setup Interaction with Requirement
         var interactions = new List<InteractionDefinition>
         {
-            new InteractionDefinition
+            new()
             {
                 TargetName = "QuestRock",
                 Type = "Gather",
-                RewardItems = new List<ItemReward> { new ItemReward(201, 1) },
+                RewardItems = new List<ItemReward> { new(201, 1) },
                 RequiredQuestId = 1016
             }
         };
@@ -80,11 +79,11 @@ public class InteractionTests
         // Setup Interaction with Requirement
         var interactions = new List<InteractionDefinition>
         {
-            new InteractionDefinition
+            new()
             {
                 TargetName = "QuestRock",
                 Type = "Gather",
-                RewardItems = new List<ItemReward> { new ItemReward(201, 1) },
+                RewardItems = new List<ItemReward> { new(201, 1) },
                 RequiredQuestId = 1016
             }
         };
@@ -105,12 +104,12 @@ public class InteractionTests
     {
         var interactions = new List<InteractionDefinition>
         {
-            new InteractionDefinition
+            new()
             {
                 TargetName = "Bench",
                 Type = "Craft",
-                RequiredItems = new List<ItemReward> { new ItemReward(201, 1) },
-                RewardItems = new List<ItemReward> { new ItemReward(203, 1) }
+                RequiredItems = new List<ItemReward> { new(201, 1) },
+                RewardItems = new List<ItemReward> { new(203, 1) }
             }
         };
         SaveInteractions(interactions);
@@ -131,12 +130,12 @@ public class InteractionTests
     {
         var interactions = new List<InteractionDefinition>
         {
-            new InteractionDefinition
+            new()
             {
                 TargetName = "Bench",
                 Type = "Craft",
-                RequiredItems = new List<ItemReward> { new ItemReward(201, 1) },
-                RewardItems = new List<ItemReward> { new ItemReward(203, 1) }
+                RequiredItems = new List<ItemReward> { new(201, 1) },
+                RewardItems = new List<ItemReward> { new(203, 1) }
             }
         };
         SaveInteractions(interactions);
@@ -150,7 +149,7 @@ public class InteractionTests
 
     private void SaveInteractions(List<InteractionDefinition> list)
     {
-        var json = System.Text.Json.JsonSerializer.Serialize(list);
+        var json = JsonSerializer.Serialize(list);
         File.WriteAllText("test_interactions.json", json);
     }
 }

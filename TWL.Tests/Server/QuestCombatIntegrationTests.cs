@@ -1,19 +1,18 @@
-using System.Collections.Generic;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.Skills;
 using TWL.Tests.Mocks;
-using Xunit;
 
 namespace TWL.Tests.Server;
 
 public class QuestCombatIntegrationTests
 {
-    private readonly ServerQuestManager _questManager;
     private readonly CombatManager _combatManager;
     private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public QuestCombatIntegrationTests()
     {
@@ -21,7 +20,7 @@ public class QuestCombatIntegrationTests
         _questManager = new ServerQuestManager();
         var quests = new List<QuestDefinition>
         {
-            new QuestDefinition
+            new()
             {
                 QuestId = 1,
                 Title = "Kill Crabs",
@@ -29,7 +28,7 @@ public class QuestCombatIntegrationTests
                 Requirements = new List<int>(),
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Kill", "WeakCrab", 2, "Kill 2 WeakCrabs")
+                    new("Kill", "WeakCrab", 2, "Kill 2 WeakCrabs")
                 },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>())
             }
@@ -55,12 +54,12 @@ public class QuestCombatIntegrationTests
     ""Effects"": [ { ""Tag"": ""Damage"" } ]
   }
 ]";
-        TWL.Shared.Domain.Skills.SkillRegistry.Instance.LoadSkills(skillsJson);
+        SkillRegistry.Instance.LoadSkills(skillsJson);
 
         // 2. Setup Combat Manager
         var random = new MockRandomService();
-        var resolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
-        _combatManager = new CombatManager(resolver, random, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
+        var resolver = new StandardCombatResolver(random, SkillRegistry.Instance);
+        _combatManager = new CombatManager(resolver, random, SkillRegistry.Instance, new StatusEngine());
 
         // 3. Setup Player Component
         _playerQuests = new PlayerQuestComponent(_questManager);
@@ -136,7 +135,7 @@ public class QuestCombatIntegrationTests
         Assert.True(result.NewTargetHp > 0);
 
         // Simulate ClientSession Logic
-        List<int> updated = new List<int>();
+        var updated = new List<int>();
         if (result.NewTargetHp <= 0)
         {
             // Should not reach here

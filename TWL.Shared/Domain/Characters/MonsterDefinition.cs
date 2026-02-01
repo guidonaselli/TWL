@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace TWL.Shared.Domain.Characters;
 
 public class MonsterDefinition
@@ -34,10 +32,6 @@ public class MonsterDefinition
 
     // Drops
     public List<DropItem> Drops { get; set; } = new();
-
-    public MonsterDefinition()
-    {
-    }
 }
 
 public class DropItem

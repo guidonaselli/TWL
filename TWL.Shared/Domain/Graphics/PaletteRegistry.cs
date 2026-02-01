@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace TWL.Shared.Domain.Graphics;
 
 public static class PaletteRegistry
@@ -20,13 +18,8 @@ public static class PaletteRegistry
         Register(water);
     }
 
-    public static void Register(PaletteVariant variant)
-    {
-        _variants[variant.Type] = variant;
-    }
+    public static void Register(PaletteVariant variant) => _variants[variant.Type] = variant;
 
-    public static PaletteVariant Get(PaletteType type)
-    {
-        return _variants.TryGetValue(type, out var v) ? v : _variants[PaletteType.Normal];
-    }
+    public static PaletteVariant Get(PaletteType type) =>
+        _variants.TryGetValue(type, out var v) ? v : _variants[PaletteType.Normal];
 }

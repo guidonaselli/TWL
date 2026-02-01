@@ -1,4 +1,5 @@
-namespace TWL.Shared.Net.Abstractions; // o el que prefieras
+namespace TWL.Shared.Net.Abstractions;
+// o el que prefieras
 
 public interface IPayloadReceiver
 {

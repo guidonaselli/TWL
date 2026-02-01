@@ -1,10 +1,6 @@
-using System;
-using System.Threading;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using TWL.Server.Services;
 using TWL.Server.Simulation.Managers;
-using Xunit;
 
 namespace TWL.Tests.Reliability;
 
@@ -18,10 +14,7 @@ public class WorldLoopObservabilityTests
         scheduler.Start();
 
         // Schedule a task that sleeps for 20ms (above 10ms threshold)
-        scheduler.Schedule(() =>
-        {
-            Thread.Sleep(20);
-        }, TimeSpan.Zero, "SlowTask");
+        scheduler.Schedule(() => { Thread.Sleep(20); }, TimeSpan.Zero, "SlowTask");
 
         // Wait for it to execute
         await Task.Delay(100);
@@ -29,7 +22,8 @@ public class WorldLoopObservabilityTests
         scheduler.Stop();
 
         var snapshot = metrics.GetSnapshot();
-        Assert.True(snapshot.WorldLoopSlowTasks > 0, $"Should record at least one slow task. Actual: {snapshot.WorldLoopSlowTasks}");
+        Assert.True(snapshot.WorldLoopSlowTasks > 0,
+            $"Should record at least one slow task. Actual: {snapshot.WorldLoopSlowTasks}");
         // It might not trigger a SlowTick because 20ms < 50ms tick budget
     }
 
@@ -41,10 +35,7 @@ public class WorldLoopObservabilityTests
         scheduler.Start();
 
         // Schedule a task that sleeps for 70ms (above 50ms tick threshold)
-        scheduler.Schedule(() =>
-        {
-            Thread.Sleep(70);
-        }, TimeSpan.Zero, "VerySlowTask");
+        scheduler.Schedule(() => { Thread.Sleep(70); }, TimeSpan.Zero, "VerySlowTask");
 
         // Wait for it to execute
         await Task.Delay(200);
@@ -52,7 +43,9 @@ public class WorldLoopObservabilityTests
         scheduler.Stop();
 
         var snapshot = metrics.GetSnapshot();
-        Assert.True(snapshot.WorldLoopSlowTicks > 0, $"Should record at least one slow tick. Actual: {snapshot.WorldLoopSlowTicks}");
-        Assert.True(snapshot.WorldLoopSlowTasks > 0, $"Should also record slow task. Actual: {snapshot.WorldLoopSlowTasks}");
+        Assert.True(snapshot.WorldLoopSlowTicks > 0,
+            $"Should record at least one slow tick. Actual: {snapshot.WorldLoopSlowTicks}");
+        Assert.True(snapshot.WorldLoopSlowTasks > 0,
+            $"Should also record slow task. Actual: {snapshot.WorldLoopSlowTasks}");
     }
 }

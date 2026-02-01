@@ -4,7 +4,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TWL.Client.Presentation.Managers;
 using TWL.Client.Presentation.UI;
-using TWL.Client.UI;
 using TWL.Shared.Net.Abstractions;
 
 namespace TWL.Client.Presentation.Scenes;
@@ -12,13 +11,13 @@ namespace TWL.Client.Presentation.Scenes;
 public sealed class SceneMarketplace : SceneBase
 {
     private readonly MarketplaceManager _marketplace;
-    private SpriteFont     _font = null!;
-    private UiMarketplace  _uiMarketplace = null!;
+    private SpriteFont _font = null!;
+    private UiMarketplace _uiMarketplace = null!;
 
     public SceneMarketplace(ContentManager content,
         GraphicsDevice gd,
-        ISceneManager  scenes,
-        IAssetLoader   assets,
+        ISceneManager scenes,
+        IAssetLoader assets,
         MarketplaceManager market)
         : base(content, gd, scenes, assets)
     {

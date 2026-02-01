@@ -1,8 +1,5 @@
-using System.Linq;
-using System.Threading.Tasks;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Models;
-using Xunit;
 
 namespace TWL.Tests;
 
@@ -61,7 +58,7 @@ public class ServerCharacterTests
         });
 
         Assert.Equal(10, character.Inventory.Count);
-        foreach(var item in character.Inventory)
+        foreach (var item in character.Inventory)
         {
             Assert.Equal(100, item.Quantity);
         }
@@ -91,7 +88,7 @@ public class ServerCharacterTests
         var character = new ServerCharacter { Id = 1, Name = "Test" };
         character.AddItem(101, 5);
 
-        bool result = character.RemoveItem(101, 3);
+        var result = character.RemoveItem(101, 3);
         Assert.True(result);
         Assert.Equal(2, character.Inventory.First(i => i.ItemId == 101).Quantity);
     }
@@ -102,7 +99,7 @@ public class ServerCharacterTests
         var character = new ServerCharacter { Id = 1, Name = "Test" };
         character.AddItem(101, 5);
 
-        bool result = character.RemoveItem(101, 6);
+        var result = character.RemoveItem(101, 6);
         Assert.False(result);
         Assert.Equal(5, character.Inventory.First(i => i.ItemId == 101).Quantity);
     }
@@ -111,7 +108,7 @@ public class ServerCharacterTests
     public void HasItem_ShouldWorkWithMultipleStacksAndPolicies()
     {
         var character = new ServerCharacter { Id = 1, Name = "Test" };
-        character.AddItem(101, 5, BindPolicy.Unbound);
+        character.AddItem(101, 5);
         character.AddItem(101, 5, BindPolicy.CharacterBound); // Should be a separate stack/item in list
 
         // Ensure we have 2 items

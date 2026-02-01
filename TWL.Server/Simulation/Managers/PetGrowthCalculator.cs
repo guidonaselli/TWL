@@ -1,4 +1,3 @@
-using System;
 using TWL.Shared.Domain.Characters;
 
 namespace TWL.Server.Simulation.Managers;
@@ -7,13 +6,21 @@ public static class PetGrowthCalculator
 {
     private const int STAT_POINTS_PER_LEVEL = 3;
 
-    public static void CalculateStats(PetDefinition def, int level, out int maxHp, out int maxSp, out int str, out int con, out int int_, out int wis, out int agi)
+    public static void CalculateStats(PetDefinition def, int level, out int maxHp, out int maxSp, out int str,
+        out int con, out int int_, out int wis, out int agi)
     {
-        if (def == null) throw new ArgumentNullException(nameof(def));
-        if (level < 1) level = 1;
+        if (def == null)
+        {
+            throw new ArgumentNullException(nameof(def));
+        }
+
+        if (level < 1)
+        {
+            level = 1;
+        }
 
         var model = def.GrowthModel ?? new PetGrowthModel();
-        int levelsGained = level - 1;
+        var levelsGained = level - 1;
 
         // Calculate HP/SP
         // Base + (Growth * levels)
@@ -26,10 +33,13 @@ public static class PetGrowthCalculator
         // I will return the "Natural" stats.
 
         // Calculate Stats based on weights
-        int totalWeight = model.StrWeight + model.ConWeight + model.IntWeight + model.WisWeight + model.AgiWeight;
-        if (totalWeight == 0) totalWeight = 1; // Prevent division by zero
+        var totalWeight = model.StrWeight + model.ConWeight + model.IntWeight + model.WisWeight + model.AgiWeight;
+        if (totalWeight == 0)
+        {
+            totalWeight = 1; // Prevent division by zero
+        }
 
-        int totalPoints = levelsGained * STAT_POINTS_PER_LEVEL;
+        var totalPoints = levelsGained * STAT_POINTS_PER_LEVEL;
 
         // Curve adjustments (Bonus points based on curve type)
         // Standard: No change
@@ -38,40 +48,52 @@ public static class PetGrowthCalculator
         // Keeping it simple for now as requested "GrowthModel: curvas por tipo".
 
         // Curve Logic
-        float multiplier = 1.0f;
+        var multiplier = 1.0f;
         if (model.CurveType == GrowthCurveType.EarlyPeaker)
         {
             // Stronger early, weaker late
-            if (level <= 40) multiplier = 1.2f;
-            else multiplier = 0.8f;
+            if (level <= 40)
+            {
+                multiplier = 1.2f;
+            }
+            else
+            {
+                multiplier = 0.8f;
+            }
         }
         else if (model.CurveType == GrowthCurveType.LateBloomer)
         {
-             // Weaker early, stronger late
-             if (level <= 40) multiplier = 0.8f;
-             else multiplier = 1.3f;
+            // Weaker early, stronger late
+            if (level <= 40)
+            {
+                multiplier = 0.8f;
+            }
+            else
+            {
+                multiplier = 1.3f;
+            }
         }
 
         // Apply multiplier to points gained
-        int adjustedPoints = (int)(totalPoints * multiplier);
+        var adjustedPoints = (int)(totalPoints * multiplier);
 
-        str = def.BaseStr + (adjustedPoints * model.StrWeight / totalWeight);
-        con = def.BaseCon + (adjustedPoints * model.ConWeight / totalWeight);
-        int_ = def.BaseInt + (adjustedPoints * model.IntWeight / totalWeight);
-        wis = def.BaseWis + (adjustedPoints * model.WisWeight / totalWeight);
-        agi = def.BaseAgi + (adjustedPoints * model.AgiWeight / totalWeight);
+        str = def.BaseStr + adjustedPoints * model.StrWeight / totalWeight;
+        con = def.BaseCon + adjustedPoints * model.ConWeight / totalWeight;
+        int_ = def.BaseInt + adjustedPoints * model.IntWeight / totalWeight;
+        wis = def.BaseWis + adjustedPoints * model.WisWeight / totalWeight;
+        agi = def.BaseAgi + adjustedPoints * model.AgiWeight / totalWeight;
 
         // HP/SP Calculation
         // Base HP + (Con Contribution) + (Growth Per Level)
         // Con Contribution: (Con - BaseCon) * 5
-        int conBonus = (con - def.BaseCon) * 5;
+        var conBonus = (con - def.BaseCon) * 5;
         maxHp = def.BaseHp + conBonus + (int)(model.HpGrowthPerLevel * levelsGained);
 
         // Base SP is derived from Int usually, let's assume BaseInt * 5 is the starting SP if not defined
         // We don't have BaseSp in definition, so we derive from Int.
-        int intBonus = (int_ - def.BaseInt) * 5;
+        var intBonus = (int_ - def.BaseInt) * 5;
         // Let's assume initial SP is roughly BaseInt * 5
-        int baseSp = def.BaseInt * 5;
+        var baseSp = def.BaseInt * 5;
         maxSp = baseSp + intBonus + (int)(model.SpGrowthPerLevel * levelsGained);
     }
 
@@ -80,7 +102,10 @@ public static class PetGrowthCalculator
         // Simple exponential curve
         // Level 1 -> 2: 100
         // Level 2 -> 3: 125
-        if (level < 1) return 0;
+        if (level < 1)
+        {
+            return 0;
+        }
         // Total Exp to reach next level? Or Exp required for current level?
         // Usually "ExpToNextLevel" for Level X is X^2 * 10 or similar.
         // ServerPet used: ExpToNextLevel = (int)(ExpToNextLevel * 1.25);

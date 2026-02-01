@@ -17,10 +17,7 @@ public class InputManager : Singleton<InputManager>
         _currentMouse = Mouse.GetState();
     }
 
-    public bool IsKeyPressed(Keys key)
-    {
-        return _currentKeyboard.IsKeyDown(key) && _previousKeyboard.IsKeyUp(key);
-    }
+    public bool IsKeyPressed(Keys key) => _currentKeyboard.IsKeyDown(key) && _previousKeyboard.IsKeyUp(key);
 
     public bool IsLeftMouseClicked()
     {

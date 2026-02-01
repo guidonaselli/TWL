@@ -1,7 +1,4 @@
-using System.IO;
-using System.Linq;
 using TWL.Server.Simulation.Managers;
-using Xunit;
 
 namespace TWL.Tests;
 
@@ -17,11 +14,11 @@ public class JungleQuestTests
         // We need to go up 4 levels to root: ../../../../Content/Data/quests.json
         // Or we can try to find it.
 
-        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
+        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json");
         if (!File.Exists(path))
         {
-             // Fallback for different runners
-             path = Path.Combine("Content", "Data", "quests.json");
+            // Fallback for different runners
+            path = Path.Combine("Content", "Data", "quests.json");
         }
 
         Assert.True(File.Exists(path), $"Quests file not found at {Path.GetFullPath(path)}");
@@ -39,7 +36,8 @@ public class JungleQuestTests
         // Assert - Quest 1102 (Gather Poison Ivy)
         var q1102 = questManager.GetDefinition(1102);
         Assert.NotNull(q1102);
-        Assert.Contains(q1102.Objectives, o => o.TargetName == "PoisonIvyBush" && o.Type == "Collect" && o.RequiredCount == 3);
+        Assert.Contains(q1102.Objectives,
+            o => o.TargetName == "PoisonIvyBush" && o.Type == "Collect" && o.RequiredCount == 3);
         Assert.Contains(q1102.Rewards.Items, i => i.ItemId == 7523); // Detox Potion
 
         // Assert - Quest 1103 (Kill Jaguar)
@@ -51,7 +49,8 @@ public class JungleQuestTests
         // Assert - Quest 2101 (Sidequest Rare Herbs)
         var q2101 = questManager.GetDefinition(2101);
         Assert.NotNull(q2101);
-        Assert.Contains(q2101.Objectives, o => o.TargetName == "RareHerbPatch" && o.Type == "Collect" && o.RequiredCount == 5);
+        Assert.Contains(q2101.Objectives,
+            o => o.TargetName == "RareHerbPatch" && o.Type == "Collect" && o.RequiredCount == 5);
         Assert.Contains(q2101.Rewards.Items, i => i.ItemId == 8002); // Rare Jungle Herb
     }
 }

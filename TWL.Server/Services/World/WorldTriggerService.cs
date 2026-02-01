@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-using System.Linq;
 using Microsoft.Extensions.Logging;
 using TWL.Server.Domain.World;
 using TWL.Server.Simulation.Managers;
@@ -9,10 +7,10 @@ namespace TWL.Server.Services.World;
 
 public class WorldTriggerService : IWorldTriggerService
 {
-    private readonly ILogger<WorldTriggerService> _logger;
-    private readonly ServerMetrics _metrics;
-    private readonly Dictionary<int, ServerMap> _maps = new();
     private readonly List<ITriggerHandler> _handlers = new();
+    private readonly ILogger<WorldTriggerService> _logger;
+    private readonly Dictionary<int, ServerMap> _maps = new();
+    private readonly ServerMetrics _metrics;
 
     public WorldTriggerService(ILogger<WorldTriggerService> logger, ServerMetrics metrics)
     {
@@ -26,17 +24,19 @@ public class WorldTriggerService : IWorldTriggerService
         {
             _maps[map.Id] = map;
         }
+
         _logger.LogInformation("Loaded {Count} maps into WorldTriggerService.", _maps.Count);
     }
 
-    public void RegisterHandler(ITriggerHandler handler)
-    {
-        _handlers.Add(handler);
-    }
+    public void RegisterHandler(ITriggerHandler handler) => _handlers.Add(handler);
 
     public void OnEnterTrigger(ServerCharacter character, int mapId, string triggerId)
     {
-        if (!_maps.TryGetValue(mapId, out var map)) return;
+        if (!_maps.TryGetValue(mapId, out var map))
+        {
+            return;
+        }
+
         var trigger = map.Triggers.FirstOrDefault(t => t.Id == triggerId);
         if (trigger == null)
         {
@@ -49,7 +49,8 @@ public class WorldTriggerService : IWorldTriggerService
         var handler = _handlers.FirstOrDefault(h => h.CanHandle(trigger.Type));
         if (handler != null)
         {
-            _logger.LogDebug("Character {CharId} entered trigger {TriggerId} ({Type})", character.Id, triggerId, trigger.Type);
+            _logger.LogDebug("Character {CharId} entered trigger {TriggerId} ({Type})", character.Id, triggerId,
+                trigger.Type);
             _metrics.RecordTriggerExecuted(trigger.Type);
             handler.ExecuteEnter(character, trigger, this);
         }
@@ -57,14 +58,22 @@ public class WorldTriggerService : IWorldTriggerService
 
     public void OnInteractTrigger(ServerCharacter character, int mapId, string triggerId)
     {
-        if (!_maps.TryGetValue(mapId, out var map)) return;
+        if (!_maps.TryGetValue(mapId, out var map))
+        {
+            return;
+        }
+
         var trigger = map.Triggers.FirstOrDefault(t => t.Id == triggerId);
-        if (trigger == null) return;
+        if (trigger == null)
+        {
+            return;
+        }
 
         var handler = _handlers.FirstOrDefault(h => h.CanHandle(trigger.Type));
         if (handler != null)
         {
-            _logger.LogDebug("Character {CharId} interacted with trigger {TriggerId} ({Type})", character.Id, triggerId, trigger.Type);
+            _logger.LogDebug("Character {CharId} interacted with trigger {TriggerId} ({Type})", character.Id, triggerId,
+                trigger.Type);
             _metrics.RecordTriggerExecuted(trigger.Type);
             handler.ExecuteInteract(character, trigger, this);
         }
@@ -72,7 +81,10 @@ public class WorldTriggerService : IWorldTriggerService
 
     public void CheckTriggers(ServerCharacter character)
     {
-        if (!_maps.TryGetValue(character.MapId, out var map)) return;
+        if (!_maps.TryGetValue(character.MapId, out var map))
+        {
+            return;
+        }
 
         foreach (var trigger in map.Triggers)
         {
@@ -87,7 +99,11 @@ public class WorldTriggerService : IWorldTriggerService
 
     public ServerSpawn? GetSpawn(int mapId, string spawnId)
     {
-         if (!_maps.TryGetValue(mapId, out var map)) return null;
-         return map.Spawns.FirstOrDefault(s => s.Id == spawnId);
+        if (!_maps.TryGetValue(mapId, out var map))
+        {
+            return null;
+        }
+
+        return map.Spawns.FirstOrDefault(s => s.Id == spawnId);
     }
 }

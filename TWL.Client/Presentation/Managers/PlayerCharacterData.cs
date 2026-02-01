@@ -1,5 +1,5 @@
-using System;
 using TWL.Shared.Domain.DTO;
+using TWL.Shared.Domain.Graphics;
 
 namespace TWL.Client.Presentation.Managers;
 
@@ -14,9 +14,7 @@ public class PlayerCharacterData
     public int MaxHp { get; set; }
     public float PosX { get; set; }
     public float PosY { get; set; }
-    public TWL.Shared.Domain.Graphics.CharacterAppearance Appearance { get; set; } = new();
-
-    public PlayerCharacterData() { }
+    public CharacterAppearance Appearance { get; set; } = new();
 
     public static PlayerCharacterData FromDTO(PlayerDataDTO dto)
     {

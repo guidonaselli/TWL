@@ -1,21 +1,17 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
 public class QuestLogicTests
 {
-    private readonly ServerQuestManager _questManager;
-    private readonly PlayerQuestComponent _playerQuests;
     private readonly ServerCharacter _character;
+    private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
     private readonly string _testFilePath;
 
     public QuestLogicTests()
@@ -25,45 +21,45 @@ public class QuestLogicTests
         var testQuests = new List<QuestDefinition>
         {
             // Quest A: Sets flag "A_DONE"
-            new QuestDefinition
+            new()
             {
                 QuestId = 101,
                 Title = "Quest A",
                 Description = "Quest A Description",
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Talk", "TargetA", 1, "Talk to A")
+                    new("Talk", "TargetA", 1, "Talk to A")
                 },
                 Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
                 FlagsSet = new List<string> { "A_DONE" }
             },
             // Quest B: Blocked by "A_DONE"
-            new QuestDefinition
+            new()
             {
                 QuestId = 102,
                 Title = "Quest B",
                 Description = "Blocked by A",
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
                 Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
                 BlockedByFlags = new List<string> { "A_DONE" }
             },
             // Quest C: Expiry Test
-            new QuestDefinition
+            new()
             {
                 QuestId = 103,
                 Title = "Quest C",
                 Description = "Expired Quest",
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
                 Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
                 Expiry = DateTime.UtcNow.AddMinutes(-10) // Expired 10 mins ago
             },
             // Quest D: Instance Rules (just definition check for now)
-            new QuestDefinition
+            new()
             {
                 QuestId = 104,
                 Title = "Quest D",
                 Description = "Instance Quest",
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
                 Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
                 InstanceRules = new InstanceRules("Inst01", 1, 300, "KillBoss")
             }

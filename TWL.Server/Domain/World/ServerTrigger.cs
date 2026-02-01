@@ -1,5 +1,3 @@
-using System.Collections.Generic;
-
 namespace TWL.Server.Domain.World;
 
 public class ServerTrigger

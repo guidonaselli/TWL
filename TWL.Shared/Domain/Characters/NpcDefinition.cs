@@ -16,8 +16,4 @@ public class NpcDefinition
 
     // Optional: Static position for some global NPCs?
     // Usually handled by Map/Spawn logic.
-
-    public NpcDefinition()
-    {
-    }
 }

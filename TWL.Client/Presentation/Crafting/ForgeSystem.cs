@@ -1,5 +1,4 @@
-﻿using TWL.Client.Managers;
-using TWL.Client.Presentation.Managers;
+﻿using TWL.Client.Presentation.Managers;
 using TWL.Shared.Domain.Characters;
 
 namespace TWL.Client.Presentation.Crafting;
@@ -16,7 +15,10 @@ public class ForgeSystem
     {
         // Chequear si el jugador tiene la piedra (forgeStoneId)
         if (inv.GetItemCount(forgeStoneId) < 1)
+        {
             return false;
+        }
+
         inv.RemoveItem(forgeStoneId, 1);
 
         var chance = GetSuccessRate(equip.EnhanceLevel);
@@ -30,7 +32,11 @@ public class ForgeSystem
         }
 
         // fallback
-        if (equip.EnhanceLevel > 0) equip.EnhanceLevel--;
+        if (equip.EnhanceLevel > 0)
+        {
+            equip.EnhanceLevel--;
+        }
+
         return false;
     }
 }

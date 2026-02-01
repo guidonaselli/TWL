@@ -1,16 +1,14 @@
-using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Models;
-using System.Collections.Generic;
 
 namespace TWL.Tests.Security;
 
 public class TradeSecurityTests
 {
-    private readonly TradeManager _tradeManager;
     private readonly ServerCharacter _alice;
     private readonly ServerCharacter _bob;
+    private readonly TradeManager _tradeManager;
 
     public TradeSecurityTests()
     {
@@ -23,7 +21,7 @@ public class TradeSecurityTests
     public void Should_Transfer_Unbound_Item()
     {
         // Arrange
-        _alice.AddItem(1, 10, BindPolicy.Unbound);
+        _alice.AddItem(1, 10);
 
         // Act
         var result = _tradeManager.TransferItem(_alice, _bob, 1, 5);
@@ -71,7 +69,7 @@ public class TradeSecurityTests
     public void Should_Reject_Insufficient_Quantity()
     {
         // Arrange
-        _alice.AddItem(4, 2, BindPolicy.Unbound);
+        _alice.AddItem(4, 2);
 
         // Act
         var result = _tradeManager.TransferItem(_alice, _bob, 4, 5);
@@ -84,7 +82,7 @@ public class TradeSecurityTests
     public void Should_Reject_Mixed_Stack_If_Insufficient_Tradable()
     {
         // Arrange
-        _alice.AddItem(5, 5, BindPolicy.Unbound);
+        _alice.AddItem(5, 5);
         _alice.AddItem(5, 5, BindPolicy.CharacterBound); // Same ItemId, diff policy
 
         // Act - Try to trade 8. Should only have 5 tradable.
@@ -99,7 +97,7 @@ public class TradeSecurityTests
     public void Should_Transfer_Only_Tradable_From_Mixed_Stack()
     {
         // Arrange
-        _alice.AddItem(6, 10, BindPolicy.Unbound);
+        _alice.AddItem(6, 10);
         _alice.AddItem(6, 5, BindPolicy.CharacterBound);
 
         // Act - Trade 8 (within tradable limit)

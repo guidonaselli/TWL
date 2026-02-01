@@ -1,17 +1,12 @@
-using System;
-using System.IO;
-using System.Linq;
-using Xunit;
-using TWL.Server.Services.World;
 using Microsoft.Extensions.Logging.Abstractions;
-using TWL.Shared.Domain.World;
+using TWL.Server.Services.World;
 
 namespace TWL.Tests.Server.Services.World;
 
 public class MapLoaderTests : IDisposable
 {
-    private readonly string _tempFile;
     private readonly MapLoader _loader;
+    private readonly string _tempFile;
 
     public MapLoaderTests()
     {
@@ -21,7 +16,10 @@ public class MapLoaderTests : IDisposable
 
     public void Dispose()
     {
-        if (File.Exists(_tempFile)) File.Delete(_tempFile);
+        if (File.Exists(_tempFile))
+        {
+            File.Delete(_tempFile);
+        }
     }
 
     [Fact]

@@ -1,19 +1,16 @@
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
 public class QuestGatingTests
 {
-    private readonly ServerQuestManager _questManager;
-    private readonly PlayerQuestComponent _playerQuests;
     private readonly ServerCharacter _character;
+    private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
     private readonly string _testFilePath;
 
     public QuestGatingTests()
@@ -22,32 +19,32 @@ public class QuestGatingTests
 
         var testQuests = new List<QuestDefinition>
         {
-            new QuestDefinition
+            new()
             {
                 QuestId = 9001,
                 Title = "Level Gate",
                 Description = "Req Level 5",
                 RequiredLevel = 5,
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
-                Rewards = new RewardDefinition(0,0, new List<ItemReward>())
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
+                Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
             },
-            new QuestDefinition
+            new()
             {
                 QuestId = 9002,
                 Title = "Stat Gate",
                 Description = "Req Str 10",
                 RequiredStats = new Dictionary<string, int> { { "Str", 10 } },
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
-                Rewards = new RewardDefinition(0,0, new List<ItemReward>())
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
+                Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
             },
-            new QuestDefinition
+            new()
             {
                 QuestId = 9003,
                 Title = "Item Gate",
                 Description = "Req Item 100 x 1",
-                RequiredItems = new List<ItemRequirement> { new ItemRequirement(100, 1) },
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "T", 1, "D") },
-                Rewards = new RewardDefinition(0,0, new List<ItemReward>())
+                RequiredItems = new List<ItemRequirement> { new(100, 1) },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
+                Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
             }
         };
 

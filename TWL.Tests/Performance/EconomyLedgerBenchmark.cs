@@ -1,9 +1,6 @@
-using System;
 using System.Diagnostics;
-using System.IO;
 using System.Text;
 using TWL.Server.Simulation.Managers;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace TWL.Tests.Performance;
@@ -25,11 +22,11 @@ public class EconomyLedgerBenchmark
 
         var startDate = DateTime.UtcNow.AddDays(-30);
 
-        for (int i = 0; i < entries; i++)
+        for (var i = 0; i < entries; i++)
         {
             var timestamp = startDate.AddMinutes(i).ToString("O");
             var type = i % 2 == 0 ? "PurchaseVerify" : "ShopBuy";
-            var userId = 1000 + (i % 100);
+            var userId = 1000 + i % 100;
             var orderId = Guid.NewGuid().ToString("N");
             var details = "";
             var delta = 0;
@@ -56,7 +53,7 @@ public class EconomyLedgerBenchmark
     [Fact]
     public void Benchmark_ReplayLedger()
     {
-        int entries = 100000; // 100k entries to make it significant
+        var entries = 100000; // 100k entries to make it significant
         var ledgerFile = GenerateLedger(entries);
 
         try

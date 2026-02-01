@@ -33,10 +33,7 @@ public abstract class UiWindow
     }
 
     // Helper method to check if a point is inside this window
-    public bool Contains(Point point)
-    {
-        return Visible && _bounds.Contains(point);
-    }
+    public bool Contains(Point point) => Visible && _bounds.Contains(point);
 
     // Optional: Methods to move/resize the window
     public virtual void Move(Point newPosition)

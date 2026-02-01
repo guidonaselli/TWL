@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using MonoGame.Extended.Tiled;
 
 namespace TWL.Client.Presentation.Managers;
@@ -30,7 +29,9 @@ public class PortalManager
         // Obtenemos la capa de objetos
         var objectLayer = map.GetLayer<TiledMapObjectLayer>(layerName);
         if (objectLayer == null)
+        {
             return;
+        }
 
         foreach (var obj in objectLayer.Objects)
         {
@@ -48,13 +49,19 @@ public class PortalManager
             var targetY = 0f;
 
             if (obj.Properties.ContainsKey("TargetMap"))
+            {
                 targetMap = obj.Properties["TargetMap"];
+            }
 
             if (obj.Properties.ContainsKey("TargetX"))
+            {
                 targetX = float.Parse(obj.Properties["TargetX"]);
+            }
 
             if (obj.Properties.ContainsKey("TargetY"))
+            {
                 targetY = float.Parse(obj.Properties["TargetY"]);
+            }
 
             var portal = new Portal
             {
@@ -74,8 +81,12 @@ public class PortalManager
     public Portal CheckCollision(Rectangle playerBounds)
     {
         foreach (var portal in _portals)
+        {
             if (playerBounds.Intersects(portal.Bounds))
+            {
                 return portal;
+            }
+        }
 
         return null;
     }

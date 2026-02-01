@@ -2,22 +2,20 @@ using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
-using TWL.Shared.Domain.Skills;
 using TWL.Shared.Domain.Characters;
-using TWL.Shared.Services;
-using Xunit;
 using TWL.Shared.Domain.Requests;
-using System.Collections.Generic;
+using TWL.Shared.Domain.Skills;
+using TWL.Shared.Services;
 
 namespace TWL.Tests.Skills;
 
 public class SkillMechanicsTests
 {
+    private readonly CombatManager _combatManager;
     private readonly Mock<IRandomService> _randomMock;
+    private readonly StatusEngine _realStatusEngine;
     private readonly Mock<ICombatResolver> _resolverMock;
     private readonly Mock<ISkillCatalog> _skillCatalogMock;
-    private readonly CombatManager _combatManager;
-    private readonly StatusEngine _realStatusEngine;
 
     public SkillMechanicsTests()
     {
@@ -42,7 +40,8 @@ public class SkillMechanicsTests
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Wis = 20 };
 
         // Target has resistance buff
-        target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 0.5f, 3, "EarthResist"), _realStatusEngine);
+        target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 0.5f, 3, "EarthResist"),
+            _realStatusEngine);
 
         var skill = new Skill
         {
@@ -50,7 +49,7 @@ public class SkillMechanicsTests
             SpCost = 10,
             Effects = new List<SkillEffect>
             {
-                new SkillEffect
+                new()
                 {
                     Tag = SkillEffectTag.Seal,
                     Value = 0,
@@ -88,7 +87,8 @@ public class SkillMechanicsTests
         var target = new ServerCharacter { Id = 2 };
 
         // Target has 100% resistance
-        target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 1.0f, 3, "EarthResist"), _realStatusEngine);
+        target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 1.0f, 3, "EarthResist"),
+            _realStatusEngine);
 
         var skill = new Skill
         {
@@ -96,7 +96,7 @@ public class SkillMechanicsTests
             SpCost = 10,
             Effects = new List<SkillEffect>
             {
-                new SkillEffect
+                new()
                 {
                     Tag = SkillEffectTag.Seal,
                     ResistanceTags = new List<string> { "EarthResist" },
@@ -153,7 +153,7 @@ public class SkillMechanicsTests
     {
         var effects = new List<StatusEffectInstance>();
 
-        var effect1 = new StatusEffectInstance(SkillEffectTag.Burn, 10, 3, null)
+        var effect1 = new StatusEffectInstance(SkillEffectTag.Burn, 10, 3)
         {
             StackingPolicy = StackingPolicy.StackUpToN,
             MaxStacks = 3,
@@ -167,7 +167,7 @@ public class SkillMechanicsTests
         Assert.Equal(10, effects[0].Value);
 
         // Act 2
-        var effect2 = new StatusEffectInstance(SkillEffectTag.Burn, 10, 3, null)
+        var effect2 = new StatusEffectInstance(SkillEffectTag.Burn, 10, 3)
         {
             StackingPolicy = StackingPolicy.StackUpToN,
             MaxStacks = 3,

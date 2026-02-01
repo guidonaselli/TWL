@@ -1,9 +1,7 @@
-﻿using System.Collections.Generic;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-using TWL.Client.UI;
 using TWL.Shared.Domain.Characters;
 
 namespace TWL.Client.Presentation.UI;
@@ -17,10 +15,10 @@ public class UiInventoryWindow : UiWindow
     private readonly List<Rectangle> _slots = new();
 
     private Texture2D? _bg;
-    private Texture2D? _slotTex;
     private SpriteFont? _font;
 
     private int _selectedSlot = -1;
+    private Texture2D? _slotTex;
 
     // ------------------------------------------------------------------
 
@@ -34,9 +32,9 @@ public class UiInventoryWindow : UiWindow
 
     public void LoadContent(ContentManager content)
     {
-        _bg      = SafeLoadTex(content, "UI/inventory_background");
+        _bg = SafeLoadTex(content, "UI/inventory_background");
         _slotTex = SafeLoadTex(content, "UI/inventory_slot");
-        _font    = content.Load<SpriteFont>("Fonts/DefaultFont");
+        _font = content.Load<SpriteFont>("Fonts/DefaultFont");
     }
 
     private static Texture2D SafeLoadTex(ContentManager c, string asset)
@@ -79,19 +77,31 @@ public class UiInventoryWindow : UiWindow
 
     public override void Update(GameTime gt, MouseState ms, KeyboardState ks)
     {
-        if (!Visible) return;
+        if (!Visible)
+        {
+            return;
+        }
 
         if (ms.LeftButton == ButtonState.Pressed)
+        {
             for (var i = 0; i < _slots.Count; i++)
+            {
                 if (_slots[i].Contains(ms.Position))
+                {
                     _selectedSlot = i;
+                }
+            }
+        }
     }
 
     // ---------- render -------------------------------------------------
 
     public override void Draw(SpriteBatch sb)
     {
-        if (!Visible || _bg is null || _slotTex is null || _font is null) return;
+        if (!Visible || _bg is null || _slotTex is null || _font is null)
+        {
+            return;
+        }
 
         sb.Draw(_bg, Bounds, Color.White);
 
@@ -117,7 +127,9 @@ public class UiInventoryWindow : UiWindow
             }
 
             if (i == _selectedSlot)
+            {
                 sb.Draw(_slotTex, _slots[i], new Color(255, 255, 0, 80));
+            }
         }
     }
 }

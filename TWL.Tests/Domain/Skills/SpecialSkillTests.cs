@@ -1,10 +1,9 @@
 using System.Text.Json;
-using TWL.Shared.Domain.Skills;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.Skills;
 using TWL.Tests.Mocks;
-using Xunit;
 
 namespace TWL.Tests.Domain.Skills;
 
@@ -78,7 +77,7 @@ public class SpecialSkillTests
     [Fact]
     public void Deserialize_UnlockRules_WithQuestFlag()
     {
-         var json = @"
+        var json = @"
         [
           {
             ""SkillId"": 9001,
@@ -117,7 +116,7 @@ public class SpecialSkillTests
         // 2. Setup Combat
         var mockRandom = new MockRandomService(0.0f); // 0.0 -> variance 0.95, random check 0.0 (Success)
         var resolver = new StandardCombatResolver(mockRandom, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRandom, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRandom, SkillRegistry.Instance, new StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Int = 100, Wis = 50 }; // Int - Wis = 50. StatDiff = 0.5.
         // Base 0.5 + 0.5 = 1.0. Clamped to MaxChance 0.9.

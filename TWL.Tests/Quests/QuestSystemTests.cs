@@ -1,17 +1,15 @@
-using System;
-using System.Collections.Generic;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
 public class QuestSystemTests
 {
-    private readonly ServerQuestManager _questManager;
     private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public QuestSystemTests()
     {
@@ -20,50 +18,50 @@ public class QuestSystemTests
         var definitions = new List<QuestDefinition>
         {
             // Quest 1: Mutual Exclusion Group A - Quest 1
-            new QuestDefinition
+            new()
             {
                 QuestId = 1,
                 Title = "Group A - Q1",
                 Description = "...",
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Npc", 1, "Talk") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "Npc", 1, "Talk") },
                 Rewards = new RewardDefinition(10, 0, new List<ItemReward>()),
                 MutualExclusionGroup = "GroupA"
             },
             // Quest 2: Mutual Exclusion Group A - Quest 2
-            new QuestDefinition
+            new()
             {
                 QuestId = 2,
                 Title = "Group A - Q2",
                 Description = "...",
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Npc", 1, "Talk") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "Npc", 1, "Talk") },
                 Rewards = new RewardDefinition(10, 0, new List<ItemReward>()),
                 MutualExclusionGroup = "GroupA"
             },
             // Quest 3: Daily Quest
-            new QuestDefinition
+            new()
             {
                 QuestId = 3,
                 Title = "Daily Quest",
                 Description = "...",
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Npc", 1, "Talk") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "Npc", 1, "Talk") },
                 Rewards = new RewardDefinition(10, 0, new List<ItemReward>()),
                 Repeatability = QuestRepeatability.Daily
             },
             // Quest 4: Cooldown Quest (1 second)
-            new QuestDefinition
+            new()
             {
                 QuestId = 4,
                 Title = "Cooldown Quest",
                 Description = "...",
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Npc", 1, "Talk") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "Npc", 1, "Talk") },
                 Rewards = new RewardDefinition(10, 0, new List<ItemReward>()),
                 Repeatability = QuestRepeatability.Cooldown,
                 RepeatCooldown = TimeSpan.FromSeconds(1)
             }
         };
 
-        string json = System.Text.Json.JsonSerializer.Serialize(definitions);
-        System.IO.File.WriteAllText("test_quest_system.json", json);
+        var json = JsonSerializer.Serialize(definitions);
+        File.WriteAllText("test_quest_system.json", json);
         _questManager.Load("test_quest_system.json");
 
         _playerQuests = new PlayerQuestComponent(_questManager);
@@ -123,7 +121,7 @@ public class QuestSystemTests
         Assert.False(_playerQuests.StartQuest(4));
 
         // 3. Wait 1.1s
-        System.Threading.Thread.Sleep(1100);
+        Thread.Sleep(1100);
 
         // 4. Try start again -> Success
         Assert.True(_playerQuests.StartQuest(4));

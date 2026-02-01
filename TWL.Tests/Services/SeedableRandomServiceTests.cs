@@ -1,9 +1,7 @@
 using System.Collections.Concurrent;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Moq;
 using TWL.Server.Services;
-using Xunit;
 
 namespace TWL.Tests.Services;
 
@@ -20,7 +18,7 @@ public class SeedableRandomServiceTests
     public void Constructor_WithSeed_LogsSeed()
     {
         // Arrange
-        int seed = 12345;
+        var seed = 12345;
 
         // Act
         var service = new SeedableRandomService(_mockLogger.Object, seed);
@@ -42,13 +40,13 @@ public class SeedableRandomServiceTests
     public void Determinism_SameSeed_ProducesSameSequence()
     {
         // Arrange
-        int seed = 42;
+        var seed = 42;
         var service1 = new SeedableRandomService(_mockLogger.Object, seed);
         var service2 = new SeedableRandomService(_mockLogger.Object, seed);
 
         // Act & Assert
         // We verify a sequence of calls
-        for (int i = 0; i < 100; i++)
+        for (var i = 0; i < 100; i++)
         {
             Assert.Equal(service1.Next(0, 100), service2.Next(0, 100));
             Assert.Equal(service1.NextFloat(), service2.NextFloat());
@@ -65,8 +63,8 @@ public class SeedableRandomServiceTests
 
         // Act
         // It's theoretically possible they produce same first number, but unlikely for a sequence.
-        bool allEqual = true;
-        for (int i = 0; i < 10; i++)
+        var allEqual = true;
+        for (var i = 0; i < 10; i++)
         {
             if (service1.NextFloat() != service2.NextFloat())
             {
@@ -87,10 +85,7 @@ public class SeedableRandomServiceTests
         var results = new ConcurrentBag<float>();
 
         // Act
-        Parallel.For(0, 1000, i =>
-        {
-            results.Add(service.NextFloat());
-        });
+        Parallel.For(0, 1000, i => { results.Add(service.NextFloat()); });
 
         // Assert
         Assert.Equal(1000, results.Count);

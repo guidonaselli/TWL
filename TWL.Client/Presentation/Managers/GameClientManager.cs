@@ -1,10 +1,6 @@
 ﻿// File: `TWL.Client/Managers/GameClientManager.cs`
 
-using System;
-using System.Collections.Generic;
-using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
-using TWL.Client.Managers;
 using TWL.Client.Presentation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
@@ -17,16 +13,9 @@ namespace TWL.Client.Presentation.Managers;
 /// </summary>
 public class GameClientManager
 {
-
-    public Guid PlayerId { get; }
-        = Guid.Parse("00000000-0000-0000-0000-000000000001");
-
-
     // Example character lists
     private List<Character> _allies;
     private List<Character> _enemies;
-
-    public NetworkClient NetworkClient { get; }
 
     public GameClientManager(ILogger<NetworkClient> log)
     {
@@ -47,6 +36,11 @@ public class GameClientManager
         MarketplaceManager = new ClientMarketplaceManager();
     }
 
+    public Guid PlayerId { get; }
+        = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+    public NetworkClient NetworkClient { get; }
+
     // Specific managers
     public ClientCombatManager CombatManager { get; }
     public ClientQuestManager QuestManager { get; }
@@ -56,54 +50,34 @@ public class GameClientManager
     /// <summary>
     ///     Called by NetworkClient when a CombatResult is received from the server.
     /// </summary>
-    public void HandleCombatResult(CombatResult result)
-    {
-        CombatManager.OnCombatResult(result);
-    }
+    public void HandleCombatResult(CombatResult result) => CombatManager.OnCombatResult(result);
 
     /// <summary>
     ///     Delegates a request to use a skill to the CombatManager.
     /// </summary>
-    public void RequestUseSkill(int playerId, int targetId, int skillId)
-    {
+    public void RequestUseSkill(int playerId, int targetId, int skillId) =>
         CombatManager.RequestUseSkill(playerId, targetId, skillId);
-    }
 
     /// <summary>
     ///     Called by NetworkClient when an InventoryUpdate is received from the server.
     /// </summary>
-    public void HandleInventoryUpdate(InventoryUpdate update)
-    {
-        InventoryManager.OnInventoryUpdate(update);
-    }
+    public void HandleInventoryUpdate(InventoryUpdate update) => InventoryManager.OnInventoryUpdate(update);
 
     /// <summary>
     ///     Called by NetworkClient when a MarketplaceUpdate is received from the server.
     /// </summary>
-    public void HandleMarketplaceUpdate(MarketplaceUpdate update)
-    {
-        MarketplaceManager.OnMarketplaceUpdate(update);
-    }
+    public void HandleMarketplaceUpdate(MarketplaceUpdate update) => MarketplaceManager.OnMarketplaceUpdate(update);
 
     // File: `TWL.Client/Managers/GameClientManager.cs`
-    public void HandleQuestUpdate(QuestUpdate update)
-    {
-        QuestManager.OnQuestUpdate(update);
-    }
+    public void HandleQuestUpdate(QuestUpdate update) => QuestManager.OnQuestUpdate(update);
 
     /// \summary
     /// Returns the current list of allied characters.
     /// \summary>
-    public List<Character> GetAllies()
-    {
-        return _allies;
-    }
+    public List<Character> GetAllies() => _allies;
 
     /// \summary
     /// Returns the current list of enemy characters.
     /// \summary>
-    public List<Character> GetEnemies()
-    {
-        return _enemies;
-    }
+    public List<Character> GetEnemies() => _enemies;
 }

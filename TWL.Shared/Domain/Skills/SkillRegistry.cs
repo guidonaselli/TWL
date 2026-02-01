@@ -6,11 +6,21 @@ namespace TWL.Shared.Domain.Skills;
 
 public class SkillRegistry : ISkillCatalog
 {
-    public static SkillRegistry Instance { get; } = new();
-
     private readonly Dictionary<int, Skill> _skills = new();
 
-    private SkillRegistry() { }
+    private SkillRegistry()
+    {
+    }
+
+    public static SkillRegistry Instance { get; } = new();
+
+    public Skill? GetSkillById(int id)
+    {
+        _skills.TryGetValue(id, out var skill);
+        return skill;
+    }
+
+    public IEnumerable<int> GetAllSkillIds() => _skills.Keys;
 
     public void LoadSkills(string jsonContent)
     {
@@ -22,7 +32,10 @@ public class SkillRegistry : ISkillCatalog
 
         var definitions = JsonSerializer.Deserialize<List<SkillDataDto>>(jsonContent, options);
 
-        if (definitions == null) return;
+        if (definitions == null)
+        {
+            return;
+        }
 
         foreach (var def in definitions)
         {
@@ -71,7 +84,7 @@ public class SkillRegistry : ISkillCatalog
                 Type = MapBranchToType(def.Branch, def.Effects),
                 Power = 0, // Calculated dynamically now
                 Level = 1,
-                MaxLevel = 1,
+                MaxLevel = 1
             };
 
             _skills[skill.SkillId] = skill;
@@ -80,22 +93,23 @@ public class SkillRegistry : ISkillCatalog
 
     private SkillType MapBranchToType(SkillBranch branch, List<SkillEffect>? effects)
     {
-        if (branch == SkillBranch.Physical) return SkillType.PhysicalDamage;
-        if (branch == SkillBranch.Magical) return SkillType.MagicalDamage;
+        if (branch == SkillBranch.Physical)
+        {
+            return SkillType.PhysicalDamage;
+        }
+
+        if (branch == SkillBranch.Magical)
+        {
+            return SkillType.MagicalDamage;
+        }
+
         // Simple heuristic for Support
-        if (effects != null && effects.Exists(e => e.Tag == SkillEffectTag.Heal)) return SkillType.Buff; // Heal treated as Buff type?
+        if (effects != null && effects.Exists(e => e.Tag == SkillEffectTag.Heal))
+        {
+            return SkillType.Buff; // Heal treated as Buff type?
+        }
+
         return SkillType.Buff;
-    }
-
-    public Skill? GetSkillById(int id)
-    {
-        _skills.TryGetValue(id, out var skill);
-        return skill;
-    }
-
-    public IEnumerable<int> GetAllSkillIds()
-    {
-        return _skills.Keys;
     }
 
     // DTOs for JSON Loading

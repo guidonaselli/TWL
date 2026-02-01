@@ -1,20 +1,17 @@
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
 public class DeliverObjectiveTests
 {
-    private readonly ServerQuestManager _questManager;
-    private readonly PlayerQuestComponent _playerQuests;
     private readonly ServerCharacter _character;
+    private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public DeliverObjectiveTests()
     {
@@ -23,21 +20,21 @@ public class DeliverObjectiveTests
         // Define a custom quest for testing
         var definitions = new List<QuestDefinition>
         {
-            new QuestDefinition
+            new()
             {
                 QuestId = 9999,
                 Title = "Test Deliver",
                 Description = "Deliver wood",
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Deliver", "TestNPC", 3, "Deliver 3 Wood") { DataId = 7316 }
+                    new("Deliver", "TestNPC", 3, "Deliver 3 Wood") { DataId = 7316 }
                 },
                 Rewards = new RewardDefinition(10, 0, new List<ItemReward>())
             }
         };
 
-        string json = System.Text.Json.JsonSerializer.Serialize(definitions);
-        string tempPath = Path.GetTempFileName();
+        var json = JsonSerializer.Serialize(definitions);
+        var tempPath = Path.GetTempFileName();
         File.WriteAllText(tempPath, json);
         _questManager.Load(tempPath);
         File.Delete(tempPath);

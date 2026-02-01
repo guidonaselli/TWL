@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
@@ -20,14 +17,14 @@ public class AutoBattleService
 {
     private readonly ISkillCatalog _skillCatalog;
 
-    // Configurable thresholds
-    public int MinSpThreshold { get; set; } = 10;
-    public float CriticalHpPercent { get; set; } = 0.4f;
-
     public AutoBattleService(ISkillCatalog skillCatalog)
     {
         _skillCatalog = skillCatalog;
     }
+
+    // Configurable thresholds
+    public int MinSpThreshold { get; set; } = 10;
+    public float CriticalHpPercent { get; set; } = 0.4f;
 
     public CombatAction SelectAction(
         ServerCharacter actor,
@@ -48,7 +45,7 @@ public class AutoBattleService
 
             if (lowHpAlly != null)
             {
-                var healSkillId = FindBestSkill(actor, SkillEffectTag.Heal, SkillTargetType.SingleAlly, ignoreThreshold: true);
+                var healSkillId = FindBestSkill(actor, SkillEffectTag.Heal, SkillTargetType.SingleAlly, true);
                 if (healSkillId.HasValue)
                 {
                     return CombatAction.UseSkill(actor.Id, lowHpAlly.Id, healSkillId.Value);
@@ -60,10 +57,12 @@ public class AutoBattleService
         if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced)
         {
             // Check for Seal or Stat Debuffs
-            var debuffedAlly = allies.FirstOrDefault(a => a.Hp > 0 && a.StatusEffects.Any(e => e.Tag == SkillEffectTag.Seal || e.Tag == SkillEffectTag.DebuffStats));
+            var debuffedAlly = allies.FirstOrDefault(a =>
+                a.Hp > 0 &&
+                a.StatusEffects.Any(e => e.Tag == SkillEffectTag.Seal || e.Tag == SkillEffectTag.DebuffStats));
             if (debuffedAlly != null)
             {
-                var cleanseSkillId = FindBestSkill(actor, SkillEffectTag.Cleanse, SkillTargetType.SingleAlly, ignoreThreshold: true);
+                var cleanseSkillId = FindBestSkill(actor, SkillEffectTag.Cleanse, SkillTargetType.SingleAlly, true);
                 if (cleanseSkillId.HasValue)
                 {
                     return CombatAction.UseSkill(actor.Id, debuffedAlly.Id, cleanseSkillId.Value);
@@ -72,65 +71,75 @@ public class AutoBattleService
         }
 
         // 3. Check Enemy Buffs -> Dispel
-        if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced || policy == AutoBattlePolicy.Aggressive)
+        if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced ||
+            policy == AutoBattlePolicy.Aggressive)
         {
-             var buffedEnemy = enemies.FirstOrDefault(e => e.Hp > 0 && e.StatusEffects.Any(s => s.Tag == SkillEffectTag.BuffStats || s.Tag == SkillEffectTag.Shield));
-             if (buffedEnemy != null)
-             {
-                  var dispelSkillId = FindBestSkill(actor, SkillEffectTag.Dispel, SkillTargetType.SingleEnemy, ignoreThreshold: false);
-                  if (dispelSkillId.HasValue)
-                  {
-                       return CombatAction.UseSkill(actor.Id, buffedEnemy.Id, dispelSkillId.Value);
-                  }
-             }
+            var buffedEnemy = enemies.FirstOrDefault(e =>
+                e.Hp > 0 &&
+                e.StatusEffects.Any(s => s.Tag == SkillEffectTag.BuffStats || s.Tag == SkillEffectTag.Shield));
+            if (buffedEnemy != null)
+            {
+                var dispelSkillId = FindBestSkill(actor, SkillEffectTag.Dispel, SkillTargetType.SingleEnemy, false);
+                if (dispelSkillId.HasValue)
+                {
+                    return CombatAction.UseSkill(actor.Id, buffedEnemy.Id, dispelSkillId.Value);
+                }
+            }
         }
 
         // 4. Control/Seal
-        if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced || policy == AutoBattlePolicy.Aggressive)
+        if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced ||
+            policy == AutoBattlePolicy.Aggressive)
         {
-             // Find unsealed enemy
-             var targetEnemy = enemies
-                 .Where(e => e.Hp > 0 && !e.StatusEffects.Any(s => s.Tag == SkillEffectTag.Seal))
-                 .OrderByDescending(e => e.Atk + e.Mat) // Target strongest
-                 .FirstOrDefault();
+            // Find unsealed enemy
+            var targetEnemy = enemies
+                .Where(e => e.Hp > 0 && !e.StatusEffects.Any(s => s.Tag == SkillEffectTag.Seal))
+                .OrderByDescending(e => e.Atk + e.Mat) // Target strongest
+                .FirstOrDefault();
 
-             if (targetEnemy != null)
-             {
-                 var sealSkillId = FindBestSkill(actor, SkillEffectTag.Seal, SkillTargetType.SingleEnemy, ignoreThreshold: false);
-                 if (sealSkillId.HasValue)
-                 {
-                     return CombatAction.UseSkill(actor.Id, targetEnemy.Id, sealSkillId.Value);
-                 }
-             }
+            if (targetEnemy != null)
+            {
+                var sealSkillId = FindBestSkill(actor, SkillEffectTag.Seal, SkillTargetType.SingleEnemy, false);
+                if (sealSkillId.HasValue)
+                {
+                    return CombatAction.UseSkill(actor.Id, targetEnemy.Id, sealSkillId.Value);
+                }
+            }
         }
 
         // 5. Apply Buffs
         if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced)
         {
-             foreach(var skillId in actor.KnownSkills)
-             {
-                 var skill = _skillCatalog.GetSkillById(skillId);
-                 if (skill == null || actor.IsSkillOnCooldown(skillId) || actor.Sp < skill.SpCost) continue;
+            foreach (var skillId in actor.KnownSkills)
+            {
+                var skill = _skillCatalog.GetSkillById(skillId);
+                if (skill == null || actor.IsSkillOnCooldown(skillId) || actor.Sp < skill.SpCost)
+                {
+                    continue;
+                }
 
-                 // Only consider SingleAlly buffs for now to keep it simple
-                 if (skill.TargetType != SkillTargetType.SingleAlly && skill.TargetType != SkillTargetType.AllAllies) continue;
+                // Only consider SingleAlly buffs for now to keep it simple
+                if (skill.TargetType != SkillTargetType.SingleAlly && skill.TargetType != SkillTargetType.AllAllies)
+                {
+                    continue;
+                }
 
-                 var buffEffect = skill.Effects.FirstOrDefault(e => e.Tag == SkillEffectTag.BuffStats);
-                 if (buffEffect != null)
-                 {
-                     // Find ally without conflicting buff
-                     var targetAlly = allies.FirstOrDefault(a => a.Hp > 0 && !HasConflictingBuff(a, buffEffect));
+                var buffEffect = skill.Effects.FirstOrDefault(e => e.Tag == SkillEffectTag.BuffStats);
+                if (buffEffect != null)
+                {
+                    // Find ally without conflicting buff
+                    var targetAlly = allies.FirstOrDefault(a => a.Hp > 0 && !HasConflictingBuff(a, buffEffect));
 
-                     if (targetAlly != null)
-                     {
-                         // Basic SP check for non-critical actions
-                         if ((actor.Sp - skill.SpCost) >= MinSpThreshold)
-                         {
-                             return CombatAction.UseSkill(actor.Id, targetAlly.Id, skillId);
-                         }
-                     }
-                 }
-             }
+                    if (targetAlly != null)
+                    {
+                        // Basic SP check for non-critical actions
+                        if (actor.Sp - skill.SpCost >= MinSpThreshold)
+                        {
+                            return CombatAction.UseSkill(actor.Id, targetAlly.Id, skillId);
+                        }
+                    }
+                }
+            }
         }
 
         // 6. Attack
@@ -140,12 +149,13 @@ public class AutoBattleService
             // Only use offensive skills if SP is above threshold
             if (actor.Sp > MinSpThreshold)
             {
-                var damageSkillId = FindBestSkill(actor, SkillEffectTag.Damage, SkillTargetType.SingleEnemy, ignoreThreshold: false);
+                var damageSkillId = FindBestSkill(actor, SkillEffectTag.Damage, SkillTargetType.SingleEnemy, false);
                 if (damageSkillId.HasValue)
                 {
                     return CombatAction.UseSkill(actor.Id, target.Id, damageSkillId.Value);
                 }
             }
+
             // Fallback to basic attack
             return CombatAction.Attack(actor.Id, target.Id);
         }
@@ -158,13 +168,15 @@ public class AutoBattleService
     {
         if (!string.IsNullOrEmpty(newEffect.ConflictGroup))
         {
-             return character.StatusEffects.Any(e => e.ConflictGroup == newEffect.ConflictGroup);
+            return character.StatusEffects.Any(e => e.ConflictGroup == newEffect.ConflictGroup);
         }
+
         // Fallback to Param check for basic buffs
         if (newEffect.Tag == SkillEffectTag.BuffStats && !string.IsNullOrEmpty(newEffect.Param))
         {
-             return character.StatusEffects.Any(e => e.Tag == SkillEffectTag.BuffStats && e.Param == newEffect.Param);
+            return character.StatusEffects.Any(e => e.Tag == SkillEffectTag.BuffStats && e.Param == newEffect.Param);
         }
+
         return false;
     }
 
@@ -177,28 +189,51 @@ public class AutoBattleService
             .FirstOrDefault();
     }
 
-    private int? FindBestSkill(ServerCharacter actor, SkillEffectTag effectTag, SkillTargetType targetType, bool ignoreThreshold)
+    private int? FindBestSkill(ServerCharacter actor, SkillEffectTag effectTag, SkillTargetType targetType,
+        bool ignoreThreshold)
     {
         // Heuristic: Pick highest SP Cost as proxy for "Best".
         int? bestSkillId = null;
-        int maxCost = -1;
+        var maxCost = -1;
 
         foreach (var skillId in actor.KnownSkills)
         {
             var skill = _skillCatalog.GetSkillById(skillId);
-            if (skill == null) continue;
+            if (skill == null)
+            {
+                continue;
+            }
 
-            if (actor.IsSkillOnCooldown(skill.SkillId)) continue;
+            if (actor.IsSkillOnCooldown(skill.SkillId))
+            {
+                continue;
+            }
 
-            if (skill.SpCost > actor.Sp) continue;
+            if (skill.SpCost > actor.Sp)
+            {
+                continue;
+            }
 
-            if (!ignoreThreshold && (actor.Sp - skill.SpCost) < MinSpThreshold) continue;
+            if (!ignoreThreshold && actor.Sp - skill.SpCost < MinSpThreshold)
+            {
+                continue;
+            }
 
             // Check target type compatibility (loose check)
-            bool targetMatch = false;
+            var targetMatch = false;
 
-            if (targetType == SkillTargetType.SingleAlly && (skill.TargetType == SkillTargetType.SingleAlly || skill.TargetType == SkillTargetType.AllAllies)) targetMatch = true;
-            if (targetType == SkillTargetType.SingleEnemy && (skill.TargetType == SkillTargetType.SingleEnemy || skill.TargetType == SkillTargetType.AllEnemies || skill.TargetType == SkillTargetType.RowEnemies)) targetMatch = true;
+            if (targetType == SkillTargetType.SingleAlly && (skill.TargetType == SkillTargetType.SingleAlly ||
+                                                             skill.TargetType == SkillTargetType.AllAllies))
+            {
+                targetMatch = true;
+            }
+
+            if (targetType == SkillTargetType.SingleEnemy && (skill.TargetType == SkillTargetType.SingleEnemy ||
+                                                              skill.TargetType == SkillTargetType.AllEnemies ||
+                                                              skill.TargetType == SkillTargetType.RowEnemies))
+            {
+                targetMatch = true;
+            }
 
             if (targetMatch)
             {
@@ -212,6 +247,7 @@ public class AutoBattleService
                 }
             }
         }
+
         return bestSkillId;
     }
 }

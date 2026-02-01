@@ -7,10 +7,10 @@ namespace TWL.Shared.Domain.Characters;
 /// </summary>
 public class ItemSlot
 {
-    public int ItemId;
-    public int Quantity;
-    public BindPolicy Policy;
     public int? BoundToId;
+    public int ItemId;
+    public BindPolicy Policy;
+    public int Quantity;
 
     public ItemSlot(int itemId, int quantity, BindPolicy policy = BindPolicy.Unbound, int? boundToId = null)
     {

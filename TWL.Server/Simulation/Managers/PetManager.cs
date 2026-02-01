@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TWL.Shared.Domain.Characters;
@@ -9,13 +6,14 @@ namespace TWL.Server.Simulation.Managers;
 
 public class PetManager
 {
-    private readonly Dictionary<int, PetDefinition> _definitions = new();
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true,
         IncludeFields = true,
         Converters = { new JsonStringEnumConverter() }
     };
+
+    private readonly Dictionary<int, PetDefinition> _definitions = new();
 
     public void Load(string path)
     {
@@ -38,8 +36,10 @@ public class PetManager
                     {
                         Console.WriteLine($"Warning: Duplicate pet ID {def.PetTypeId}");
                     }
+
                     _definitions[def.PetTypeId] = def;
                 }
+
                 Console.WriteLine($"Loaded {_definitions.Count} pet definitions.");
             }
         }
@@ -49,8 +49,5 @@ public class PetManager
         }
     }
 
-    public virtual PetDefinition? GetDefinition(int petTypeId)
-    {
-        return _definitions.GetValueOrDefault(petTypeId);
-    }
+    public virtual PetDefinition? GetDefinition(int petTypeId) => _definitions.GetValueOrDefault(petTypeId);
 }

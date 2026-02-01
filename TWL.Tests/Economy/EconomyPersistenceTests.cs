@@ -1,8 +1,5 @@
-using System;
-using System.IO;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using Xunit;
 
 namespace TWL.Tests.Economy;
 
@@ -44,7 +41,13 @@ public class EconomyPersistenceTests
         {
             if (File.Exists(ledgerFile))
             {
-                try { File.Delete(ledgerFile); } catch {}
+                try
+                {
+                    File.Delete(ledgerFile);
+                }
+                catch
+                {
+                }
             }
         }
     }

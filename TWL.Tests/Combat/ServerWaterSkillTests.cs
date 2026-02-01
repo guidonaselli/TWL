@@ -1,11 +1,9 @@
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.Skills;
-using TWL.Shared.Services;
-using Xunit;
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.Skills;
 using TWL.Tests.Mocks;
-using System.IO;
 
 namespace TWL.Tests.Combat;
 
@@ -13,7 +11,7 @@ public class ServerWaterSkillTests
 {
     public ServerWaterSkillTests()
     {
-        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
+        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/skills.json");
 
 
         if (File.Exists(path))
@@ -26,18 +24,23 @@ public class ServerWaterSkillTests
     [Fact]
     public void AquaImpact_ShouldDealDamage()
     {
-        if (SkillRegistry.Instance.GetSkillById(3001) == null) return;
+        if (SkillRegistry.Instance.GetSkillById(3001) == null)
+        {
+            return;
+        }
 
         var mockRngMean = new MockRandomService(0.5f);
 
         var resolver = new StandardCombatResolver(mockRngMean, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRngMean, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRngMean, SkillRegistry.Instance, new StatusEngine());
 
-        var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Str = 20, CharacterElement = TWL.Shared.Domain.Characters.Element.Water };
+        var attacker = new ServerCharacter
+            { Id = 1, Name = "Attacker", Sp = 100, Str = 20, CharacterElement = Element.Water };
         // Atk = 40.
         // Skill scaling: 1.2 * Atk = 48.
 
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Con = 5, CharacterElement = TWL.Shared.Domain.Characters.Element.Water };
+        var target = new ServerCharacter
+            { Id = 2, Name = "Target", Hp = 100, Con = 5, CharacterElement = Element.Water };
         // Def = 10.
         // Element same: 1.0x
 
@@ -57,19 +60,24 @@ public class ServerWaterSkillTests
     [Fact]
     public void AquaRecover_ShouldHeal_AndNotDealDamage()
     {
-        if (SkillRegistry.Instance.GetSkillById(3201) == null) return;
+        if (SkillRegistry.Instance.GetSkillById(3201) == null)
+        {
+            return;
+        }
 
         var mockRngMean = new MockRandomService(0.5f);
         var resolver = new StandardCombatResolver(mockRngMean, SkillRegistry.Instance);
-        var manager = new CombatManager(resolver, mockRngMean, TWL.Shared.Domain.Skills.SkillRegistry.Instance, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRngMean, SkillRegistry.Instance, new StatusEngine());
 
-        var healer = new ServerCharacter { Id = 1, Name = "Healer", Sp = 100, Wis = 20, CharacterElement = TWL.Shared.Domain.Characters.Element.Water };
+        var healer = new ServerCharacter
+            { Id = 1, Name = "Healer", Sp = 100, Wis = 20, CharacterElement = Element.Water };
         // Wis = 20.
         // Scaling: 2.5 * Wis = 50.
         // Mean variance (1.0).
         // Heal Amount = 50.
 
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 50, Con = 10, CharacterElement = TWL.Shared.Domain.Characters.Element.Water };
+        var target = new ServerCharacter
+            { Id = 2, Name = "Target", Hp = 50, Con = 10, CharacterElement = Element.Water };
         // MaxHp = Con * 10 = 100.
         // Current Hp = 50.
 

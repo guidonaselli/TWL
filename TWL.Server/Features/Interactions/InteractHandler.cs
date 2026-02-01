@@ -1,6 +1,3 @@
-using System.Collections.Generic;
-using System.Threading;
-using System.Threading.Tasks;
 using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Simulation.Managers;
 
@@ -35,7 +32,10 @@ public class InteractHandler : ICommandHandler<InteractCommand, InteractResult>
 
         // Try "Deliver" objectives
         var deliveredQuests = questComponent.TryDeliver(targetName);
-        foreach(var qid in deliveredQuests) uniqueUpdates.Add(qid);
+        foreach (var qid in deliveredQuests)
+        {
+            uniqueUpdates.Add(qid);
+        }
 
         // If interaction was successful (e.g. Crafting done), try "Craft" objectives
         if (!string.IsNullOrEmpty(interactionType))

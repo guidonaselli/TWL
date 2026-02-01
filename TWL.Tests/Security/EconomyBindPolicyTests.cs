@@ -1,9 +1,7 @@
-using System.Linq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Models;
-using Xunit;
 
 namespace TWL.Tests.Security;
 
@@ -50,7 +48,7 @@ public class EconomyBindPolicyTests
     [Fact]
     public void EconomyManager_ShopBuy_Grants_Bound_Item_When_Configured()
     {
-        using var manager = new EconomyManager(System.IO.Path.GetTempFileName());
+        using var manager = new EconomyManager(Path.GetTempFileName());
         var character = new ServerCharacter { Id = 1, PremiumCurrency = 1000 };
 
         // Shop Item 3 is configured as BindOnPickup in EconomyManager (hardcoded mock data)
@@ -69,7 +67,7 @@ public class EconomyBindPolicyTests
     [Fact]
     public void EconomyManager_ShopBuy_Grants_Unbound_Item_When_Configured()
     {
-        using var manager = new EconomyManager(System.IO.Path.GetTempFileName());
+        using var manager = new EconomyManager(Path.GetTempFileName());
         var character = new ServerCharacter { Id = 1, PremiumCurrency = 1000 };
 
         // Shop Item 1 is configured as Unbound
@@ -95,7 +93,7 @@ public class EconomyBindPolicyTests
         source.AddItem(200, 1, BindPolicy.BindOnPickup);
 
         // Attempt transfer
-        bool success = tradeManager.TransferItem(source, target, 200, 1);
+        var success = tradeManager.TransferItem(source, target, 200, 1);
 
         Assert.False(success); // Should fail because it's bound
         Assert.False(target.HasItem(200, 1));
@@ -110,10 +108,10 @@ public class EconomyBindPolicyTests
         var target = new ServerCharacter { Id = 2 };
 
         // Add Unbound Item to Source
-        source.AddItem(200, 1, BindPolicy.Unbound);
+        source.AddItem(200, 1);
 
         // Attempt transfer
-        bool success = tradeManager.TransferItem(source, target, 200, 1);
+        var success = tradeManager.TransferItem(source, target, 200, 1);
 
         Assert.True(success);
         Assert.True(target.HasItem(200, 1));
@@ -123,7 +121,7 @@ public class EconomyBindPolicyTests
     [Fact]
     public void EconomyManager_Idempotency_Prevent_Double_Spend()
     {
-        using var manager = new EconomyManager(System.IO.Path.GetTempFileName());
+        using var manager = new EconomyManager(Path.GetTempFileName());
         var character = new ServerCharacter { Id = 1, PremiumCurrency = 100 }; // 100 Gems
 
         // Shop Item 1 costs 10 Gems.

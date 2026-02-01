@@ -1,9 +1,6 @@
-using System;
 using System.Net.Sockets;
 using System.Text.Json;
-using System.Threading;
 using System.Threading.Channels;
-using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
@@ -13,26 +10,26 @@ namespace TWL.Client.Presentation.Networking;
 
 public class NetworkClient
 {
-    private readonly string _ip;
-    private readonly ILogger<NetworkClient> _log;
-    private readonly int _port;
-
     // Configuration to be case-insensitive (PascalCase vs camelCase)
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
 
-    private GameClientManager _gameClientManager;
-    private NetworkStream? _stream;
-    private TcpClient _tcp;
-
-    private readonly Channel<NetMessage> _sendChannel;
-    private readonly Channel<NetMessage> _receiveChannel;
-    private CancellationTokenSource? _cts;
+    private readonly string _ip;
+    private readonly ILogger<NetworkClient> _log;
+    private readonly int _port;
 
     // Reusable buffer for receiving data to avoid repeated allocations
     private readonly byte[] _receiveBuffer = new byte[8192];
+    private readonly Channel<NetMessage> _receiveChannel;
+
+    private readonly Channel<NetMessage> _sendChannel;
+    private CancellationTokenSource? _cts;
+
+    private GameClientManager _gameClientManager;
+    private NetworkStream? _stream;
+    private TcpClient _tcp;
 
     public NetworkClient(string ip, int port, GameClientManager gameClientManager, ILogger<NetworkClient> log)
     {
@@ -91,14 +88,18 @@ public class NetworkClient
             {
                 // Async read to avoid blocking threads
                 // Use _receiveBuffer instead of allocating a new buffer
-                int read = await _stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length, token);
-                if (read == 0) break;
+                var read = await _stream.ReadAsync(_receiveBuffer, 0, _receiveBuffer.Length, token);
+                if (read == 0)
+                {
+                    break;
+                }
 
                 try
                 {
                     // OPTIMIZATION: Deserialize directly from Span<byte>, avoiding string allocation
                     // Using Source Generator Context for better performance
-                    var serverMsg = JsonSerializer.Deserialize(_receiveBuffer.AsSpan(0, read), AppJsonContext.Default.NetMessage);
+                    var serverMsg = JsonSerializer.Deserialize(_receiveBuffer.AsSpan(0, read),
+                        AppJsonContext.Default.NetMessage);
 
                     if (serverMsg != null)
                     {
@@ -117,14 +118,11 @@ public class NetworkClient
         }
         catch (Exception ex)
         {
-             Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
+            Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
         }
     }
 
-    private void HandleServerMessage(NetMessage serverMsg)
-    {
-        EventBus.Publish(serverMsg);
-    }
+    private void HandleServerMessage(NetMessage serverMsg) => EventBus.Publish(serverMsg);
 
     public void SendNetMessage(NetMessage message)
     {
@@ -148,7 +146,10 @@ public class NetworkClient
             {
                 while (_sendChannel.Reader.TryRead(out var message))
                 {
-                    if (_stream == null || !IsConnected) return;
+                    if (_stream == null || !IsConnected)
+                    {
+                        return;
+                    }
 
                     try
                     {

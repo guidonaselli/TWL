@@ -1,16 +1,15 @@
-using System.Collections.Generic;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests;
 
 public class QuestFlagsTests
 {
-    private readonly ServerQuestManager _questManager;
     private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public QuestFlagsTests()
     {
@@ -19,20 +18,20 @@ public class QuestFlagsTests
         var quests = new List<QuestDefinition>
         {
             // Quest 1: Normal, sets Flag "F1"
-            new QuestDefinition
+            new()
             {
                 QuestId = 1,
                 Title = "Flag Setter",
                 Description = "Desc",
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Talk", "Npc1", 1, "Talk")
+                    new("Talk", "Npc1", 1, "Talk")
                 },
                 Rewards = new RewardDefinition(10, 0, new List<ItemReward>()),
                 FlagsSet = new List<string> { "F1" }
             },
             // Quest 2: Requires "F1", clears "F1", sets "F2"
-            new QuestDefinition
+            new()
             {
                 QuestId = 2,
                 Title = "Flag Gated",
@@ -40,29 +39,29 @@ public class QuestFlagsTests
                 RequiredFlags = new List<string> { "F1" },
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Talk", "Npc2", 1, "Talk")
+                    new("Talk", "Npc2", 1, "Talk")
                 },
                 Rewards = new RewardDefinition(10, 0, new List<ItemReward>()),
                 FlagsClear = new List<string> { "F1" },
                 FlagsSet = new List<string> { "F2" }
             },
             // Quest 3: Repeatable
-            new QuestDefinition
+            new()
             {
                 QuestId = 3,
                 Title = "Repeatable Quest",
                 Description = "Desc",
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Kill", "Rat", 1, "Kill")
+                    new("Kill", "Rat", 1, "Kill")
                 },
                 Rewards = new RewardDefinition(5, 0, new List<ItemReward>()),
                 Repeatability = QuestRepeatability.Unlimited
             }
         };
 
-        string json = System.Text.Json.JsonSerializer.Serialize(quests);
-        System.IO.File.WriteAllText("test_flags_quests.json", json);
+        var json = JsonSerializer.Serialize(quests);
+        File.WriteAllText("test_flags_quests.json", json);
         _questManager.Load("test_flags_quests.json");
 
         _playerQuests = new PlayerQuestComponent(_questManager);
@@ -71,7 +70,7 @@ public class QuestFlagsTests
     [Fact(Skip = "Unrelated broken functionality")]
     public void StartQuest_ShouldFail_WhenMissingRequiredFlag()
     {
-        bool result = _playerQuests.StartQuest(2); // Requires F1
+        var result = _playerQuests.StartQuest(2); // Requires F1
         Assert.False(result);
     }
 
@@ -87,7 +86,7 @@ public class QuestFlagsTests
         Assert.Equal(QuestState.RewardClaimed, _playerQuests.QuestStates[1]);
 
         // 2. Start Quest 2 (Requires F1)
-        bool result = _playerQuests.StartQuest(2);
+        var result = _playerQuests.StartQuest(2);
         Assert.True(result);
 
         // 3. Complete Quest 2
@@ -112,7 +111,7 @@ public class QuestFlagsTests
         Assert.Equal(QuestState.RewardClaimed, _playerQuests.QuestStates[3]);
 
         // 3. Start Again
-        bool result = _playerQuests.StartQuest(3);
+        var result = _playerQuests.StartQuest(3);
         Assert.True(result);
         Assert.Equal(QuestState.InProgress, _playerQuests.QuestStates[3]);
         Assert.Equal(0, _playerQuests.QuestProgress[3][0]); // Progress reset
@@ -129,7 +128,7 @@ public class QuestFlagsTests
         _playerQuests.TryProgress("Talk", "Npc1");
         _playerQuests.ClaimReward(1);
 
-        bool result = _playerQuests.StartQuest(1);
+        var result = _playerQuests.StartQuest(1);
         Assert.False(result);
     }
 }

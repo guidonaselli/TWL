@@ -1,4 +1,3 @@
-using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
@@ -26,29 +25,24 @@ public class CombatManagerTests
 ]
 ";
 
-    public CombatManagerTests()
-    {
-        // SkillRegistry.Instance.LoadSkills(TestSkillJson);
-    }
-
     private ISkillCatalog CreateMockCatalog()
     {
         var catalog = new MockSkillCatalog();
-        var skill = new TWL.Shared.Domain.Skills.Skill
+        var skill = new Skill
         {
             SkillId = 999,
             Name = "Test Strike",
-            Element = TWL.Shared.Domain.Characters.Element.Earth,
-            Branch = TWL.Shared.Domain.Skills.SkillBranch.Physical,
-            TargetType = TWL.Shared.Domain.Skills.SkillTargetType.SingleEnemy,
+            Element = Element.Earth,
+            Branch = SkillBranch.Physical,
+            TargetType = SkillTargetType.SingleEnemy,
             SpCost = 0,
-            Scaling = new System.Collections.Generic.List<TWL.Shared.Domain.Skills.SkillScaling>
+            Scaling = new List<SkillScaling>
             {
-                new TWL.Shared.Domain.Skills.SkillScaling { Stat = TWL.Shared.Domain.Skills.StatType.Str, Coefficient = 2.0f }
+                new() { Stat = StatType.Str, Coefficient = 2.0f }
             },
-            Effects = new System.Collections.Generic.List<TWL.Shared.Domain.Skills.SkillEffect>
+            Effects = new List<SkillEffect>
             {
-                new TWL.Shared.Domain.Skills.SkillEffect { Tag = TWL.Shared.Domain.Skills.SkillEffectTag.Damage }
+                new() { Tag = SkillEffectTag.Damage }
             }
         };
         catalog.AddSkill(skill);
@@ -63,7 +57,7 @@ public class CombatManagerTests
         var mockRandom = new MockRandomService(0.5f);
         var catalog = CreateMockCatalog();
         var resolver = new StandardCombatResolver(mockRandom, catalog);
-        var manager = new CombatManager(resolver, mockRandom, catalog, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRandom, catalog, new StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 }; // Atk=200? No, Str=100.
         // Skill scaling: Str * 2 = 200.
@@ -94,7 +88,7 @@ public class CombatManagerTests
         var mockRandom = new MockRandomService(0.0f);
         var catalog = CreateMockCatalog();
         var resolver = new StandardCombatResolver(mockRandom, catalog);
-        var manager = new CombatManager(resolver, mockRandom, catalog, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRandom, catalog, new StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };
@@ -119,7 +113,7 @@ public class CombatManagerTests
         var mockRandom = new MockRandomService(1.0f);
         var catalog = CreateMockCatalog();
         var resolver = new StandardCombatResolver(mockRandom, catalog);
-        var manager = new CombatManager(resolver, mockRandom, catalog, new TWL.Server.Simulation.Managers.StatusEngine());
+        var manager = new CombatManager(resolver, mockRandom, catalog, new StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };

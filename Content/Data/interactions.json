@@ -4,7 +4,10 @@
     "Type": "Gather",
     "RequiredQuestId": 1052,
     "RewardItems": [
-      { "ItemId": 7502, "Quantity": 1 }
+      {
+        "ItemId": 7502,
+        "Quantity": 1
+      }
     ]
   },
   {
@@ -12,7 +15,10 @@
     "Type": "Gather",
     "RequiredQuestId": 1060,
     "RewardItems": [
-      { "ItemId": 7503, "Quantity": 1 }
+      {
+        "ItemId": 7503,
+        "Quantity": 1
+      }
     ]
   }
 ]

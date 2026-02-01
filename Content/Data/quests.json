@@ -22,7 +22,9 @@
     "QuestId": 1002,
     "Title": "Supervivencia Básica",
     "Description": "Necesitas fuego para sobrevivir la noche. Recoge madera a la deriva en la playa.",
-    "Requirements": [1001],
+    "Requirements": [
+      1001
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -35,7 +37,10 @@
       "Exp": 100,
       "Gold": 10,
       "Items": [
-        { "ItemId": 7316, "Quantity": 1 }
+        {
+          "ItemId": 7316,
+          "Quantity": 1
+        }
       ]
     }
   },
@@ -43,7 +48,9 @@
     "QuestId": 1003,
     "Title": "El Cangrejo Molesto",
     "Description": "Un cangrejo gigante está asustando a la niña en la orilla.",
-    "Requirements": [1001],
+    "Requirements": [
+      1001
+    ],
     "Objectives": [
       {
         "Type": "Kill",
@@ -62,7 +69,9 @@
     "QuestId": 1004,
     "Title": "Compañero Fiel",
     "Description": "Aprende a capturar una mascota para que te acompañe.",
-    "Requirements": [1002],
+    "Requirements": [
+      1002
+    ],
     "Objectives": [
       {
         "Type": "Capture",
@@ -100,7 +109,9 @@
     "QuestId": 1012,
     "Title": "A New Friend",
     "Description": "A colorful bird is watching you.",
-    "Requirements": [1010],
+    "Requirements": [
+      1010
+    ],
     "Objectives": [
       {
         "Type": "Talk",
@@ -128,13 +139,19 @@
         "Description": "Talk to Alchemist Elara."
       }
     ],
-    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 2002,
     "Title": "Gathering Ingredients",
     "Description": "Collect green herbs for the potion.",
-    "Requirements": [2001],
+    "Requirements": [
+      2001
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -143,13 +160,19 @@
         "Description": "Collect 5 Green Herbs."
       }
     ],
-    "Rewards": { "Exp": 100, "Gold": 20, "Items": [] }
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 20,
+      "Items": []
+    }
   },
   {
     "QuestId": 2003,
     "Title": "Basic Brew",
     "Description": "Brew a Minor Potion using the herbs.",
-    "Requirements": [2002],
+    "Requirements": [
+      2002
+    ],
     "Objectives": [
       {
         "Type": "Craft",
@@ -158,13 +181,24 @@
         "Description": "Craft 1 Minor Potion."
       }
     ],
-    "Rewards": { "Exp": 150, "Gold": 50, "Items": [{"ItemId": 3001, "Quantity": 1}] }
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 50,
+      "Items": [
+        {
+          "ItemId": 3001,
+          "Quantity": 1
+        }
+      ]
+    }
   },
   {
     "QuestId": 2004,
     "Title": "Delivery",
     "Description": "Deliver the potion to the Guard Captain.",
-    "Requirements": [2003],
+    "Requirements": [
+      2003
+    ],
     "Objectives": [
       {
         "Type": "Talk",
@@ -173,7 +207,11 @@
         "Description": "Deliver the potion to the Guard Captain."
       }
     ],
-    "Rewards": { "Exp": 200, "Gold": 100, "Items": [] }
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 100,
+      "Items": []
+    }
   },
   {
     "QuestId": 3001,
@@ -181,7 +219,9 @@
     "Description": "Demuestra tu fuerza para comenzar el entrenamiento.",
     "Requirements": [],
     "RequiredLevel": 2,
-    "RequiredStats": { "Str": 10 },
+    "RequiredStats": {
+      "Str": 10
+    },
     "Objectives": [
       {
         "Type": "Talk",
@@ -190,13 +230,19 @@
         "Description": "Habla con el Instructor."
       }
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 3002,
     "Title": "Materiales de Entrenamiento",
     "Description": "Trae madera para practicar cortes.",
-    "Requirements": [3001],
+    "Requirements": [
+      3001
+    ],
     "Objectives": [
       {
         "Type": "Deliver",
@@ -206,13 +252,19 @@
         "DataId": 7316
       }
     ],
-    "Rewards": { "Exp": 150, "Gold": 50, "Items": [] }
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 50,
+      "Items": []
+    }
   },
   {
     "QuestId": 3003,
     "Title": "Primera Sangre",
     "Description": "Elimina a los lobos que acechan el campamento.",
-    "Requirements": [3002],
+    "Requirements": [
+      3002
+    ],
     "Objectives": [
       {
         "Type": "Kill",
@@ -221,7 +273,11 @@
         "Description": "Derrota a 3 Lobos del Bosque."
       }
     ],
-    "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 100,
+      "Items": []
+    }
   },
   {
     "QuestId": 8001,
@@ -230,7 +286,9 @@
     "Type": "SpecialSkill",
     "SpecialCategory": "Dragon",
     "RequiredLevel": 10,
-    "RequiredStats": { "Str": 20 },
+    "RequiredStats": {
+      "Str": 20
+    },
     "Requirements": [],
     "Objectives": [
       {
@@ -262,13 +320,19 @@
         "Description": "Habla con el Pescador Viejo."
       }
     ],
-    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 1051,
     "Title": "La Fuente del Ruido",
     "Description": "Investiga la entrada de las cuevas y elimina a las bestias que bloquean el camino.",
-    "Requirements": [1050],
+    "Requirements": [
+      1050
+    ],
     "Objectives": [
       {
         "Type": "Kill",
@@ -277,13 +341,24 @@
         "Description": "Matar 3 Murciélago de Cueva."
       }
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [{"ItemId": 3001, "Quantity": 1}] }
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 3001,
+          "Quantity": 1
+        }
+      ]
+    }
   },
   {
     "QuestId": 1052,
     "Title": "Inscripciones Antiguas",
     "Description": "Hay extraños grabados en las paredes. Toma calcos para estudiarlos.",
-    "Requirements": [1051],
+    "Requirements": [
+      1051
+    ],
     "Objectives": [
       {
         "Type": "Interact",
@@ -292,13 +367,24 @@
         "Description": "Toma 3 Calcos de Piedra de los Grabados."
       }
     ],
-    "Rewards": { "Exp": 150, "Gold": 20, "Items": [{"ItemId": 7502, "Quantity": 3}] }
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 20,
+      "Items": [
+        {
+          "ItemId": 7502,
+          "Quantity": 3
+        }
+      ]
+    }
   },
   {
     "QuestId": 1053,
     "Title": "El Guardián de Piedra",
     "Description": "Un gólem bloquea el altar interior. Derrótalo.",
-    "Requirements": [1052],
+    "Requirements": [
+      1052
+    ],
     "Objectives": [
       {
         "Type": "Kill",
@@ -307,14 +393,30 @@
         "Description": "Matar 1 Gólem de Piedra."
       }
     ],
-    "Rewards": { "Exp": 300, "Gold": 0, "Items": [{"ItemId": 7501, "Quantity": 1}] }
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 7501,
+          "Quantity": 1
+        }
+      ]
+    }
   },
   {
     "QuestId": 1054,
     "Title": "Un Pequeño Amigo",
     "Description": "El fragmento brilla cerca del altar. Úsalo para despertar al espíritu.",
-    "Requirements": [1053],
-    "RequiredItems": [ { "ItemId": 7501, "Quantity": 1 } ],
+    "Requirements": [
+      1053
+    ],
+    "RequiredItems": [
+      {
+        "ItemId": 7501,
+        "Quantity": 1
+      }
+    ],
     "Objectives": [
       {
         "Type": "Talk",
@@ -323,8 +425,15 @@
         "Description": "Hablar con Altar Antiguo."
       }
     ],
-    "FlagsSet": ["Unlock_FairyLight"],
-    "Rewards": { "Exp": 0, "Gold": 0, "Items": [], "PetUnlockId": 1003 }
+    "FlagsSet": [
+      "Unlock_FairyLight"
+    ],
+    "Rewards": {
+      "Exp": 0,
+      "Gold": 0,
+      "Items": [],
+      "PetUnlockId": 1003
+    }
   },
   {
     "QuestId": 1060,
@@ -339,7 +448,16 @@
         "Description": "Recuperar la Caja a la Deriva."
       }
     ],
-    "Rewards": { "Exp": 0, "Gold": 50, "Items": [{"ItemId": 7503, "Quantity": 1}] }
+    "Rewards": {
+      "Exp": 0,
+      "Gold": 50,
+      "Items": [
+        {
+          "ItemId": 7503,
+          "Quantity": 1
+        }
+      ]
+    }
   },
   {
     "QuestId": 8002,
@@ -348,7 +466,9 @@
     "Type": "SpecialSkill",
     "SpecialCategory": "Fairy",
     "RequiredLevel": 10,
-    "RequiredStats": { "Wis": 20 },
+    "RequiredStats": {
+      "Wis": 20
+    },
     "Requirements": [],
     "Objectives": [
       {
@@ -371,7 +491,9 @@
     "QuestId": 1100,
     "Title": "Partida Inminente",
     "Description": "La caravana está lista para partir. Habla con el Líder de la Caravana.",
-    "Requirements": [1004],
+    "Requirements": [
+      1004
+    ],
     "Objectives": [
       {
         "Type": "Talk",
@@ -380,13 +502,24 @@
         "Description": "Habla con el Líder de la Caravana."
       }
     ],
-    "Rewards": { "Exp": 50, "Gold": 0, "Items": [{"ItemId": 3001, "Quantity": 3}] }
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 3001,
+          "Quantity": 3
+        }
+      ]
+    }
   },
   {
     "QuestId": 1101,
     "Title": "El Camino del Bosque",
     "Description": "Sigue el sendero hacia el Bosque del Norte.",
-    "Requirements": [1100],
+    "Requirements": [
+      1100
+    ],
     "Objectives": [
       {
         "Type": "Interact",
@@ -395,13 +528,19 @@
         "Description": "Interactúa con el Sendero Norte."
       }
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 1102,
     "Title": "Peligros del Camino",
     "Description": "Bandidos acechan el camino. Despeja la ruta.",
-    "Requirements": [1101],
+    "Requirements": [
+      1101
+    ],
     "Objectives": [
       {
         "Type": "Kill",
@@ -410,13 +549,19 @@
         "Description": "Derrota a 2 Bandidos del Camino."
       }
     ],
-    "Rewards": { "Exp": 200, "Gold": 50, "Items": [] }
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": []
+    }
   },
   {
     "QuestId": 1103,
     "Title": "Llegada a Puerto Roca",
     "Description": "Has llegado a las puertas de la ciudad. Entra.",
-    "Requirements": [1102],
+    "Requirements": [
+      1102
+    ],
     "Objectives": [
       {
         "Type": "Interact",
@@ -425,13 +570,19 @@
         "Description": "Interactúa con la Puerta de la Ciudad."
       }
     ],
-    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 1104,
     "Title": "Ciudadano Nuevo",
     "Description": "Regístrate en el Ayuntamiento para obtener acceso a la ciudad.",
-    "Requirements": [1103],
+    "Requirements": [
+      1103
+    ],
     "Objectives": [
       {
         "Type": "Talk",
@@ -440,7 +591,11 @@
         "Description": "Habla con el Funcionario de Registro."
       }
     ],
-    "Rewards": { "Exp": 100, "Gold": 100, "Items": [] }
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 100,
+      "Items": []
+    }
   },
   {
     "QuestId": 9001,
@@ -456,13 +611,19 @@
         "Description": "Talk to the Estate Agent."
       }
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 9002,
     "Title": "Building Blocks",
     "Description": "Gather materials to demonstrate your resourcefulness.",
-    "Requirements": [9001],
+    "Requirements": [
+      9001
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -479,13 +640,19 @@
         "DataId": 7301
       }
     ],
-    "Rewards": { "Exp": 200, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 9003,
     "Title": "The Price of Land",
     "Description": "A fee is required to register your claim.",
-    "Requirements": [9002],
+    "Requirements": [
+      9002
+    ],
     "Objectives": [
       {
         "Type": "PayGold",
@@ -494,13 +661,19 @@
         "Description": "Pay 500 Gold fee."
       }
     ],
-    "Rewards": { "Exp": 300, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 9004,
     "Title": "Landowner",
     "Description": "Finalize your registration and receive your tent.",
-    "Requirements": [9003],
+    "Requirements": [
+      9003
+    ],
     "Objectives": [
       {
         "Type": "Talk",
@@ -509,12 +682,17 @@
         "Description": "Talk to the Estate Agent to finalize."
       }
     ],
-    "FlagsSet": ["HOUSING_UNLOCKED"],
+    "FlagsSet": [
+      "HOUSING_UNLOCKED"
+    ],
     "Rewards": {
       "Exp": 1000,
       "Gold": 0,
       "Items": [
-        { "ItemId": 800, "Quantity": 1 }
+        {
+          "ItemId": 800,
+          "Quantity": 1
+        }
       ]
     }
   },
@@ -522,7 +700,9 @@
     "QuestId": 1200,
     "Title": "Seaworthy Vessel",
     "Description": "Construct a Canoe to explore the nearby islands.",
-    "Requirements": [1002],
+    "Requirements": [
+      1002
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -538,14 +718,27 @@
         "Description": "Craft a Canoe (or Interact with Workbench)."
       }
     ],
-    "Rewards": { "Exp": 500, "Gold": 0, "Items": [{ "ItemId": 1200, "Quantity": 1 }] },
-    "FlagsSet": ["VEHICLE_CANOE_UNLOCKED"]
+    "Rewards": {
+      "Exp": 500,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 1200,
+          "Quantity": 1
+        }
+      ]
+    },
+    "FlagsSet": [
+      "VEHICLE_CANOE_UNLOCKED"
+    ]
   },
   {
     "QuestId": 1201,
     "Title": "Into the Deep",
     "Description": "Build a Raft to traverse the open ocean.",
-    "Requirements": [1200],
+    "Requirements": [
+      1200
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -560,7 +753,18 @@
         "Description": "Compound a Raft structure."
       }
     ],
-    "Rewards": { "Exp": 1000, "Gold": 0, "Items": [{ "ItemId": 1201, "Quantity": 1 }] },
-    "FlagsSet": ["VEHICLE_RAFT_UNLOCKED"]
+    "Rewards": {
+      "Exp": 1000,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 1201,
+          "Quantity": 1
+        }
+      ]
+    },
+    "FlagsSet": [
+      "VEHICLE_RAFT_UNLOCKED"
+    ]
   }
 ]

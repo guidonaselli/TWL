@@ -1,5 +1,3 @@
-using System;
-using System.Linq;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -10,12 +8,13 @@ namespace TWL.Server.Services;
 
 public class PetService : IPetService
 {
-    private readonly PlayerService _playerService;
-    private readonly PetManager _petManager;
     private readonly CombatManager _combatManager;
+    private readonly PetManager _petManager;
+    private readonly PlayerService _playerService;
     private readonly IRandomService _random;
 
-    public PetService(PlayerService playerService, PetManager petManager, CombatManager combatManager, IRandomService random)
+    public PetService(PlayerService playerService, PetManager petManager, CombatManager combatManager,
+        IRandomService random)
     {
         _playerService = playerService;
         _petManager = petManager;
@@ -25,23 +24,24 @@ public class PetService : IPetService
         _combatManager.OnCombatantDeath += HandlePetDeath;
     }
 
-    private void HandlePetDeath(ServerCombatant victim)
-    {
-        if (victim is ServerPet pet)
-        {
-            pet.Die();
-        }
-    }
-
     public string CreatePet(int ownerId, int definitionId)
     {
         var session = _playerService.GetSession(ownerId);
-        if (session == null || session.Character == null) return null;
+        if (session == null || session.Character == null)
+        {
+            return null;
+        }
 
         var def = _petManager.GetDefinition(definitionId);
-        if (def == null) return null;
+        if (def == null)
+        {
+            return null;
+        }
 
-        if (session.Character.Pets.Count >= 5) return null;
+        if (session.Character.Pets.Count >= 5)
+        {
+            return null;
+        }
 
         var pet = new ServerPet(def);
         session.Character.AddPet(pet);
@@ -51,28 +51,49 @@ public class PetService : IPetService
     public string CaptureEnemy(int ownerId, int enemyCombatantId)
     {
         var session = _playerService.GetSession(ownerId);
-        if (session == null || session.Character == null) return null;
+        if (session == null || session.Character == null)
+        {
+            return null;
+        }
 
         // 1. Validate Target
         var target = _combatManager.GetCombatant(enemyCombatantId);
-        if (target is not ServerEnemy enemy) return null; // Can only capture enemies
+        if (target is not ServerEnemy enemy)
+        {
+            return null; // Can only capture enemies
+        }
 
         // Security: Prevent capturing dead enemies (Anti-dupe)
-        if (enemy.Hp <= 0) return null;
+        if (enemy.Hp <= 0)
+        {
+            return null;
+        }
 
         // 2. Validate Enemy Definition
-        if (!enemy.Definition.IsCapturable || enemy.Definition.PetTypeId == null) return null;
+        if (!enemy.Definition.IsCapturable || enemy.Definition.PetTypeId == null)
+        {
+            return null;
+        }
 
         // 3. Validate HP Threshold
-        float hpPercent = (float)enemy.Hp / enemy.MaxHp;
-        if (hpPercent > enemy.Definition.CaptureThreshold) return null; // Too healthy
+        var hpPercent = (float)enemy.Hp / enemy.MaxHp;
+        if (hpPercent > enemy.Definition.CaptureThreshold)
+        {
+            return null; // Too healthy
+        }
 
         // 4. Validate Pet Definition Rules
         var petDef = _petManager.GetDefinition(enemy.Definition.PetTypeId.Value);
-        if (petDef == null || petDef.CaptureRules == null || !petDef.CaptureRules.IsCapturable) return null;
+        if (petDef == null || petDef.CaptureRules == null || !petDef.CaptureRules.IsCapturable)
+        {
+            return null;
+        }
 
         // 5. Level Check
-        if (session.Character.Level < petDef.CaptureRules.LevelLimit) return null;
+        if (session.Character.Level < petDef.CaptureRules.LevelLimit)
+        {
+            return null;
+        }
 
         // 6. Check Item Requirement & Consume (On Attempt)
         if (petDef.CaptureRules.RequiredItemId.HasValue)
@@ -84,14 +105,14 @@ public class PetService : IPetService
         }
 
         // 7. Calculate Chance
-        float baseChance = petDef.CaptureRules.BaseChance;
-        float hpBonus = (1.0f - hpPercent) * 0.5f; // Up to +50% capture rate if 0 HP
-        float totalChance = baseChance + hpBonus;
+        var baseChance = petDef.CaptureRules.BaseChance;
+        var hpBonus = (1.0f - hpPercent) * 0.5f; // Up to +50% capture rate if 0 HP
+        var totalChance = baseChance + hpBonus;
 
         // 8. Roll
         if (_random.NextFloat() > totalChance)
         {
-             return null; // Failed capture
+            return null; // Failed capture
         }
 
         // 9. Success!
@@ -110,15 +131,28 @@ public class PetService : IPetService
     public bool RevivePet(int ownerId, string petInstanceId)
     {
         var session = _playerService.GetSession(ownerId);
-        if (session == null || session.Character == null) return false;
+        if (session == null || session.Character == null)
+        {
+            return false;
+        }
 
         var pet = GetPet(ownerId, petInstanceId);
-        if (pet == null) return false;
+        if (pet == null)
+        {
+            return false;
+        }
 
-        if (!pet.IsDead) return false;
-        if (pet.IsExpired) return false; // Cannot revive expired pets
+        if (!pet.IsDead)
+        {
+            return false;
+        }
 
-        int cost = pet.Level * 50; // Simple cost formula
+        if (pet.IsExpired)
+        {
+            return false; // Cannot revive expired pets
+        }
+
+        var cost = pet.Level * 50; // Simple cost formula
         if (!session.Character.TryConsumeGold(cost))
         {
             return false;
@@ -131,7 +165,10 @@ public class PetService : IPetService
     public bool DismissPet(int ownerId, string petInstanceId)
     {
         var session = _playerService.GetSession(ownerId);
-        if (session == null || session.Character == null) return false;
+        if (session == null || session.Character == null)
+        {
+            return false;
+        }
 
         // If active, unregister first
         var active = session.Character.GetActivePet();
@@ -147,7 +184,10 @@ public class PetService : IPetService
     public bool AddExperience(int ownerId, string petInstanceId, int amount)
     {
         var pet = GetPet(ownerId, petInstanceId);
-        if (pet == null) return false;
+        if (pet == null)
+        {
+            return false;
+        }
 
         pet.AddExp(amount);
         return true;
@@ -156,7 +196,10 @@ public class PetService : IPetService
     public bool ModifyAmity(int ownerId, string petInstanceId, int amount)
     {
         var pet = GetPet(ownerId, petInstanceId);
-        if (pet == null) return false;
+        if (pet == null)
+        {
+            return false;
+        }
 
         pet.ChangeAmity(amount);
         return true;
@@ -165,7 +208,10 @@ public class PetService : IPetService
     public bool TryRebirth(int ownerId, string petInstanceId)
     {
         var pet = GetPet(ownerId, petInstanceId);
-        if (pet == null) return false;
+        if (pet == null)
+        {
+            return false;
+        }
 
         return pet.TryRebirth();
     }
@@ -173,7 +219,10 @@ public class PetService : IPetService
     public bool SwitchPet(int ownerId, string petInstanceId)
     {
         var session = _playerService.GetSession(ownerId);
-        if (session == null || session.Character == null) return false;
+        if (session == null || session.Character == null)
+        {
+            return false;
+        }
 
         var chara = session.Character;
 
@@ -184,7 +233,10 @@ public class PetService : IPetService
         }
 
         var targetPet = GetPet(ownerId, petInstanceId);
-        if (targetPet == null || targetPet.IsExpired) return false;
+        if (targetPet == null || targetPet.IsExpired)
+        {
+            return false;
+        }
 
         var oldPet = chara.GetActivePet();
 
@@ -195,8 +247,11 @@ public class PetService : IPetService
         }
 
         // 2. Set new Active Pet
-        bool success = chara.SetActivePet(petInstanceId);
-        if (!success) return false;
+        var success = chara.SetActivePet(petInstanceId);
+        if (!success)
+        {
+            return false;
+        }
 
         chara.LastPetSwitchTime = DateTime.UtcNow;
 
@@ -213,13 +268,27 @@ public class PetService : IPetService
         return true;
     }
 
+    private void HandlePetDeath(ServerCombatant victim)
+    {
+        if (victim is ServerPet pet)
+        {
+            pet.Die();
+        }
+    }
+
     public bool UseUtility(int ownerId, string petInstanceId, PetUtilityType type)
     {
         var pet = GetPet(ownerId, petInstanceId);
-        if (pet == null) return false;
+        if (pet == null)
+        {
+            return false;
+        }
 
-        float value = pet.GetUtilityValue(type);
-        if (value <= 0) return false;
+        var value = pet.GetUtilityValue(type);
+        if (value <= 0)
+        {
+            return false;
+        }
 
         // Apply utility logic
         // For now just return true as "Activated"
@@ -233,7 +302,10 @@ public class PetService : IPetService
     private ServerPet? GetPet(int ownerId, string petInstanceId)
     {
         var session = _playerService.GetSession(ownerId);
-        if (session == null || session.Character == null) return null;
+        if (session == null || session.Character == null)
+        {
+            return null;
+        }
 
         return session.Character.Pets.FirstOrDefault(p => p.InstanceId == petInstanceId);
     }

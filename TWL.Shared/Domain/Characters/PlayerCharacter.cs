@@ -1,211 +1,236 @@
+using Microsoft.Xna.Framework;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Graphics;
-using Microsoft.Xna.Framework;
 
-namespace TWL.Shared.Domain.Characters
+namespace TWL.Shared.Domain.Characters;
+
+public class PlayerCharacter : Character
 {
-    public class PlayerCharacter : Character
+    // Collision & Movement
+    private bool[,] _collisionGrid;
+
+    private Queue<Point> _currentPath;
+    private Vector2 _targetPosition;
+
+    public PlayerCharacter(Guid guidId, string name, Element element)
+        : base(name, element)
     {
-        public Guid GuidId { get; private set; }
-
-        public PlayerColorsDto Colors { get; set; } = new PlayerColorsDto();
-        public CharacterAppearance Appearance { get; set; } = new CharacterAppearance();
-
-        // Resources
-        public int Gold { get; set; }
-        public int TwlPoints { get; set; }
-
-        // Inventory & Pets
-        public Inventory Inventory { get; private set; }
-        public List<PetCharacter> Pets { get; private set; }
-
-        // Progression
-        public int Level { get; private set; }
-        public int Exp { get; private set; }
-        public int ExpToNextLevel { get; private set; }
-        public int StatPoints { get; private set; }
-
-        // Collision & Movement
-        private bool[,] _collisionGrid;
-        public int MapWidth { get; private set; }
-        public int MapHeight { get; private set; }
-        public int TileWidth { get; private set; } = 32;
-        public int TileHeight { get; private set; } = 32;
-
-        private Queue<Point> _currentPath;
-        private Vector2 _targetPosition;
-        private bool _isMoving;
-
-        public bool IsMoving => _isMoving;
-
-        public PlayerCharacter(Guid guidId, string name, Element element)
-            : base(name, element)
+        if (element == Element.None)
         {
-            if (element == Element.None)
-                throw new ArgumentException("PlayerCharacter cannot be Element.None", nameof(element));
-
-            GuidId = guidId;
-            Inventory = new Inventory();
-            Pets = new List<PetCharacter>();
-
-            Level = 1;
-            Exp = 0;
-            ExpToNextLevel = 100;
-
-            Str = 8;
-            Con = 8;
-            Int = 8;
-            Wis = 8;
-            Agi = 8;
-
-            Gold = 0;
-            TwlPoints = 0;
-
-            UpdateDerivedStats();
-            Health = MaxHealth;
-            Sp = MaxSp;
+            throw new ArgumentException("PlayerCharacter cannot be Element.None", nameof(element));
         }
 
-        public PlayerCharacter(Guid guidId, string name, Element element, PlayerColorsDto colors)
-            : this(guidId, name, element)
+        GuidId = guidId;
+        Inventory = new Inventory();
+        Pets = new List<PetCharacter>();
+
+        Level = 1;
+        Exp = 0;
+        ExpToNextLevel = 100;
+
+        Str = 8;
+        Con = 8;
+        Int = 8;
+        Wis = 8;
+        Agi = 8;
+
+        Gold = 0;
+        TwlPoints = 0;
+
+        UpdateDerivedStats();
+        Health = MaxHealth;
+        Sp = MaxSp;
+    }
+
+    public PlayerCharacter(Guid guidId, string name, Element element, PlayerColorsDto colors)
+        : this(guidId, name, element)
+    {
+        Colors = colors;
+    }
+
+    public Guid GuidId { get; private set; }
+
+    public PlayerColorsDto Colors { get; set; } = new();
+    public CharacterAppearance Appearance { get; set; } = new();
+
+    // Resources
+    public int Gold { get; set; }
+    public int TwlPoints { get; set; }
+
+    // Inventory & Pets
+    public Inventory Inventory { get; }
+    public List<PetCharacter> Pets { get; }
+
+    // Progression
+    public int Level { get; private set; }
+    public int Exp { get; private set; }
+    public int ExpToNextLevel { get; private set; }
+    public int StatPoints { get; private set; }
+    public int MapWidth { get; private set; }
+    public int MapHeight { get; private set; }
+    public int TileWidth { get; } = 32;
+    public int TileHeight { get; } = 32;
+
+    public bool IsMoving { get; private set; }
+
+    public void SetCollisionInfo(bool[,] grid, int width, int height)
+    {
+        _collisionGrid = grid;
+        MapWidth = width;
+        MapHeight = height;
+    }
+
+    public bool IsColliding(Vector2 position)
+    {
+        if (_collisionGrid == null)
         {
-            Colors = colors;
+            return false;
         }
 
-        public void SetCollisionInfo(bool[,] grid, int width, int height)
+        var x = (int)(position.X / TileWidth);
+        var y = (int)(position.Y / TileHeight);
+
+        if (x < 0 || x >= MapWidth || y < 0 || y >= MapHeight)
         {
-            _collisionGrid = grid;
-            MapWidth = width;
-            MapHeight = height;
+            return true;
         }
 
-        public bool IsColliding(Vector2 position)
-        {
-            if (_collisionGrid == null) return false;
-            int x = (int)(position.X / TileWidth);
-            int y = (int)(position.Y / TileHeight);
+        return _collisionGrid[x, y];
+    }
 
-            if (x < 0 || x >= MapWidth || y < 0 || y >= MapHeight) return true;
-            return _collisionGrid[x, y];
+    public void SetPath(List<Point> path)
+    {
+        _currentPath = new Queue<Point>(path);
+        IsMoving = true;
+        if (_currentPath.Count > 0)
+        {
+            var next = _currentPath.Dequeue();
+            _targetPosition = new Vector2(next.X * TileWidth, next.Y * TileHeight);
         }
+    }
 
-        public void SetPath(List<Point> path)
+    public override void Update(GameTime gameTime)
+    {
+        // Handle Path Movement
+        if (IsMoving && _currentPath != null)
         {
-            _currentPath = new Queue<Point>(path);
-            _isMoving = true;
-            if (_currentPath.Count > 0)
+            var dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+            var step = MovementSpeed * 60f * dt;
+
+            if (Vector2.Distance(Position, _targetPosition) < step)
             {
-                var next = _currentPath.Dequeue();
-                _targetPosition = new Vector2(next.X * TileWidth, next.Y * TileHeight);
-            }
-        }
-
-        public override void Update(GameTime gameTime)
-        {
-            // Handle Path Movement
-            if (_isMoving && _currentPath != null)
-            {
-                float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
-                float step = MovementSpeed * 60f * dt;
-
-                if (Vector2.Distance(Position, _targetPosition) < step)
+                Position = _targetPosition;
+                if (_currentPath.Count > 0)
                 {
-                    Position = _targetPosition;
-                    if (_currentPath.Count > 0)
-                    {
-                        var next = _currentPath.Dequeue();
-                        _targetPosition = new Vector2(next.X * TileWidth, next.Y * TileHeight);
-                    }
-                    else
-                    {
-                        _isMoving = false;
-                    }
+                    var next = _currentPath.Dequeue();
+                    _targetPosition = new Vector2(next.X * TileWidth, next.Y * TileHeight);
                 }
                 else
                 {
-                    Vector2 dir = _targetPosition - Position;
-                    dir.Normalize();
-                    Position += dir * step;
+                    IsMoving = false;
                 }
             }
-
-            // MovementController call removed. Should be handled by Client.
-
-            base.Update(gameTime);
-        }
-
-        public void GainExp(int amount)
-        {
-            Exp += amount;
-            while (Exp >= ExpToNextLevel)
+            else
             {
-                Exp -= ExpToNextLevel;
-                Level++;
-                ExpToNextLevel = (int)(ExpToNextLevel * 1.2);
-
-                StatPoints += 3;
-
-                UpdateDerivedStats();
-
-                Health = MaxHealth;
-                Sp = MaxSp;
+                var dir = _targetPosition - Position;
+                dir.Normalize();
+                Position += dir * step;
             }
         }
 
-        public void UpdateDerivedStats()
+        // MovementController call removed. Should be handled by Client.
+
+        base.Update(gameTime);
+    }
+
+    public void GainExp(int amount)
+    {
+        Exp += amount;
+        while (Exp >= ExpToNextLevel)
         {
-            MaxHealth = Con * 10;
-            MaxSp = Int * 5;
+            Exp -= ExpToNextLevel;
+            Level++;
+            ExpToNextLevel = (int)(ExpToNextLevel * 1.2);
 
-            if (Health > MaxHealth) Health = MaxHealth;
-            if (Sp > MaxSp) Sp = MaxSp;
-        }
-
-        public void AddGold(int amount) => Gold = Math.Max(0, Gold + amount);
-        public void AddTwlPoints(int amount) => TwlPoints = Math.Max(0, TwlPoints + amount);
-
-        public void AddItem(int itemId, int quantity = 1) => Inventory.AddItem(itemId, quantity);
-        public void RemoveItem(int itemId, int quantity = 1) => Inventory.RemoveItem(itemId, quantity);
-
-        public void AddPet(PetCharacter pet)
-        {
-            if (Pets.All(p => p.Id != pet.Id)) Pets.Add(pet);
-        }
-        public void RemovePet(int petId)
-        {
-            var pet = Pets.FirstOrDefault(p => p.Id == petId);
-            if (pet != null) Pets.Remove(pet);
-        }
-
-        public void Heal(int amount) => Health = Math.Min(MaxHealth, Health + amount);
-        public void TakeDamage(int amount) => Health = Math.Max(0, Health - amount);
-        public void RestoreMana(int amount) => Sp = Math.Min(MaxSp, Sp + amount);
-        public void SpendMana(int amount) => Sp = Math.Max(0, Sp - amount);
-
-        public void Rebirth()
-        {
-            if (Level < 100) throw new InvalidOperationException("Need level 100 to rebirth.");
-
-            Level = 1;
-            Exp = 0;
-            ExpToNextLevel = 100;
-
-            Str += 10;
-            Con += 10;
-            Int += 10;
-            Wis += 10;
-            Agi += 10;
+            StatPoints += 3;
 
             UpdateDerivedStats();
+
             Health = MaxHealth;
             Sp = MaxSp;
         }
+    }
 
-        public void SetProgress(int level, int exp, int expToNextLevel)
+    public void UpdateDerivedStats()
+    {
+        MaxHealth = Con * 10;
+        MaxSp = Int * 5;
+
+        if (Health > MaxHealth)
         {
-            Level = level;
-            Exp = exp;
-            ExpToNextLevel = expToNextLevel;
+            Health = MaxHealth;
         }
+
+        if (Sp > MaxSp)
+        {
+            Sp = MaxSp;
+        }
+    }
+
+    public void AddGold(int amount) => Gold = Math.Max(0, Gold + amount);
+    public void AddTwlPoints(int amount) => TwlPoints = Math.Max(0, TwlPoints + amount);
+
+    public void AddItem(int itemId, int quantity = 1) => Inventory.AddItem(itemId, quantity);
+    public void RemoveItem(int itemId, int quantity = 1) => Inventory.RemoveItem(itemId, quantity);
+
+    public void AddPet(PetCharacter pet)
+    {
+        if (Pets.All(p => p.Id != pet.Id))
+        {
+            Pets.Add(pet);
+        }
+    }
+
+    public void RemovePet(int petId)
+    {
+        var pet = Pets.FirstOrDefault(p => p.Id == petId);
+        if (pet != null)
+        {
+            Pets.Remove(pet);
+        }
+    }
+
+    public void Heal(int amount) => Health = Math.Min(MaxHealth, Health + amount);
+    public void TakeDamage(int amount) => Health = Math.Max(0, Health - amount);
+    public void RestoreMana(int amount) => Sp = Math.Min(MaxSp, Sp + amount);
+    public void SpendMana(int amount) => Sp = Math.Max(0, Sp - amount);
+
+    public void Rebirth()
+    {
+        if (Level < 100)
+        {
+            throw new InvalidOperationException("Need level 100 to rebirth.");
+        }
+
+        Level = 1;
+        Exp = 0;
+        ExpToNextLevel = 100;
+
+        Str += 10;
+        Con += 10;
+        Int += 10;
+        Wis += 10;
+        Agi += 10;
+
+        UpdateDerivedStats();
+        Health = MaxHealth;
+        Sp = MaxSp;
+    }
+
+    public void SetProgress(int level, int exp, int expToNextLevel)
+    {
+        Level = level;
+        Exp = exp;
+        ExpToNextLevel = expToNextLevel;
     }
 }

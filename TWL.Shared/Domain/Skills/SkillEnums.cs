@@ -6,8 +6,8 @@ namespace TWL.Shared.Domain.Skills;
 public enum SkillBranch
 {
     Physical, // ATK
-    Magical,  // MATK
-    Support   // SUPPORT
+    Magical, // MATK
+    Support // SUPPORT
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -73,16 +73,16 @@ public enum RebirthClass
 public enum StackingPolicy
 {
     NoStackOverwrite, // Default: New overwrites old
-    RefreshDuration,  // Refresh duration only
-    StackUpToN,       // Increment stack count up to N
+    RefreshDuration, // Refresh duration only
+    StackUpToN, // Increment stack count up to N
     SeparateInstances // Allow multiple instances
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum OutcomeModel
 {
-    Full,     // Standard application
-    Partial,  // Duration/Magnitude reduced
-    Resist,   // Failed application due to resistance
-    Immunity  // Hard immunity
+    Full, // Standard application
+    Partial, // Duration/Magnitude reduced
+    Resist, // Failed application due to resistance
+    Immunity // Hard immunity
 }

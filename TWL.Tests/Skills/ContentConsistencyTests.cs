@@ -1,10 +1,6 @@
-using System;
-using System.IO;
-using System.Linq;
 using System.Reflection;
-using TWL.Shared.Domain.Skills;
 using TWL.Shared.Domain.Characters;
-using Xunit;
+using TWL.Shared.Domain.Skills;
 
 namespace TWL.Tests.Skills;
 
@@ -19,7 +15,8 @@ public class ContentConsistencyTests
         var json = File.ReadAllText(path);
 
         // Reset/Init Registry
-        var ctor = typeof(SkillRegistry).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+        var ctor = typeof(SkillRegistry).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null,
+            Type.EmptyTypes, null);
         var registry = (SkillRegistry)ctor.Invoke(null);
         registry.LoadSkills(json);
         _skillCatalog = registry;

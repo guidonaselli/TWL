@@ -1,12 +1,7 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.Json;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using TWL.Server.Domain.World;
-using TWL.Shared.Domain.World;
 
 namespace TWL.Server.Services.World;
 
@@ -33,7 +28,7 @@ public class MapLoader
         }
         catch (Exception ex)
         {
-             throw new Exception($"Failed to load TMX XML: {tmxPath}. Error: {ex.Message}", ex);
+            throw new Exception($"Failed to load TMX XML: {tmxPath}. Error: {ex.Message}", ex);
         }
 
         var root = doc.Element("map");
@@ -45,36 +40,52 @@ public class MapLoader
         var map = new ServerMap();
 
         // TMX attributes
-        if (int.TryParse(root.Attribute("width")?.Value, out var w)) map.Width = w;
-        if (int.TryParse(root.Attribute("height")?.Value, out var h)) map.Height = h;
-        if (int.TryParse(root.Attribute("tilewidth")?.Value, out var tw)) map.TileWidth = tw;
-        if (int.TryParse(root.Attribute("tileheight")?.Value, out var th)) map.TileHeight = th;
+        if (int.TryParse(root.Attribute("width")?.Value, out var w))
+        {
+            map.Width = w;
+        }
+
+        if (int.TryParse(root.Attribute("height")?.Value, out var h))
+        {
+            map.Height = h;
+        }
+
+        if (int.TryParse(root.Attribute("tilewidth")?.Value, out var tw))
+        {
+            map.TileWidth = tw;
+        }
+
+        if (int.TryParse(root.Attribute("tileheight")?.Value, out var th))
+        {
+            map.TileHeight = th;
+        }
 
         // Parse ID from meta.json if exists
-        string metaPath = Path.ChangeExtension(tmxPath, ".meta.json");
+        var metaPath = Path.ChangeExtension(tmxPath, ".meta.json");
         if (File.Exists(metaPath))
         {
-             try
-             {
-                 var json = File.ReadAllText(metaPath);
-                 using var jsonDoc = JsonDocument.Parse(json);
-                 if (jsonDoc.RootElement.TryGetProperty("MapId", out var mapIdProp))
-                 {
-                     map.Id = mapIdProp.GetInt32();
-                 }
-                 if (jsonDoc.RootElement.TryGetProperty("Name", out var nameProp))
-                 {
-                     map.Name = nameProp.GetString() ?? string.Empty;
-                 }
-             }
-             catch(Exception ex)
-             {
-                 _logger.LogWarning(ex, "Failed to parse meta.json for map {Path}", tmxPath);
-             }
+            try
+            {
+                var json = File.ReadAllText(metaPath);
+                using var jsonDoc = JsonDocument.Parse(json);
+                if (jsonDoc.RootElement.TryGetProperty("MapId", out var mapIdProp))
+                {
+                    map.Id = mapIdProp.GetInt32();
+                }
+
+                if (jsonDoc.RootElement.TryGetProperty("Name", out var nameProp))
+                {
+                    map.Name = nameProp.GetString() ?? string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to parse meta.json for map {Path}", tmxPath);
+            }
         }
         else
         {
-             _logger.LogWarning("No meta.json found for map {Path}, MapId will be 0", tmxPath);
+            _logger.LogWarning("No meta.json found for map {Path}, MapId will be 0", tmxPath);
         }
 
         var objectGroups = root.Elements("objectgroup").ToList();
@@ -113,10 +124,25 @@ public class MapLoader
             Properties = ParseProperties(obj)
         };
 
-        if (float.TryParse(obj.Attribute("x")?.Value, out var x)) trigger.X = x;
-        if (float.TryParse(obj.Attribute("y")?.Value, out var y)) trigger.Y = y;
-        if (float.TryParse(obj.Attribute("width")?.Value, out var w)) trigger.Width = w;
-        if (float.TryParse(obj.Attribute("height")?.Value, out var h)) trigger.Height = h;
+        if (float.TryParse(obj.Attribute("x")?.Value, out var x))
+        {
+            trigger.X = x;
+        }
+
+        if (float.TryParse(obj.Attribute("y")?.Value, out var y))
+        {
+            trigger.Y = y;
+        }
+
+        if (float.TryParse(obj.Attribute("width")?.Value, out var w))
+        {
+            trigger.Width = w;
+        }
+
+        if (float.TryParse(obj.Attribute("height")?.Value, out var h))
+        {
+            trigger.Height = h;
+        }
 
         if (trigger.Properties.TryGetValue("TriggerType", out var type))
         {
@@ -126,7 +152,7 @@ public class MapLoader
         // Logical Id overrides TMX Id
         if (trigger.Properties.TryGetValue("Id", out var customId))
         {
-             trigger.Id = customId;
+            trigger.Id = customId;
         }
 
         return trigger;
@@ -140,8 +166,15 @@ public class MapLoader
             Properties = ParseProperties(obj)
         };
 
-        if (float.TryParse(obj.Attribute("x")?.Value, out var x)) spawn.X = x;
-        if (float.TryParse(obj.Attribute("y")?.Value, out var y)) spawn.Y = y;
+        if (float.TryParse(obj.Attribute("x")?.Value, out var x))
+        {
+            spawn.X = x;
+        }
+
+        if (float.TryParse(obj.Attribute("y")?.Value, out var y))
+        {
+            spawn.Y = y;
+        }
 
         if (spawn.Properties.TryGetValue("SpawnType", out var type))
         {
@@ -150,7 +183,7 @@ public class MapLoader
 
         if (spawn.Properties.TryGetValue("Id", out var customId))
         {
-             spawn.Id = customId;
+            spawn.Id = customId;
         }
 
         return spawn;
@@ -172,6 +205,7 @@ public class MapLoader
                 }
             }
         }
+
         return dict;
     }
 }

@@ -11,8 +11,13 @@
       "Y": 10,
       "Width": 20,
       "Height": 20,
-      "AllowedFamilyIds": [ 1 ],
-      "AllowedMonsterIds": [ 2001, 2002 ]
+      "AllowedFamilyIds": [
+        1
+      ],
+      "AllowedMonsterIds": [
+        2001,
+        2002
+      ]
     }
   ]
 }

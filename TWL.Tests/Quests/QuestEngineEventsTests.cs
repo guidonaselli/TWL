@@ -1,76 +1,73 @@
-using System;
-using System.Collections.Generic;
-using System.IO;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Interactions;
-using TWL.Shared.Domain.Models;
 using TWL.Shared.Domain.Quests;
-using TWL.Shared.Domain.Requests; // Added for QuestState
-using Xunit;
+using TWL.Shared.Domain.Requests;
+// Added for QuestState
 
 namespace TWL.Tests.Quests;
 
 public class QuestEngineEventsTests : IDisposable
 {
-    private readonly ServerQuestManager _questManager;
-    private readonly PetManager _petManager;
     private readonly InteractionManager _interactionManager;
-    private readonly TradeManager _tradeManager;
+    private readonly string _interactionsFile = "test_engine_interactions.json";
+    private readonly PetManager _petManager;
+    private readonly string _petsFile = "test_engine_pets.json";
     private readonly ServerCharacter _player;
     private readonly PlayerQuestComponent _questComponent;
+    private readonly ServerQuestManager _questManager;
 
     private readonly string _questsFile = "test_engine_quests.json";
-    private readonly string _interactionsFile = "test_engine_interactions.json";
-    private readonly string _petsFile = "test_engine_pets.json";
+    private readonly TradeManager _tradeManager;
 
     public QuestEngineEventsTests()
     {
         // Setup Quests
         var quests = new List<QuestDefinition>
         {
-            new QuestDefinition
+            new()
             {
                 QuestId = 1,
                 Title = "Pet Friend",
                 Description = "Get a pet",
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("PetAcquired", "Dog", 1, "Get a Dog") { DataId = 100 }
+                    new("PetAcquired", "Dog", 1, "Get a Dog") { DataId = 100 }
                 },
                 Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
                 RequiredLevel = 1,
                 Requirements = new List<int>()
             },
-            new QuestDefinition
+            new()
             {
                 QuestId = 2,
                 Title = "Trader",
                 Description = "Trade Iron",
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Trade", "Buyer", 5, "Trade 5 Iron") { DataId = 500 }
+                    new("Trade", "Buyer", 5, "Trade 5 Iron") { DataId = 500 }
                 },
                 Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
                 RequiredLevel = 1,
                 Requirements = new List<int>()
             },
-            new QuestDefinition
+            new()
             {
                 QuestId = 3,
                 Title = "Compounder",
                 Description = "Compound something",
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Compound", "AlchemyTable", 1, "Compound Potion")
+                    new("Compound", "AlchemyTable", 1, "Compound Potion")
                 },
                 Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
                 RequiredLevel = 1,
                 Requirements = new List<int>()
             }
         };
-        File.WriteAllText(_questsFile, System.Text.Json.JsonSerializer.Serialize(quests));
+        File.WriteAllText(_questsFile, JsonSerializer.Serialize(quests));
 
         _questManager = new ServerQuestManager();
         _questManager.Load(_questsFile);
@@ -79,14 +76,14 @@ public class QuestEngineEventsTests : IDisposable
         _interactionManager = new InteractionManager();
         var interactions = new List<InteractionDefinition>
         {
-            new InteractionDefinition
+            new()
             {
                 TargetName = "AlchemyTable",
                 Type = "Compound",
                 RewardItems = new List<ItemReward>()
             }
         };
-        File.WriteAllText(_interactionsFile, System.Text.Json.JsonSerializer.Serialize(interactions));
+        File.WriteAllText(_interactionsFile, JsonSerializer.Serialize(interactions));
         _interactionManager.Load(_interactionsFile);
 
         _tradeManager = new TradeManager();
@@ -98,8 +95,15 @@ public class QuestEngineEventsTests : IDisposable
 
     public void Dispose()
     {
-        if (File.Exists(_questsFile)) File.Delete(_questsFile);
-        if (File.Exists(_interactionsFile)) File.Delete(_interactionsFile);
+        if (File.Exists(_questsFile))
+        {
+            File.Delete(_questsFile);
+        }
+
+        if (File.Exists(_interactionsFile))
+        {
+            File.Delete(_interactionsFile);
+        }
     }
 
     [Fact]
@@ -124,7 +128,7 @@ public class QuestEngineEventsTests : IDisposable
         _player.AddItem(500, 10); // Give items to sell
 
         // Act
-        bool success = _tradeManager.TransferItem(_player, buyer, 500, 5);
+        var success = _tradeManager.TransferItem(_player, buyer, 500, 5);
 
         // Assert
         Assert.True(success);

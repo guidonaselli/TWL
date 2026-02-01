@@ -1,6 +1,3 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
 using TWL.Server.Persistence;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Domain.Characters;
@@ -9,42 +6,15 @@ namespace TWL.Server.Simulation.Networking;
 
 public class ServerPet : ServerCombatant
 {
-    public string InstanceId { get; set; } = Guid.NewGuid().ToString();
-    public int DefinitionId { get; set; }
-
-    // ServerCombatant has Name, Id, Hp, Sp, Stats, StatusEffects
-
-    // Runtime ID for Combat (separate from InstanceId which is persistent GUID)
-    // ServerCombatant.Id is used as the Combat ID.
-    // It should be assigned when entering combat or session load.
-
-    public int Level { get; set; } = 1;
-    public int Exp { get; set; }
-    public int ExpToNextLevel { get; set; } = 100;
-
-    public int Amity { get; set; } = 50;
-
-    public bool IsDead { get; set; }
-    public bool IsLost { get; set; }
-    public bool DeathQuestCompleted { get; set; }
-    public bool HasRebirthed { get; set; }
-    public DateTime? ExpirationTime { get; set; }
-
-    public bool IsExpired => ExpirationTime.HasValue && DateTime.UtcNow > ExpirationTime.Value;
-
-    public List<int> UnlockedSkillIds { get; private set; } = new();
-
     // Transient
     private PetDefinition _definition;
-    public bool IsRebellious => Amity < 20;
 
     private int _maxHp;
     private int _maxSp;
 
-    public override int MaxHp => _maxHp;
-    public override int MaxSp => _maxSp;
-
-    public ServerPet() { }
+    public ServerPet()
+    {
+    }
 
     public ServerPet(PetDefinition def)
     {
@@ -69,28 +39,60 @@ public class ServerPet : ServerCombatant
         ExpToNextLevel = PetGrowthCalculator.GetExpForLevel(Level);
     }
 
+    public string InstanceId { get; set; } = Guid.NewGuid().ToString();
+    public int DefinitionId { get; set; }
+
+    // ServerCombatant has Name, Id, Hp, Sp, Stats, StatusEffects
+
+    // Runtime ID for Combat (separate from InstanceId which is persistent GUID)
+    // ServerCombatant.Id is used as the Combat ID.
+    // It should be assigned when entering combat or session load.
+
+    public int Level { get; set; } = 1;
+    public int Exp { get; set; }
+    public int ExpToNextLevel { get; set; } = 100;
+
+    public int Amity { get; set; } = 50;
+
+    public bool IsDead { get; set; }
+    public bool IsLost { get; set; }
+    public bool DeathQuestCompleted { get; set; }
+    public bool HasRebirthed { get; set; }
+    public DateTime? ExpirationTime { get; set; }
+
+    public bool IsExpired => ExpirationTime.HasValue && DateTime.UtcNow > ExpirationTime.Value;
+
+    public List<int> UnlockedSkillIds { get; private set; } = new();
+    public bool IsRebellious => Amity < 20;
+
+    public override int MaxHp => _maxHp;
+    public override int MaxSp => _maxSp;
+
     public void Hydrate(PetDefinition def)
     {
         _definition = def;
         CharacterElement = def.Element;
         // Ensure Name is set if missing (e.g. from old save)
-        if (string.IsNullOrEmpty(Name)) Name = def.Name;
+        if (string.IsNullOrEmpty(Name))
+        {
+            Name = def.Name;
+        }
 
         RecalculateStats();
     }
 
-    public void SetDefinition(PetDefinition def)
-    {
-        Hydrate(def);
-    }
+    public void SetDefinition(PetDefinition def) => Hydrate(def);
 
     public void AddExp(int amount)
     {
-        if (_definition == null) return;
+        if (_definition == null)
+        {
+            return;
+        }
 
         Exp += amount;
         IsDirty = true;
-        bool leveledUp = false;
+        var leveledUp = false;
 
         while (Exp >= ExpToNextLevel)
         {
@@ -111,11 +113,14 @@ public class ServerPet : ServerCombatant
 
     public void RecalculateStats()
     {
-        if (_definition == null) return;
+        if (_definition == null)
+        {
+            return;
+        }
 
         PetGrowthCalculator.CalculateStats(_definition, Level,
-            out int maxHp, out int maxSp,
-            out int str, out int con, out int int_, out int wis, out int agi);
+            out var maxHp, out var maxSp,
+            out var str, out var con, out var int_, out var wis, out var agi);
 
         _maxHp = maxHp;
         _maxSp = maxSp;
@@ -158,21 +163,28 @@ public class ServerPet : ServerCombatant
 
     public bool CheckObedience(float roll)
     {
-        if (Amity >= 60) return true; // Always obeys
-        if (Amity >= 20) return true; // Normal range
+        if (Amity >= 60)
+        {
+            return true; // Always obeys
+        }
+
+        if (Amity >= 20)
+        {
+            return true; // Normal range
+        }
 
         // Amity < 20 (Rebellious)
         // Chance to disobey increases as Amity drops.
         // Amity 19 -> 5% fail
         // Amity 0 -> 24% fail
-        float failChance = (20 - Amity) * 0.01f + 0.04f;
+        var failChance = (20 - Amity) * 0.01f + 0.04f;
         return roll > failChance;
     }
 
     public void ChangeAmity(int amount)
     {
-        int oldAmity = Amity;
-        bool wasRebellious = IsRebellious;
+        var oldAmity = Amity;
+        var wasRebellious = IsRebellious;
 
         Amity = Math.Clamp(Amity + amount, 0, 100);
 
@@ -190,7 +202,10 @@ public class ServerPet : ServerCombatant
 
     public void Die()
     {
-        if (IsDead) return;
+        if (IsDead)
+        {
+            return;
+        }
 
         IsDead = true;
         Hp = 0;
@@ -203,7 +218,10 @@ public class ServerPet : ServerCombatant
 
     public void Revive()
     {
-        if (!IsDead) return;
+        if (!IsDead)
+        {
+            return;
+        }
 
         IsDead = false;
         Hp = MaxHp;
@@ -215,10 +233,19 @@ public class ServerPet : ServerCombatant
     public bool TryRebirth()
     {
         if (_definition == null || !(_definition.RebirthEligible || _definition.RebirthSkillId > 0))
+        {
             return false;
+        }
 
-        if (Level < 100) return false;
-        if (HasRebirthed) return false;
+        if (Level < 100)
+        {
+            return false;
+        }
+
+        if (HasRebirthed)
+        {
+            return false;
+        }
 
         HasRebirthed = true;
         Level = 1;
@@ -241,15 +268,21 @@ public class ServerPet : ServerCombatant
 
     public void CheckSkillUnlocks()
     {
-        if (_definition == null) return;
+        if (_definition == null)
+        {
+            return;
+        }
 
         foreach (var skillSet in _definition.SkillSet)
         {
-            if (UnlockedSkillIds.Contains(skillSet.SkillId)) continue;
+            if (UnlockedSkillIds.Contains(skillSet.SkillId))
+            {
+                continue;
+            }
 
-            bool levelMet = Level >= skillSet.UnlockLevel;
-            bool amityMet = Amity >= skillSet.UnlockAmity;
-            bool rebirthMet = !skillSet.RequiresRebirth || HasRebirthed;
+            var levelMet = Level >= skillSet.UnlockLevel;
+            var amityMet = Amity >= skillSet.UnlockAmity;
+            var rebirthMet = !skillSet.RequiresRebirth || HasRebirthed;
 
             if (levelMet && amityMet && rebirthMet)
             {
@@ -271,17 +304,27 @@ public class ServerPet : ServerCombatant
             // Sync with SkillMastery if needed
             // But SkillMastery is a Dictionary<int, SkillMastery>, so we don't need to "remove" unless we want to clear history
         }
+
         IsDirty = true;
     }
 
     public float GetUtilityValue(PetUtilityType type)
     {
-        if (_definition == null || _definition.Utilities == null) return 0f;
+        if (_definition == null || _definition.Utilities == null)
+        {
+            return 0f;
+        }
 
         var utility = _definition.Utilities.FirstOrDefault(u => u.Type == type);
-        if (utility == null) return 0f;
+        if (utility == null)
+        {
+            return 0f;
+        }
 
-        if (Level < utility.RequiredLevel || Amity < utility.RequiredAmity) return 0f;
+        if (Level < utility.RequiredLevel || Amity < utility.RequiredAmity)
+        {
+            return 0f;
+        }
 
         return utility.Value;
     }

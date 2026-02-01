@@ -1,18 +1,15 @@
-using System.Collections.Generic;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
-using System.IO;
-using System.Text.Json;
 
 namespace TWL.Tests.Quests;
 
 public class SpecialQuestTests
 {
-    private readonly ServerQuestManager _questManager;
     private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public SpecialQuestTests()
     {
@@ -21,61 +18,61 @@ public class SpecialQuestTests
         var quests = new List<QuestDefinition>
         {
             // Quest 1: Normal Quest
-            new QuestDefinition
+            new()
             {
                 QuestId = 1,
                 Title = "Normal Quest",
                 Description = "Desc",
                 Requirements = new List<int>(),
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Npc", 1, "Talk") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "Npc", 1, "Talk") },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>())
             },
             // Quest 100: Unique Per Character Quest (e.g. Legendary Start)
-            new QuestDefinition
+            new()
             {
                 QuestId = 100,
                 Title = "Unique Quest",
                 Description = "Desc",
                 Requirements = new List<int>(),
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Npc", 1, "Talk") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "Npc", 1, "Talk") },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 AntiAbuseRules = "UniquePerCharacter",
                 Repeatability = QuestRepeatability.None
             },
             // Quest 201: Special Category Dragon A
-            new QuestDefinition
+            new()
             {
                 QuestId = 201,
                 Title = "Dragon Quest A",
                 Description = "Desc",
                 Requirements = new List<int>(),
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Dragon", 1, "Talk") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "Dragon", 1, "Talk") },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 Type = "SpecialSkill",
                 SpecialCategory = "Dragon",
                 MutualExclusionGroup = "GlobalSpecial"
             },
             // Quest 202: Special Category Dragon B
-            new QuestDefinition
+            new()
             {
                 QuestId = 202,
                 Title = "Dragon Quest B",
                 Description = "Desc",
                 Requirements = new List<int>(),
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Dragon", 1, "Talk") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "Dragon", 1, "Talk") },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 Type = "SpecialSkill",
                 SpecialCategory = "Dragon",
                 MutualExclusionGroup = "GlobalSpecial"
             },
             // Quest 301: Special Category Rebirth
-            new QuestDefinition
+            new()
             {
                 QuestId = 301,
                 Title = "Rebirth Quest",
                 Description = "Desc",
                 Requirements = new List<int>(),
-                Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "Angel", 1, "Talk") },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "Angel", 1, "Talk") },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 Type = "SpecialSkill",
                 SpecialCategory = "Rebirth",
@@ -83,7 +80,7 @@ public class SpecialQuestTests
             }
         };
 
-        string json = JsonSerializer.Serialize(quests);
+        var json = JsonSerializer.Serialize(quests);
         File.WriteAllText("test_special_quests.json", json);
         _questManager.Load("test_special_quests.json");
 
@@ -116,7 +113,8 @@ public class SpecialQuestTests
 
         // Even though state is gone, the CompletionLog (QuestCompletionTimes) should remain
         // and UniquePerCharacter rule should still block it.
-        Assert.False(_playerQuests.StartQuest(100), "Should not start even if state is hacked/removed, because log remains");
+        Assert.False(_playerQuests.StartQuest(100),
+            "Should not start even if state is hacked/removed, because log remains");
     }
 
     [Fact]
@@ -130,7 +128,8 @@ public class SpecialQuestTests
         Assert.False(_playerQuests.CanStartQuest(202), "CanStartQuest should also return false");
 
         // 3. Try to start Rebirth Quest (Different Special Category) - Should Fail (Global Special Exclusivity)
-        Assert.False(_playerQuests.StartQuest(301), "Should fail to start Rebirth Quest while Dragon Quest A is active");
+        Assert.False(_playerQuests.StartQuest(301),
+            "Should fail to start Rebirth Quest while Dragon Quest A is active");
 
         // 4. Complete Dragon Quest A
         _playerQuests.UpdateProgress(201, 0, 1);

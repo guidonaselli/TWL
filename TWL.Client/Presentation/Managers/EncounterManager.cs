@@ -1,7 +1,4 @@
-using System;
-using System.Collections.Generic;
 using TWL.Client.Presentation.Services;
-using TWL.Shared;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Events;
 using TWL.Shared.Net;
@@ -28,7 +25,10 @@ public class EncounterManager
         }
 
         _stepsSinceLast++;
-        if (_stepsSinceLast < MinSteps) return;
+        if (_stepsSinceLast < MinSteps)
+        {
+            return;
+        }
 
         if (_rng.NextDouble() < EncounterChance)
         {
@@ -37,35 +37,35 @@ public class EncounterManager
         }
     }
 
-    public void ForceEncounter(PlayerCharacter player)
-    {
-        StartBattle(player);
-    }
+    public void ForceEncounter(PlayerCharacter player) => StartBattle(player);
 
     // ------------------------------------------------------------------
     private void StartBattle(PlayerCharacter player)
     {
         var enemies = new List<EnemyCharacter>();
-        int count = _rng.Next(1, 4); // 1 to 3
+        var count = _rng.Next(1, 4); // 1 to 3
 
-        for (int i = 0; i < count; i++)
+        for (var i = 0; i < count; i++)
         {
-            int type = _rng.Next(0, 3);
+            var type = _rng.Next(0, 3);
             if (type == 0)
             {
-                enemies.Add(new EnemyCharacter(Loc.T("ENEMY_Slime"), Element.Earth, false) {
+                enemies.Add(new EnemyCharacter(Loc.T("ENEMY_Slime"), Element.Earth, false)
+                {
                     Health = 30, MaxHealth = 30, Str = 5, Con = 2, Agi = 3, Level = 1
                 });
             }
             else if (type == 1)
             {
-                enemies.Add(new EnemyCharacter(Loc.T("ENEMY_Wolf"), Element.Wind, false) {
+                enemies.Add(new EnemyCharacter(Loc.T("ENEMY_Wolf"), Element.Wind, false)
+                {
                     Health = 50, MaxHealth = 50, Str = 9, Con = 4, Agi = 6, Level = 3
                 });
             }
             else
             {
-                enemies.Add(new EnemyCharacter(Loc.T("ENEMY_Bat"), Element.Wind, false) {
+                enemies.Add(new EnemyCharacter(Loc.T("ENEMY_Bat"), Element.Wind, false)
+                {
                     Health = 20, MaxHealth = 20, Str = 4, Con = 1, Agi = 8, Level = 2
                 });
             }

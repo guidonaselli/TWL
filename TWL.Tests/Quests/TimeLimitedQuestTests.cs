@@ -1,18 +1,15 @@
-using System;
-using System.Collections.Generic;
-using System.Threading;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
 public class TimeLimitedQuestTests
 {
-    private readonly ServerQuestManager _questManager;
     private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public TimeLimitedQuestTests()
     {
@@ -20,22 +17,22 @@ public class TimeLimitedQuestTests
         // Create mock data
         var quests = new List<QuestDefinition>
         {
-            new QuestDefinition
+            new()
             {
                 QuestId = 1,
                 Title = "Timed Quest",
                 Description = "Run!",
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Talk", "Target", 1, "Talk")
+                    new("Talk", "Target", 1, "Talk")
                 },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 TimeLimitSeconds = 1 // Very short limit
             }
         };
 
-        string json = System.Text.Json.JsonSerializer.Serialize(quests);
-        System.IO.File.WriteAllText("test_quests_timed.json", json);
+        var json = JsonSerializer.Serialize(quests);
+        File.WriteAllText("test_quests_timed.json", json);
         _questManager.Load("test_quests_timed.json");
 
         _playerQuests = new PlayerQuestComponent(_questManager);

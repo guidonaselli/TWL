@@ -1,12 +1,4 @@
-using System.Collections.Generic;
-using System.Linq;
-using Moq;
-using TWL.Server.Persistence;
-using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.Skills;
-using TWL.Shared.Services;
-using Xunit;
 
 namespace TWL.Tests.Skills;
 
@@ -16,14 +8,15 @@ public class SkillProgressionTests
     public void IncrementSkillUsage_UpdatesRank_Every10Uses()
     {
         var character = new ServerCharacter();
-        int skillId = 1001;
+        var skillId = 1001;
         character.LearnSkill(skillId);
 
         // Use 9 times - Rank should be 1
-        for (int i = 0; i < 9; i++)
+        for (var i = 0; i < 9; i++)
         {
             character.IncrementSkillUsage(skillId);
         }
+
         Assert.Equal(1, character.SkillMastery[skillId].Rank);
 
         // Use 10th time - Rank should be 2
@@ -35,8 +28,8 @@ public class SkillProgressionTests
     public void ReplaceSkill_ResetsRank()
     {
         var character = new ServerCharacter();
-        int oldId = 1001;
-        int newId = 1002;
+        var oldId = 1001;
+        var newId = 1002;
         character.LearnSkill(oldId);
         character.SkillMastery[oldId].Rank = 10;
 

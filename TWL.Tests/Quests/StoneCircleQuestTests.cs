@@ -1,30 +1,26 @@
-using System.Collections.Generic;
-using System.IO;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
-using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
 public class StoneCircleQuestTests
 {
-    private readonly ServerQuestManager _questManager;
-    private readonly PlayerQuestComponent _playerQuests;
     private readonly ServerCharacter _character;
+    private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public StoneCircleQuestTests()
     {
         _questManager = new ServerQuestManager();
 
         // Locate quests.json
-        string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
+        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json");
         if (!File.Exists(path))
         {
-             // Try valid fallback if running from root
-             path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
+            // Try valid fallback if running from root
+            path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json");
         }
 
         Assert.True(File.Exists(path), $"Quest file not found at {Path.GetFullPath(path)}");

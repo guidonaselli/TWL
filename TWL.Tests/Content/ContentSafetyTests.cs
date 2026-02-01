@@ -1,8 +1,4 @@
-using System;
-using System.IO;
-using System.Linq;
-using Xunit;
-using TWL.Server.Simulation.Managers;
+using System.Text.Json;
 using TWL.Shared.Constants;
 using TWL.Shared.Domain.Quests;
 
@@ -20,13 +16,17 @@ public class ContentSafetyTests
     public void NoQuestsGrantGoddessSkills()
     {
         // Load quests.json
-        var path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
-        if (!File.Exists(path)) path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json"); // CI fallback
+        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json");
+        if (!File.Exists(path))
+        {
+            path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json"); // CI fallback
+        }
 
         Assert.True(File.Exists(path), "quests.json not found");
 
         var json = File.ReadAllText(path);
-        var quests = System.Text.Json.JsonSerializer.Deserialize<System.Collections.Generic.List<QuestDefinition>>(json, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var quests = JsonSerializer.Deserialize<List<QuestDefinition>>(json,
+            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
 
         // Goddess Skill IDs
         var restrictedIds = new[]
@@ -43,7 +43,8 @@ public class ContentSafetyTests
             {
                 if (restrictedIds.Contains(def.Rewards.GrantSkillId.Value))
                 {
-                    Assert.Fail($"Quest {def.QuestId} grants a Goddess Skill ({def.Rewards.GrantSkillId}), which is forbidden.");
+                    Assert.Fail(
+                        $"Quest {def.QuestId} grants a Goddess Skill ({def.Rewards.GrantSkillId}), which is forbidden.");
                 }
             }
         }
@@ -65,7 +66,10 @@ public class ContentSafetyTests
         foreach (var dir in dirs)
         {
             var path = Path.Combine(Environment.CurrentDirectory, dir);
-            if (!Directory.Exists(path)) continue; // Skip if not found (e.g. CI structure diff)
+            if (!Directory.Exists(path))
+            {
+                continue; // Skip if not found (e.g. CI structure diff)
+            }
 
             var files = Directory.GetFiles(path, "*.json", SearchOption.AllDirectories);
             foreach (var file in files)
@@ -121,13 +125,19 @@ public class ContentSafetyTests
         foreach (var dir in dirs)
         {
             var path = Path.Combine(Environment.CurrentDirectory, dir);
-            if (!Directory.Exists(path)) continue;
+            if (!Directory.Exists(path))
+            {
+                continue;
+            }
 
             var files = Directory.GetFiles(path, "*.cs", SearchOption.AllDirectories);
             foreach (var file in files)
             {
                 // Skip this test file itself and migration/constants files if we allow aliases (we don't for constants)
-                if (file.EndsWith("ContentSafetyTests.cs")) continue;
+                if (file.EndsWith("ContentSafetyTests.cs"))
+                {
+                    continue;
+                }
 
                 var content = File.ReadAllText(file);
                 foreach (var term in ForbiddenTerms)

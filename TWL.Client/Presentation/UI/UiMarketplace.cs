@@ -1,9 +1,7 @@
-﻿using System.Linq;
-using Microsoft.Xna.Framework;
+﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using TWL.Client.Presentation.Managers;
-using TWL.Client.UI;
 using TWL.Client.Presentation.Services;
 using TWL.Shared.Domain.Characters;
 
@@ -29,7 +27,10 @@ public class UiMarketplace : UiWindow
 
     public override void Update(GameTime gameTime, MouseState mouseState, KeyboardState keyboardState)
     {
-        if (!Visible) return;
+        if (!Visible)
+        {
+            return;
+        }
 
         // Check for clicks
         if (mouseState.LeftButton == ButtonState.Pressed &&
@@ -45,7 +46,10 @@ public class UiMarketplace : UiWindow
                 // (básico, cada listing en 20 px)
 
                 var listings = _marketplace.GetAllListings().ToList();
-                if (index < listings.Count) _selectedListingId = listings[index].ListingId;
+                if (index < listings.Count)
+                {
+                    _selectedListingId = listings[index].ListingId;
+                }
             }
         }
 
@@ -54,7 +58,10 @@ public class UiMarketplace : UiWindow
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        if (!Visible) return;
+        if (!Visible)
+        {
+            return;
+        }
 
         // Fondo
         spriteBatch.Draw(_bgTexture, Bounds, Color.White);
@@ -78,14 +85,15 @@ public class UiMarketplace : UiWindow
 
     public void AttemptPurchase(int buyerId, Inventory buyerInv, Inventory sellerInv, int qty)
     {
-        if (_selectedListingId == 0) return;
+        if (_selectedListingId == 0)
+        {
+            return;
+        }
+
         var status = "";
         var success = _marketplace.BuyListing(buyerId, _selectedListingId, qty, buyerInv, sellerInv, ref status);
         _statusMsg = status;
     }
 
-    public void LoadBackground(Texture2D texture)
-    {
-        _bgTexture = texture;
-    }
+    public void LoadBackground(Texture2D texture) => _bgTexture = texture;
 }

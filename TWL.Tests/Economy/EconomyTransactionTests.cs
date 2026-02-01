@@ -1,8 +1,5 @@
-using System.Linq;
-using System.IO;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using Xunit;
 
 namespace TWL.Tests.Economy;
 
@@ -39,7 +36,10 @@ public class EconomyTransactionTests
         }
         finally
         {
-            if (File.Exists(tempFile)) File.Delete(tempFile);
+            if (File.Exists(tempFile))
+            {
+                File.Delete(tempFile);
+            }
         }
     }
 }

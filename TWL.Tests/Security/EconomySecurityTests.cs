@@ -1,8 +1,5 @@
-using System.Threading.Tasks;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.DTO;
-using Xunit;
 
 namespace TWL.Tests.Security;
 

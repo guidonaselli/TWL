@@ -1,22 +1,18 @@
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
-using Xunit;
 
 namespace TWL.Tests.Combat;
 
 public class MockSkillCatalogMechanics : ISkillCatalog
 {
-    private Dictionary<int, Skill> _skills = new();
-
-    public void AddSkill(Skill skill)
-    {
-        _skills[skill.SkillId] = skill;
-    }
+    private readonly Dictionary<int, Skill> _skills = new();
 
     public IEnumerable<int> GetAllSkillIds() => _skills.Keys;
 
     public Skill? GetSkillById(int id) => _skills.GetValueOrDefault(id);
+
+    public void AddSkill(Skill skill) => _skills[skill.SkillId] = skill;
 }
 
 public class TestCharacterMechanics : Character
@@ -28,11 +24,11 @@ public class TestCharacterMechanics : Character
 
 public class CombatMechanicsTests
 {
-    private readonly MockSkillCatalogMechanics _mockCatalog;
     private readonly TestCharacterMechanics _attackerFire;
-    private readonly TestCharacterMechanics _targetWind;  // Weak to Fire
-    private readonly TestCharacterMechanics _targetWater; // Resists Fire
+    private readonly MockSkillCatalogMechanics _mockCatalog;
     private readonly TestCharacterMechanics _targetEarth; // Neutral to Fire
+    private readonly TestCharacterMechanics _targetWater; // Resists Fire
+    private readonly TestCharacterMechanics _targetWind; // Weak to Fire
 
     public CombatMechanicsTests()
     {
@@ -152,7 +148,8 @@ public class CombatMechanicsTests
             Element = Element.Fire,
             Branch = SkillBranch.Support,
             TargetType = SkillTargetType.SingleAlly,
-            Effects = new List<SkillEffect> {
+            Effects = new List<SkillEffect>
+            {
                 new() { Tag = SkillEffectTag.BuffStats, Param = "Atk", Value = 20, Duration = 3 }
             },
             Scaling = new List<SkillScaling> { new() { Stat = StatType.Wis, Coefficient = 1.0f } }
@@ -186,7 +183,8 @@ public class CombatMechanicsTests
             Element = Element.Fire,
             Branch = SkillBranch.Support,
             TargetType = SkillTargetType.SingleEnemy,
-            Effects = new List<SkillEffect> {
+            Effects = new List<SkillEffect>
+            {
                 new() { Tag = SkillEffectTag.Seal, Chance = 0.1f, Duration = 1 }
             }
         };

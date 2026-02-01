@@ -1,6 +1,5 @@
-using System.Linq;
+using System.Diagnostics;
 using System.Net.Sockets;
-using System.Text;
 using System.Text.Json;
 using TWL.Server.Architecture.Observability;
 using TWL.Server.Architecture.Pipeline;
@@ -9,15 +8,16 @@ using TWL.Server.Features.Interactions;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Security;
+using TWL.Server.Services;
+using TWL.Server.Services.World;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
-using TWL.Server.Security;
-using TWL.Server.Services.World;
+using TWL.Shared.Constants;
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Requests;
-using TWL.Shared.Net.Payloads;
 using TWL.Shared.Net.Network;
-using TWL.Server.Security;
+using TWL.Shared.Net.Payloads;
 
 namespace TWL.Server.Simulation.Networking;
 
@@ -29,29 +29,31 @@ public class ClientSession
     };
 
     private readonly TcpClient _client;
-    private readonly DbService _dbService;
-    private readonly PetManager _petManager;
-    private readonly ServerQuestManager _questManager;
     private readonly CombatManager _combatManager;
-    private readonly InteractionManager _interactionManager;
+    private readonly DbService _dbService;
     private readonly IEconomyService _economyManager;
-    private readonly PlayerService _playerService;
-    private readonly TWL.Server.Services.PetService _petService;
-    private readonly IWorldTriggerService _worldTriggerService;
-    private readonly SpawnManager _spawnManager;
+    private readonly InteractionManager _interactionManager;
     private readonly IMediator _mediator;
-    private readonly NetworkStream _stream;
-    private readonly RateLimiter _rateLimiter;
     private readonly ServerMetrics _metrics;
-
-    public PlayerQuestComponent QuestComponent { get; protected set; }
-    public ServerCharacter? Character { get; protected set; }
+    private readonly PetManager _petManager;
+    private readonly PetService _petService;
+    private readonly PlayerService _playerService;
+    private readonly ServerQuestManager _questManager;
+    private readonly RateLimiter _rateLimiter;
+    private readonly SpawnManager _spawnManager;
+    private readonly NetworkStream _stream;
+    private readonly IWorldTriggerService _worldTriggerService;
 
     public int UserId = -1; // se setea tras login
 
-    protected ClientSession() { } // For testing
+    protected ClientSession()
+    {
+    } // For testing
 
-    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService, IWorldTriggerService worldTriggerService, SpawnManager spawnManager)
+    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager,
+        CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
+        IEconomyService economyManager, ServerMetrics metrics, PetService petService,
+        IWorldTriggerService worldTriggerService, SpawnManager spawnManager)
     {
         _client = client;
         _stream = client.GetStream();
@@ -75,9 +77,16 @@ public class ClientSession
         }
     }
 
+    public PlayerQuestComponent QuestComponent { get; protected set; }
+    public ServerCharacter? Character { get; protected set; }
+
     private void OnCombatantDeath(ServerCombatant victim)
     {
-        if (Character == null) return;
+        if (Character == null)
+        {
+            return;
+        }
+
         QuestComponent.HandleCombatantDeath(victim.Name);
 
         // Handle Quest Progress (Kill)
@@ -105,7 +114,10 @@ public class ClientSession
             while (true)
             {
                 var read = await _stream.ReadAsync(buffer, 0, buffer.Length);
-                if (read <= 0) break;
+                if (read <= 0)
+                {
+                    break;
+                }
 
                 _metrics?.RecordNetBytesReceived(read);
 
@@ -114,7 +126,7 @@ public class ClientSession
                 if (netMsg != null)
                 {
                     _metrics?.RecordNetMessageProcessed();
-                    var sw = System.Diagnostics.Stopwatch.StartNew();
+                    var sw = Stopwatch.StartNew();
 
                     var traceId = Guid.NewGuid().ToString();
                     PipelineLogger.LogStage(traceId, "NetworkReceive", 0, $"Op:{netMsg.Op} Size:{read}");
@@ -146,6 +158,7 @@ public class ClientSession
                 await _playerService.SaveSessionAsync(this);
                 _playerService.UnregisterSession(UserId);
             }
+
             _stream.Close();
             _client.Close();
         }
@@ -153,9 +166,12 @@ public class ClientSession
 
     private async Task HandleMessageAsync(NetMessage msg, string traceId)
     {
-        if (msg == null) return;
+        if (msg == null)
+        {
+            return;
+        }
 
-        var swValidate = System.Diagnostics.Stopwatch.StartNew();
+        var swValidate = Stopwatch.StartNew();
         if (!_rateLimiter.Check(msg.Op))
         {
             swValidate.Stop();
@@ -165,11 +181,12 @@ public class ClientSession
             PipelineLogger.LogStage(traceId, "Validate", swValidate.Elapsed.TotalMilliseconds, "Failed: RateLimit");
             return;
         }
+
         swValidate.Stop();
         _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
         PipelineLogger.LogStage(traceId, "Validate", swValidate.Elapsed.TotalMilliseconds, "Success");
 
-        var swResolve = System.Diagnostics.Stopwatch.StartNew();
+        var swResolve = Stopwatch.StartNew();
         switch (msg.Op)
         {
             case Opcode.LoginRequest:
@@ -204,6 +221,7 @@ public class ClientSession
                 break;
             // etc.
         }
+
         swResolve.Stop();
         _metrics?.RecordPipelineResolveDuration(swResolve.ElapsedTicks);
         PipelineLogger.LogStage(traceId, "Resolve", swResolve.Elapsed.TotalMilliseconds, $"Op:{msg.Op}");
@@ -211,11 +229,18 @@ public class ClientSession
 
     private async Task HandlePetActionAsync(string payload)
     {
-        if (UserId <= 0) return;
-        var request = JsonSerializer.Deserialize<PetActionRequest>(payload, _jsonOptions);
-        if (request == null) return;
+        if (UserId <= 0)
+        {
+            return;
+        }
 
-        bool success = false;
+        var request = JsonSerializer.Deserialize<PetActionRequest>(payload, _jsonOptions);
+        if (request == null)
+        {
+            return;
+        }
+
+        var success = false;
         switch (request.Action)
         {
             case PetActionType.Switch:
@@ -236,30 +261,44 @@ public class ClientSession
 
     private async Task HandlePurchaseGemsIntentAsync(string payload)
     {
-        if (UserId <= 0) return;
+        if (UserId <= 0)
+        {
+            return;
+        }
+
         var request = JsonSerializer.Deserialize<PurchaseGemsIntentDTO>(payload, _jsonOptions);
 
         // Validation
         if (request == null || string.IsNullOrEmpty(request.ProductId))
         {
-             SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing ProductId");
-             return;
+            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing ProductId");
+            return;
         }
+
         if (request.ProductId.Length > 20 || !request.ProductId.StartsWith("gems_"))
         {
-             SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, $"Invalid ProductId format: {request.ProductId}");
-             return;
+            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId,
+                $"Invalid ProductId format: {request.ProductId}");
+            return;
         }
 
         var result = _economyManager.InitiatePurchase(UserId, request.ProductId);
-        if (result == null) return;
+        if (result == null)
+        {
+            return;
+        }
 
-        await SendAsync(new NetMessage { Op = Opcode.PurchaseGemsIntent, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
+        await SendAsync(new NetMessage
+            { Op = Opcode.PurchaseGemsIntent, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
     }
 
     private async Task HandlePurchaseGemsVerifyAsync(string payload)
     {
-        if (UserId <= 0 || Character == null) return;
+        if (UserId <= 0 || Character == null)
+        {
+            return;
+        }
+
         var request = JsonSerializer.Deserialize<PurchaseGemsVerifyDTO>(payload, _jsonOptions);
 
         // Validation
@@ -268,6 +307,7 @@ public class ClientSession
             SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing OrderId");
             return;
         }
+
         if (string.IsNullOrEmpty(request.ReceiptToken))
         {
             SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing ReceiptToken");
@@ -276,34 +316,50 @@ public class ClientSession
 
         var result = _economyManager.VerifyPurchase(UserId, request.OrderId, request.ReceiptToken, Character);
 
-        await SendAsync(new NetMessage { Op = Opcode.PurchaseGemsVerify, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
+        await SendAsync(new NetMessage
+            { Op = Opcode.PurchaseGemsVerify, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
     }
 
     private async Task HandleBuyShopItemAsync(string payload)
     {
-        if (UserId <= 0 || Character == null) return;
+        if (UserId <= 0 || Character == null)
+        {
+            return;
+        }
+
         var request = JsonSerializer.Deserialize<BuyShopItemDTO>(payload, _jsonOptions);
-        if (request == null) return;
+        if (request == null)
+        {
+            return;
+        }
 
         // Hardening: Quantity Check
         if (request.Quantity <= 0 || request.Quantity > 999)
         {
-            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, $"Invalid Shop Quantity: {request.Quantity}");
+            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId,
+                $"Invalid Shop Quantity: {request.Quantity}");
             return;
         }
 
         var result = _economyManager.BuyShopItem(Character, request.ShopItemId, request.Quantity);
 
-        await SendAsync(new NetMessage { Op = Opcode.BuyShopItemRequest, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
+        await SendAsync(new NetMessage
+            { Op = Opcode.BuyShopItemRequest, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
     }
 
     private async Task HandleAttackAsync(string payload)
     {
         var request = JsonSerializer.Deserialize<UseSkillRequest>(payload, _jsonOptions);
-        if (request == null) return;
+        if (request == null)
+        {
+            return;
+        }
 
         // Ensure the request comes from this player
-        if (request.PlayerId != UserId && Character != null) request.PlayerId = Character.Id;
+        if (request.PlayerId != UserId && Character != null)
+        {
+            request.PlayerId = Character.Id;
+        }
 
         // Use Mediator
         var result = await _mediator.Send(new UseSkillCommand(request));
@@ -325,16 +381,26 @@ public class ClientSession
 
     private async Task HandleInteractAsync(string payload)
     {
-        if (string.IsNullOrEmpty(payload) || payload.Length > 256) return;
+        if (string.IsNullOrEmpty(payload) || payload.Length > 256)
+        {
+            return;
+        }
 
         InteractDTO? dto = null;
         try
         {
             dto = JsonSerializer.Deserialize<InteractDTO>(payload, _jsonOptions);
         }
-        catch (JsonException) { return; }
+        catch (JsonException)
+        {
+            return;
+        }
 
-        if (dto == null || string.IsNullOrWhiteSpace(dto.TargetName)) return;
+        if (dto == null || string.IsNullOrWhiteSpace(dto.TargetName))
+        {
+            return;
+        }
+
         if (dto.TargetName.Length > 64)
         {
             SecurityLogger.LogSecurityEvent("InvalidInput", UserId, "TargetName too long");
@@ -343,18 +409,18 @@ public class ClientSession
 
         if (Character != null)
         {
-             var result = await _mediator.Send(new InteractCommand(Character, QuestComponent, dto.TargetName));
+            var result = await _mediator.Send(new InteractCommand(Character, QuestComponent, dto.TargetName));
 
-             foreach (var questId in result.UpdatedQuestIds)
-             {
-                 await SendQuestUpdateAsync(questId);
-             }
+            foreach (var questId in result.UpdatedQuestIds)
+            {
+                await SendQuestUpdateAsync(questId);
+            }
         }
     }
 
     private async Task HandleStartQuestAsync(string payload)
     {
-        if (int.TryParse(payload, out int questId) && questId > 0)
+        if (int.TryParse(payload, out var questId) && questId > 0)
         {
             if (QuestComponent.StartQuest(questId))
             {
@@ -365,7 +431,7 @@ public class ClientSession
 
     private async Task HandleClaimRewardAsync(string payload)
     {
-        if (int.TryParse(payload, out int questId) && questId > 0)
+        if (int.TryParse(payload, out var questId) && questId > 0)
         {
             if (QuestComponent.ClaimReward(questId))
             {
@@ -377,25 +443,39 @@ public class ClientSession
 
     protected virtual void GrantGoddessSkills()
     {
-        if (Character == null) return;
+        if (Character == null)
+        {
+            return;
+        }
 
         const string gsFlag = "GS_GRANTED";
         // Optimization: check flag first
-        if (QuestComponent.Flags.Contains(gsFlag)) return;
+        if (QuestComponent.Flags.Contains(gsFlag))
+        {
+            return;
+        }
 
-        int skillId = 0;
-        string skillName = "";
+        var skillId = 0;
+        var skillName = "";
 
         switch (Character.CharacterElement)
         {
-            case TWL.Shared.Domain.Characters.Element.Water:
-                skillId = TWL.Shared.Constants.SkillIds.GS_WATER_DIMINUTION; skillName = "Diminution"; break;
-            case TWL.Shared.Domain.Characters.Element.Earth:
-                skillId = TWL.Shared.Constants.SkillIds.GS_EARTH_SUPPORT_SEAL; skillName = "Support Seal"; break;
-            case TWL.Shared.Domain.Characters.Element.Fire:
-                skillId = TWL.Shared.Constants.SkillIds.GS_FIRE_EMBER_SURGE; skillName = "Ember Surge"; break;
-            case TWL.Shared.Domain.Characters.Element.Wind:
-                skillId = TWL.Shared.Constants.SkillIds.GS_WIND_UNTOUCHABLE_VEIL; skillName = "Untouchable Veil"; break;
+            case Element.Water:
+                skillId = SkillIds.GS_WATER_DIMINUTION;
+                skillName = "Diminution";
+                break;
+            case Element.Earth:
+                skillId = SkillIds.GS_EARTH_SUPPORT_SEAL;
+                skillName = "Support Seal";
+                break;
+            case Element.Fire:
+                skillId = SkillIds.GS_FIRE_EMBER_SURGE;
+                skillName = "Ember Surge";
+                break;
+            case Element.Wind:
+                skillId = SkillIds.GS_WIND_UNTOUCHABLE_VEIL;
+                skillName = "Untouchable Veil";
+                break;
         }
 
         if (skillId > 0)
@@ -437,19 +517,41 @@ public class ClientSession
     private async Task HandleLoginAsync(string payload)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
-        if (string.IsNullOrEmpty(payload) || payload.Length > 512) return;
+        if (string.IsNullOrEmpty(payload) || payload.Length > 512)
+        {
+            return;
+        }
 
         LoginDTO? loginDto = null;
         try
         {
             loginDto = JsonSerializer.Deserialize<LoginDTO>(payload, _jsonOptions);
         }
-        catch (JsonException) { return; }
+        catch (JsonException)
+        {
+            return;
+        }
 
-        if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Username) || string.IsNullOrWhiteSpace(loginDto.PassHash)) return;
-        if (loginDto.Username.Length > 50) return;
-        if (loginDto.PassHash.Length < 64 || loginDto.PassHash.Length > 128) return;
-        if (!IsHex(loginDto.PassHash)) return;
+        if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Username) ||
+            string.IsNullOrWhiteSpace(loginDto.PassHash))
+        {
+            return;
+        }
+
+        if (loginDto.Username.Length > 50)
+        {
+            return;
+        }
+
+        if (loginDto.PassHash.Length < 64 || loginDto.PassHash.Length > 128)
+        {
+            return;
+        }
+
+        if (!IsHex(loginDto.PassHash))
+        {
+            return;
+        }
 
         var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
         if (uid < 0)
@@ -481,7 +583,10 @@ public class ClientSession
                     foreach (var pet in Character.Pets)
                     {
                         var def = _petManager.GetDefinition(pet.DefinitionId);
-                        if (def != null) pet.Hydrate(def);
+                        if (def != null)
+                        {
+                            pet.Hydrate(def);
+                        }
                     }
 
                     // Register Active Pet
@@ -526,25 +631,35 @@ public class ClientSession
 
     private static bool IsHex(string value)
     {
-        for (int i = 0; i < value.Length; i++)
+        for (var i = 0; i < value.Length; i++)
         {
             var c = value[i];
             var isDigit = c >= '0' && c <= '9';
             var isLower = c >= 'a' && c <= 'f';
             var isUpper = c >= 'A' && c <= 'F';
-            if (!isDigit && !isLower && !isUpper) return false;
+            if (!isDigit && !isLower && !isUpper)
+            {
+                return false;
+            }
         }
+
         return true;
     }
 
     private async Task HandleMoveAsync(string payload)
     {
         // EJ: {"dx":1,"dy":0}
-        if (UserId < 0 || Character == null) return; // no logueado
+        if (UserId < 0 || Character == null)
+        {
+            return; // no logueado
+        }
 
         var moveDto = JsonSerializer.Deserialize<MoveDTO>(payload, _jsonOptions);
 
-        if (moveDto == null) return;
+        if (moveDto == null)
+        {
+            return;
+        }
 
         // Actualizar la pos en el server side:
         Character.X += moveDto.dx;
@@ -569,7 +684,10 @@ public class ClientSession
 
     public void HandleInstanceCompletion(string instanceName)
     {
-        if (Character == null) return;
+        if (Character == null)
+        {
+            return;
+        }
 
         // Use a HashSet to avoid duplicates
         var uniqueUpdates = new HashSet<int>();
@@ -584,7 +702,10 @@ public class ClientSession
 
     public void HandleInstanceFailure(string instanceId)
     {
-        if (Character == null) return;
+        if (Character == null)
+        {
+            return;
+        }
 
         var failedQuests = QuestComponent.HandleInstanceFailure(instanceId);
         foreach (var questId in failedQuests)

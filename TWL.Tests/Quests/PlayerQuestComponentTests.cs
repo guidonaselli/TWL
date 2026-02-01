@@ -1,16 +1,15 @@
-using System.Collections.Generic;
+using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using Xunit;
 
 namespace TWL.Tests.Quests;
 
 public class PlayerQuestComponentTests
 {
-    private readonly ServerQuestManager _questManager;
     private readonly PlayerQuestComponent _playerQuests;
+    private readonly ServerQuestManager _questManager;
 
     public PlayerQuestComponentTests()
     {
@@ -18,7 +17,7 @@ public class PlayerQuestComponentTests
         // Create mock data
         var quests = new List<QuestDefinition>
         {
-            new QuestDefinition
+            new()
             {
                 QuestId = 1,
                 Title = "Crafting Quest",
@@ -26,11 +25,11 @@ public class PlayerQuestComponentTests
                 Requirements = new List<int>(),
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Craft", "Sword", 1, "Craft a Sword")
+                    new("Craft", "Sword", 1, "Craft a Sword")
                 },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>())
             },
-            new QuestDefinition
+            new()
             {
                 QuestId = 2,
                 Title = "Compound Quest",
@@ -38,11 +37,11 @@ public class PlayerQuestComponentTests
                 Requirements = new List<int>(),
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Compound", "Potion", 2, "Compound 2 Potions")
+                    new("Compound", "Potion", 2, "Compound 2 Potions")
                 },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>())
             },
-            new QuestDefinition
+            new()
             {
                 QuestId = 3,
                 Title = "Escort Quest",
@@ -50,14 +49,14 @@ public class PlayerQuestComponentTests
                 Requirements = new List<int>(),
                 Objectives = new List<ObjectiveDefinition>
                 {
-                    new ObjectiveDefinition("Escort", "Princess", 1, "Escort Princess")
+                    new("Escort", "Princess", 1, "Escort Princess")
                 },
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>())
             }
         };
 
-        string json = System.Text.Json.JsonSerializer.Serialize(quests);
-        System.IO.File.WriteAllText("test_quests_component.json", json);
+        var json = JsonSerializer.Serialize(quests);
+        File.WriteAllText("test_quests_component.json", json);
         _questManager.Load("test_quests_component.json");
 
         _playerQuests = new PlayerQuestComponent(_questManager);
@@ -68,7 +67,7 @@ public class PlayerQuestComponentTests
     {
         _playerQuests.StartQuest(1);
 
-        var updated = _playerQuests.HandleCraft("Sword", 1);
+        var updated = _playerQuests.HandleCraft("Sword");
         Assert.Single(updated);
         Assert.Equal(1, updated[0]);
         Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[1]);
@@ -79,12 +78,12 @@ public class PlayerQuestComponentTests
     {
         _playerQuests.StartQuest(2);
 
-        var updated = _playerQuests.HandleCompound("Potion", 1);
+        var updated = _playerQuests.HandleCompound("Potion");
         Assert.Single(updated);
         Assert.Equal(QuestState.InProgress, _playerQuests.QuestStates[2]);
         Assert.Equal(1, _playerQuests.QuestProgress[2][0]);
 
-        updated = _playerQuests.HandleCompound("Potion", 1);
+        updated = _playerQuests.HandleCompound("Potion");
         Assert.Single(updated);
         Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[2]);
     }

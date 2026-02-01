@@ -1,4 +1,3 @@
-using Xunit;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 

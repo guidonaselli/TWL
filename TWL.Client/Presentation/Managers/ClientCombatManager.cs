@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using TWL.Shared.Domain.Characters;
+﻿using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
 
 // CombatResult, etc.
@@ -25,15 +22,9 @@ public class ClientCombatManager
     }
 
     // Podrías pasar listas de personajes al constructor o exponer métodos
-    public void SetAllies(List<Character> allies)
-    {
-        _allies = allies;
-    }
+    public void SetAllies(List<Character> allies) => _allies = allies;
 
-    public void SetEnemies(List<Character> enemies)
-    {
-        _enemies = enemies;
-    }
+    public void SetEnemies(List<Character> enemies) => _enemies = enemies;
 
     /// <summary>
     ///     Cuando llega un CombatResult del servidor,

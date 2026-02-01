@@ -1,10 +1,5 @@
-using System.Collections.Concurrent;
-using System.IO;
-using System.Threading.Tasks;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.DTO;
-using Xunit;
 
 namespace TWL.Tests.Economy;
 
@@ -93,8 +88,14 @@ public class EconomyTests
         await Task.WhenAll(task1, task2);
 
         var results = new[] { task1.Result, task2.Result };
-        int successes = 0;
-        foreach (var r in results) if (r.Success) successes++;
+        var successes = 0;
+        foreach (var r in results)
+        {
+            if (r.Success)
+            {
+                successes++;
+            }
+        }
 
         Assert.Equal(1, successes); // Only one should succeed
         Assert.Equal(5, character.PremiumCurrency); // 15 - 10 = 5

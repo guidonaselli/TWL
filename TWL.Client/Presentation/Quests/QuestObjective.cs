@@ -23,6 +23,8 @@ public class QuestObjective
     {
         CurrentCount += amount;
         if (CurrentCount >= RequiredCount)
+        {
             IsCompleted = true;
+        }
     }
 }

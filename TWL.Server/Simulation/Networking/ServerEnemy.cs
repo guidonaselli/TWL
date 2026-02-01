@@ -4,11 +4,9 @@ namespace TWL.Server.Simulation.Networking;
 
 public class ServerEnemy : ServerCombatant
 {
-    private readonly EnemyCharacter _definition;
-
     public ServerEnemy(EnemyCharacter definition)
     {
-        _definition = definition;
+        Definition = definition;
         Id = -1; // Temporary ID, should be assigned by CombatManager
         Name = definition.Name;
         CharacterElement = definition.CharacterElement;
@@ -31,7 +29,7 @@ public class ServerEnemy : ServerCombatant
         Level = definition.Level;
     }
 
-    public EnemyCharacter Definition => _definition;
+    public EnemyCharacter Definition { get; }
 
     public int Level { get; set; }
 

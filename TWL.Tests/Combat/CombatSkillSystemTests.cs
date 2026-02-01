@@ -1,22 +1,19 @@
+using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
-using Xunit;
 
 namespace TWL.Tests.Combat;
 
 public class MockSkillCatalog2 : ISkillCatalog
 {
-    private Dictionary<int, Skill> _skills = new();
-
-    public void AddSkill(Skill skill)
-    {
-        _skills[skill.SkillId] = skill;
-    }
+    private readonly Dictionary<int, Skill> _skills = new();
 
     public IEnumerable<int> GetAllSkillIds() => _skills.Keys;
 
     public Skill? GetSkillById(int id) => _skills.GetValueOrDefault(id);
+
+    public void AddSkill(Skill skill) => _skills[skill.SkillId] = skill;
 }
 
 public class TestCharacter2 : Character
@@ -30,22 +27,28 @@ public class TestCharacter2 : Character
 
 public class CombatSkillSystemTests
 {
-    private readonly MockSkillCatalog2 _mockCatalog;
     private readonly TestCharacter2 _actor;
+    private readonly MockSkillCatalog2 _mockCatalog;
     private readonly TestCharacter2 _target;
 
     public CombatSkillSystemTests()
     {
         _mockCatalog = new MockSkillCatalog2();
         _actor = new TestCharacter2("Actor", Element.Wind);
-        _target = new TestCharacter2("Target", Element.Earth);
+        _target = new TestCharacter2("Target");
 
         // Init stats
         _actor.SetId(1);
-        _actor.Health = 100; _actor.Sp = 100; _actor.Str = 10; _actor.Int = 10; _actor.Wis = 10; _actor.Agi = 20;
+        _actor.Health = 100;
+        _actor.Sp = 100;
+        _actor.Str = 10;
+        _actor.Int = 10;
+        _actor.Wis = 10;
+        _actor.Agi = 20;
 
         _target.SetId(2);
-        _target.Health = 100; _target.Sp = 100;
+        _target.Health = 100;
+        _target.Sp = 100;
         _target.Con = 2; // Def = 4
         _target.Wis = 2; // Mdf = 4
     }
@@ -66,7 +69,8 @@ public class CombatSkillSystemTests
             Name = "Wind Blade",
             Branch = SkillBranch.Physical,
             SpCost = 8,
-            Scaling = new List<SkillScaling> {
+            Scaling = new List<SkillScaling>
+            {
                 new() { Stat = StatType.Atk, Coefficient = 1.0f },
                 new() { Stat = StatType.Spd, Coefficient = 0.5f }
             },
@@ -98,7 +102,8 @@ public class CombatSkillSystemTests
             SkillId = 100,
             Name = "Seal Skill",
             TargetType = SkillTargetType.SingleEnemy,
-            Effects = new List<SkillEffect> {
+            Effects = new List<SkillEffect>
+            {
                 new() { Tag = SkillEffectTag.Seal, Duration = 2, Chance = 1.0f }
             }
         };
@@ -159,62 +164,76 @@ public class CombatSkillSystemTests
     [Fact]
     public void Mastery_EventFires()
     {
-         var skill = new Skill {
-             SkillId = 200,
-             Name = "Test",
-             TargetType = SkillTargetType.SingleEnemy,
-             Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Damage } }
-         };
-         _mockCatalog.AddSkill(skill);
+        var skill = new Skill
+        {
+            SkillId = 200,
+            Name = "Test",
+            TargetType = SkillTargetType.SingleEnemy,
+            Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Damage } }
+        };
+        _mockCatalog.AddSkill(skill);
 
-         var battle = new BattleInstance(new[] { _actor }, new[] { _target }, _mockCatalog);
-         var actorC = battle.Allies[0];
-         var targetC = battle.Enemies[0];
+        var battle = new BattleInstance(new[] { _actor }, new[] { _target }, _mockCatalog);
+        var actorC = battle.Allies[0];
+        var targetC = battle.Enemies[0];
 
-         bool eventFired = false;
-         battle.OnSkillUsed += (actorId, skillId) => {
-             if (actorId == actorC.Character.Id && skillId == 200) eventFired = true;
-         };
+        var eventFired = false;
+        battle.OnSkillUsed += (actorId, skillId) =>
+        {
+            if (actorId == actorC.Character.Id && skillId == 200)
+            {
+                eventFired = true;
+            }
+        };
 
-         actorC.Atb = 100;
-         battle.Tick(0.1f);
-         battle.ResolveAction(CombatAction.UseSkill(actorC.BattleId, targetC.BattleId, 200));
+        actorC.Atb = 100;
+        battle.Tick(0.1f);
+        battle.ResolveAction(CombatAction.UseSkill(actorC.BattleId, targetC.BattleId, 200));
 
-         Assert.True(eventFired);
+        Assert.True(eventFired);
     }
 
     [Fact]
     public void Evolution_SwapsId_At_Threshold()
     {
-         // Setup Skill with Upgrade Rule
-         var skill1 = new Skill { SkillId = 80, Name = "Wind Blade I", StageUpgradeRules = new() { RankThreshold = 2, NextSkillId = 83 } };
-         var skill2 = new Skill { SkillId = 83, Name = "Wind Blade II" };
+        // Setup Skill with Upgrade Rule
+        var skill1 = new Skill
+        {
+            SkillId = 80, Name = "Wind Blade I",
+            StageUpgradeRules = new StageUpgradeRules { RankThreshold = 2, NextSkillId = 83 }
+        };
+        var skill2 = new Skill { SkillId = 83, Name = "Wind Blade II" };
 
-         _mockCatalog.AddSkill(skill1);
-         _mockCatalog.AddSkill(skill2);
+        _mockCatalog.AddSkill(skill1);
+        _mockCatalog.AddSkill(skill2);
 
-         var sChar = new TWL.Server.Simulation.Networking.ServerCharacter();
-         sChar.LearnSkill(80);
+        var sChar = new ServerCharacter();
+        sChar.LearnSkill(80);
 
-         // Simulate usage
-         // Usage 1 -> Rank 1
-         int rank = sChar.IncrementSkillUsage(80);
-         Assert.Equal(1, rank);
+        // Simulate usage
+        // Usage 1 -> Rank 1
+        var rank = sChar.IncrementSkillUsage(80);
+        Assert.Equal(1, rank);
 
-         // Usage 10 -> Rank 2 (Logic is % 10 == 0)
-         // Loop 9 more times to reach 10 usages
-         for(int i=0; i<9; i++) rank = sChar.IncrementSkillUsage(80);
+        // Usage 10 -> Rank 2 (Logic is % 10 == 0)
+        // Loop 9 more times to reach 10 usages
+        for (var i = 0; i < 9; i++)
+        {
+            rank = sChar.IncrementSkillUsage(80);
+        }
 
-         Assert.Equal(2, rank);
+        Assert.Equal(2, rank);
 
-         // Manager Logic Simulation: Check if evolution is needed
-         if (rank >= skill1.StageUpgradeRules.RankThreshold)
-         {
-             if (skill1.StageUpgradeRules.NextSkillId.HasValue)
+        // Manager Logic Simulation: Check if evolution is needed
+        if (rank >= skill1.StageUpgradeRules.RankThreshold)
+        {
+            if (skill1.StageUpgradeRules.NextSkillId.HasValue)
+            {
                 sChar.ReplaceSkill(skill1.SkillId, skill1.StageUpgradeRules.NextSkillId.Value);
-         }
+            }
+        }
 
-         Assert.DoesNotContain(80, sChar.KnownSkills);
-         Assert.Contains(83, sChar.KnownSkills);
+        Assert.DoesNotContain(80, sChar.KnownSkills);
+        Assert.Contains(83, sChar.KnownSkills);
     }
 }

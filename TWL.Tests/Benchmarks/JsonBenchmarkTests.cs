@@ -1,21 +1,20 @@
-using System;
 using System.Diagnostics;
 using System.Text;
 using System.Text.Json;
 using TWL.Shared.Net.Messages;
 using TWL.Shared.Net.Network;
-using Xunit;
 using Xunit.Abstractions;
 
 namespace TWL.Tests.Benchmarks;
 
 public class JsonBenchmarkTests
 {
-    private readonly ITestOutputHelper _output;
     private static readonly JsonSerializerOptions _jsonOptions = new()
     {
         PropertyNameCaseInsensitive = true
     };
+
+    private readonly ITestOutputHelper _output;
 
     public JsonBenchmarkTests(ITestOutputHelper output)
     {
@@ -45,10 +44,11 @@ public class JsonBenchmarkTests
         // Benchmark Bad
         var beforeBad = GC.GetTotalAllocatedBytes();
         var sw = Stopwatch.StartNew();
-        for (int i = 0; i < iterations; i++)
+        for (var i = 0; i < iterations; i++)
         {
             DeserializeBad(jsonBytes);
         }
+
         sw.Stop();
         var afterBad = GC.GetTotalAllocatedBytes();
         var badTime = sw.ElapsedMilliseconds;
@@ -58,10 +58,11 @@ public class JsonBenchmarkTests
         // Benchmark Current
         var beforeCurrent = GC.GetTotalAllocatedBytes();
         sw.Restart();
-        for (int i = 0; i < iterations; i++)
+        for (var i = 0; i < iterations; i++)
         {
             DeserializeCurrent(jsonBytes);
         }
+
         sw.Stop();
         var afterCurrent = GC.GetTotalAllocatedBytes();
         var currentTime = sw.ElapsedMilliseconds;
@@ -71,10 +72,11 @@ public class JsonBenchmarkTests
         // Benchmark SourceGen
         var beforeSourceGen = GC.GetTotalAllocatedBytes();
         sw.Restart();
-        for (int i = 0; i < iterations; i++)
+        for (var i = 0; i < iterations; i++)
         {
             DeserializeSourceGen(jsonBytes);
         }
+
         sw.Stop();
         var afterSourceGen = GC.GetTotalAllocatedBytes();
         var sourceGenTime = sw.ElapsedMilliseconds;

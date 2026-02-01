@@ -1,4 +1,3 @@
-using Xunit;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
@@ -7,18 +6,11 @@ namespace TWL.Tests.Domain.Skills;
 
 public class SkillSystemTests
 {
-    private class TestCharacter : Character
-    {
-        public TestCharacter(string name, Element element) : base(name, element)
-        {
-        }
-    }
-
     [Fact]
     public void TestFireballSkill_LoadedFromJson_AndExecuted()
     {
         // 1. Setup Skill Registry
-        string json = @"[
+        var json = @"[
           {
             ""SkillId"": 999,
             ""Name"": ""Test Fireball"",
@@ -72,7 +64,7 @@ public class SkillSystemTests
             SkillId = 999
         };
 
-        string result = battle.ResolveAction(action);
+        var result = battle.ResolveAction(action);
 
         // 4. Verification
         // Damage = (Mat * 2.0) - Mdf
@@ -90,7 +82,7 @@ public class SkillSystemTests
     [Fact]
     public void TestSkillSpCost_NotEnoughSp()
     {
-        string json = @"[
+        var json = @"[
           { ""SkillId"": 998, ""Name"": ""High Cost"", ""SpCost"": 100, ""TargetType"": ""SingleEnemy"", ""Element"": ""Fire"", ""Branch"": ""Physical"", ""Effects"": [ { ""Tag"": ""Damage"" } ] }
         ]";
         SkillRegistry.Instance.LoadSkills(json);
@@ -111,9 +103,16 @@ public class SkillSystemTests
             SkillId = 998
         };
 
-        string result = battle.ResolveAction(action);
+        var result = battle.ResolveAction(action);
 
         Assert.Equal("Not enough SP!", result);
         Assert.Equal(10, caster.Sp); // SP not consumed
+    }
+
+    private class TestCharacter : Character
+    {
+        public TestCharacter(string name, Element element) : base(name, element)
+        {
+        }
     }
 }

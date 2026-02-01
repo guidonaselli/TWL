@@ -1,6 +1,6 @@
 using System.Text.Json;
 
-﻿namespace TWL.Shared.Net.Network;
+namespace TWL.Shared.Net.Network;
 
 [Serializable]
 public class NetMessage

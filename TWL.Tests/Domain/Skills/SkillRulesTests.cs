@@ -1,12 +1,9 @@
-using System.Collections.Generic;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
-using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Domain.Skills;
 using TWL.Tests.Mocks;
-using Xunit;
 
 namespace TWL.Tests.Domain.Skills;
 
@@ -94,7 +91,7 @@ public class SkillRulesTests
             TargetType = SkillTargetType.SingleEnemy,
             Effects = new List<SkillEffect>
             {
-                new SkillEffect
+                new()
                 {
                     Tag = SkillEffectTag.DebuffStats,
                     Value = 50,
@@ -114,7 +111,8 @@ public class SkillRulesTests
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100 };
 
         // Add 50% resistance
-        target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 0.5f, 99, "SpdResist"), _statusEngine);
+        target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 0.5f, 99, "SpdResist"),
+            _statusEngine);
 
         manager.AddCharacter(attacker);
         manager.AddCharacter(target);
@@ -146,7 +144,7 @@ public class SkillRulesTests
             TargetType = SkillTargetType.SingleEnemy,
             Effects = new List<SkillEffect>
             {
-                new SkillEffect
+                new()
                 {
                     Tag = SkillEffectTag.Seal,
                     Value = 0,
@@ -165,7 +163,8 @@ public class SkillRulesTests
         var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100 };
 
         // Add 50% resistance
-        target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 0.5f, 99, "SealResist"), _statusEngine);
+        target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 0.5f, 99, "SealResist"),
+            _statusEngine);
 
         manager.AddCharacter(attacker);
         manager.AddCharacter(target);

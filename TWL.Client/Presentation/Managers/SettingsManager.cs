@@ -1,55 +1,56 @@
-using System;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Media;
 
-namespace TWL.Client.Presentation.Managers
+namespace TWL.Client.Presentation.Managers;
+
+public class SettingsManager
 {
-    public class SettingsManager
+    // Helps restore volume after unmuting
+    private bool _isMutedByFocus;
+
+    public SettingsManager()
     {
-        // 0.0 to 1.0
-        public float MasterVolume { get; set; } = 1.0f;
-        public float MusicVolume { get; set; } = 1.0f;
-        public float SfxVolume { get; set; } = 1.0f;
+        // Set initial defaults
+        ApplyAudioSettings();
+    }
 
-        // 0: Slow, 1: Normal, 2: Fast
-        public int TextSpeed { get; set; } = 1;
+    // 0.0 to 1.0
+    public float MasterVolume { get; set; } = 1.0f;
+    public float MusicVolume { get; set; } = 1.0f;
+    public float SfxVolume { get; set; } = 1.0f;
 
-        public bool MuteOnUnfocus { get; set; } = true;
+    // 0: Slow, 1: Normal, 2: Fast
+    public int TextSpeed { get; set; } = 1;
 
-        // Helps restore volume after unmuting
-        private bool _isMutedByFocus = false;
+    public bool MuteOnUnfocus { get; set; } = true;
 
-        public SettingsManager()
+    public void ApplyAudioSettings()
+    {
+        if (_isMutedByFocus)
         {
-            // Set initial defaults
-            ApplyAudioSettings();
+            return; // Don't apply if currently muted by focus loss
         }
 
-        public void ApplyAudioSettings()
+        // MonoGame SoundEffect MasterVolume controls all sound effects
+        // We combine Master * Sfx for effective SFX volume
+        SoundEffect.MasterVolume = Math.Clamp(MasterVolume * SfxVolume, 0f, 1f);
+
+        // MediaPlayer Volume controls music
+        MediaPlayer.Volume = Math.Clamp(MasterVolume * MusicVolume, 0f, 1f);
+    }
+
+    public void SetMuteState(bool isMuted)
+    {
+        if (isMuted)
         {
-            if (_isMutedByFocus) return; // Don't apply if currently muted by focus loss
-
-            // MonoGame SoundEffect MasterVolume controls all sound effects
-            // We combine Master * Sfx for effective SFX volume
-            SoundEffect.MasterVolume = Math.Clamp(MasterVolume * SfxVolume, 0f, 1f);
-
-            // MediaPlayer Volume controls music
-            MediaPlayer.Volume = Math.Clamp(MasterVolume * MusicVolume, 0f, 1f);
+            SoundEffect.MasterVolume = 0f;
+            MediaPlayer.Volume = 0f;
+            _isMutedByFocus = true;
         }
-
-        public void SetMuteState(bool isMuted)
+        else
         {
-            if (isMuted)
-            {
-                SoundEffect.MasterVolume = 0f;
-                MediaPlayer.Volume = 0f;
-                _isMutedByFocus = true;
-            }
-            else
-            {
-                _isMutedByFocus = false;
-                ApplyAudioSettings(); // Restore user settings
-            }
+            _isMutedByFocus = false;
+            ApplyAudioSettings(); // Restore user settings
         }
     }
 }

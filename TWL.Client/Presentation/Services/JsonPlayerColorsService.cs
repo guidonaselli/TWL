@@ -1,10 +1,5 @@
-using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Text.Json;
-using System.Threading.Tasks;
 using TWL.Shared.Domain.DTO;
 
 namespace TWL.Client.Presentation.Services;
@@ -25,21 +20,21 @@ public class JsonPlayerColorsService : IPlayerColorsService
         _loadingTask = lazy.Value;
     }
 
-    private static async Task<Dictionary<Guid, PlayerColorsDto>> LoadColorsAsync(string filePath)
-    {
-        using var stream = File.OpenRead(filePath);
-        var raw = await JsonSerializer.DeserializeAsync<Dictionary<string, PlayerColorsDto>>(stream)
-            .ConfigureAwait(false) ?? new();
-        return raw.ToDictionary(
-            kv => Guid.Parse(kv.Key),
-            kv => kv.Value);
-    }
-
     public PlayerColorsDto? Get(Guid playerId)
     {
         // Must block if not ready. The constructor is non-blocking, so IO happens in background
         // until this method is called.
         var map = _loadingTask.GetAwaiter().GetResult();
         return map.TryGetValue(playerId, out var dto) ? dto : null;
+    }
+
+    private static async Task<Dictionary<Guid, PlayerColorsDto>> LoadColorsAsync(string filePath)
+    {
+        using var stream = File.OpenRead(filePath);
+        var raw = await JsonSerializer.DeserializeAsync<Dictionary<string, PlayerColorsDto>>(stream)
+            .ConfigureAwait(false) ?? new Dictionary<string, PlayerColorsDto>();
+        return raw.ToDictionary(
+            kv => Guid.Parse(kv.Key),
+            kv => kv.Value);
     }
 }

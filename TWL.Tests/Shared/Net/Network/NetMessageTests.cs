@@ -1,37 +1,35 @@
 using System.Text;
-using Xunit;
 using TWL.Shared.Net.Network;
 
-namespace TWL.Tests.Shared.Net.Network
+namespace TWL.Tests.Shared.Net.Network;
+
+public class NetMessageTests
 {
-    public class NetMessageTests
+    [Fact]
+    public void Deserialize_ValidJson_ReturnsNetMessage()
     {
-        [Fact]
-        public void Deserialize_ValidJson_ReturnsNetMessage()
-        {
-            int opCode = (int)Opcode.LoginRequest;
-            var json = $"{{\"Op\": {opCode}, \"JsonPayload\": \"test\"}}";
-            var bytes = Encoding.UTF8.GetBytes(json);
+        var opCode = (int)Opcode.LoginRequest;
+        var json = $"{{\"Op\": {opCode}, \"JsonPayload\": \"test\"}}";
+        var bytes = Encoding.UTF8.GetBytes(json);
 
-            var msg = NetMessage.Deserialize(bytes, bytes.Length);
+        var msg = NetMessage.Deserialize(bytes, bytes.Length);
 
-            Assert.NotNull(msg);
-            Assert.Equal(Opcode.LoginRequest, msg.Op);
-            Assert.Equal("test", msg.JsonPayload);
-        }
+        Assert.NotNull(msg);
+        Assert.Equal(Opcode.LoginRequest, msg.Op);
+        Assert.Equal("test", msg.JsonPayload);
+    }
 
-        [Fact]
-        public void Deserialize_CaseInsensitive_ReturnsNetMessage()
-        {
-            int opCode = (int)Opcode.LoginRequest;
-            var json = $"{{\"op\": {opCode}, \"jsonPayload\": \"test\"}}";
-            var bytes = Encoding.UTF8.GetBytes(json);
+    [Fact]
+    public void Deserialize_CaseInsensitive_ReturnsNetMessage()
+    {
+        var opCode = (int)Opcode.LoginRequest;
+        var json = $"{{\"op\": {opCode}, \"jsonPayload\": \"test\"}}";
+        var bytes = Encoding.UTF8.GetBytes(json);
 
-            var msg = NetMessage.Deserialize(bytes, bytes.Length);
+        var msg = NetMessage.Deserialize(bytes, bytes.Length);
 
-            Assert.NotNull(msg);
-            Assert.Equal(Opcode.LoginRequest, msg.Op);
-            Assert.Equal("test", msg.JsonPayload);
-        }
+        Assert.NotNull(msg);
+        Assert.Equal(Opcode.LoginRequest, msg.Op);
+        Assert.Equal("test", msg.JsonPayload);
     }
 }

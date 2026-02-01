@@ -4,6 +4,14 @@ namespace TWL.Shared.Domain.Battle;
 
 public class StatusEffectInstance
 {
+    public StatusEffectInstance(SkillEffectTag tag, float value, int duration, string? param = null)
+    {
+        Tag = tag;
+        Value = value;
+        TurnsRemaining = duration;
+        Param = param;
+    }
+
     public SkillEffectTag Tag { get; set; }
     public float Value { get; set; }
     public int TurnsRemaining { get; set; }
@@ -16,12 +24,4 @@ public class StatusEffectInstance
     public StackingPolicy StackingPolicy { get; set; }
     public string? ConflictGroup { get; set; }
     public int Priority { get; set; }
-
-    public StatusEffectInstance(SkillEffectTag tag, float value, int duration, string? param = null)
-    {
-        Tag = tag;
-        Value = value;
-        TurnsRemaining = duration;
-        Param = param;
-    }
 }

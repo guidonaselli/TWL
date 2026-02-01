@@ -1,12 +1,9 @@
-using System.Threading;
-using System.Threading.Tasks;
 using TWL.Server.Features.Combat;
 using TWL.Server.Simulation.Managers;
+using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Domain.Skills;
-using TWL.Shared.Services;
 using TWL.Tests.Mocks;
-using Xunit;
 
 namespace TWL.Tests.Features.Combat;
 
@@ -17,24 +14,25 @@ public class UseSkillHandlerTests
     {
         if (SkillRegistry.Instance.GetSkillById(1001) == null)
         {
-             string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
-             if (!System.IO.File.Exists(path))
-             {
-                 // Try looking from project root (if running from root)
-                 path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
-             }
+            var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/skills.json");
+            if (!File.Exists(path))
+            {
+                // Try looking from project root (if running from root)
+                path = Path.Combine(AppContext.BaseDirectory, "Content/Data/skills.json");
+            }
 
-             if (System.IO.File.Exists(path))
-             {
-                 var json = System.IO.File.ReadAllText(path);
-                 SkillRegistry.Instance.LoadSkills(json);
-             }
-             else
-             {
-                 // Fallback: Manually register the skill needed for test
-                 var manualJson = "[{\"SkillId\":1001,\"Name\":\"Rock Smash\",\"SpCost\":5,\"Scaling\":[{\"Stat\":\"Atk\",\"Coefficient\":1.2}],\"Effects\":[{\"Tag\":\"Damage\"}]}]";
-                 SkillRegistry.Instance.LoadSkills(manualJson);
-             }
+            if (File.Exists(path))
+            {
+                var json = File.ReadAllText(path);
+                SkillRegistry.Instance.LoadSkills(json);
+            }
+            else
+            {
+                // Fallback: Manually register the skill needed for test
+                var manualJson =
+                    "[{\"SkillId\":1001,\"Name\":\"Rock Smash\",\"SpCost\":5,\"Scaling\":[{\"Stat\":\"Atk\",\"Coefficient\":1.2}],\"Effects\":[{\"Tag\":\"Damage\"}]}]";
+                SkillRegistry.Instance.LoadSkills(manualJson);
+            }
         }
 
         var mockRng = new MockRandomService(0.5f);
@@ -43,8 +41,8 @@ public class UseSkillHandlerTests
 
         var handler = new UseSkillHandler(combatManager);
 
-        var attacker = new TWL.Server.Simulation.Networking.ServerCharacter { Id = 1, Name = "P1", Sp = 100, Str = 10 };
-        var target = new TWL.Server.Simulation.Networking.ServerCharacter { Id = 2, Name = "P2", Hp = 100, Con = 5 };
+        var attacker = new ServerCharacter { Id = 1, Name = "P1", Sp = 100, Str = 10 };
+        var target = new ServerCharacter { Id = 2, Name = "P2", Hp = 100, Con = 5 };
 
         combatManager.AddCharacter(attacker);
         combatManager.AddCharacter(target);

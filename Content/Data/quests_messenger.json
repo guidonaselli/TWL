@@ -11,13 +11,19 @@
         "Description": "Talk to the Messenger."
       }
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 5002,
     "Title": "Urgent Delivery",
     "Description": "Deliver this potion to the City Guard within 60 seconds!",
-    "Requirements": [5001],
+    "Requirements": [
+      5001
+    ],
     "TimeLimitSeconds": 60,
     "Objectives": [
       {
@@ -28,13 +34,19 @@
         "DataId": 3001
       }
     ],
-    "Rewards": { "Exp": 200, "Gold": 50, "Items": [] }
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": []
+    }
   },
   {
     "QuestId": 5003,
     "Title": "Choose Your Path",
     "Description": "The Messenger asks you to choose a specialization.",
-    "Requirements": [5002],
+    "Requirements": [
+      5002
+    ],
     "Objectives": [
       {
         "Type": "Talk",
@@ -43,16 +55,27 @@
         "Description": "Talk to the Messenger."
       }
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 5004,
     "Title": "Path of the Hawk",
     "Description": "Collect feathers to prove your speed.",
-    "Requirements": [5003],
+    "Requirements": [
+      5003
+    ],
     "MutualExclusionGroup": "MessengerPath",
-    "BlockedByFlags": ["PATH_OWL"],
-    "FlagsSet": ["MESSENGER_TRIAL_DONE", "PATH_HAWK"],
+    "BlockedByFlags": [
+      "PATH_OWL"
+    ],
+    "FlagsSet": [
+      "MESSENGER_TRIAL_DONE",
+      "PATH_HAWK"
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -62,16 +85,27 @@
         "DataId": 7001
       }
     ],
-    "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 100,
+      "Items": []
+    }
   },
   {
     "QuestId": 5005,
     "Title": "Path of the Owl",
     "Description": "Collect scrolls to prove your wisdom.",
-    "Requirements": [5003],
+    "Requirements": [
+      5003
+    ],
     "MutualExclusionGroup": "MessengerPath",
-    "BlockedByFlags": ["PATH_HAWK"],
-    "FlagsSet": ["MESSENGER_TRIAL_DONE", "PATH_OWL"],
+    "BlockedByFlags": [
+      "PATH_HAWK"
+    ],
+    "FlagsSet": [
+      "MESSENGER_TRIAL_DONE",
+      "PATH_OWL"
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -81,14 +115,20 @@
         "DataId": 7002
       }
     ],
-    "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 100,
+      "Items": []
+    }
   },
   {
     "QuestId": 5006,
     "Title": "Master Messenger",
     "Description": "You have completed your path.",
     "Requirements": [],
-    "RequiredFlags": ["MESSENGER_TRIAL_DONE"],
+    "RequiredFlags": [
+      "MESSENGER_TRIAL_DONE"
+    ],
     "Objectives": [
       {
         "Type": "Talk",
@@ -97,6 +137,10 @@
         "Description": "Report to Messenger."
       }
     ],
-    "Rewards": { "Exp": 1000, "Gold": 500, "Items": [] }
+    "Rewards": {
+      "Exp": 1000,
+      "Gold": 500,
+      "Items": []
+    }
   }
 ]
