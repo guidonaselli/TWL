@@ -52,6 +52,7 @@ public class HiddenCoveTests
         Assert.True(_questComponent.StartQuest(1402));
 
         // Obj 1: Interact HeavyRocks
+        Assert.NotNull(_interactionManager.ProcessInteraction(_character, _questComponent, "HeavyRocks"));
         _questComponent.TryProgress("Interact", "HeavyRocks");
 
         // Obj 2: Collect Sulfur (Simulate gathering)

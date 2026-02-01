@@ -20,5 +20,118 @@
         "Quantity": 1
       }
     ]
+  },
+  {
+    "TargetName": "StrangeStoneDebris",
+    "Type": "Collect",
+    "RequiredQuestId": 1301,
+    "RewardItems": [{"ItemId": 8101, "Quantity": 1}]
+  },
+  {
+    "TargetName": "AncientTablet",
+    "Type": "Collect",
+    "RequiredQuestId": 1302,
+    "RewardItems": [{"ItemId": 8102, "Quantity": 1}]
+  },
+  {
+    "TargetName": "RuinsEntrance",
+    "Type": "Interact",
+    "RequiredQuestId": 1304,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "RuinsConsole",
+    "Type": "Talk",
+    "RequiredQuestId": 1305,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "PowerCrystalSource",
+    "Type": "Collect",
+    "RequiredQuestId": 1306,
+    "RewardItems": [{"ItemId": 8108, "Quantity": 1}]
+  },
+  {
+    "TargetName": "HologramProjector",
+    "Type": "Interact",
+    "RequiredQuestId": 1307,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "BatNest",
+    "Type": "Collect",
+    "RequiredQuestId": 2303,
+    "RewardItems": [{"ItemId": 8106, "Quantity": 1}]
+  },
+  {
+    "TargetName": "RepairedRadioTower",
+    "Type": "Interact",
+    "RequiredQuestId": 1401,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "NorthEastCliff",
+    "Type": "Interact",
+    "RequiredQuestId": 1401,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "SulfurVent",
+    "Type": "Collect",
+    "RequiredQuestId": 1402,
+    "RewardItems": [{"ItemId": 9001, "Quantity": 1}]
+  },
+  {
+    "TargetName": "BurntTree",
+    "Type": "Collect",
+    "RequiredQuestId": 1402,
+    "RewardItems": [{"ItemId": 9002, "Quantity": 1}]
+  },
+  {
+    "TargetName": "AlchemyTable",
+    "Type": "Craft",
+    "RequiredQuestId": 1402,
+    "RequiredItems": [{"ItemId": 9001, "Quantity": 1}, {"ItemId": 9002, "Quantity": 1}],
+    "ConsumeRequiredItems": true,
+    "RewardItems": [{"ItemId": 9003, "Quantity": 1}]
+  },
+  {
+    "TargetName": "HeavyRocks",
+    "Type": "Interact",
+    "RequiredQuestId": 1403,
+    "RequiredItems": [{"ItemId": 9003, "Quantity": 1}],
+    "ConsumeRequiredItems": true,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "HiddenDock",
+    "Type": "Interact",
+    "RequiredQuestId": 1404,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "FishingSpot",
+    "Type": "Collect",
+    "RequiredQuestId": 2401,
+    "RequiredItems": [{"ItemId": 303, "Quantity": 1}],
+    "RewardItems": [{"ItemId": 9005, "Quantity": 1}]
+  },
+  {
+    "TargetName": "AnyFishingSpot",
+    "Type": "Interact",
+    "RequiredQuestId": 2011,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "RuinsConsole",
+    "Type": "Talk",
+    "RequiredQuestId": 1306,
+    "RewardItems": []
+  },
+  {
+    "TargetName": "HeavyRocks",
+    "Type": "Interact",
+    "RequiredQuestId": 1402,
+    "RewardItems": []
   }
 ]
