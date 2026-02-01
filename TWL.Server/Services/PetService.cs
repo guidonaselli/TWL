@@ -233,7 +233,7 @@ public class PetService : IPetService
         }
 
         var targetPet = GetPet(ownerId, petInstanceId);
-        if (targetPet == null || targetPet.IsExpired)
+        if (targetPet == null || targetPet.IsExpired || targetPet.IsDead)
         {
             return false;
         }
