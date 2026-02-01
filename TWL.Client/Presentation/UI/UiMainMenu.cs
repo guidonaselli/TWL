@@ -92,17 +92,17 @@ namespace TWL.Client.Presentation.UI
 
             if (!_networkClient.IsConnected)
             {
-                _loginStatusMessage = "Connecting...";
+                _loginStatusMessage = Loc.T("UI_LoginStatus_Connecting");
                 _loginStatusColor = Color.White;
                 try
                 {
                     _networkClient.Connect();
-                    _loginStatusMessage = "Connected.";
+                    _loginStatusMessage = Loc.T("UI_LoginStatus_Connected");
                     _loginStatusColor = Color.LightGreen;
                 }
                 catch (Exception ex)
                 {
-                    _loginStatusMessage = $"Connection failed: {ex.Message}";
+                    _loginStatusMessage = Loc.TF("UI_LoginStatus_ConnectionFailed", ex.Message);
                     _loginStatusColor = Color.OrangeRed;
                 }
             }
@@ -176,13 +176,13 @@ namespace TWL.Client.Presentation.UI
             var username = _username.Trim();
             if (string.IsNullOrWhiteSpace(username) || string.IsNullOrEmpty(_password))
             {
-                _loginStatusMessage = "Username and password are required.";
+                _loginStatusMessage = Loc.T("UI_LoginStatus_UserPassRequired");
                 _loginStatusColor = Color.OrangeRed;
                 return;
             }
             if (username.Length > 50)
             {
-                _loginStatusMessage = "Username is too long.";
+                _loginStatusMessage = Loc.T("UI_LoginStatus_UserTooLong");
                 _loginStatusColor = Color.OrangeRed;
                 return;
             }
@@ -198,7 +198,7 @@ namespace TWL.Client.Presentation.UI
             _networkClient.SendNetMessage(netMessage);
             _password = string.Empty;
             _activeField = ActiveField.Username;
-            _loginStatusMessage = "Logging in...";
+            _loginStatusMessage = Loc.T("UI_LoginStatus_LoggingIn");
             _loginStatusColor = Color.White;
 
             Console.WriteLine($"Attempting login for user: {_username}");
@@ -284,19 +284,19 @@ namespace TWL.Client.Presentation.UI
             }
             catch (JsonException)
             {
-                _loginStatusMessage = "Login failed.";
+                _loginStatusMessage = Loc.T("UI_LoginStatus_LoginFailed");
                 _loginStatusColor = Color.OrangeRed;
                 return;
             }
 
             if (response == null || !response.Success)
             {
-                _loginStatusMessage = response?.ErrorMessage ?? "Login failed.";
+                _loginStatusMessage = response?.ErrorMessage ?? Loc.T("UI_LoginStatus_LoginFailed");
                 _loginStatusColor = Color.OrangeRed;
                 return;
             }
 
-            _loginStatusMessage = "Login successful.";
+            _loginStatusMessage = Loc.T("UI_LoginStatus_LoginSuccess");
             _loginStatusColor = Color.LightGreen;
             _scenes.ChangeScene("Gameplay");
         }

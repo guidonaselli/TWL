@@ -270,4 +270,37 @@
   <data name="ENEMY_Bat" xml:space="preserve">
     <value>Bat</value>
   </data>
+  <data name="NPC_HarborQuartermaster_Hello" xml:space="preserve">
+    <value>Welcome to the harbor!</value>
+  </data>
+  <data name="NPC_HerbalistApprentice_Hello" xml:space="preserve">
+    <value>Need any herbs?</value>
+  </data>
+  <data name="NPC_WanderingTinkerer_Hello" xml:space="preserve">
+    <value>I have many gadgets.</value>
+  </data>
+  <data name="UI_LoginStatus_Connecting" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="UI_LoginStatus_Connected" xml:space="preserve">
+    <value>Connected.</value>
+  </data>
+  <data name="UI_LoginStatus_ConnectionFailed" xml:space="preserve">
+    <value>Connection failed: {0}</value>
+  </data>
+  <data name="UI_LoginStatus_UserPassRequired" xml:space="preserve">
+    <value>Username and password are required.</value>
+  </data>
+  <data name="UI_LoginStatus_UserTooLong" xml:space="preserve">
+    <value>Username is too long.</value>
+  </data>
+  <data name="UI_LoginStatus_LoggingIn" xml:space="preserve">
+    <value>Logging in...</value>
+  </data>
+  <data name="UI_LoginStatus_LoginFailed" xml:space="preserve">
+    <value>Login failed.</value>
+  </data>
+  <data name="UI_LoginStatus_LoginSuccess" xml:space="preserve">
+    <value>Login successful.</value>
+  </data>
 </root>

@@ -392,7 +392,7 @@ namespace TWL.Tests.Localization.Audit
              }
 
             // 4. Key Naming Convention
-            var validPrefixes = new[] { "UI_", "ERR_", "QUEST_", "SKILL_", "ITEM_", "TUTORIAL_", "ENEMY_" };
+            var validPrefixes = new[] { "UI_", "ERR_", "QUEST_", "SKILL_", "ITEM_", "TUTORIAL_", "ENEMY_", "NPC_" };
             foreach (var key in allUsedKeys)
             {
                  if (!validPrefixes.Any(p => key.StartsWith(p)))
