@@ -234,4 +234,91 @@
   <data name="ENEMY_Bat" xml:space="preserve">
     <value>Bat</value>
   </data>
+  <data name="NPC_HarborQuartermaster_Hello" xml:space="preserve">
+    <value>Welcome to the harbor!</value>
+  </data>
+  <data name="NPC_HerbalistApprentice_Hello" xml:space="preserve">
+    <value>Need any herbs?</value>
+  </data>
+  <data name="NPC_WanderingTinkerer_Hello" xml:space="preserve">
+    <value>I have many gadgets.</value>
+  </data>
+  <data name="UI_LoginStatus_Connecting" xml:space="preserve">
+    <value>Connecting...</value>
+  </data>
+  <data name="UI_LoginStatus_Connected" xml:space="preserve">
+    <value>Connected.</value>
+  </data>
+  <data name="UI_LoginStatus_ConnectionFailed" xml:space="preserve">
+    <value>Connection failed: {0}</value>
+  </data>
+  <data name="UI_LoginStatus_UserPassRequired" xml:space="preserve">
+    <value>Username and password are required.</value>
+  </data>
+  <data name="UI_LoginStatus_UserTooLong" xml:space="preserve">
+    <value>Username is too long.</value>
+  </data>
+  <data name="UI_LoginStatus_LoggingIn" xml:space="preserve">
+    <value>Logging in...</value>
+  </data>
+  <data name="UI_LoginStatus_LoginFailed" xml:space="preserve">
+    <value>Login failed.</value>
+  </data>
+  <data name="UI_LoginStatus_LoginSuccess" xml:space="preserve">
+    <value>Login successful.</value>
+  </data>
+  <data name="SKILL_AquaImpactI" xml:space="preserve">
+    <value>Aqua Impact I</value>
+  </data>
+  <data name="SKILL_AquaImpactII" xml:space="preserve">
+    <value>Aqua Impact II</value>
+  </data>
+  <data name="SKILL_AquaImpactIII" xml:space="preserve">
+    <value>Aqua Impact III</value>
+  </data>
+  <data name="SKILL_WaterBallI" xml:space="preserve">
+    <value>Water Ball I</value>
+  </data>
+  <data name="SKILL_WaterBallII" xml:space="preserve">
+    <value>Water Ball II</value>
+  </data>
+  <data name="SKILL_WaterBallIII" xml:space="preserve">
+    <value>Water Ball III</value>
+  </data>
+  <data name="SKILL_AquaRecoverI" xml:space="preserve">
+    <value>Aqua Recover I</value>
+  </data>
+  <data name="SKILL_AquaRecoverII" xml:space="preserve">
+    <value>Aqua Recover II</value>
+  </data>
+  <data name="SKILL_AquaRecoverIII" xml:space="preserve">
+    <value>Aqua Recover III</value>
+  </data>
+  <data name="SKILL_FlameSmashI" xml:space="preserve">
+    <value>Flame Smash I</value>
+  </data>
+  <data name="SKILL_FlameSmashII" xml:space="preserve">
+    <value>Flame Smash II</value>
+  </data>
+  <data name="SKILL_FlameSmashIII" xml:space="preserve">
+    <value>Flame Smash III</value>
+  </data>
+  <data name="SKILL_FireballI" xml:space="preserve">
+    <value>Fireball I</value>
+  </data>
+  <data name="SKILL_FireballII" xml:space="preserve">
+    <value>Fireball II</value>
+  </data>
+  <data name="SKILL_FireballIII" xml:space="preserve">
+    <value>Fireball III</value>
+  </data>
+  <data name="SKILL_FieryWillI" xml:space="preserve">
+    <value>Fiery Will I</value>
+  </data>
+  <data name="SKILL_FieryWillII" xml:space="preserve">
+    <value>Fiery Will II</value>
+  </data>
+  <data name="SKILL_FieryWillIII" xml:space="preserve">
+    <value>Fiery Will III</value>
+  </data>
 </root>
