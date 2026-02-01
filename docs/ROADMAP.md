@@ -1,27 +1,58 @@
-# THE WONDERLAND - MASTER ROADMAP
+# THE WONDERLAND LEGACY - MASTER ROADMAP
 
-El roadmap del proyecto ha sido dividido en dominios específicos para facilitar su mantenimiento y foco. Por favor, consulta los siguientes documentos según el área de trabajo:
-
-## 1. Core System & Arquitectura
-**Archivo:** [docs/core/ROADMAP.md](core/ROADMAP.md)
-*   Contiene: Principios, DoD, Seguridad, Persistencia, Combate, Inventario, Economía, Social, World.
-
-## 2. Skills System
-**Archivo:** [docs/skills/ROADMAP.md](skills/ROADMAP.md)
-*   Contiene: Definición de Skills, Packs Elementales, Goddess Skills.
-
-## 3. Quests & Content
-**Archivo:** [docs/quests/ROADMAP.md](quests/ROADMAP.md)
-*   Contiene: Sistema de Quests, Questlines (Puerto Roca, etc.), Objetivos.
-
-## 4. Pets System
-**Archivo:** [docs/pets/ROADMAP.md](pets/ROADMAP.md)
-*   Contiene: Sistema de Mascotas, IA, Captura.
-
-## 5. Housing & Manufacturing
-**Archivo:** [docs/housing/ROADMAP.md](housing/ROADMAP.md)
-*   Contiene: Sistema de Tent (Casa), Muebles, Almacenamiento, Manufactura.
+> **JULES-CONTEXT**: This is the index for all roadmaps. When starting a new task,
+> first read `CONTEXT.md` for game identity, then find the relevant domain roadmap below.
+> Pick tasks by priority (P0 first). Each task must produce: code + tests + doc update.
 
 ---
 
-> **Nota:** Para agregar nuevos ítems, hazlo en el archivo correspondiente al dominio. Si es un cambio arquitectónico o transversal, usa `docs/core/ROADMAP.md`.
+## Domain Roadmaps
+
+### 1. Core System & Architecture
+**File:** [docs/core/ROADMAP.md](core/ROADMAP.md)
+- Server architecture, networking, security, persistence
+- Combat engine, inventory, economy, social systems
+- World/map streaming, instances, events
+
+### 2. Skills System
+**File:** [docs/skills/ROADMAP.md](skills/ROADMAP.md)
+- Skill definitions, elemental packs (Earth/Water/Fire/Wind)
+- Tier budgets, mastery-by-use, stage evolution
+- Goddess Skills, legendary skills, life skills
+
+### 3. Quests & Content
+**File:** [docs/quests/ROADMAP.md](quests/ROADMAP.md)
+- Quest engine, objective types, reward system
+- Questlines: Isla Brisa, Puerto Roca, Selva Esmeralda
+- Design docs: `docs/quests/design/`
+
+### 4. Pets System
+**File:** [docs/pets/ROADMAP.md](pets/ROADMAP.md)
+- Pet model, combat AI, capture mechanics
+- Amity/bonding, riding, rebirth/evolution
+- Pet population across regions
+
+### 5. Housing & Manufacturing
+**File:** [docs/housing/ROADMAP.md](housing/ROADMAP.md)
+- Tent system, furniture grid, storage
+- Manufacturing workbenches, crafting logic
+- Permissions, garage system
+
+### 6. World & Regions
+**File:** [docs/world/WORLD_REGIONS.md](world/WORLD_REGIONS.md)
+- Region definitions, map IDs, NPCs, progression gates
+- Lore: Las Islas Perdidas, Los Ancestrales, Resonancia
+
+---
+
+## Rules (SSOT)
+
+| Document | What it enforces |
+|----------|-----------------|
+| [docs/rules/GAMEPLAY_CONTRACTS.md](rules/GAMEPLAY_CONTRACTS.md) | Market, PvP, death penalty, instance lockouts, skill progression |
+| [docs/rules/CONTENT_RULES.md](rules/CONTENT_RULES.md) | Skill IDs, quest rewards, data validation, tier budgets |
+
+---
+
+> **Adding new items:** Add to the domain-specific roadmap. Cross-cutting or architectural
+> changes go in `docs/core/ROADMAP.md`. Format: `DOM-###`: short title, priority, acceptance criteria.

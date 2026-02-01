@@ -1,339 +1,215 @@
 # CONTEXT.md
 
-## Proyecto: The Wonderland Legacy (TWL)
-
-**The Wonderland Legacy (TWL)** es un JRPG/MMORPG por turnos inspirado en *Wonderland Online*, con foco en:
-
-* Mundo persistente compartido (en etapas: primero singleplayer / pseudo-online, luego MMO real).
-* Combate táctico por turnos, basado en **party** (jugador + pets + aliados).
-* Sistema profundo de **stats, equipamiento, rebirth, pets, quests y crafting ligero**.
-* Personajes totalmente **personalizables visualmente** (palette swapping + equip visible).
-* Arquitectura **clean**: dominio compartido, cliente gráfico y servidor autoritativo.
-
-Este archivo describe el **modelo conceptual del juego**, la **arquitectura de la solución** y ciertas **reglas estructurales** que deben respetarse en todo el código nuevo.
+> **JULES-CONTEXT**: This is the conceptual source of truth for the entire project.
+> Read this file FIRST before working on any task. It defines the game identity,
+> architecture constraints, and design rules that all code must respect.
+> For implementation tasks, cross-reference with `docs/core/ROADMAP.md` and `docs/rules/`.
 
 ---
 
-## Visión de juego
+## Project: The Wonderland Legacy (TWL)
 
-TWL quiere capturar la sensación de *Wonderland Online*:
+**The Wonderland Legacy (TWL)** is a 2D multiplayer JRPG set in an uncharted archipelago
+called **Las Islas Perdidas**. Players are shipwreck survivors who build a community,
+explore ancient ruins, and uncover the secrets of a lost civilization called **Los Ancestrales**
+that mastered elemental energy through crystalline technology known as **Resonancia**.
 
-* Personaje principal creado por el jugador, con:
+**Genre:** Turn-based MMORPG (WLO-inspired, original IP)
+**Platform:** PC (MonoGame/DesktopGL), future: mobile
+**Architecture:** Server-authoritative, clean 3-layer separation
 
-  * Elemento (Fuego, Agua, Tierra, Viento, etc.).
-  * Distribución de stats (STR, CON, INT, WIS, SPD).
-  * Apariencia base (sexo/modelo, colores de piel/pelo/ojos).
-* Mundo explorado en mapas 2D basados en **Tiled** (TMX), con:
+### Core Pillars
 
-  * Zonas urbanas, mazmorras, campos abiertos, mapas de eventos.
-  * Capa de colisión explícita.
-* Sistema de combate por turnos:
-
-  * Orden de turno basado en SPD + modificadores.
-  * Skills elementales, físicos, de soporte y control.
-  * Party del jugador (jugador + pets + aliados temporales).
-* Progressión:
-
-  * Level + EXP + ExpToNextLevel.
-  * Rebirth / Renacer (reseteo estratégico con bonus).
-  * Oro y moneda premium (**TwlPoints**).
-  * Equipo y pets como motores centrales de poder.
-* Experiencia estética:
-
-  * HUD tipo *Wonderland Online* (panel de personaje, party, chat, mini-mapa, shortcuts, inventario, etc.).
-  * Equip visible, superpuesto al sprite base del personaje.
+1. **Multiplayer-First:** Persistent shared world. Login-based accounts. No local saves.
+2. **Tactical Turn-Based Combat:** Party-based (player + pets + allies). Elemental cycle.
+3. **Deep Progression:** Stats, equipment, rebirth, skill mastery, pet bonding, crafting.
+4. **Visual Customization:** Palette swapping + visible equipment layering.
+5. **Mystery-Driven Narrative:** Survival + ancient ruins + elemental technology discovery.
+6. **Data-Driven Content:** All skills, quests, items, pets defined in JSON. No hardcoded content.
 
 ---
 
-## Arquitectura de la solución
+## Game Identity (What Makes TWL Unique)
 
-La solución se organiza en tres capas principales:
+TWL is NOT a fantasy kingdom game. It is:
 
-### 1. TWL.Shared (Dominio y contratos)
+- **Setting:** Tropical archipelago, shipwreck survival, ancient crystalline ruins
+- **Tone:** *Lost* meets *Golden Sun* meets *classic 2D MMO*
+- **Player Fantasy:** You are an explorer who discovers you have a unique connection to
+  Ancestral technology (Resonancia). You are not a "chosen one" - you earned it by
+  being brave enough to venture into the ruins.
+- **World Logic:** Civilization exists because of previous shipwreck waves. Puerto Roca
+  is a city built by generations of survivors. The world grows as players explore.
 
-Proyecto **puro de dominio** (sin referencias a MonoGame ni a nada gráfico).
+### Elemental System
 
-Responsabilidades:
+| Element | Identity | Stat | Role | Color |
+|---------|----------|------|------|-------|
+| Earth | Endurance | CON | Tank/Shield | Brown/Green |
+| Water | Healing | WIS | Healer/Cleanse | Blue |
+| Fire | Burst | STR/INT | DPS/Offense | Red/Orange |
+| Wind | Speed | SPD | Control/AoE | Cyan/White |
 
-* Modelo de dominio:
+**Cycle:** Water > Fire > Wind > Earth > Water (1.5x advantage, 0.5x disadvantage)
 
-  * `Character`, `PlayerCharacter`, `PetCharacter`, `NpcCharacter`.
-  * `Inventory`, `InventoryItem`, `ItemDefinition`, `EquipmentSlot`, `EquipmentSet`.
-  * `Stats`: STR, CON, INT, WIS, SPD, HP/MP máximos, cálculos de daño.
-  * Sistema de rebirth, progresión y fórmulas básicas.
-* Modelo de combate por turnos:
+### World Regions
 
-  * Representación abstracta de turnos, acciones, skills, efectos de estado.
-* Modelo de quests y progresión narrativa:
+| Region | Map Range | Theme | Status |
+|--------|-----------|-------|--------|
+| Isla Brisa (Starter) | 0001-0099 | Beach, shipwreck, tutorial | In Dev |
+| Puerto Roca (Hub) | 1000-1099 | Colonial port city, commerce | In Dev |
+| Selva Esmeralda (Jungle) | 2000-2099 | Dense jungle, Ancestral ruins | Planned |
+| Isla Volcana (Volcanic) | 3000-3099 | Volcano, endgame, legendary forge | Planned |
+| Arrecife Hundido (Underwater) | 4000-4099 | Submerged Ancestral city | Future |
 
-  * Quests, estados de quest, objetivos, recompensas.
-* Modelo de economía:
-
-  * Oro, TwlPoints, drops, recompensas de combate.
-* Modelo de red:
-
-  * DTOs, eventos de gameplay (BattleStarted, BattleFinished, InventoryUpdate, etc.).
-  * Interfaces de comunicación (`INetworkChannel`, `IGameManager`, etc.).
-
-Reglas:
-
-* TWL.Shared **no puede depender** de MonoGame, ContentManager, Texture2D, SpriteBatch, GraphicsDevice ni de ningún tipo gráfico.
-* Shared modela **el “qué”** (datos y reglas), nunca el “cómo se dibuja”.
-
----
-
-### 2. TWL.Client (Presentación y cliente de juego)
-
-Proyecto de **cliente gráfico**, basado en MonoGame.
-
-Responsabilidades:
-
-* Motor de render:
-
-  * Escenas (`SceneBase`, `SceneMainMenu`, `SceneGameplay`, `SceneBattle`, `SceneMarketplace`).
-  * Carga de contenido (`ContentManager`, `IAssetLoader`).
-  * Render de mapas Tiled (MonoGame.Extended).
-  * Cámara 2D, input, UI/HUD.
-* Representación visual del jugador:
-
-  * `PlayerView`: responsable de:
-
-    * Cargar sprites base (idle/walk para cada dirección).
-    * Aplicar **palette swapping** según colores del jugador.
-    * Combinar **sprite base + equip visible**:
-
-      * Capas: cuerpo, pelo, ojos, ropa, arma, accesorios.
-      * Orden de dibujo consistente con la dirección.
-* Sistema de UI:
-
-  * `UiMainMenu`, `UiGameplay`, ventanas de inventario, equipo, stats, party, chat, etc.
-* Servicios locales de datos mientras no exista backend:
-
-  * Carga de JSON (`items.json`, `quests.json`, `playercolors.json`, etc.).
-  * `JsonPlayerColorsService` para obtener colores de jugador.
-* Lógica de escena:
-
-  * `SceneGameplay`: navegación de mapa, pathfinding, encuentros, UI in-game.
-  * `SceneBattle`: visualización del combate por turnos usando los resultados del dominio (cuando el server exista).
-  * `EncounterManager`: disparo de batallas (pseudo-random, zonas, triggers).
-
-Reglas:
-
-* El cliente **puede referenciar** TWL.Shared, pero no al revés.
-* Cualquier lógica relacionada con texturas, sprite sheets, palette swapping, animaciones o layout de UI debe vivir en TWL.Client (p. ej. `PaletteSwapper`, `PlayerView`).
-* El cliente no es dueño del estado “real” del personaje; lo representa a partir de modelos de Shared y datos del server (o simulados por JSON en esta primera etapa).
+> Full world design: `docs/world/WORLD_REGIONS.md`
 
 ---
 
-### 3. TWL.Server (Servidor autoritativo – futuro/gradual)
+## Solution Architecture
 
-Proyecto que será el **dueño del estado del mundo y de los personajes**.
+### 1. TWL.Shared (Domain & Contracts)
 
-Responsabilidades:
+Pure domain project. **No MonoGame references.**
 
-* Persistencia:
+Responsibilities:
+- Domain model: `Character`, `PlayerCharacter`, `PetCharacter`, `NpcCharacter`
+- Inventory: `Inventory`, `InventoryItem`, `ItemDefinition`, `EquipmentSlot`
+- Stats: STR, CON, INT, WIS, SPD -> derived ATK, DEF, MAT, MDF, SPD
+- Combat: Turn representation, actions, skills, status effects
+- Quests: Quest states, objectives, rewards
+- Economy: Gold, TwlPoints, drops
+- Network: DTOs, gameplay events, `INetworkChannel`, `IGameManager`
 
-  * Personajes, equip, pets, quests, inventarios, estado de la cuenta, etc.
-* Lógica autoritativa de combate:
+**Rules:**
+- TWL.Shared **cannot depend** on MonoGame, ContentManager, Texture2D, SpriteBatch, or any graphics type
+- Shared models the **"what"** (data and rules), never the "how it renders"
 
-  * Validar acciones, aplicar efectos, resolver turnos, enviar resultados.
-* Lógica de mundo:
+### 2. TWL.Client (Presentation & Game Client)
 
-  * Instancias de mapas, spawns, triggers de eventos.
-* Sincronización:
+MonoGame-based graphical client.
 
-  * Estado del jugador, posiciones relevantes en el mapa, actualizaciones de inventario y equipo.
+Responsibilities:
+- Scenes: `SceneBase`, `SceneMainMenu`, `SceneGameplay`, `SceneBattle`
+- Content loading: `ContentManager`, `IAssetLoader`
+- Tiled map rendering (MonoGame.Extended)
+- Camera 2D, input handling, UI/HUD
+- Player visual: `PlayerView` (sprite base + palette swap + equipment layers)
+- UI system: `UiMainMenu`, `UiGameplay`, inventory, equipment, stats, party, chat
 
-En la fase actual, muchas de estas responsabilidades se simulan localmente usando JSON y lógica en el cliente.
+**Rules:**
+- Client **can reference** TWL.Shared, but not the reverse
+- All texture/sprite/animation/UI layout logic lives in TWL.Client
+- Client does NOT own "real" character state; it renders from Shared models + server data
 
----
+### 3. TWL.Server (Authoritative Server)
 
-## Personaje jugador y equipamiento
+Owner of world state and character data.
 
-### PlayerCharacter (Shared)
+Responsibilities:
+- Persistence: Characters, equipment, pets, quests, inventories, accounts (PostgreSQL)
+- Authoritative combat: Validate actions, apply effects, resolve turns, send results
+- World logic: Map instances, spawns, event triggers
+- Synchronization: Player state, positions, inventory/equipment updates
 
-`PlayerCharacter` vive en TWL.Shared y modela:
-
-* Identidad:
-
-  * `Id`, `Name`, `Element`.
-* Progressión:
-
-  * `Level`, `Exp`, `ExpToNextLevel`.
-  * Métodos: `GainExp`, `TryLevelUp`, `DoRebirth`.
-* Stats:
-
-  * Stats base y stats totales derivados de:
-
-    * Atributos básicos (STR, CON, INT, WIS, SPD).
-    * Equipamiento (`Equipment`).
-    * Efectos temporales (buffs/debuffs).
-* Inventario y equipo:
-
-  * `Inventory`: items consumibles, materiales, etc.
-  * `Equipment`:
-
-    * Slots: `Head`, `Body`, `Weapon`, `Boots`, `Accessory1`, `Accessory2`, etc.
-    * Cada item de equip aporta:
-
-      * Stats (STR +, CON +, HP +, etc.).
-      * Flags/efectos especiales.
-* Economía:
-
-  * `Gold`, `TwlPoints`.
-* Mascotas:
-
-  * `Pets` como lista de `PetCharacter` con comportamiento similar a personajes.
-
-PlayerCharacter **no sabe nada** de cómo se ve el equip; sólo conoce qué equip está equipado y qué stats aporta.
+**Rules:**
+- Server is the single source of truth for all game state
+- All valuable operations must be idempotent
+- Anti-dupe and anti-replay protections are mandatory
 
 ---
 
-### Apariencia y equip visible (Client)
+## Player Character Model
 
-La apariencia visible surge de:
+### PlayerCharacter (in TWL.Shared)
 
-* **Datos de dominio del personaje** (Shared):
+- **Identity:** `Id`, `Name`, `Element`
+- **Progression:** `Level`, `Exp`, `ExpToNextLevel`, methods: `GainExp`, `TryLevelUp`, `DoRebirth`
+- **Stats:** Base stats (STR, CON, INT, WIS, SPD) + equipment bonuses + buff/debuff modifiers
+- **Inventory:** Consumables, materials, key items
+- **Equipment:** Slots: Head, Body, Weapon, Boots, Accessory1, Accessory2. Each item provides stat bonuses.
+- **Economy:** `Gold`, `TwlPoints`
+- **Pets:** List of `PetCharacter` with leveling, amity, rebirth
 
-  * Elemento, sexo/modelo base, equipo actualmente equipado.
-* **Metadatos visuales de equip** (Client/recursos):
+PlayerCharacter **knows nothing** about visual representation.
 
-  * Cada item de equip tiene una definición visual (p. ej. `EquipmentVisualDefinition`) que indica:
+### Visual Appearance (in TWL.Client)
 
-    * Qué spritesheets o overlays usar para cada dirección.
-    * Qué capa ocupa (ropa, casco, arma en mano, etc.).
-* **PlayerView** en TWL.Client:
-
-  * Combina:
-
-    * Sprite base del cuerpo (con palette swap aplicado a piel, pelo, ojos).
-    * Capas visuales de equip (ropa, casco, arma…).
-  * Gestiona:
-
-    * Animación idle/walk/run.
-    * Elección de frame según `FacingDirection` y estado (moverse, parado).
-    * Paleta modificada por equip si corresponde (por ejemplo, ropa que define sus propios colores).
+Rendered by `PlayerView`:
+- Sprite base (body, hair, eyes) with palette swapping
+- Equipment overlay layers (clothing, helmet, weapon)
+- Animation: idle/walk/run based on `FacingDirection`
+- Draw order consistent with facing direction
 
 ---
 
-## Datos y contenido
+## Data & Content
 
-Mientras no haya DB ni servidor, el contenido se carga desde JSON:
+All game content is defined in JSON files under `Content/Data/`:
 
-* `items.json`: definiciones de items (consumibles, equip, materiales).
-* `equipment.json`: metadatos de equip (stats + información visual).
-* `quests.json`: definiciones de quests, objetivos, recompensas.
-* `playercolors.json`: colores de personalización para jugadores de prueba.
-* `monsters.json`: definiciones básicas de enemigos.
+| File | Purpose |
+|------|---------|
+| `skills.json` | Skill definitions (damage, effects, unlock rules, tiers) |
+| `quests.json` | Quest definitions (objectives, rewards, prerequisites) |
+| `pets.json` | Pet definitions (stats, growth, capture rules, utilities) |
+| `interactions.json` | World object interactions |
+| `items.json` | Item definitions (consumables, equipment, materials) |
+| `equipment.json` | Equipment metadata (stats + visual info) |
+| `playercolors.json` | Player customization color palettes |
+| `monsters.json` | Enemy definitions |
 
-Estos JSON se interpretan en el cliente y se mapean a modelos de dominio (Shared) y a modelos visuales (Client) cuando haga falta.
-
----
-
-## Internacionalización (i18n)
-
-El proyecto está pensado para ser **multi-idioma** (por ejemplo, español/inglés).
-
-Principios:
-
-* Ningún texto de UI debe quedar hardcodeado directamente en el código de presentación.
-* Los textos se referencian por **clave simbólica**, estilo i18n en frontend:
-
-  * Ejemplo de clave: `ui.mainmenu.new_game`, `ui.inventory.title`, `msg.battle.victory`.
-* La resolución de estas claves se hace mediante un servicio de localización:
-
-  * Ejemplo conceptual:
-
-    ```csharp
-    interface ILocalizationService
-    {
-        string Get(string key, params object[] args);
-    }
-    ```
-  * Implementaciones pueden usar `.resx`, JSON o cualquier otra estrategia.
-* El dominio (Shared) **no necesita** texto localizado; como mucho, usar claves que luego el cliente traduce.
-
-Limitaciones:
-
-* El código C# no se “traduce” como tal: lo que se internacionaliza son **strings visibles para el usuario**.
-* Las claves de i18n funcionan como **constantes/identificadores**; la traducción se resuelve en tiempo de ejecución según idioma activo.
+**Validation:** `TWL.Tests.ContentValidationTests` enforces data integrity.
+**Rules:** See `docs/rules/CONTENT_RULES.md` and `docs/rules/GAMEPLAY_CONTRACTS.md`.
 
 ---
 
-## Escena de gameplay (visión conceptual)
+## Internationalization (i18n)
 
-`SceneGameplay` en TWL.Client representa:
-
-* Exploración del mapa:
-
-  * Uso de `TiledMap` y `TiledMapRenderer`.
-  * Capa de colisión leída desde el TMX.
-* Movimiento:
-
-  * Click en el mapa → conversión a coordenadas de mundo → pathfinding sobre tiles.
-  * PlayerCharacter mantiene una cola de tiles (`SetPath`); PlayerView anima el movimiento.
-* Encuentros:
-
-  * `EncounterManager` puede disparar batallas según:
-
-    * Zonas peligrosas.
-    * Tasa de encuentros.
-    * Misiones activas.
-* HUD:
-
-  * Barra de vida/MP.
-  * Botón/tecla para inventario, equipo, estado, quest log.
-  * (A futuro) minimapa, chat, party UI.
-
-El flujo típico:
-
-1. `SceneGameplay.Initialize`:
-
-   * Crea/recibe `PlayerCharacter` del GameClientManager.
-   * Crea `PlayerView` y UI.
-2. `SceneGameplay.LoadContent`:
-
-   * Carga mapa, assets de player, UI, etc.
-3. `SceneGameplay.Update`:
-
-   * Procesa input, pathfinding, encuentros, UI, actualiza PlayerCharacter y PlayerView.
-4. `SceneGameplay.Draw`:
-
-   * Dibuja mapa, luego player + equip, luego HUD/UI.
+- No UI text is hardcoded in presentation code
+- All text referenced by symbolic keys: `UI_Login`, `UI_Title`, `msg.battle.victory`
+- Resolution via `Loc.T("key")` service using JSON-based translation files
+- Domain (Shared) uses keys, not translated text
 
 ---
 
-## Objetivo global
+## Gameplay Scene Flow
 
-Este contexto apunta a que todo el código nuevo:
+```
+SceneMainMenu -> [Login] -> SceneGameplay -> [Encounter] -> SceneBattle -> [Victory] -> SceneGameplay
+                                          -> [Open UI]   -> Inventory/Equipment/QuestLog/Party
+```
 
-* Refuerce la separación **Shared (dominio) / Client (presentación) / Server (autoridad)**.
-* Trate al jugador como una **entidad de dominio rica** (stats, equip, pets, quests, economía) y al cliente sólo como la capa que:
+### SceneGameplay Loop
+1. `Initialize`: Create/receive `PlayerCharacter` from `GameClientManager`, create `PlayerView` and UI
+2. `LoadContent`: Load map, player assets, UI assets
+3. `Update`: Process input, pathfinding, encounters, UI, update PlayerCharacter and PlayerView
+4. `Draw`: Draw map -> player + equipment -> HUD/UI
 
-  * Lo dibuja (incluyendo equip visible y palette swapping).
-  * Lo controla a través de input y UI.
-  * Lo sincroniza con el servidor cuando este esté operativo.
-* Prepare desde ahora el terreno para:
+---
 
-  * MMO real.
-  * Sistema de equip completo y visible.
-  * Internacionalización real con claves i18n.
-  * Extensión futura (skills, elementos, instancias de mazmorras, PvP, etc.).
+## Design Evolution
 
-Este archivo debe leerse como la **fuente de verdad conceptual** del proyecto.
+TWL's design is iterative. Current class names, methods, and modules are a snapshot,
+not an immutable contract. Refactorings are expected and encouraged when they improve:
 
-Evolución del diseño y refactorizaciones permitidas
+- Conceptual clarity of the domain model
+- Separation of responsibilities (Client / Shared / Server)
+- Cohesion and expressiveness of domain entities
+- Extensibility for new mechanics (skills, advanced equipment, crafting, pet AI)
+- Performance or maintainability
 
-El diseño de TWL es iterativo y evolutivo.
-Los nombres actuales de clases, métodos y módulos son una foto del estado actual del proyecto, no un contrato inmutable.
-Se permiten —y se esperan— refactorizaciones cuando mejoren:
+---
 
-La claridad conceptual del modelo.
+## Key Documentation Index
 
-La separación de responsabilidades (Client / Shared / Server).
-
-La cohesión y expresividad de las entidades del dominio.
-
-La extensibilidad para nuevas mecánicas (skills, equip avanzado, crafting, pet AI, etc.).
-
-La performance o la mantenibilidad.
+| Document | Purpose |
+|----------|---------|
+| `docs/core/ROADMAP.md` | Master technical roadmap (P0-P3 priorities) |
+| `docs/skills/ROADMAP.md` | Skill system backlog |
+| `docs/quests/ROADMAP.md` | Quest system backlog |
+| `docs/pets/ROADMAP.md` | Pet system backlog |
+| `docs/housing/ROADMAP.md` | Housing & manufacturing backlog |
+| `docs/world/WORLD_REGIONS.md` | World regions, maps, NPCs, lore |
+| `docs/rules/GAMEPLAY_CONTRACTS.md` | System rules SSOT (market, PvP, death penalty, etc.) |
+| `docs/rules/CONTENT_RULES.md` | Data rules SSOT (skill IDs, quest rewards, validation) |
+| `docs/PRODUCTION_GAP_ANALYSIS.md` | Current gaps and risks |
