@@ -156,4 +156,25 @@ public class PetSystemExpansionTests : IDisposable
         var resultSuccess = _petService.UseUtility(1, pet.InstanceId, PetUtilityType.Mount);
         Assert.True(resultSuccess);
     }
+
+    [Fact]
+    public void ObedienceCheckShouldRespectAmity()
+    {
+        var def = _petManager.GetDefinition(1001);
+        var pet = new ServerPet(def);
+
+        // Amity 50 -> Always obey
+        Assert.True(pet.CheckObedience(0.99f));
+
+        // Amity 0 -> 24% fail chance (Formula: (20-0)*0.01 + 0.04 = 0.24)
+        pet.ChangeAmity(-50); // Amity 0
+
+        // Roll 0.1 (10%) -> Fail check (returns false if roll <= failChance? No, returns roll > failChance)
+        // Code: return roll > failChance;
+        // 0.1 > 0.24 is False. Disobey.
+        Assert.False(pet.CheckObedience(0.1f));
+
+        // Roll 0.3 -> 0.3 > 0.24 is True. Obey.
+        Assert.True(pet.CheckObedience(0.3f));
+    }
 }
