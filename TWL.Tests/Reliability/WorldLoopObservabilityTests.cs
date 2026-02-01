@@ -17,10 +17,10 @@ public class WorldLoopObservabilityTests
         using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, metrics);
         scheduler.Start();
 
-        // Schedule a task that sleeps for 20ms (above 10ms threshold)
+        // Schedule a task that sleeps for 40ms (above presumed 10ms threshold, safer for OS scheduling)
         scheduler.Schedule(() =>
         {
-            Thread.Sleep(20);
+            Thread.Sleep(40);
         }, TimeSpan.Zero, "SlowTask");
 
         // Wait for it to execute

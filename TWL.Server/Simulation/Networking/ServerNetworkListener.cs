@@ -45,7 +45,7 @@ public class ServerNetworkListener
 
                 break;
 
-            // Casos adicionales para otros tipos de mensaje
+                // Casos adicionales para otros tipos de mensaje
         }
     }
 

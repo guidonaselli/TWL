@@ -5,12 +5,11 @@ namespace TWL.Client.Presentation.Managers;
 
 public class CaptureSystem
 {
-    private readonly EnemyCharacter _enemyCharacter;
     private readonly Random _rnd = new();
 
     public bool TryCapture(PlayerCharacter player, EnemyCharacter enemy, Inventory playerInventory)
     {
-        if (_enemyCharacter.IsCapturable == false)
+        if (enemy.IsCapturable == false)
             return false;
 
         // Condición: HP del enemigo < 30%

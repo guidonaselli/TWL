@@ -25,7 +25,7 @@ namespace TWL.Tests
                 Title = "Escort Duty",
                 Description = "Protect Leader",
                 Objectives = new List<ObjectiveDefinition>(),
-                Rewards = new RewardDefinition(0,0, new List<ItemReward>()),
+                Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
                 FailConditions = new List<QuestFailCondition>
                 {
                     new QuestFailCondition("NpcDeath", "CaravanLeader", "Leader died")

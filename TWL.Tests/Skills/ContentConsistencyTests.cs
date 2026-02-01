@@ -20,6 +20,7 @@ public class ContentConsistencyTests
 
         // Reset/Init Registry
         var ctor = typeof(SkillRegistry).GetConstructor(BindingFlags.Instance | BindingFlags.NonPublic, null, Type.EmptyTypes, null);
+        Assert.NotNull(ctor);
         var registry = (SkillRegistry)ctor.Invoke(null);
         registry.LoadSkills(json);
         _skillCatalog = registry;
@@ -31,6 +32,7 @@ public class ContentConsistencyTests
         foreach (var id in _skillCatalog.GetAllSkillIds())
         {
             var skill = _skillCatalog.GetSkillById(id);
+            Assert.NotNull(skill);
             if (skill.StageUpgradeRules != null && skill.StageUpgradeRules.NextSkillId.HasValue)
             {
                 var nextId = skill.StageUpgradeRules.NextSkillId.Value;

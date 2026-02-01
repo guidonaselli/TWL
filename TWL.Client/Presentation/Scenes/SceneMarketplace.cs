@@ -12,13 +12,13 @@ namespace TWL.Client.Presentation.Scenes;
 public sealed class SceneMarketplace : SceneBase
 {
     private readonly MarketplaceManager _marketplace;
-    private SpriteFont     _font = null!;
-    private UiMarketplace  _uiMarketplace = null!;
+    private SpriteFont _font = null!;
+    private UiMarketplace _uiMarketplace = null!;
 
     public SceneMarketplace(ContentManager content,
         GraphicsDevice gd,
-        ISceneManager  scenes,
-        IAssetLoader   assets,
+        ISceneManager scenes,
+        IAssetLoader assets,
         MarketplaceManager market)
         : base(content, gd, scenes, assets)
     {

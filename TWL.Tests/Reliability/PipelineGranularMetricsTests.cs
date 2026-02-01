@@ -41,10 +41,11 @@ public class PipelineGranularMetricsTests
         var mockWorldTrigger = new Mock<IWorldTriggerService>();
         var spawnManager = new SpawnManager(new MonsterManager(), combatManager);
 
-        int port = 9124; // Use different port
-        var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object, playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object, spawnManager);
+        // Dynamic port assignment: use port 0 to let OS assign a free port
+        var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object, playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object, spawnManager);
 
         server.Start();
+        int port = server.Port;
 
         try
         {
@@ -58,9 +59,9 @@ public class PipelineGranularMetricsTests
             await stream.WriteAsync(bytes, 0, bytes.Length);
 
             // Wait for processing
-            for(int i=0; i<20; i++)
+            for (int i = 0; i < 20; i++)
             {
-                if(metrics.GetSnapshot().NetMessagesProcessed > 0) break;
+                if (metrics.GetSnapshot().NetMessagesProcessed > 0) break;
                 await Task.Delay(100);
             }
 

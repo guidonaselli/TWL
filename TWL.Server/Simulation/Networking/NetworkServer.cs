@@ -26,6 +26,8 @@ public class NetworkServer
     private bool _running;
     private CancellationTokenSource _cts;
 
+    public int Port => ((IPEndPoint)_listener.LocalEndpoint).Port;
+
     public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager, CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService, IEconomyService economyManager, ServerMetrics metrics, TWL.Server.Services.PetService petService, IWorldTriggerService worldTriggerService, SpawnManager spawnManager)
     {
         _listener = new TcpListener(IPAddress.Any, port);

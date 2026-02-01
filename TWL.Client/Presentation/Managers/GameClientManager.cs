@@ -34,11 +34,11 @@ public class GameClientManager
         var port = 7777;
 
         NetworkClient = new NetworkClient(ip, port, this, log);
-        var allies = new List<Character>();
-        var enemies = new List<Character>();
+        _allies = new List<Character>();
+        _enemies = new List<Character>();
         // Initialize example characters
-        // allies.Add(new Character { Id = 101, Name = "Player1", Health = 100, MaxHealth = 100 });
-        // enemies.Add(new Character { Id = 201, Name = "Slime", Health = 50, MaxHealth = 50 });
+        // _allies.Add(new Character { Id = 101, Name = "Player1", Health = 100, MaxHealth = 100 });
+        // _enemies.Add(new Character { Id = 201, Name = "Slime", Health = 50, MaxHealth = 50 });
 
         CombatManager = new ClientCombatManager();
         var questDataManager = new QuestDataManager();

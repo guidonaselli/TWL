@@ -175,7 +175,7 @@ public class PlayerService
 
     public void SaveSession(ClientSession session)
     {
-       SaveSessionAsync(session).GetAwaiter().GetResult();
+        SaveSessionAsync(session).GetAwaiter().GetResult();
     }
 
     public async Task SaveSessionAsync(ClientSession session)

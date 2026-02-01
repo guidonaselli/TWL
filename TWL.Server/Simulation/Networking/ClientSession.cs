@@ -202,7 +202,7 @@ public class ClientSession
             case Opcode.PetActionRequest:
                 await HandlePetActionAsync(msg.JsonPayload);
                 break;
-            // etc.
+                // etc.
         }
         swResolve.Stop();
         _metrics?.RecordPipelineResolveDuration(swResolve.ElapsedTicks);
@@ -224,7 +224,7 @@ public class ClientSession
             case PetActionType.Dismiss:
                 success = _petService.DismissPet(UserId, request.PetInstanceId);
                 break;
-            // Utility etc.
+                // Utility etc.
         }
 
         await SendAsync(new NetMessage
@@ -242,13 +242,13 @@ public class ClientSession
         // Validation
         if (request == null || string.IsNullOrEmpty(request.ProductId))
         {
-             SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing ProductId");
-             return;
+            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing ProductId");
+            return;
         }
         if (request.ProductId.Length > 20 || !request.ProductId.StartsWith("gems_"))
         {
-             SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, $"Invalid ProductId format: {request.ProductId}");
-             return;
+            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, $"Invalid ProductId format: {request.ProductId}");
+            return;
         }
 
         var result = _economyManager.InitiatePurchase(UserId, request.ProductId);
@@ -343,12 +343,12 @@ public class ClientSession
 
         if (Character != null)
         {
-             var result = await _mediator.Send(new InteractCommand(Character, QuestComponent, dto.TargetName));
+            var result = await _mediator.Send(new InteractCommand(Character, QuestComponent, dto.TargetName));
 
-             foreach (var questId in result.UpdatedQuestIds)
-             {
-                 await SendQuestUpdateAsync(questId);
-             }
+            foreach (var questId in result.UpdatedQuestIds)
+            {
+                await SendQuestUpdateAsync(questId);
+            }
         }
     }
 

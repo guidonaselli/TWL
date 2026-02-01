@@ -20,8 +20,8 @@ public class JungleQuestTests
         string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
         if (!File.Exists(path))
         {
-             // Fallback for different runners
-             path = Path.Combine("Content", "Data", "quests.json");
+            // Fallback for different runners
+            path = Path.Combine("Content", "Data", "quests.json");
         }
 
         Assert.True(File.Exists(path), $"Quests file not found at {Path.GetFullPath(path)}");

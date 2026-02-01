@@ -1,5 +1,5 @@
 using System;
-﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 
@@ -15,7 +15,7 @@ public class TileMap
 
     public TileMap(int tileWidth = 32, int tileHeight = 32)
     {
-        TileWidth  = tileWidth;
+        TileWidth = tileWidth;
         TileHeight = tileHeight;
     }
 
@@ -87,22 +87,22 @@ public class TileMap
         maxY = Math.Clamp(maxY, 0, _rows);
 
         for (var y = minY; y < maxY; y++)
-        for (var x = minX; x < maxX; x++)
-        {
-            var tileIndex = _mapData[y, x];
-            var tileX = tileIndex % _tilesPerRow;
-            var tileY = tileIndex / _tilesPerRow;
+            for (var x = minX; x < maxX; x++)
+            {
+                var tileIndex = _mapData[y, x];
+                var tileX = tileIndex % _tilesPerRow;
+                var tileY = tileIndex / _tilesPerRow;
 
-            var source = new Rectangle(
-                tileX * TileWidth,
-                tileY * TileHeight,
-                TileWidth,
-                TileHeight
-            );
+                var source = new Rectangle(
+                    tileX * TileWidth,
+                    tileY * TileHeight,
+                    TileWidth,
+                    TileHeight
+                );
 
-            var pos = new Vector2(x * TileWidth, y * TileHeight);
-            spriteBatch.Draw(_tileSet, pos, source, Color.White);
-        }
+                var pos = new Vector2(x * TileWidth, y * TileHeight);
+                spriteBatch.Draw(_tileSet, pos, source, Color.White);
+            }
     }
 
     public bool IsBlocked(Point tilePos)

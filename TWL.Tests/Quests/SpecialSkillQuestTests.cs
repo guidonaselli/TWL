@@ -132,6 +132,7 @@ public class SpecialSkillQuestTests : IDisposable
         _session.GrantGoddessSkills();
 
         // Assert
+        Assert.NotNull(_session.Character);
         Assert.Contains(2003, _session.Character.KnownSkills);
         Assert.Contains("GS_GRANTED", _session.QuestComponent.Flags);
     }
@@ -141,6 +142,7 @@ public class SpecialSkillQuestTests : IDisposable
     {
         // Arrange
         _session.GrantGoddessSkills();
+        Assert.NotNull(_session.Character);
         Assert.Contains(2003, _session.Character.KnownSkills);
 
         // Manually remove skill but keep flag to simulate corruption or just verifying flag check
@@ -161,6 +163,7 @@ public class SpecialSkillQuestTests : IDisposable
         // Need to clear flags if re-using character, but here we run in isolation per test class instance usually.
         // But xUnit creates new instance per test.
         _session.GrantGoddessSkills();
+        Assert.NotNull(_session.Character);
         Assert.Contains(2004, _session.Character.KnownSkills);
     }
 

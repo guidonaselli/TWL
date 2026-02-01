@@ -41,9 +41,9 @@ namespace TWL.Client.Presentation.Views
                 Cloth = ColorHelper.FromHex(_player.Colors.ClothColor ?? "#888888")
             };
 
-            _down  = GetSwappedTexture(content, gd, $"{basePath}/player_down", clientColors);
-            _up    = GetSwappedTexture(content, gd, $"{basePath}/player_up", clientColors);
-            _left  = GetSwappedTexture(content, gd, $"{basePath}/player_left", clientColors);
+            _down = GetSwappedTexture(content, gd, $"{basePath}/player_down", clientColors);
+            _up = GetSwappedTexture(content, gd, $"{basePath}/player_up", clientColors);
+            _left = GetSwappedTexture(content, gd, $"{basePath}/player_left", clientColors);
             _right = GetSwappedTexture(content, gd, $"{basePath}/player_right", clientColors);
 
             // Load Equipment Visuals
@@ -76,22 +76,22 @@ namespace TWL.Client.Presentation.Views
 
         private void LoadPartTexture(ContentManager content, GraphicsDevice gd, TWL.Shared.Domain.Graphics.AvatarPart part, string dir)
         {
-             try
-             {
-                 // Path convention: Sprites/Items/{AssetId}/{dir}
-                 string path = $"Sprites/Items/{part.AssetId}/{dir}";
-                 var tex = content.Load<Texture2D>(path);
+            try
+            {
+                // Path convention: Sprites/Items/{AssetId}/{dir}
+                string path = $"Sprites/Items/{part.AssetId}/{dir}";
+                var tex = content.Load<Texture2D>(path);
 
-                 // TODO: If we want to palette swap items (e.g. dyed armor), we would use GetSwappedTexture here too.
-                 // For now, we assume items are pre-colored or fixed.
+                // TODO: If we want to palette swap items (e.g. dyed armor), we would use GetSwappedTexture here too.
+                // For now, we assume items are pre-colored or fixed.
 
-                 string key = $"{part.AssetId}_{dir}"; // loc: ignore
-                 _equipmentTextures[key] = tex;
-             }
-             catch
-             {
-                 // Ignore missing assets for now
-             }
+                string key = $"{part.AssetId}_{dir}"; // loc: ignore
+                _equipmentTextures[key] = tex;
+            }
+            catch
+            {
+                // Ignore missing assets for now
+            }
         }
 
         public void Update(GameTime gameTime)
@@ -141,8 +141,8 @@ namespace TWL.Client.Presentation.Views
 
             switch (_player.CurrentDirection)
             {
-                case FacingDirection.Up:    tex = _up;    break;
-                case FacingDirection.Left:  tex = _left;  break;
+                case FacingDirection.Up: tex = _up; break;
+                case FacingDirection.Left: tex = _left; break;
                 case FacingDirection.Right: tex = _right; break;
             }
             if (tex != null)

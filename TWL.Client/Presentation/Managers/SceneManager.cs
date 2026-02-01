@@ -11,7 +11,7 @@ namespace TWL.Client.Presentation.Managers;
 public sealed class SceneManager : ISceneManager
 {
     private readonly Dictionary<string, IScene> _catalog = new();
-    private readonly Stack<IScene>              _stack   = new();
+    private readonly Stack<IScene> _stack = new();
 
     public IScene? CurrentScene => _stack.Any() ? _stack.Peek() : null;
 
@@ -30,7 +30,7 @@ public sealed class SceneManager : ISceneManager
         PushScene(next, payload);
     }
 
-    public void PushScene(IScene scene)               => PushScene(scene, null);
+    public void PushScene(IScene scene) => PushScene(scene, null);
     public void PopScene()
     {
         if (_stack.TryPop(out var old))

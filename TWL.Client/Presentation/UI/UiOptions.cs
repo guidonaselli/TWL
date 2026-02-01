@@ -11,14 +11,14 @@ namespace TWL.Client.Presentation.UI
 {
     public class UiOptions
     {
-        private readonly ISceneManager   _scenes;
-        private readonly IAssetLoader    _assets;
-        private readonly GraphicsDevice  _graphicsDevice;
+        private readonly ISceneManager _scenes;
+        private readonly IAssetLoader _assets;
+        private readonly GraphicsDevice _graphicsDevice;
         private readonly SettingsManager _settings;
 
-        private SpriteFont  _titleFont      = null!;
-        private SpriteFont  _optionFont     = null!;
-        private Texture2D?  _background;
+        private SpriteFont _titleFont = null!;
+        private SpriteFont _optionFont = null!;
+        private Texture2D? _background;
 
         private enum OptionType { MasterVolume, MusicVolume, SfxVolume, TextSpeed, MuteOnUnfocus, Back }
         private readonly List<OptionType> _menuItems = new()
@@ -35,23 +35,23 @@ namespace TWL.Client.Presentation.UI
 
         private Vector2 _titlePosition;
         private Vector2 _optionsStart;
-        private float   _optionSpacing    = 50f;
+        private float _optionSpacing = 50f;
 
         private KeyboardState _prevKeyboardState;
-        private double        _inputCooldown    = 0.1;
-        private double        _timeSinceLastInput;
+        private double _inputCooldown = 0.1;
+        private double _timeSinceLastInput;
 
         public UiOptions(ISceneManager scenes, GraphicsDevice graphicsDevice, IAssetLoader assets, SettingsManager settings)
         {
-            _scenes        = scenes;
+            _scenes = scenes;
             _graphicsDevice = graphicsDevice;
-            _assets        = assets;
-            _settings      = settings;
+            _assets = assets;
+            _settings = settings;
         }
 
         public void LoadContent()
         {
-            _titleFont  = _assets.Load<SpriteFont>("Fonts/MenuFont");
+            _titleFont = _assets.Load<SpriteFont>("Fonts/MenuFont");
             _optionFont = _assets.Load<SpriteFont>("Fonts/DefaultFont");
             try { _background = _assets.Load<Texture2D>("UI/mainmenu_background"); }
             catch { _background = null; }
@@ -61,7 +61,7 @@ namespace TWL.Client.Presentation.UI
             var titleSize = _titleFont.MeasureString(titleText);
             _titlePosition = new Vector2((vp.Width - titleSize.X) / 2, vp.Height * 0.1f);
 
-            _optionsStart  = new Vector2(vp.Width / 2, vp.Height * 0.3f);
+            _optionsStart = new Vector2(vp.Width / 2, vp.Height * 0.3f);
 
             _prevKeyboardState = Keyboard.GetState();
         }
@@ -187,7 +187,7 @@ namespace TWL.Client.Presentation.UI
 
                 var size = _optionFont.MeasureString(text);
                 var origin = new Vector2(size.X / 2, 0);
-                var pos   = _optionsStart + new Vector2(0, i * _optionSpacing);
+                var pos = _optionsStart + new Vector2(0, i * _optionSpacing);
                 var color = i == _selectedIndex ? Color.Yellow : Color.White;
 
                 sb.DrawString(_optionFont, text, pos, color, 0f, origin, 1f, SpriteEffects.None, 0f);
@@ -199,11 +199,11 @@ namespace TWL.Client.Presentation.UI
             return item switch
             {
                 OptionType.MasterVolume => Loc.TF("UI_OPTIONS_MASTER_VOLUME", _settings.MasterVolume * 100),
-                OptionType.MusicVolume  => Loc.TF("UI_OPTIONS_MUSIC_VOLUME", _settings.MusicVolume * 100),
-                OptionType.SfxVolume    => Loc.TF("UI_OPTIONS_SFX_VOLUME", _settings.SfxVolume * 100),
-                OptionType.TextSpeed    => Loc.TF("UI_OPTIONS_TEXT_SPEED", GetTextSpeedLabel(_settings.TextSpeed)),
-                OptionType.MuteOnUnfocus=> Loc.TF("UI_OPTIONS_MUTE_UNFOCUS", _settings.MuteOnUnfocus ? Loc.T("UI_COMMON_ON") : Loc.T("UI_COMMON_OFF")),
-                OptionType.Back         => Loc.T("UI_COMMON_BACK"),
+                OptionType.MusicVolume => Loc.TF("UI_OPTIONS_MUSIC_VOLUME", _settings.MusicVolume * 100),
+                OptionType.SfxVolume => Loc.TF("UI_OPTIONS_SFX_VOLUME", _settings.SfxVolume * 100),
+                OptionType.TextSpeed => Loc.TF("UI_OPTIONS_TEXT_SPEED", GetTextSpeedLabel(_settings.TextSpeed)),
+                OptionType.MuteOnUnfocus => Loc.TF("UI_OPTIONS_MUTE_UNFOCUS", _settings.MuteOnUnfocus ? Loc.T("UI_COMMON_ON") : Loc.T("UI_COMMON_OFF")),
+                OptionType.Back => Loc.T("UI_COMMON_BACK"),
                 _ => ""
             };
         }

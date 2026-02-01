@@ -111,7 +111,7 @@ public class GameServer
         }
         else
         {
-             System.Console.WriteLine("Warning: Content/Maps not found.");
+            System.Console.WriteLine("Warning: Content/Maps not found.");
         }
 
         var scheduler = new WorldScheduler(Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldScheduler>.Instance, Metrics);

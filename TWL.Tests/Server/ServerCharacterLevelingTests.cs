@@ -40,15 +40,15 @@ namespace TWL.Tests.Server
         [Fact]
         public void AddExp_ShouldHandleMultipleLevelUps()
         {
-             var chara = new ServerCharacter { Name = "Test" };
-             // Lv1->2 requires 100. New ExpToNextLevel = 120 (100*1.2).
-             // Lv2->3 requires 120. Total 220.
+            var chara = new ServerCharacter { Name = "Test" };
+            // Lv1->2 requires 100. New ExpToNextLevel = 120 (100*1.2).
+            // Lv2->3 requires 120. Total 220.
 
-             chara.AddExp(220);
+            chara.AddExp(220);
 
-             Assert.Equal(3, chara.Level);
-             Assert.Equal(6, chara.StatPoints);
-             Assert.Equal(0, chara.Exp);
+            Assert.Equal(3, chara.Level);
+            Assert.Equal(6, chara.StatPoints);
+            Assert.Equal(0, chara.Exp);
         }
 
         [Fact]

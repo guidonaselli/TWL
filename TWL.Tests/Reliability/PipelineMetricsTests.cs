@@ -67,9 +67,9 @@ public class PipelineMetricsTests
             await stream.WriteAsync(bytes, 0, bytes.Length);
 
             // Wait for processing
-            for(int i=0; i<20; i++)
+            for (int i = 0; i < 20; i++)
             {
-                if(metrics.GetSnapshot().NetMessagesProcessed > 0) break;
+                if (metrics.GetSnapshot().NetMessagesProcessed > 0) break;
                 await Task.Delay(100);
             }
 

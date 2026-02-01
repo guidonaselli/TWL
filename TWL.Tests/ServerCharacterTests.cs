@@ -61,7 +61,7 @@ public class ServerCharacterTests
         });
 
         Assert.Equal(10, character.Inventory.Count);
-        foreach(var item in character.Inventory)
+        foreach (var item in character.Inventory)
         {
             Assert.Equal(100, item.Quantity);
         }

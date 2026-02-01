@@ -91,7 +91,7 @@ public class PetService : IPetService
         // 8. Roll
         if (_random.NextFloat() > totalChance)
         {
-             return null; // Failed capture
+            return null; // Failed capture
         }
 
         // 9. Success!

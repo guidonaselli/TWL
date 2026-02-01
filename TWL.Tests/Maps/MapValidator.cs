@@ -73,7 +73,7 @@ namespace TWL.Tests.Maps
             {
                 if (i >= presentRequiredLayers.Count)
                 {
-                     throw new Exception($"Missing required layer (checking order): {WorldConstants.RequiredLayers[i]}");
+                    throw new Exception($"Missing required layer (checking order): {WorldConstants.RequiredLayers[i]}");
                 }
 
                 if (presentRequiredLayers[i] != WorldConstants.RequiredLayers[i])
@@ -88,7 +88,7 @@ namespace TWL.Tests.Maps
                 var layer = layers.First(l => l.Attribute("name")?.Value == layerName);
                 if (layer.Name != "objectgroup")
                 {
-                     throw new Exception($"Layer '{layerName}' must be an objectgroup, found {layer.Name}.");
+                    throw new Exception($"Layer '{layerName}' must be an objectgroup, found {layer.Name}.");
                 }
             }
 
@@ -168,7 +168,7 @@ namespace TWL.Tests.Maps
                 string id = GetProperty(obj, "Id");
                 if (string.IsNullOrEmpty(id))
                 {
-                     throw new Exception($"Trigger object (ID {obj.Attribute("id")?.Value}) missing 'Id' property.");
+                    throw new Exception($"Trigger object (ID {obj.Attribute("id")?.Value}) missing 'Id' property.");
                 }
 
                 if (!triggerIds.Add(id))
@@ -184,7 +184,7 @@ namespace TWL.Tests.Maps
             }
         }
 
-        private static string GetProperty(XElement obj, string propertyName)
+        private static string? GetProperty(XElement obj, string propertyName)
         {
             var props = obj.Element("properties");
             if (props == null) return null;
@@ -195,10 +195,10 @@ namespace TWL.Tests.Maps
 
         private static void ValidatePropertyExists(XElement obj, string propertyName)
         {
-             if (string.IsNullOrEmpty(GetProperty(obj, propertyName)))
-             {
-                 throw new Exception($"Object (ID {obj.Attribute("id")?.Value}) missing required property '{propertyName}'.");
-             }
+            if (string.IsNullOrEmpty(GetProperty(obj, propertyName)))
+            {
+                throw new Exception($"Object (ID {obj.Attribute("id")?.Value}) missing required property '{propertyName}'.");
+            }
         }
 
         private static void ValidateMeta(string path)

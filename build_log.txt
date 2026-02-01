@@ -1,0 +1,12 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  TWL.Shared -> /app/TWL.Shared/bin/Debug/net10.0/TWL.Shared.dll
+  TWL.Server -> /app/TWL.Server/bin/Debug/net10.0/TWL.Server.dll
+  TWL.Client -> /app/TWL.Client/bin/Debug/net10.0/TWL.Client.dll
+  TWL.Tests -> /app/TWL.Tests/bin/Debug/net10.0/TWL.Tests.dll
+
+Build succeeded.
+    0 Warning(s)
+    0 Error(s)
+
+Time Elapsed 00:00:02.66

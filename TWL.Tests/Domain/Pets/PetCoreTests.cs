@@ -64,10 +64,10 @@ public class PetCoreTests
             {
                 CurveType = GrowthCurveType.EarlyPeaker,
                 StrWeight = 100,
-                ConWeight=0,
-                IntWeight=0,
-                WisWeight=0,
-                AgiWeight=0
+                ConWeight = 0,
+                IntWeight = 0,
+                WisWeight = 0,
+                AgiWeight = 0
             }
         };
         var earlyPet = new ServerPet(earlyDef);
@@ -86,10 +86,10 @@ public class PetCoreTests
             {
                 CurveType = GrowthCurveType.LateBloomer,
                 StrWeight = 100,
-                ConWeight=0,
-                IntWeight=0,
-                WisWeight=0,
-                AgiWeight=0
+                ConWeight = 0,
+                IntWeight = 0,
+                WisWeight = 0,
+                AgiWeight = 0
             }
         };
         var latePet = new ServerPet(lateDef);

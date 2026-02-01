@@ -38,7 +38,7 @@ public class QuestValidationTests
             Title = "Q1",
             Description = "D1",
             Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D", null) },
-            Rewards = new RewardDefinition(0, 0, null)
+            Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
         };
         var q2 = new QuestDefinition
         {
@@ -46,7 +46,7 @@ public class QuestValidationTests
             Title = "Q2",
             Description = "D2",
             Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D", null) },
-            Rewards = new RewardDefinition(0, 0, null)
+            Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
         };
 
         var errors = QuestValidator.Validate(new[] { q1, q2 });
@@ -63,7 +63,7 @@ public class QuestValidationTests
             Description = "D1",
             Requirements = new List<int> { 999 }, // Missing
             Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D", null) },
-            Rewards = new RewardDefinition(0, 0, null)
+            Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
         };
 
         var errors = QuestValidator.Validate(new[] { q });
@@ -82,7 +82,7 @@ public class QuestValidationTests
             {
                 new ObjectiveDefinition("InvalidType", "T", 1, "D", null)
             },
-            Rewards = new RewardDefinition(0, 0, null)
+            Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
         };
 
         var errors = QuestValidator.Validate(new[] { q });
@@ -101,7 +101,7 @@ public class QuestValidationTests
             {
                 new ObjectiveDefinition("Deliver", "Target", 1, "Desc", null) // No DataId
             },
-            Rewards = new RewardDefinition(0, 0, null)
+            Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
         };
 
         var errors = QuestValidator.Validate(new[] { q });
@@ -114,7 +114,7 @@ public class QuestValidationTests
         // Locate Content/Data/quests.json
         // Strategy: Walk up until we find Content/Data/quests.json
         var currentDir = Directory.GetCurrentDirectory();
-        string questsPath = null;
+        string? questsPath = null;
 
         var dir = new DirectoryInfo(currentDir);
         while (dir != null)
@@ -140,7 +140,7 @@ public class QuestValidationTests
         if (errors.Count > 0)
         {
             // Dump errors to help debugging
-            foreach(var err in errors) Console.WriteLine(err);
+            foreach (var err in errors) Console.WriteLine(err);
             throw new Exception("Production Data Validation Failed:\n" + string.Join("\n", errors));
         }
         Assert.Empty(errors);

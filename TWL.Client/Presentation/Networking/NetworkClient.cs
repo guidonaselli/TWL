@@ -25,7 +25,7 @@ public class NetworkClient
 
     private GameClientManager _gameClientManager;
     private NetworkStream? _stream;
-    private TcpClient _tcp;
+    private TcpClient? _tcp;
 
     private readonly Channel<NetMessage> _sendChannel;
     private readonly Channel<NetMessage> _receiveChannel;
@@ -117,7 +117,7 @@ public class NetworkClient
         }
         catch (Exception ex)
         {
-             Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
+            Console.WriteLine($"ReceiveLoopAsync error: {ex.Message}");
         }
     }
 

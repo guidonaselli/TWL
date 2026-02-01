@@ -19,27 +19,27 @@ public class TestServerCharacter : ServerCharacter
 {
     public void TickStatus(IStatusEngine engine)
     {
-         // Access protected _statusEffects via subclass
-         // But _statusEffects is List<StatusEffectInstance>, and engine.Tick takes IList.
-         // List implements IList.
-         // We need to lock as well.
-         // Since we can't access _statusLock (it's protected? yes), we can use it.
-         // Wait, checking ServerCombatant.cs: protected readonly object _statusLock = new();
-         // Yes, it is protected.
+        // Access protected _statusEffects via subclass
+        // But _statusEffects is List<StatusEffectInstance>, and engine.Tick takes IList.
+        // List implements IList.
+        // We need to lock as well.
+        // Since we can't access _statusLock (it's protected? yes), we can use it.
+        // Wait, checking ServerCombatant.cs: protected readonly object _statusLock = new();
+        // Yes, it is protected.
 
-         // Reflection might be needed if I can't access _statusLock directly from subclass if it was private, but it is protected.
-         // Let's assume it is accessible.
-         // Wait, I saw it was protected in ServerCombatant.cs
+        // Reflection might be needed if I can't access _statusLock directly from subclass if it was private, but it is protected.
+        // Let's assume it is accessible.
+        // Wait, I saw it was protected in ServerCombatant.cs
 
-         // Actually, check ServerCombatant.cs again.
-         // protected readonly List<StatusEffectInstance> _statusEffects = new();
-         // protected readonly object _statusLock = new();
-         // Yes.
+        // Actually, check ServerCombatant.cs again.
+        // protected readonly List<StatusEffectInstance> _statusEffects = new();
+        // protected readonly object _statusLock = new();
+        // Yes.
 
-         lock (_statusLock)
-         {
-             engine.Tick(_statusEffects);
-         }
+        lock (_statusLock)
+        {
+            engine.Tick(_statusEffects);
+        }
     }
 }
 
@@ -145,6 +145,7 @@ public class EarthSkillPackTests
         // Simulate 1 turn pass
         ally.TickStatus(_statusEngine);
         buff = ally.StatusEffects.FirstOrDefault(e => e.Tag == SkillEffectTag.BuffStats && e.Param == "Def");
+        Assert.NotNull(buff);
         Assert.Equal(2, buff.TurnsRemaining);
 
         // Reset cooldown to allow casting again
@@ -158,9 +159,10 @@ public class EarthSkillPackTests
 
         // Assert - Should refresh to 3
         buff = ally.StatusEffects.FirstOrDefault(e => e.Tag == SkillEffectTag.BuffStats && e.Param == "Def");
+        Assert.NotNull(buff);
         Assert.Equal(3, buff.TurnsRemaining);
         // Should NOT have 2 buffs
-        Assert.Single(ally.StatusEffects.Where(e => e.Tag == SkillEffectTag.BuffStats && e.Param == "Def"));
+        Assert.Single(ally.StatusEffects, e => e.Tag == SkillEffectTag.BuffStats && e.Param == "Def");
     }
 
     [Fact]
@@ -183,6 +185,7 @@ public class EarthSkillPackTests
 
         // Assert
         // Check if Seal was applied
+        if (defender.StatusEffects == null) return;
         var seal = defender.StatusEffects.FirstOrDefault(e => e.Tag == SkillEffectTag.Seal);
         Assert.Null(seal); // Should be resisted
     }

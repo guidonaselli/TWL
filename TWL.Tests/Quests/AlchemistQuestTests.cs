@@ -23,8 +23,8 @@ public class AlchemistQuestTests
         string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
         if (!File.Exists(path))
         {
-             // Try valid fallback if running from root
-             path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
+            // Try valid fallback if running from root
+            path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json");
         }
 
         Assert.True(File.Exists(path), $"Quest file not found at {Path.GetFullPath(path)}");

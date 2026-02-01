@@ -33,7 +33,7 @@ public class MapLoader
         }
         catch (Exception ex)
         {
-             throw new Exception($"Failed to load TMX XML: {tmxPath}. Error: {ex.Message}", ex);
+            throw new Exception($"Failed to load TMX XML: {tmxPath}. Error: {ex.Message}", ex);
         }
 
         var root = doc.Element("map");
@@ -54,27 +54,27 @@ public class MapLoader
         string metaPath = Path.ChangeExtension(tmxPath, ".meta.json");
         if (File.Exists(metaPath))
         {
-             try
-             {
-                 var json = File.ReadAllText(metaPath);
-                 using var jsonDoc = JsonDocument.Parse(json);
-                 if (jsonDoc.RootElement.TryGetProperty("MapId", out var mapIdProp))
-                 {
-                     map.Id = mapIdProp.GetInt32();
-                 }
-                 if (jsonDoc.RootElement.TryGetProperty("Name", out var nameProp))
-                 {
-                     map.Name = nameProp.GetString() ?? string.Empty;
-                 }
-             }
-             catch(Exception ex)
-             {
-                 _logger.LogWarning(ex, "Failed to parse meta.json for map {Path}", tmxPath);
-             }
+            try
+            {
+                var json = File.ReadAllText(metaPath);
+                using var jsonDoc = JsonDocument.Parse(json);
+                if (jsonDoc.RootElement.TryGetProperty("MapId", out var mapIdProp))
+                {
+                    map.Id = mapIdProp.GetInt32();
+                }
+                if (jsonDoc.RootElement.TryGetProperty("Name", out var nameProp))
+                {
+                    map.Name = nameProp.GetString() ?? string.Empty;
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogWarning(ex, "Failed to parse meta.json for map {Path}", tmxPath);
+            }
         }
         else
         {
-             _logger.LogWarning("No meta.json found for map {Path}, MapId will be 0", tmxPath);
+            _logger.LogWarning("No meta.json found for map {Path}, MapId will be 0", tmxPath);
         }
 
         var objectGroups = root.Elements("objectgroup").ToList();
@@ -126,7 +126,7 @@ public class MapLoader
         // Logical Id overrides TMX Id
         if (trigger.Properties.TryGetValue("Id", out var customId))
         {
-             trigger.Id = customId;
+            trigger.Id = customId;
         }
 
         return trigger;
@@ -150,7 +150,7 @@ public class MapLoader
 
         if (spawn.Properties.TryGetValue("Id", out var customId))
         {
-             spawn.Id = customId;
+            spawn.Id = customId;
         }
 
         return spawn;

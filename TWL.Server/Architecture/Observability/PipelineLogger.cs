@@ -32,9 +32,9 @@ public static class PipelineLogger
 
     public static void LogEvent(string traceId, string eventName, string details = "")
     {
-         var timestamp = DateTime.UtcNow.ToString("O");
-         var logEntry = $"[PIPELINE] [{timestamp}] [TraceID:{traceId}] [Event:{eventName}] {details}";
-         _logChannel.Writer.TryWrite(logEntry);
+        var timestamp = DateTime.UtcNow.ToString("O");
+        var logEntry = $"[PIPELINE] [{timestamp}] [TraceID:{traceId}] [Event:{eventName}] {details}";
+        _logChannel.Writer.TryWrite(logEntry);
     }
 
     private static async Task WriteLoopAsync()

@@ -47,9 +47,9 @@ public static class PetGrowthCalculator
         }
         else if (model.CurveType == GrowthCurveType.LateBloomer)
         {
-             // Weaker early, stronger late
-             if (level <= 40) multiplier = 0.8f;
-             else multiplier = 1.3f;
+            // Weaker early, stronger late
+            if (level <= 40) multiplier = 0.8f;
+            else multiplier = 1.3f;
         }
 
         // Apply multiplier to points gained

@@ -111,6 +111,7 @@ public class QuestCombatIntegrationTests
         if (result2.NewTargetHp <= 0)
         {
             var target = _combatManager.GetCharacter(result2.TargetId);
+            Assert.NotNull(target);
             var updated = _playerQuests.TryProgress("Kill", target.Name);
             Assert.Single(updated);
         }
@@ -141,6 +142,7 @@ public class QuestCombatIntegrationTests
         {
             // Should not reach here
             var target = _combatManager.GetCharacter(result.TargetId);
+            Assert.NotNull(target);
             updated = _playerQuests.TryProgress("Kill", target.Name);
         }
 

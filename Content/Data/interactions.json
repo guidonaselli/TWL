@@ -1,7 +1,7 @@
 [
   {
     "TargetName": "Grabado de Pared",
-    "Type": "Gather",
+    "Type": "Interact",
     "RequiredQuestId": 1052,
     "RewardItems": [
       { "ItemId": 7502, "Quantity": 1 }
@@ -9,10 +9,92 @@
   },
   {
     "TargetName": "Caja a la Deriva",
-    "Type": "Gather",
+    "Type": "Interact",
     "RequiredQuestId": 1060,
     "RewardItems": [
       { "ItemId": 7503, "Quantity": 1 }
     ]
+  },
+  {
+    "TargetName": "StrangeStoneDebris",
+    "Type": "Collect",
+    "RequiredQuestId": 1201,
+    "RewardItems": [{ "ItemId": 8101, "Quantity": 1 }]
+  },
+  {
+    "TargetName": "AncientTablet",
+    "Type": "Collect",
+    "RequiredQuestId": 1202,
+    "RewardItems": [{ "ItemId": 8102, "Quantity": 1 }]
+  },
+  {
+    "TargetName": "RuinsEntrance",
+    "Type": "Interact",
+    "RequiredQuestId": 1204
+  },
+  {
+    "TargetName": "RuinsConsole",
+    "Type": "Talk",
+    "RequiredQuestId": 1205
+  },
+  {
+    "TargetName": "PowerCrystalSource",
+    "Type": "Collect",
+    "RequiredQuestId": 1206,
+    "RewardItems": [{ "ItemId": 8108, "Quantity": 1 }]
+  },
+  {
+    "TargetName": "HologramProjector",
+    "Type": "Interact",
+    "RequiredQuestId": 1207
+  },
+  {
+    "TargetName": "BatNest",
+    "Type": "Collect",
+    "RequiredQuestId": 2203,
+    "RewardItems": [{ "ItemId": 8106, "Quantity": 1 }]
+  },
+  {
+    "TargetName": "RepairedRadioTower",
+    "Type": "Interact",
+    "RequiredQuestId": 1401
+  },
+  {
+    "TargetName": "NorthEastCliff",
+    "Type": "Interact",
+    "RequiredQuestId": 1401
+  },
+  {
+    "TargetName": "HeavyRocks",
+    "Type": "Interact"
+  },
+  {
+    "TargetName": "SulfurVent",
+    "Type": "Collect",
+    "RequiredQuestId": 1402,
+    "RewardItems": [{ "ItemId": 9001, "Quantity": 1 }]
+  },
+  {
+    "TargetName": "BurntTree",
+    "Type": "Collect",
+    "RequiredQuestId": 1402,
+    "RewardItems": [{ "ItemId": 9002, "Quantity": 1 }]
+  },
+  {
+    "TargetName": "AlchemyTable",
+    "Type": "Craft",
+    "RequiredQuestId": 1402,
+    "RewardItems": [{ "ItemId": 9003, "Quantity": 1 }]
+  },
+  {
+    "TargetName": "HiddenDock",
+    "Type": "Interact",
+    "RequiredQuestId": 1404
+  },
+  {
+    "TargetName": "FishingSpot",
+    "Type": "Collect",
+    "RequiredQuestId": 2401,
+    "RewardItems": [{ "ItemId": 9005, "Quantity": 1 }]
   }
 ]

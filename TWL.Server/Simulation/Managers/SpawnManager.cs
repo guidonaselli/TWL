@@ -156,7 +156,8 @@ public class SpawnManager
             EncounterId = encounterId,
             Source = source.ToString(),
             Seed = seed,
-            Monsters = serverMobs.Select((m, index) => new {
+            Monsters = serverMobs.Select((m, index) => new
+            {
                 m.Id,
                 m.Name,
                 m.Hp,

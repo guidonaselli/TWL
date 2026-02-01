@@ -77,8 +77,10 @@ public class PetSystemExpansionTests : IDisposable
         _playerService.RegisterSession(session);
 
         var def = _petManager.GetDefinition(1001);
+        Assert.NotNull(def);
         var pet = new ServerPet(def);
         pet.Amity = 50;
+        Assert.NotNull(session.Character);
         session.Character.AddPet(pet);
 
         // Register combatants
@@ -110,46 +112,49 @@ public class PetSystemExpansionTests : IDisposable
     [Fact]
     public void Rebirth_ResetsLevel_BoostsStats()
     {
-         var def = _petManager.GetDefinition(1001);
-         var pet = new ServerPet(def);
-         pet.Level = 100;
-         pet.RecalculateStats();
+        var def = _petManager.GetDefinition(1001);
+        Assert.NotNull(def);
+        var pet = new ServerPet(def);
+        pet.Level = 100;
+        pet.RecalculateStats();
 
-         // Act
-         bool success = pet.TryRebirth();
+        // Act
+        bool success = pet.TryRebirth();
 
-         // Assert
-         Assert.True(success);
-         Assert.Equal(1, pet.Level);
-         Assert.True(pet.HasRebirthed);
+        // Assert
+        Assert.True(success);
+        Assert.Equal(1, pet.Level);
+        Assert.True(pet.HasRebirthed);
 
-         // Check stat boost: Level 1 Rebirth vs Level 1 Normal
-         var normalPet = new ServerPet(def); // Level 1 default
+        // Check stat boost: Level 1 Rebirth vs Level 1 Normal
+        var normalPet = new ServerPet(def); // Level 1 default
 
-         // Normal HP: BaseHp (100) + Growth(0)
-         // Rebirth HP: (BaseHp + Growth) * 1.1
-         Assert.True(pet.MaxHp > normalPet.MaxHp);
+        // Normal HP: BaseHp (100) + Growth(0)
+        // Rebirth HP: (BaseHp + Growth) * 1.1
+        Assert.True(pet.MaxHp > normalPet.MaxHp);
     }
 
     [Fact]
     public void Utility_Usage_Check()
     {
-         var session = new ClientSessionForTest();
-         session.SetCharacter(new ServerCharacter { Id = 1, Name = "Trainer" });
-         _playerService.RegisterSession(session);
+        var session = new ClientSessionForTest();
+        session.SetCharacter(new ServerCharacter { Id = 1, Name = "Trainer" });
+        _playerService.RegisterSession(session);
 
-         var def = _petManager.GetDefinition(1001);
-         var pet = new ServerPet(def);
-         pet.Amity = 5; // Too low (req 10)
-         session.Character.AddPet(pet);
+        var def = _petManager.GetDefinition(1001);
+        Assert.NotNull(def);
+        var pet = new ServerPet(def);
+        pet.Amity = 5; // Too low (req 10)
+        Assert.NotNull(session.Character);
+        session.Character.AddPet(pet);
 
-         // Act - Fail
-         bool resultLowAmity = _petService.UseUtility(1, pet.InstanceId, PetUtilityType.Mount);
-         Assert.False(resultLowAmity);
+        // Act - Fail
+        bool resultLowAmity = _petService.UseUtility(1, pet.InstanceId, PetUtilityType.Mount);
+        Assert.False(resultLowAmity);
 
-         // Act - Success
-         pet.Amity = 20;
-         bool resultSuccess = _petService.UseUtility(1, pet.InstanceId, PetUtilityType.Mount);
-         Assert.True(resultSuccess);
+        // Act - Success
+        pet.Amity = 20;
+        bool resultSuccess = _petService.UseUtility(1, pet.InstanceId, PetUtilityType.Mount);
+        Assert.True(resultSuccess);
     }
 }

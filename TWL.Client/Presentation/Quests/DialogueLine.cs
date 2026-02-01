@@ -3,7 +3,7 @@
 namespace TWL.Client.Presentation.Quests;
 
 public sealed record DialogueLine(
-    string           SpeakerName,
-    string           Text,
+    string SpeakerName,
+    string Text,
     IReadOnlyList<string> Options,
-    int              NextLineId = -1);
+    int NextLineId = -1);

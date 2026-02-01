@@ -60,7 +60,8 @@ public class DailySkillsTests
         var enemy = new ServerCharacter { Id = 2, Hp = 100, Con = 10, Str = 25, Int = 25 };
         var ally = new ServerCharacter { Id = 3, Hp = 100, Con = 10 };
 
-        var sealSkill = new Skill {
+        var sealSkill = new Skill
+        {
             SkillId = 100,
             SpCost = 10,
             TargetType = SkillTargetType.SingleEnemy,
@@ -87,7 +88,8 @@ public class DailySkillsTests
         var enemy = new ServerCharacter { Id = 2, Hp = 10 };
         var ally = new ServerCharacter { Id = 3, Hp = 100, Con = 10 }; // Needs buff
 
-        var buffSkill = new Skill {
+        var buffSkill = new Skill
+        {
             SkillId = 200,
             SpCost = 10,
             TargetType = SkillTargetType.SingleAlly,
@@ -117,7 +119,8 @@ public class DailySkillsTests
         // Ally already has Agi Buff
         ally.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 3, "Agi"), new StatusEngine());
 
-        var buffSkill = new Skill {
+        var buffSkill = new Skill
+        {
             SkillId = 200,
             SpCost = 10,
             TargetType = SkillTargetType.SingleAlly,

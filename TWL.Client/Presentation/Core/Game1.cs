@@ -13,7 +13,7 @@ namespace TWL.Client.Presentation.Core
     public sealed class Game1 : Game
     {
         private readonly SceneManager _scenes;
-        private readonly GameManager  _gameManager;
+        private readonly GameManager _gameManager;
         private readonly GameClientManager _gameClientManager;
         private readonly LoopbackChannel _net;
         private readonly ILogger<Game1> _log;
@@ -26,7 +26,7 @@ namespace TWL.Client.Presentation.Core
 
         public Game1(
             SceneManager scenes,
-            GameManager  gameManager,
+            GameManager gameManager,
             GameClientManager gameClientManager,
             LoopbackChannel net,
             SettingsManager settings,

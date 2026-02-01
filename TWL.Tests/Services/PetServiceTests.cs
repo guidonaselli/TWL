@@ -60,11 +60,11 @@ public class PetServiceTests : IDisposable
         };
         var tempDef = new PetDefinition
         {
-             PetTypeId = 101,
-             Name = "Temp Pet",
-             IsTemporary = true,
-             DurationSeconds = 1,
-             GrowthModel = new PetGrowthModel()
+            PetTypeId = 101,
+            Name = "Temp Pet",
+            IsTemporary = true,
+            DurationSeconds = 1,
+            GrowthModel = new PetGrowthModel()
         };
 
         var options = new System.Text.Json.JsonSerializerOptions { IncludeFields = true };
@@ -92,7 +92,7 @@ public class PetServiceTests : IDisposable
     {
         // Arrange
         var chara = new ServerCharacter { Id = 1, Name = "Trainer" };
-        while(chara.Level < 5) chara.AddExp(1000); // Level up to 5
+        while (chara.Level < 5) chara.AddExp(1000); // Level up to 5
 
         chara.AddItem(999, 1); // Required Item
 
@@ -238,23 +238,23 @@ public class PetServiceTests : IDisposable
     [Fact]
     public void TemporaryPet_Expiry()
     {
-         var def = new PetDefinition
-         {
-             PetTypeId = 101,
-             IsTemporary = true,
-             DurationSeconds = 1 // 1 second duration
-         };
-         var pet = new ServerPet(def);
+        var def = new PetDefinition
+        {
+            PetTypeId = 101,
+            IsTemporary = true,
+            DurationSeconds = 1 // 1 second duration
+        };
+        var pet = new ServerPet(def);
 
-         Assert.NotNull(pet.ExpirationTime);
-         Assert.False(pet.IsExpired);
+        Assert.NotNull(pet.ExpirationTime);
+        Assert.False(pet.IsExpired);
 
-         // Wait slightly (in real test we shouldn't sleep ideally but for 1s it's okay-ish)
-         // Since ServerPet uses DateTime.UtcNow directly, we can't mock time easily.
-         // We'll manually set ExpirationTime for test stability.
+        // Wait slightly (in real test we shouldn't sleep ideally but for 1s it's okay-ish)
+        // Since ServerPet uses DateTime.UtcNow directly, we can't mock time easily.
+        // We'll manually set ExpirationTime for test stability.
 
-         pet.ExpirationTime = DateTime.UtcNow.AddSeconds(-1);
-         Assert.True(pet.IsExpired);
+        pet.ExpirationTime = DateTime.UtcNow.AddSeconds(-1);
+        Assert.True(pet.IsExpired);
     }
 
     [Fact]

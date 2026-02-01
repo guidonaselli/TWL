@@ -87,7 +87,7 @@ public class WorldTriggerService : IWorldTriggerService
 
     public ServerSpawn? GetSpawn(int mapId, string spawnId)
     {
-         if (!_maps.TryGetValue(mapId, out var map)) return null;
-         return map.Spawns.FirstOrDefault(s => s.Id == spawnId);
+        if (!_maps.TryGetValue(mapId, out var map)) return null;
+        return map.Spawns.FirstOrDefault(s => s.Id == spawnId);
     }
 }

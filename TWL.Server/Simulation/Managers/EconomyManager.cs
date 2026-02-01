@@ -155,11 +155,11 @@ public class EconomyManager : IEconomyService, IDisposable
                     var orderSplit = details.Split(", Product:");
                     if (orderSplit.Length > 0)
                     {
-                         var firstPart = orderSplit[0]; // Order:ABC
-                         if (firstPart.StartsWith("Order:"))
-                         {
-                             orderId = firstPart.Substring(6).Trim();
-                         }
+                        var firstPart = orderSplit[0]; // Order:ABC
+                        if (firstPart.StartsWith("Order:"))
+                        {
+                            orderId = firstPart.Substring(6).Trim();
+                        }
                     }
                     if (orderSplit.Length > 1)
                     {
@@ -188,24 +188,24 @@ public class EconomyManager : IEconomyService, IDisposable
                     }
                     else if (type == "PurchaseVerify" || type == "ShopBuy")
                     {
-                         // Mark as Completed
-                         if (_transactions.TryGetValue(orderId!, out var tx))
-                         {
-                             tx.State = TransactionState.Completed;
-                         }
-                         else
-                         {
-                             tx = new Transaction
-                             {
-                                 OrderId = orderId!,
-                                 UserId = userId,
-                                 ProductId = productId ?? "unknown",
-                                 State = TransactionState.Completed,
-                                 Timestamp = timestamp
-                             };
-                             _transactions[orderId!] = tx;
-                         }
-                         count++;
+                        // Mark as Completed
+                        if (_transactions.TryGetValue(orderId!, out var tx))
+                        {
+                            tx.State = TransactionState.Completed;
+                        }
+                        else
+                        {
+                            tx = new Transaction
+                            {
+                                OrderId = orderId!,
+                                UserId = userId,
+                                ProductId = productId ?? "unknown",
+                                State = TransactionState.Completed,
+                                Timestamp = timestamp
+                            };
+                            _transactions[orderId!] = tx;
+                        }
+                        count++;
                     }
                 }
             }
@@ -239,8 +239,8 @@ public class EconomyManager : IEconomyService, IDisposable
         }
         catch (Exception ex)
         {
-             // Log to console if the background writer dies
-             Console.Error.WriteLine($"[CRITICAL] EconomyManager Log Writer Failed: {ex}");
+            // Log to console if the background writer dies
+            Console.Error.WriteLine($"[CRITICAL] EconomyManager Log Writer Failed: {ex}");
         }
     }
 
@@ -301,8 +301,8 @@ public class EconomyManager : IEconomyService, IDisposable
 
         if (!_transactions.TryGetValue(orderId, out var tx))
         {
-             SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, $"Reason:OrderNotFound OrderId:{orderId}");
-             return new EconomyOperationResultDTO { Success = false, Message = "Order not found" };
+            SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, $"Reason:OrderNotFound OrderId:{orderId}");
+            return new EconomyOperationResultDTO { Success = false, Message = "Order not found" };
         }
 
         if (tx.UserId != userId)
@@ -365,8 +365,8 @@ public class EconomyManager : IEconomyService, IDisposable
     {
         if (!CheckRateLimit(character.Id))
         {
-             SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id, "Reason:RateLimitExceeded");
-             return new EconomyOperationResultDTO { Success = false, Message = "Rate limit exceeded" };
+            SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id, "Reason:RateLimitExceeded");
+            return new EconomyOperationResultDTO { Success = false, Message = "Rate limit exceeded" };
         }
 
         if (quantity <= 0 || quantity > 999)

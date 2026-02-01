@@ -114,8 +114,8 @@ public class QuestSystemTests
         string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/quests.json"); // Relative from TWL.Tests/bin/Debug/net10.0
         if (!System.IO.File.Exists(path))
         {
-             // Fallback for different test runners
-             path = "Content/Data/quests.json";
+            // Fallback for different test runners
+            path = "Content/Data/quests.json";
         }
 
         // Ensure we can find the file, otherwise skip or fail
@@ -189,7 +189,7 @@ public class QuestSystemTests
         // Collect 5 Madera
         for (int i = 0; i < 5; i++)
         {
-             updated = pq.TryProgress("Collect", "Madera");
+            updated = pq.TryProgress("Collect", "Madera");
         }
         Assert.Single(updated); // Last one implies update
 

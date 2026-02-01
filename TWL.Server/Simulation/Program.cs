@@ -73,7 +73,8 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<PetService>();
 
         // Pipeline / Mediator
-        svcs.AddSingleton<IMediator>(sp => {
+        svcs.AddSingleton<IMediator>(sp =>
+        {
             var mediator = new Mediator();
             // Manual registration of handlers for now
             mediator.Register<UseSkillCommand, CombatResult>(new UseSkillHandler(sp.GetRequiredService<CombatManager>()));

@@ -103,6 +103,7 @@ public class PetSystemTests : IDisposable
 
         // Assert
         Assert.NotNull(petInstanceId);
+        Assert.NotNull(session.Character);
         var pet = session.Character.Pets[0];
         Assert.Equal(9999, pet.DefinitionId);
         Assert.Equal(40, pet.Amity); // Default capture amity
@@ -113,6 +114,7 @@ public class PetSystemTests : IDisposable
     {
         // Act
         var def = _petManager.GetDefinition(9999);
+        Assert.NotNull(def);
         var pet = new ServerPet(def);
 
         int hpLvl1 = pet.MaxHp;
@@ -129,6 +131,7 @@ public class PetSystemTests : IDisposable
     {
         // Setup
         var petDef = _petManager.GetDefinition(9999);
+        Assert.NotNull(petDef);
         var pet = new ServerPet(petDef) { Id = -100 }; // Runtime ID
         _combatManager.RegisterCombatant(pet);
 
@@ -154,7 +157,8 @@ public class PetSystemTests : IDisposable
 // Helper to expose setting Character
 public class ClientSessionForTest : ClientSession
 {
-    public ClientSessionForTest() : base() {
+    public ClientSessionForTest() : base()
+    {
         UserId = 1;
     }
     public void SetCharacter(ServerCharacter c) { Character = c; }

@@ -1,0 +1,52 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  TWL.Shared -> /app/TWL.Shared/bin/Debug/net10.0/TWL.Shared.dll
+  TWL.Server -> /app/TWL.Server/bin/Debug/net10.0/TWL.Server.dll
+/app/TWL.Tests/Skills/EarthSkillPackTests.cs(66,39): warning CS8602: Dereference of a possibly null reference. [/app/TWL.Tests/TWL.Tests.csproj]
+/app/TWL.Tests/Content/ContentSafetyTests.cs(40,29): warning CS8602: Dereference of a possibly null reference. [/app/TWL.Tests/TWL.Tests.csproj]
+/app/TWL.Tests/ContentValidationTests.cs(137,30): warning CS8629: Nullable value type may be null. [/app/TWL.Tests/TWL.Tests.csproj]
+/app/TWL.Tests/Domain/Skills/SkillSystemTests.cs(70,23): warning CS8602: Dereference of a possibly null reference. [/app/TWL.Tests/TWL.Tests.csproj]
+/app/TWL.Tests/Integration/GameLoopTests.cs(75,35): warning CS8602: Dereference of a possibly null reference. [/app/TWL.Tests/TWL.Tests.csproj]
+/app/TWL.Tests/Maps/MapValidator.cs(116,40): warning CS8600: Converting null literal or possible null value to non-nullable type. [/app/TWL.Tests/TWL.Tests.csproj]
+/app/TWL.Tests/Maps/MapValidator.cs(132,36): warning CS8600: Converting null literal or possible null value to non-nullable type. [/app/TWL.Tests/TWL.Tests.csproj]
+/app/TWL.Tests/Maps/MapValidator.cs(158,38): warning CS8600: Converting null literal or possible null value to non-nullable type. [/app/TWL.Tests/TWL.Tests.csproj]
+/app/TWL.Tests/Maps/MapValidator.cs(168,29): warning CS8600: Converting null literal or possible null value to non-nullable type. [/app/TWL.Tests/TWL.Tests.csproj]
+/app/TWL.Tests/Quests/QuestSystemTests.cs(80,48): warning CS8602: Dereference of a possibly null reference. [/app/TWL.Tests/TWL.Tests.csproj]
+/app/TWL.Tests/Quests/QuestLogicTests.cs(129,24): warning CS8602: Dereference of a possibly null reference. [/app/TWL.Tests/TWL.Tests.csproj]
+/app/TWL.Tests/Quests/QuestEngineEventsTests.cs(26,29): warning CS0414: The field 'QuestEngineEventsTests._petsFile' is assigned but its value is never used [/app/TWL.Tests/TWL.Tests.csproj]
+  TWL.Tests -> /app/TWL.Tests/bin/Debug/net10.0/TWL.Tests.dll
+Test run for /app/TWL.Tests/bin/Debug/net10.0/TWL.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:01.56]     TWL.Tests.Benchmarks.PlayerServicePerformanceTests.Benchmark_Flush_Synchronous_Wrapper_Optimized [FAIL]
+  Failed TWL.Tests.Benchmarks.PlayerServicePerformanceTests.Benchmark_Flush_Synchronous_Wrapper_Optimized [275 ms]
+  Error Message:
+   Synchronous wrapper is not using optimization!
+  Stack Trace:
+     at TWL.Tests.Benchmarks.PlayerServicePerformanceTests.Benchmark_Flush_Synchronous_Wrapper_Optimized() in /app/TWL.Tests/Benchmarks/PlayerServicePerformanceTests.cs:line 96
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Standard Output Messages:
+ [SYNC-WRAPPER] Flushed 50 sessions in 264ms
+
+
+[xUnit.net 00:00:01.64]     TWL.Tests.HiddenCoveTests.HiddenCove_Chain_Progression [FAIL]
+  Failed TWL.Tests.HiddenCoveTests.HiddenCove_Chain_Progression [2 ms]
+  Error Message:
+   Assert.NotNull() Failure: Value is null
+  Stack Trace:
+     at TWL.Tests.HiddenCoveTests.HiddenCove_Chain_Progression() in /app/TWL.Tests/HiddenCoveTests.cs:line 93
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:02.36]     TWL.Tests.JungleQuestTests.VerifyJungleQuestsExistAndAreValid [SKIP]
+  Skipped TWL.Tests.JungleQuestTests.VerifyJungleQuestsExistAndAreValid [1 ms]
+[xUnit.net 00:00:04.81]     TWL.Tests.QuestFlagsTests.RepeatableQuest_ShouldAllowRestart [SKIP]
+[xUnit.net 00:00:04.86]     TWL.Tests.QuestFlagsTests.FlagFlow_ShouldWork [SKIP]
+[xUnit.net 00:00:04.87]     TWL.Tests.QuestFlagsTests.StartQuest_ShouldFail_WhenMissingRequiredFlag [SKIP]
+  Skipped TWL.Tests.QuestFlagsTests.RepeatableQuest_ShouldAllowRestart [1 ms]
+  Skipped TWL.Tests.QuestFlagsTests.FlagFlow_ShouldWork [1 ms]
+  Skipped TWL.Tests.QuestFlagsTests.StartQuest_ShouldFail_WhenMissingRequiredFlag [1 ms]
+
+Failed!  - Failed:     2, Passed:   336, Skipped:     4, Total:   342, Duration: 30 s - TWL.Tests.dll (net10.0)

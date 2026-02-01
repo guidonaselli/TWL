@@ -48,26 +48,26 @@ public class TradeManager
         // Prevent self-transfer (unless we want to support stacking, but typically trade is 2 parties)
         if (source.Id == target.Id)
         {
-             SecurityLogger.LogSecurityEvent("TradeSelfTransferAttempt", source.Id, $"ItemId:{itemId}");
-             return false;
+            SecurityLogger.LogSecurityEvent("TradeSelfTransferAttempt", source.Id, $"ItemId:{itemId}");
+            return false;
         }
 
         // 1. Locate Item(s)
         var items = source.GetItems(itemId, policyFilter);
         long available = 0;
-        foreach(var i in items) available += i.Quantity;
+        foreach (var i in items) available += i.Quantity;
 
         if (available < quantity)
         {
-             SecurityLogger.LogSecurityEvent("TradeInsufficientFunds", source.Id, $"ItemId:{itemId} Want:{quantity} Have:{available}");
-             return false;
+            SecurityLogger.LogSecurityEvent("TradeInsufficientFunds", source.Id, $"ItemId:{itemId} Want:{quantity} Have:{available}");
+            return false;
         }
 
         // 2. Validate Bind Policy for candidates
         var tradableItems = new List<Item>();
         long tradableQty = 0;
 
-        foreach(var item in items)
+        foreach (var item in items)
         {
             if (ValidateTransfer(item, target.Id, source.Id))
             {
@@ -78,15 +78,15 @@ public class TradeManager
 
         if (tradableQty < quantity)
         {
-             SecurityLogger.LogSecurityEvent("TradeBoundItemAttempt", source.Id, $"ItemId:{itemId} Tradable:{tradableQty} Want:{quantity}");
-             return false;
+            SecurityLogger.LogSecurityEvent("TradeBoundItemAttempt", source.Id, $"ItemId:{itemId} Tradable:{tradableQty} Want:{quantity}");
+            return false;
         }
 
         // 3. Execute Transfer (Atomic-ish)
         int remaining = quantity;
         var movedItems = new List<(int ItemId, int Qty, BindPolicy Policy, int? BoundToId)>();
 
-        foreach(var item in tradableItems)
+        foreach (var item in tradableItems)
         {
             if (remaining <= 0) break;
             int toTake = System.Math.Min(item.Quantity, remaining);
@@ -102,7 +102,7 @@ public class TradeManager
         if (remaining > 0)
         {
             // ROLLBACK if we couldn't get enough (e.g. concurrency race)
-            foreach(var m in movedItems)
+            foreach (var m in movedItems)
             {
                 source.AddItem(m.ItemId, m.Qty, m.Policy, m.BoundToId);
             }
@@ -111,7 +111,7 @@ public class TradeManager
         }
 
         // 4. Add to Target
-        foreach(var m in movedItems)
+        foreach (var m in movedItems)
         {
             target.AddItem(m.ItemId, m.Qty, m.Policy, m.BoundToId);
         }

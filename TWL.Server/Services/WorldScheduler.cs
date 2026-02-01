@@ -179,8 +179,8 @@ public class WorldScheduler : IWorldScheduler, IDisposable
         _metrics.RecordWorldLoopTick(elapsed, tasksCount);
         if (elapsed > TickRateMs)
         {
-             _logger.LogWarning("Slow World Loop Tick: {Duration}ms > {Limit}ms", elapsed, TickRateMs);
-             _metrics.RecordSlowWorldTick(elapsed);
+            _logger.LogWarning("Slow World Loop Tick: {Duration}ms > {Limit}ms", elapsed, TickRateMs);
+            _metrics.RecordSlowWorldTick(elapsed);
         }
     }
 

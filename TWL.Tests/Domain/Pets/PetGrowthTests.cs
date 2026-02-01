@@ -20,7 +20,11 @@ public class PetGrowthTests
             GrowthModel = new PetGrowthModel
             {
                 HpGrowthPerLevel = 10,
-                StrWeight = 1, ConWeight = 1, IntWeight = 1, WisWeight = 1, AgiWeight = 1
+                StrWeight = 1,
+                ConWeight = 1,
+                IntWeight = 1,
+                WisWeight = 1,
+                AgiWeight = 1
             }
         };
 
@@ -50,7 +54,11 @@ public class PetGrowthTests
             GrowthModel = new PetGrowthModel
             {
                 HpGrowthPerLevel = 10,
-                StrWeight = 1, ConWeight = 1, IntWeight = 1, WisWeight = 1, AgiWeight = 1
+                StrWeight = 1,
+                ConWeight = 1,
+                IntWeight = 1,
+                WisWeight = 1,
+                AgiWeight = 1
             }
         };
 
@@ -61,7 +69,7 @@ public class PetGrowthTests
             out int maxHp, out int maxSp,
             out int str, out int con, out int int_, out int wis, out int agi);
 
-        Assert.Equal(150 + (13-10)*5, maxHp);
+        Assert.Equal(150 + (13 - 10) * 5, maxHp);
         Assert.Equal(13, str);
         Assert.Equal(13, con);
         Assert.Equal(13, int_);

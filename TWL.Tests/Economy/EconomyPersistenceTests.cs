@@ -44,7 +44,7 @@ public class EconomyPersistenceTests
         {
             if (File.Exists(ledgerFile))
             {
-                try { File.Delete(ledgerFile); } catch {}
+                try { File.Delete(ledgerFile); } catch { }
             }
         }
     }

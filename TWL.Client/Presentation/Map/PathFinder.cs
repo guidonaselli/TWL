@@ -101,7 +101,7 @@ namespace TWL.Client.Presentation.Map
 
         private static List<Point> BuildPath(Node endNode)
         {
-            var path    = new List<Point>();
+            var path = new List<Point>();
             var current = endNode;
             while (current is not null)
             {
@@ -116,19 +116,19 @@ namespace TWL.Client.Presentation.Map
 
         private sealed class Node
         {
-            public Point Pos       { get; }
-            public Node? Parent    { get; set; }
-            public int   G         { get; set; }   // coste desde el inicio
+            public Point Pos { get; }
+            public Node? Parent { get; set; }
+            public int G { get; set; }   // coste desde el inicio
             private readonly int _h;               // heurística
 
             public int F => G + _h;                // función de evaluación
 
             public Node(Point pos, Node? parent, int g, int h)
             {
-                Pos    = pos;
+                Pos = pos;
                 Parent = parent;
-                G      = g;
-                _h     = h;
+                G = g;
+                _h = h;
             }
         }
     }

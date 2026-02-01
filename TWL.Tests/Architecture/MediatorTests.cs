@@ -7,7 +7,7 @@ namespace TWL.Tests.Architecture;
 
 public class MediatorTests
 {
-    public class TestCommand : ICommand<string> { public string Input { get; set; } }
+    public class TestCommand : ICommand<string> { public string Input { get; set; } = string.Empty; }
     public class TestHandler : ICommandHandler<TestCommand, string>
     {
         public Task<string> Handle(TestCommand command, CancellationToken cancellationToken)

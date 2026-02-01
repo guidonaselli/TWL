@@ -25,7 +25,7 @@ namespace TWL.Client.Presentation.Helpers
                 if (x == end.X && y == end.Y) break;
                 int e2 = err * 2;
                 if (e2 > -dy) { err -= dy; x += sx; }
-                if (e2 <  dx) { err += dx; y += sy; }
+                if (e2 < dx) { err += dx; y += sy; }
             }
 
             return path;

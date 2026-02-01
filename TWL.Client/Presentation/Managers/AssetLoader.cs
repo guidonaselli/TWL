@@ -16,7 +16,7 @@ namespace TWL.Client.Presentation.Managers
         public AssetLoader(IServiceProvider services, ILogger<AssetLoader>? logger = null)
         {
             _content = new ContentManager(services, "Content");
-            _logger  = logger;
+            _logger = logger;
         }
 
         public T Load<T>(string asset)

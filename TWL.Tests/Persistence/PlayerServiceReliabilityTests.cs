@@ -56,13 +56,14 @@ public class PlayerServiceReliabilityTests
     {
         var repo = new MockPlayerRepository();
         var service = new PlayerService(repo, new ServerMetrics());
+        var qm = new ServerQuestManager();
 
         // Dirty session
         var s1 = new TestClientSession(1);
         var c1 = new ServerCharacter { Id = 1, Name = "Dirty" };
         c1.AddGold(10); // Makes it dirty
         s1.SetCharacter(c1);
-        s1.SetQuestComponent(new PlayerQuestComponent(null));
+        s1.SetQuestComponent(new PlayerQuestComponent(qm));
 
         service.RegisterSession(s1);
 
@@ -71,7 +72,7 @@ public class PlayerServiceReliabilityTests
         var c2 = new ServerCharacter { Id = 2, Name = "Clean" };
         // Not dirty
         s2.SetCharacter(c2);
-        s2.SetQuestComponent(new PlayerQuestComponent(null));
+        s2.SetQuestComponent(new PlayerQuestComponent(qm));
         service.RegisterSession(s2);
 
         await service.FlushAllDirtyAsync();
@@ -85,12 +86,13 @@ public class PlayerServiceReliabilityTests
     {
         var repo = new MockPlayerRepository { ShouldThrow = true };
         var service = new PlayerService(repo, new ServerMetrics());
+        var qm = new ServerQuestManager();
 
         var s1 = new TestClientSession(1);
         var c1 = new ServerCharacter { Id = 1, Name = "Dirty" };
         c1.AddGold(10);
         s1.SetCharacter(c1);
-        s1.SetQuestComponent(new PlayerQuestComponent(null));
+        s1.SetQuestComponent(new PlayerQuestComponent(qm));
         service.RegisterSession(s1);
 
         await service.FlushAllDirtyAsync();
@@ -106,6 +108,7 @@ public class PlayerServiceReliabilityTests
         var repo = new MockPlayerRepository();
         var service = new PlayerService(repo, new ServerMetrics());
         int count = 100;
+        var qm = new ServerQuestManager();
 
         for (int i = 0; i < count; i++)
         {
@@ -113,7 +116,7 @@ public class PlayerServiceReliabilityTests
             var c = new ServerCharacter { Id = i + 100, Name = $"Bencher_{i}" };
             c.AddGold(1);
             s.SetCharacter(c);
-            s.SetQuestComponent(new PlayerQuestComponent(null));
+            s.SetQuestComponent(new PlayerQuestComponent(qm));
             service.RegisterSession(s);
         }
 

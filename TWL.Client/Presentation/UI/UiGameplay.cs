@@ -20,18 +20,18 @@ namespace TWL.Client.Presentation.UI
     public class UiGameplay : UiManager
     {
         private readonly UiInventoryWindow _invWindow;
-        private readonly PlayerCharacter   _player;
+        private readonly PlayerCharacter _player;
 
         // recursos HUD
-        private SpriteFont _font      = null!;
-        private Texture2D  _panelBg   = null!;   // panel barra HP/XP
-        private Texture2D  _miniMapBg = null!;   // placeholder minimap
+        private SpriteFont _font = null!;
+        private Texture2D _panelBg = null!;   // panel barra HP/XP
+        private Texture2D _miniMapBg = null!;   // placeholder minimap
 
         public UiGameplay(PlayerCharacter player)
         {
-            _player     = player;
+            _player = player;
             _invWindow = new UiInventoryWindow(
-                new Rectangle(40,40,320,480),
+                new Rectangle(40, 40, 320, 480),
                 _player.Inventory);
             _invWindow.Visible = false;
             _invWindow.Active = false;
@@ -42,21 +42,21 @@ namespace TWL.Client.Presentation.UI
 
         public void LoadContent(ContentManager content, GraphicsDevice gd)
         {
-            _font      = content.Load<SpriteFont>("Fonts/DefaultFont");
+            _font = content.Load<SpriteFont>("Fonts/DefaultFont");
 
             // Create placeholder textures if files are missing
             try { _panelBg = content.Load<Texture2D>("UI/hud_panel_bg"); }
             catch
             {
-                 _panelBg = new Texture2D(gd, 1, 1);
-                 _panelBg.SetData(new[] { new Color(0, 0, 0, 128) });
+                _panelBg = new Texture2D(gd, 1, 1);
+                _panelBg.SetData(new[] { new Color(0, 0, 0, 128) });
             }
 
             try { _miniMapBg = content.Load<Texture2D>("UI/minimap_bg"); }
             catch
             {
-                 _miniMapBg = new Texture2D(gd, 1, 1);
-                 _miniMapBg.SetData(new[] { new Color(0, 0, 0, 128) });
+                _miniMapBg = new Texture2D(gd, 1, 1);
+                _miniMapBg.SetData(new[] { new Color(0, 0, 0, 128) });
             }
 
             _invWindow.LoadContent(content);
@@ -66,7 +66,7 @@ namespace TWL.Client.Presentation.UI
         {
             var v = !_invWindow.Visible;
             _invWindow.Visible = v;
-            _invWindow.Active  = v;
+            _invWindow.Active = v;
         }
 
         public void Update(GameTime time,
@@ -90,7 +90,7 @@ namespace TWL.Client.Presentation.UI
             int statsX = 90;
 
             // Nivel
-            sb.DrawString(_font, 
+            sb.DrawString(_font,
                 Loc.TF("UI_LevelFormat", _player.Level),
                 new Vector2(statsX, 20), Color.Yellow);
 
@@ -133,7 +133,7 @@ namespace TWL.Client.Presentation.UI
             sb.Draw(_miniMapBg,
                     new Rectangle((int)mmPos.X, (int)mmPos.Y, 150, 150),
                     Color.White);
-            sb.DrawString(_font, Loc.T("UI_Minimap"), mmPos + new Vector2(10,10),
+            sb.DrawString(_font, Loc.T("UI_Minimap"), mmPos + new Vector2(10, 10),
                           Color.White);
 
             // *** Inventario y ventanas ***

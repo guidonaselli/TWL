@@ -14,9 +14,9 @@ namespace TWL.Client.Presentation.Scenes
 
         public SceneOptions(
             ContentManager content,
-            GraphicsDevice  graphicsDevice,
-            ISceneManager   scenes,
-            IAssetLoader    assets,
+            GraphicsDevice graphicsDevice,
+            ISceneManager scenes,
+            IAssetLoader assets,
             SettingsManager settings
         ) : base(content, graphicsDevice, scenes, assets)
         {
@@ -35,8 +35,8 @@ namespace TWL.Client.Presentation.Scenes
         }
 
         public override void Update(
-            GameTime     gameTime,
-            MouseState   mouseState,
+            GameTime gameTime,
+            MouseState mouseState,
             KeyboardState keyboardState
         )
         {

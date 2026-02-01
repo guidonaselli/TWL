@@ -61,8 +61,8 @@ public class QuestInfrastructureTests
         // If file load failed, this returns false
         if (_questManager.GetDefinition(9001) == null)
         {
-             // Skip test if file not found (e.g. during certain CI runs if paths differ)
-             return;
+            // Skip test if file not found (e.g. during certain CI runs if paths differ)
+            return;
         }
 
         Assert.True(_playerQuests.StartQuest(9001));

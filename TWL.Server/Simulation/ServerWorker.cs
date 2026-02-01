@@ -95,7 +95,7 @@ public class ServerWorker : IHostedService
         }
         else
         {
-             _log.LogWarning("Content/Maps not found.");
+            _log.LogWarning("Content/Maps not found.");
         }
 
         _log.LogInformation("Starting server...");

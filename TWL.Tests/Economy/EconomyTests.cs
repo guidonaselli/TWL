@@ -92,7 +92,7 @@ public class EconomyTests
 
         await Task.WhenAll(task1, task2);
 
-        var results = new[] { task1.Result, task2.Result };
+        var results = new[] { await task1, await task2 };
         int successes = 0;
         foreach (var r in results) if (r.Success) successes++;
 

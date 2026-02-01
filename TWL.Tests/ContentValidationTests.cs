@@ -26,7 +26,7 @@ namespace TWL.Tests
                 current = current.Parent;
             }
             // Fallback for direct test execution if structure differs
-             return "../../../../Content/Data";
+            return "../../../../Content/Data";
         }
 
         private JsonSerializerOptions GetJsonOptions()
@@ -162,8 +162,8 @@ namespace TWL.Tests
                 // If Skill refers to a QuestId in UnlockRules, verify that quest exists
                 if (skill.UnlockRules?.QuestId is int qId)
                 {
-                     Assert.True(questIds.Contains(qId),
-                         $"Skill {skill.SkillId} refers to non-existent QuestId {qId} in UnlockRules.");
+                    Assert.True(questIds.Contains(qId),
+                        $"Skill {skill.SkillId} refers to non-existent QuestId {qId} in UnlockRules.");
                 }
             }
 
@@ -199,7 +199,7 @@ namespace TWL.Tests
 
                         if (skill.StageUpgradeRules.RankThreshold > 0 && nextSkill.UnlockRules.ParentSkillRank.HasValue)
                         {
-                             Assert.Equal(skill.StageUpgradeRules.RankThreshold, nextSkill.UnlockRules.ParentSkillRank.Value);
+                            Assert.Equal(skill.StageUpgradeRules.RankThreshold, nextSkill.UnlockRules.ParentSkillRank.Value);
                         }
                     }
                 }
@@ -319,20 +319,20 @@ namespace TWL.Tests
 
         private List<ZoneSpawnConfig> LoadSpawnConfigs()
         {
-             var root = GetContentRoot();
-             var spawnDir = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/spawns");
-             if (!Directory.Exists(spawnDir)) return new List<ZoneSpawnConfig>();
+            var root = GetContentRoot();
+            var spawnDir = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/spawns");
+            if (!Directory.Exists(spawnDir)) return new List<ZoneSpawnConfig>();
 
-             var files = Directory.GetFiles(spawnDir, "*.spawns.json", SearchOption.AllDirectories);
-             var list = new List<ZoneSpawnConfig>();
+            var files = Directory.GetFiles(spawnDir, "*.spawns.json", SearchOption.AllDirectories);
+            var list = new List<ZoneSpawnConfig>();
 
-             foreach (var file in files)
-             {
-                 var json = File.ReadAllText(file);
-                 var config = JsonSerializer.Deserialize<ZoneSpawnConfig>(json, GetJsonOptions());
-                 if (config != null) list.Add(config);
-             }
-             return list;
+            foreach (var file in files)
+            {
+                var json = File.ReadAllText(file);
+                var config = JsonSerializer.Deserialize<ZoneSpawnConfig>(json, GetJsonOptions());
+                if (config != null) list.Add(config);
+            }
+            return list;
         }
 
         [Fact]
@@ -343,7 +343,7 @@ namespace TWL.Tests
             {
                 if (monster.Element == Element.None)
                 {
-                     Assert.Contains("QuestOnly", monster.Tags);
+                    Assert.Contains("QuestOnly", monster.Tags);
                 }
             }
         }
@@ -372,10 +372,10 @@ namespace TWL.Tests
 
                 foreach (var region in config.SpawnRegions)
                 {
-                     foreach (var mid in region.AllowedMonsterIds)
-                     {
-                         Assert.True(monsterIds.Contains(mid), $"Spawn config for map {config.MapId} references unknown MonsterId {mid}");
-                     }
+                    foreach (var mid in region.AllowedMonsterIds)
+                    {
+                        Assert.True(monsterIds.Contains(mid), $"Spawn config for map {config.MapId} references unknown MonsterId {mid}");
+                    }
                 }
             }
         }

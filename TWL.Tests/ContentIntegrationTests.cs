@@ -64,10 +64,10 @@ namespace TWL.Tests
             Assert.NotNull(turtle);
             Assert.NotNull(turtle.SpritePath);
 
-             // Verify Asset Paths exist
+            // Verify Asset Paths exist
             var repoRoot = GetRepoRoot();
 
-            foreach(var pet in new[] { otter, gecko, turtle })
+            foreach (var pet in new[] { otter, gecko, turtle })
             {
                 var spritePath = Path.Combine(repoRoot, "TWL.Client/Content/Sprites", pet.SpritePath);
                 var portraitPath = Path.Combine(repoRoot, "TWL.Client/Content/Sprites", pet.PortraitPath);
@@ -107,7 +107,7 @@ namespace TWL.Tests
             // Verify Asset Paths exist
             var repoRoot = GetRepoRoot();
 
-            foreach(var mob in monsters)
+            foreach (var mob in monsters)
             {
                 var spritePath = Path.Combine(repoRoot, "TWL.Client/Content/Sprites", mob.SpritePath);
                 var portraitPath = Path.Combine(repoRoot, "TWL.Client/Content/Sprites", mob.PortraitPath);
@@ -127,9 +127,9 @@ namespace TWL.Tests
             Assert.Contains(npcs, n => n.NpcId == 3002 && n.Name == "Herbalist Apprentice");
             Assert.Contains(npcs, n => n.NpcId == 3003 && n.Name == "Wandering Tinkerer");
 
-             var repoRoot = GetRepoRoot();
+            var repoRoot = GetRepoRoot();
 
-            foreach(var npc in npcs)
+            foreach (var npc in npcs)
             {
                 var spritePath = Path.Combine(repoRoot, "TWL.Client/Content/Sprites", npc.SpritePath);
                 var portraitPath = Path.Combine(repoRoot, "TWL.Client/Content/Sprites", npc.PortraitPath);
@@ -141,7 +141,7 @@ namespace TWL.Tests
 
         private string GetRepoRoot()
         {
-             var baseDir = AppDomain.CurrentDomain.BaseDirectory;
+            var baseDir = AppDomain.CurrentDomain.BaseDirectory;
             var current = new DirectoryInfo(baseDir);
             while (current != null)
             {

@@ -13,7 +13,7 @@ namespace TWL.Tests.Localization.Audit
         private readonly string _solutionRoot;
         private readonly string _clientPath;
         private readonly string _serverPath;
-        private AuditConfig _config;
+        private AuditConfig _config = new AuditConfig();
         private Dictionary<string, string> _baseResourceValues = new();
 
         public LocalizationAuditor(string solutionRoot, string clientPath, string serverPath)
@@ -32,7 +32,7 @@ namespace TWL.Tests.Localization.Audit
                 try
                 {
                     var json = File.ReadAllText(configPath);
-                    _config = JsonSerializer.Deserialize<AuditConfig>(json);
+                    _config = JsonSerializer.Deserialize<AuditConfig>(json) ?? new AuditConfig();
                 }
                 catch (Exception ex)
                 {
@@ -50,14 +50,14 @@ namespace TWL.Tests.Localization.Audit
             }
         }
 
-    public class AuditConfig
-    {
-        public List<string> AllowedHardcodedLiterals { get; set; } = new();
-        public List<string> AllowedFolders { get; set; } = new();
-        public List<string> RequiredLanguages { get; set; } = new();
-        public List<string> UiScanRoots { get; set; } = new();
-        public List<string> IgnoredFiles { get; set; } = new();
-    }
+        public class AuditConfig
+        {
+            public List<string> AllowedHardcodedLiterals { get; set; } = new();
+            public List<string> AllowedFolders { get; set; } = new();
+            public List<string> RequiredLanguages { get; set; } = new();
+            public List<string> UiScanRoots { get; set; } = new();
+            public List<string> IgnoredFiles { get; set; } = new();
+        }
 
         public AuditResults RunAudit()
         {
@@ -208,7 +208,7 @@ namespace TWL.Tests.Localization.Audit
 
             // Check if immediate close or comma
             // Skip whitespace
-            while(i < content.Length && char.IsWhiteSpace(content[i])) i++;
+            while (i < content.Length && char.IsWhiteSpace(content[i])) i++;
 
             if (i >= content.Length || content[i] == ')') return 0; // No extra args
             if (content[i] == ',')
@@ -228,7 +228,7 @@ namespace TWL.Tests.Localization.Audit
             {
                 char c = content[i];
 
-                if (c == '"' && (i == 0 || content[i-1] != '\\'))
+                if (c == '"' && (i == 0 || content[i - 1] != '\\'))
                 {
                     insideString = !insideString;
                     continue;
@@ -257,10 +257,10 @@ namespace TWL.Tests.Localization.Audit
                 : new List<string> { Path.Combine("TWL.Client", "Presentation", "UI") };
 
             var files = new List<string>();
-            foreach(var root in roots)
+            foreach (var root in roots)
             {
-                 var fullPath = Path.Combine(_solutionRoot, root);
-                 if(Directory.Exists(fullPath))
+                var fullPath = Path.Combine(_solutionRoot, root);
+                if (Directory.Exists(fullPath))
                     files.AddRange(Directory.GetFiles(fullPath, "*.cs", SearchOption.AllDirectories));
             }
 
@@ -375,38 +375,38 @@ namespace TWL.Tests.Localization.Audit
             }
 
             // 3. Orphan Keys
-             foreach (var key in baseKeys)
-             {
-                 if (!allUsedKeys.Contains(key))
-                 {
-                     results.Findings.Add(new AuditFinding
-                     {
-                         Code = "WARN_ORPHAN_KEY",
-                         Severity = "WARN",
-                         File = "Resources/Strings.resx",
-                         Location = key,
-                         Message = $"Key '{key}' is present in resources but not used.",
-                         SuggestedFix = "Remove if unused."
-                     });
-                 }
-             }
+            foreach (var key in baseKeys)
+            {
+                if (!allUsedKeys.Contains(key))
+                {
+                    results.Findings.Add(new AuditFinding
+                    {
+                        Code = "WARN_ORPHAN_KEY",
+                        Severity = "WARN",
+                        File = "Resources/Strings.resx",
+                        Location = key,
+                        Message = $"Key '{key}' is present in resources but not used.",
+                        SuggestedFix = "Remove if unused."
+                    });
+                }
+            }
 
             // 4. Key Naming Convention
             var validPrefixes = new[] { "UI_", "ERR_", "QUEST_", "SKILL_", "ITEM_", "TUTORIAL_", "ENEMY_", "NPC_" };
             foreach (var key in allUsedKeys)
             {
-                 if (!validPrefixes.Any(p => key.StartsWith(p)))
-                 {
-                     results.Findings.Add(new AuditFinding
-                     {
-                         Code = "WARN_NAMING_CONVENTION",
-                         Severity = "WARN",
-                         File = "N/A",
-                         Location = key,
-                         Message = $"Key '{key}' does not follow naming convention (prefixes: {string.Join(", ", validPrefixes)})",
-                         SuggestedFix = "Rename key with valid prefix."
-                     });
-                 }
+                if (!validPrefixes.Any(p => key.StartsWith(p)))
+                {
+                    results.Findings.Add(new AuditFinding
+                    {
+                        Code = "WARN_NAMING_CONVENTION",
+                        Severity = "WARN",
+                        File = "N/A",
+                        Location = key,
+                        Message = $"Key '{key}' does not follow naming convention (prefixes: {string.Join(", ", validPrefixes)})",
+                        SuggestedFix = "Rename key with valid prefix."
+                    });
+                }
             }
 
             // 5. Format Safety
@@ -421,7 +421,7 @@ namespace TWL.Tests.Localization.Audit
                     // Regex matches {n} or {n:format}
                     var matches = Regex.Matches(resourceValue, @"\{(\d+)(?::[^}]+)?\}");
                     var maxPlaceholderIndex = -1;
-                    foreach(Match m in matches)
+                    foreach (Match m in matches)
                     {
                         if (int.TryParse(m.Groups[1].Value, out int idx))
                         {
@@ -430,7 +430,7 @@ namespace TWL.Tests.Localization.Audit
                     }
                     var expectedArgs = maxPlaceholderIndex + 1; // e.g. {0} needs 1 arg.
 
-                    foreach(var count in argCounts)
+                    foreach (var count in argCounts)
                     {
                         if (count != expectedArgs)
                         {

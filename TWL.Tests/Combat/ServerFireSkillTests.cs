@@ -19,8 +19,8 @@ public class ServerFireSkillTests
         string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
         if (!File.Exists(path))
         {
-             // Try going up one more level if running from bin/Debug/net10.0
-             path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
+            // Try going up one more level if running from bin/Debug/net10.0
+            path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
         }
 
         if (File.Exists(path))
@@ -35,8 +35,8 @@ public class ServerFireSkillTests
     {
         if (SkillRegistry.Instance.GetSkillById(4001) == null)
         {
-             // Fallback if file not loaded correctly in test env
-             return;
+            // Fallback if file not loaded correctly in test env
+            return;
         }
 
         // Use 0.5f to get exactly 1.0 multiplier from NextFloat(0.95, 1.05)

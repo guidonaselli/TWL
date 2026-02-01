@@ -12,7 +12,7 @@ public sealed class ResourceManager : Singleton<ResourceManager>
     public void SetServices(IServiceProvider services)
     {
         _services = services;
-        _content  = new ContentManager(services, "Content");
+        _content = new ContentManager(services, "Content");
     }
 
     public void SetContentManager(ContentManager cm) => _content = cm;

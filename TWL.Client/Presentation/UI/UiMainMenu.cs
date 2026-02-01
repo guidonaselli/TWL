@@ -150,7 +150,7 @@ namespace TWL.Client.Presentation.UI
             }
             else if (ks.IsKeyDown(Keys.Enter) && !_prevKeyboardState.IsKeyDown(Keys.Enter))
             {
-                 OnLoginSelected();
+                OnLoginSelected();
             }
             else
             {
@@ -330,14 +330,14 @@ namespace TWL.Client.Presentation.UI
             yPos += _optionSpacing * 1.5f;
 
             // Login/Back Buttons
-             for (int i = 0; i < _loginOptions.Count; i++)
-             {
-                 var text = _loginOptions[i];
-                 var pos = new Vector2(_graphicsDevice.Viewport.Width / 2, yPos + i * _optionSpacing);
-                 var color = i == _loginSelectedIndex ? Color.Yellow : Color.White;
-                 var origin = _optionFont.MeasureString(text) / 2;
-                 sb.DrawString(_optionFont, text, pos, color, 0f, origin, 1f, SpriteEffects.None, 0f);
-             }
+            for (int i = 0; i < _loginOptions.Count; i++)
+            {
+                var text = _loginOptions[i];
+                var pos = new Vector2(_graphicsDevice.Viewport.Width / 2, yPos + i * _optionSpacing);
+                var color = i == _loginSelectedIndex ? Color.Yellow : Color.White;
+                var origin = _optionFont.MeasureString(text) / 2;
+                sb.DrawString(_optionFont, text, pos, color, 0f, origin, 1f, SpriteEffects.None, 0f);
+            }
 
             if (!string.IsNullOrEmpty(_loginStatusMessage))
             {

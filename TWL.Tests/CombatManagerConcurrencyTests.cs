@@ -21,7 +21,7 @@ public class CombatManagerConcurrencyTests
     }
 
     [Fact]
-    public void CombatManager_ConcurrentAccess_ShouldNotCrash()
+    public async Task CombatManager_ConcurrentAccess_ShouldNotCrash()
     {
         var random = new MockRandomService();
         var resolver = new StandardCombatResolver(random, TWL.Shared.Domain.Skills.SkillRegistry.Instance);
@@ -97,9 +97,9 @@ public class CombatManagerConcurrencyTests
         }
 
         // Let it run
-        Thread.Sleep(3000);
+        await Task.Delay(3000);
         running = false;
-        Task.WaitAll(tasks.ToArray());
+        await Task.WhenAll(tasks);
 
         foreach (var ex in exceptions)
         {

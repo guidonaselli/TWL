@@ -28,7 +28,6 @@ public enum BattleUiState
 public sealed class SceneBattle : SceneBase, IPayloadReceiver
 {
     private OfflineCombatManager _combat = null!;
-    private readonly IAssetLoader _assets;
 
     private SpriteFont _font = null!;
     private Texture2D _whiteTexture = null!;
@@ -75,17 +74,17 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         var player = _payload.Allies.FirstOrDefault();
         if (player != null)
         {
-             // For vertical slice, if no skills are known, give defaults.
-             if (player.KnownSkills.Count == 0)
-             {
-                 player.KnownSkills.Add(1); // Power Strike
-                 player.KnownSkills.Add(23); // Flame Strike (Data)
-                 player.KnownSkills.Add(20); // Fireball (Data)
-                 player.KnownSkills.Add(3); // Heal
-                 player.KnownSkills.Add(4); // Focus
-             }
+            // For vertical slice, if no skills are known, give defaults.
+            if (player.KnownSkills.Count == 0)
+            {
+                player.KnownSkills.Add(1); // Power Strike
+                player.KnownSkills.Add(23); // Flame Strike (Data)
+                player.KnownSkills.Add(20); // Fireball (Data)
+                player.KnownSkills.Add(3); // Heal
+                player.KnownSkills.Add(4); // Focus
+            }
 
-             _availableSkills = player.KnownSkills.Select(id => (GetSkillName(id), id)).ToList();
+            _availableSkills = player.KnownSkills.Select(id => (GetSkillName(id), id)).ToList();
         }
     }
 
@@ -141,7 +140,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         {
             _combat.Tick(dt);
             if (_uiState != BattleUiState.Result)
-                 _status = _combat.LastMessage;
+                _status = _combat.LastMessage;
 
             // Input Handling
             if (_combat.State == LocalBattleState.AwaitingInput)
@@ -157,7 +156,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
             else
             {
                 if (_uiState != BattleUiState.Result)
-                     _uiState = BattleUiState.Idle;
+                    _uiState = BattleUiState.Idle;
             }
         }
 
@@ -247,11 +246,11 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
                 // In party play, we need to do this. For single player, it's already set in ReceivePayload but doing it again is safer.
                 if (actor.Character.KnownSkills.Count == 0)
                 {
-                     // Fallback
-                     actor.Character.KnownSkills.Add(1);
-                     actor.Character.KnownSkills.Add(23);
-                     actor.Character.KnownSkills.Add(20);
-                     actor.Character.KnownSkills.Add(3);
+                    // Fallback
+                    actor.Character.KnownSkills.Add(1);
+                    actor.Character.KnownSkills.Add(23);
+                    actor.Character.KnownSkills.Add(20);
+                    actor.Character.KnownSkills.Add(3);
                 }
                 _availableSkills = actor.Character.KnownSkills.Select(id => (GetSkillName(id), id)).ToList();
 
@@ -302,17 +301,17 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
 
         if (_uiState == BattleUiState.Result)
         {
-             string msg = _result.Victory ? "YOU WON! Press Enter" : "YOU LOST... Press Enter";
-             if (_result.Victory)
-             {
-                 msg += $"\nEXP Gained: {_result.ExpGained}";
-                 if (_result.Loot.Count > 0)
-                 {
-                     msg += "\nLoot: " + string.Join(", ", _result.Loot.Select(i => i.Name));
-                 }
-             }
-             sb.DrawString(_font, msg, new Vector2(200, 200), Color.Yellow);
-             return;
+            string msg = _result.Victory ? "YOU WON! Press Enter" : "YOU LOST... Press Enter";
+            if (_result.Victory)
+            {
+                msg += $"\nEXP Gained: {_result.ExpGained}";
+                if (_result.Loot.Count > 0)
+                {
+                    msg += "\nLoot: " + string.Join(", ", _result.Loot.Select(i => i.Name));
+                }
+            }
+            sb.DrawString(_font, msg, new Vector2(200, 200), Color.Yellow);
+            return;
         }
 
         int startY = 60;
@@ -334,11 +333,11 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         }
         else if (_uiState == BattleUiState.TargetSelection)
         {
-             // Draw menu or skill menu depending on what we are selecting targets for
-             if (_selectedActionType == CombatActionType.Skill)
-                 DrawSkillMenu(sb, new Vector2(150, 300));
-             else
-                 DrawMenu(sb, new Vector2(50, 300));
+            // Draw menu or skill menu depending on what we are selecting targets for
+            if (_selectedActionType == CombatActionType.Skill)
+                DrawSkillMenu(sb, new Vector2(150, 300));
+            else
+                DrawMenu(sb, new Vector2(50, 300));
         }
     }
 

@@ -159,62 +159,64 @@ public class CombatSkillSystemTests
     [Fact]
     public void Mastery_EventFires()
     {
-         var skill = new Skill {
-             SkillId = 200,
-             Name = "Test",
-             TargetType = SkillTargetType.SingleEnemy,
-             Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Damage } }
-         };
-         _mockCatalog.AddSkill(skill);
+        var skill = new Skill
+        {
+            SkillId = 200,
+            Name = "Test",
+            TargetType = SkillTargetType.SingleEnemy,
+            Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Damage } }
+        };
+        _mockCatalog.AddSkill(skill);
 
-         var battle = new BattleInstance(new[] { _actor }, new[] { _target }, _mockCatalog);
-         var actorC = battle.Allies[0];
-         var targetC = battle.Enemies[0];
+        var battle = new BattleInstance(new[] { _actor }, new[] { _target }, _mockCatalog);
+        var actorC = battle.Allies[0];
+        var targetC = battle.Enemies[0];
 
-         bool eventFired = false;
-         battle.OnSkillUsed += (actorId, skillId) => {
-             if (actorId == actorC.Character.Id && skillId == 200) eventFired = true;
-         };
+        bool eventFired = false;
+        battle.OnSkillUsed += (actorId, skillId) =>
+        {
+            if (actorId == actorC.Character.Id && skillId == 200) eventFired = true;
+        };
 
-         actorC.Atb = 100;
-         battle.Tick(0.1f);
-         battle.ResolveAction(CombatAction.UseSkill(actorC.BattleId, targetC.BattleId, 200));
+        actorC.Atb = 100;
+        battle.Tick(0.1f);
+        battle.ResolveAction(CombatAction.UseSkill(actorC.BattleId, targetC.BattleId, 200));
 
-         Assert.True(eventFired);
+        Assert.True(eventFired);
     }
 
     [Fact]
     public void Evolution_SwapsId_At_Threshold()
     {
-         // Setup Skill with Upgrade Rule
-         var skill1 = new Skill { SkillId = 80, Name = "Wind Blade I", StageUpgradeRules = new() { RankThreshold = 2, NextSkillId = 83 } };
-         var skill2 = new Skill { SkillId = 83, Name = "Wind Blade II" };
+        // Setup Skill with Upgrade Rule
+        var skill1 = new Skill { SkillId = 80, Name = "Wind Blade I", StageUpgradeRules = new() { RankThreshold = 2, NextSkillId = 83 } };
+        var skill2 = new Skill { SkillId = 83, Name = "Wind Blade II" };
 
-         _mockCatalog.AddSkill(skill1);
-         _mockCatalog.AddSkill(skill2);
+        _mockCatalog.AddSkill(skill1);
+        _mockCatalog.AddSkill(skill2);
 
-         var sChar = new TWL.Server.Simulation.Networking.ServerCharacter();
-         sChar.LearnSkill(80);
+        var sChar = new TWL.Server.Simulation.Networking.ServerCharacter();
+        sChar.LearnSkill(80);
 
-         // Simulate usage
-         // Usage 1 -> Rank 1
-         int rank = sChar.IncrementSkillUsage(80);
-         Assert.Equal(1, rank);
+        // Simulate usage
+        // Usage 1 -> Rank 1
+        int rank = sChar.IncrementSkillUsage(80);
+        Assert.Equal(1, rank);
 
-         // Usage 10 -> Rank 2 (Logic is % 10 == 0)
-         // Loop 9 more times to reach 10 usages
-         for(int i=0; i<9; i++) rank = sChar.IncrementSkillUsage(80);
+        // Usage 10 -> Rank 2 (Logic is % 10 == 0)
+        // Loop 9 more times to reach 10 usages
+        for (int i = 0; i < 9; i++) rank = sChar.IncrementSkillUsage(80);
 
-         Assert.Equal(2, rank);
+        Assert.Equal(2, rank);
 
-         // Manager Logic Simulation: Check if evolution is needed
-         if (rank >= skill1.StageUpgradeRules.RankThreshold)
-         {
-             if (skill1.StageUpgradeRules.NextSkillId.HasValue)
+        // Manager Logic Simulation: Check if evolution is needed
+        if (rank >= skill1.StageUpgradeRules.RankThreshold)
+        {
+            if (skill1.StageUpgradeRules.NextSkillId.HasValue)
                 sChar.ReplaceSkill(skill1.SkillId, skill1.StageUpgradeRules.NextSkillId.Value);
-         }
+        }
 
-         Assert.DoesNotContain(80, sChar.KnownSkills);
-         Assert.Contains(83, sChar.KnownSkills);
+        Assert.DoesNotContain(80, sChar.KnownSkills);
+        Assert.Contains(83, sChar.KnownSkills);
     }
 }

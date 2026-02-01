@@ -78,7 +78,7 @@ public class SpecialSkillTests
     [Fact]
     public void Deserialize_UnlockRules_WithQuestFlag()
     {
-         var json = @"
+        var json = @"
         [
           {
             ""SkillId"": 9001,

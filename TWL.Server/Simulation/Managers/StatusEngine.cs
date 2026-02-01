@@ -65,8 +65,8 @@ public class StatusEngine : IStatusEngine
                     }
                     else
                     {
-                         // Just refresh if max stack reached
-                         existing.TurnsRemaining = Math.Max(existing.TurnsRemaining, newEffect.TurnsRemaining);
+                        // Just refresh if max stack reached
+                        existing.TurnsRemaining = Math.Max(existing.TurnsRemaining, newEffect.TurnsRemaining);
                     }
                     break;
             }

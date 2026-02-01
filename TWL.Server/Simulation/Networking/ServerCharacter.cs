@@ -187,7 +187,7 @@ public class ServerCharacter : ServerCombatant
         }
     }
 
-    public bool SetActivePet(string instanceId)
+    public bool SetActivePet(string? instanceId)
     {
         lock (_pets)
         {

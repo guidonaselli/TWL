@@ -101,6 +101,7 @@ namespace TWL.Tests.Maps
             foreach (var file in mapFiles)
             {
                 var doc = LoadTmx(file);
+                Assert.NotNull(doc.Root);
                 var layers = doc.Root.Elements()
                     .Where(e => e.Name.LocalName == "layer" || e.Name.LocalName == "objectgroup")
                     .Select(e => e.Attribute("name")?.Value)
@@ -125,6 +126,7 @@ namespace TWL.Tests.Maps
             foreach (var file in mapFiles)
             {
                 var doc = LoadTmx(file);
+                Assert.NotNull(doc.Root);
                 var mapName = Path.GetFileName(file);
 
                 // Collisions
@@ -201,6 +203,7 @@ namespace TWL.Tests.Maps
 
                 // Check EntryPoints against Spawns
                 var doc = LoadTmx(file);
+                Assert.NotNull(doc.Root);
                 var spawnGroup = doc.Root.Elements("objectgroup").FirstOrDefault(e => e.Attribute("name")?.Value == "Spawns");
                 var spawnObjects = spawnGroup?.Elements("object").Select(o => GetProperties(o)).ToList() ?? new List<Dictionary<string, string>>();
                 var playerStartIds = spawnObjects
@@ -219,7 +222,8 @@ namespace TWL.Tests.Maps
 
                 var transitionTargets = triggerObjects
                     .Where(p => p.GetValueOrDefault("TriggerType") == "MapTransition")
-                    .Select(p => new {
+                    .Select(p => new
+                    {
                         TargetMapId = int.Parse(p.GetValueOrDefault("TargetMapId", "0")),
                         TargetSpawnId = int.Parse(p.GetValueOrDefault("TargetSpawnId", "0"))
                     })
@@ -271,6 +275,7 @@ namespace TWL.Tests.Maps
             // Better check: For every MapTransition in every Map, does the Target exist?
             foreach (var map in loadedMaps.Values)
             {
+                Assert.NotNull(map.Tmx.Root);
                 var triggerGroup = map.Tmx.Root.Elements("objectgroup").FirstOrDefault(e => e.Attribute("name")?.Value == "Triggers");
                 if (triggerGroup == null) continue;
 
@@ -288,6 +293,7 @@ namespace TWL.Tests.Maps
 
                             // Target Spawn must exist in Target Map
                             var targetMapTmx = loadedMaps[targetMapId].Tmx;
+                            Assert.NotNull(targetMapTmx.Root);
                             var targetSpawns = targetMapTmx.Root.Elements("objectgroup")
                                 .FirstOrDefault(e => e.Attribute("name")?.Value == "Spawns");
 

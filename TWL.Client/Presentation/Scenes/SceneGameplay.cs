@@ -26,7 +26,7 @@ namespace TWL.Client.Presentation.Scenes
     public sealed class SceneGameplay : SceneBase, IPayloadReceiver
     {
         private readonly GameClientManager _gameManager;
-        private readonly LoopbackChannel   _netChannel;
+        private readonly LoopbackChannel _netChannel;
         private PlayerCharacterData _playerData = new PlayerCharacterData
         {
             PlayerId = 1,
@@ -36,32 +36,30 @@ namespace TWL.Client.Presentation.Scenes
             Hp = 100,
             MaxHp = 100
         };
-        private readonly EncounterManager  _encounter = new();
+        private readonly EncounterManager _encounter = new();
 
-        private PlayerCharacter  _player     = null!;
-        private PlayerView       _playerView = null!;
-        private PlayerColors     _colors     = null!;
-        private UiGameplay       _ui         = null!;
+        private PlayerCharacter _player = null!;
+        private PlayerView _playerView = null!;
+        private UiGameplay _ui = null!;
 
-        private TiledMap         _map;
-        private TiledMapRenderer _mapRenderer;
-        private Vector2          _clickTarget;
-        private Point?           _lastTargetTile;
+        private TiledMap _map = null!;
+        private TiledMapRenderer _mapRenderer = null!;
+        private Point? _lastTargetTile;
         private readonly PersistenceManager _persistence;
         private KeyboardState _prevKeyboardState;
 
         public SceneGameplay(
-            ContentManager    content,
-            GraphicsDevice    graphicsDevice,
-            ISceneManager     scenes,
-            IAssetLoader      assets,
+            ContentManager content,
+            GraphicsDevice graphicsDevice,
+            ISceneManager scenes,
+            IAssetLoader assets,
             GameClientManager gameManager,
-            LoopbackChannel   netChannel,
+            LoopbackChannel netChannel,
             PersistenceManager persistence
         ) : base(content, graphicsDevice, scenes, assets)
         {
             _gameManager = gameManager;
-            _netChannel  = netChannel;
+            _netChannel = netChannel;
             _persistence = persistence;
         }
 
@@ -120,8 +118,8 @@ namespace TWL.Client.Presentation.Scenes
             _ui = new UiGameplay(_player);
             _prevKeyboardState = Keyboard.GetState();
 
-            EventBus.Subscribe<BattleStarted>(   e => Scenes.ChangeScene("Battle",    e) );
-            EventBus.Subscribe<BattleFinished>( e => OnBattleFinished(e)               );
+            EventBus.Subscribe<BattleStarted>(e => Scenes.ChangeScene("Battle", e));
+            EventBus.Subscribe<BattleFinished>(e => OnBattleFinished(e));
         }
 
         public override void LoadContent()
@@ -129,12 +127,14 @@ namespace TWL.Client.Presentation.Scenes
             _playerView.Load(Content, GraphicsDevice);
             _ui.LoadContent(Content, GraphicsDevice);
 
-            try {
+            try
+            {
                 _map = Content.Load<TiledMap>("Maps/GreenMap");
             }
-            catch {
+            catch
+            {
                 _map = new TiledMap(
-                    "Empty","",1,1,32,32,
+                    "Empty", "", 1, 1, 32, 32,
                     TiledMapTileDrawOrder.LeftDown,
                     TiledMapOrientation.Orthogonal
                 );
@@ -145,16 +145,16 @@ namespace TWL.Client.Presentation.Scenes
             if (layer != null)
             {
                 int w = _map.Width, h = _map.Height;
-                var grid = new bool[w,h];
-                for (int x=0;x<w;x++)
-                for (int y=0;y<h;y++)
-                    grid[x,y] = layer.GetTile((ushort)x,(ushort)y).GlobalIdentifier != 0;
+                var grid = new bool[w, h];
+                for (int x = 0; x < w; x++)
+                    for (int y = 0; y < h; y++)
+                        grid[x, y] = layer.GetTile((ushort)x, (ushort)y).GlobalIdentifier != 0;
                 _player.SetCollisionInfo(grid, w, h);
             }
             else
             {
-                 // Create empty grid if no collision layer
-                 _player.SetCollisionInfo(new bool[_map.Width,_map.Height], _map.Width, _map.Height);
+                // Create empty grid if no collision layer
+                _player.SetCollisionInfo(new bool[_map.Width, _map.Height], _map.Width, _map.Height);
             }
         }
 

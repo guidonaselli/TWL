@@ -34,7 +34,8 @@ public class ServerPetTests
     [Fact]
     public void AddExp_ShouldLevelUp_WhenExpExceedsThreshold()
     {
-        var def = new PetDefinition {
+        var def = new PetDefinition
+        {
             PetTypeId = 1,
             BaseHp = 10,
             Name = "Test",

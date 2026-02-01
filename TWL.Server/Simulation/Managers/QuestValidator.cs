@@ -130,8 +130,8 @@ public static class QuestValidator
 
         if (string.IsNullOrWhiteSpace(obj.TargetName) && !obj.DataId.HasValue)
         {
-             // Enforce TargetName OR DataId
-             errors.Add($"Quest {questId} Obj {index}: TargetName or DataId is missing.");
+            // Enforce TargetName OR DataId
+            errors.Add($"Quest {questId} Obj {index}: TargetName or DataId is missing.");
         }
 
         if (obj.RequiredCount <= 0)

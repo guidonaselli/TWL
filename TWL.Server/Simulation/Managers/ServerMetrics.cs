@@ -112,7 +112,7 @@ public class ServerMetrics
 
     public void RecordMessageProcessingTime(long ticks)
     {
-         Interlocked.Add(ref _totalMessageProcessingTimeTicks, ticks);
+        Interlocked.Add(ref _totalMessageProcessingTimeTicks, ticks);
     }
 
     public void RecordWorldLoopTick(long durationMs, int queueDepth)

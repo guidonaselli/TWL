@@ -22,7 +22,7 @@ namespace TWL.Client.Presentation.Core
         }
 
         /// <summary>Pone el juego en pausa (las escenas dejarán de actualizarse).</summary>
-        public void PauseGame()  => IsPaused = true;
+        public void PauseGame() => IsPaused = true;
 
         /// <summary>Reanuda el juego (las escenas vuelven a actualizarse).</summary>
         public void ResumeGame() => IsPaused = false;
@@ -37,7 +37,7 @@ namespace TWL.Client.Presentation.Core
                 return;
 
             // Capturamos estado de entrada
-            MouseState    mouse    = Mouse.GetState();
+            MouseState mouse = Mouse.GetState();
             KeyboardState keyboard = Keyboard.GetState();
 
             // Delegamos a la escena activa

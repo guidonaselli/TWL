@@ -1,0 +1,5 @@
+./Content/Data/quests.json
+./TWL.Server/bin/Debug/net10.0/Content/Data/quests.json
+./TWL.Tests/bin/Debug/net10.0/Content/Data/quests.json
+./TWL.Client/Content/Data/quests.json
+./TWL.Client/bin/Debug/net10.0/Content/Data/quests.json

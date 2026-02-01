@@ -15,31 +15,31 @@ namespace TWL.Client.Presentation.Scenes;
 /// </summary>
 public abstract class SceneBase : IScene
 {
-    protected readonly Camera2D      Camera;
+    protected readonly Camera2D Camera;
     protected readonly ContentManager Content;
     protected readonly GraphicsDevice GraphicsDevice;
-    protected readonly ISceneManager  Scenes;
-    protected readonly IAssetLoader   Assets;
+    protected readonly ISceneManager Scenes;
+    protected readonly IAssetLoader Assets;
 
     protected SceneBase(
         ContentManager content,
-        GraphicsDevice  gd,
-        ISceneManager   scenes,
-        IAssetLoader    assets)
+        GraphicsDevice gd,
+        ISceneManager scenes,
+        IAssetLoader assets)
     {
-        Content        = content;
+        Content = content;
         GraphicsDevice = gd;
-        Scenes         = scenes;
-        Assets         = assets;
-        Camera         = new Camera2D();
+        Scenes = scenes;
+        Assets = assets;
+        Camera = new Camera2D();
     }
 
     public bool IsInitialized { get; private set; }
 
-    public virtual void Initialize()               => IsInitialized = true;
-    public virtual void LoadContent()              { }
-    public virtual void UnloadContent()            { }
+    public virtual void Initialize() => IsInitialized = true;
+    public virtual void LoadContent() { }
+    public virtual void UnloadContent() { }
     public virtual void Update(GameTime time, MouseState mouse, KeyboardState keys) { }
     public virtual void Draw(SpriteBatch spriteBatch) { }
-    public virtual Camera2D GetCamera()            => Camera;
+    public virtual Camera2D GetCamera() => Camera;
 }

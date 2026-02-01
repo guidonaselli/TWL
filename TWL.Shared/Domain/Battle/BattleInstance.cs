@@ -123,8 +123,8 @@ public class BattleInstance
                 break;
 
             case CombatActionType.Flee:
-                 resultMessage = $"{actor.Character.Name} tries to flee... failed!";
-                 break;
+                resultMessage = $"{actor.Character.Name} tries to flee... failed!";
+                break;
         }
 
         // End turn
@@ -208,104 +208,104 @@ public class BattleInstance
         {
             foreach (var effect in skill.Effects)
             {
-                 if (effect.Tag == SkillEffectTag.Damage)
-                 {
-                     float elemMult = GetElementalMultiplier(skill.Element, currentTarget.Character.CharacterElement);
-                     float adjustedValue = totalValue * elemMult;
+                if (effect.Tag == SkillEffectTag.Damage)
+                {
+                    float elemMult = GetElementalMultiplier(skill.Element, currentTarget.Character.CharacterElement);
+                    float adjustedValue = totalValue * elemMult;
 
-                     int defense = (skill.Branch == SkillBranch.Magical)
-                         ? GetEffectiveStat(currentTarget, StatType.Mdf)
-                         : GetEffectiveStat(currentTarget, StatType.Def);
+                    int defense = (skill.Branch == SkillBranch.Magical)
+                        ? GetEffectiveStat(currentTarget, StatType.Mdf)
+                        : GetEffectiveStat(currentTarget, StatType.Def);
 
-                     int damage = Math.Max(1, (int)adjustedValue - defense);
-                     if (currentTarget.IsDefending) damage /= 2;
+                    int damage = Math.Max(1, (int)adjustedValue - defense);
+                    if (currentTarget.IsDefending) damage /= 2;
 
-                     damage = ApplyDamage(currentTarget, damage);
-                     didDamage = true;
-                     lastDamage = damage;
-                     lastTarget = currentTarget;
-                 }
-                 else if (effect.Tag == SkillEffectTag.Shield)
-                 {
-                     float value = effect.Value;
-                     if (value == 0 && totalValue > 0) value = totalValue; // Use scaled value if provided
+                    damage = ApplyDamage(currentTarget, damage);
+                    didDamage = true;
+                    lastDamage = damage;
+                    lastTarget = currentTarget;
+                }
+                else if (effect.Tag == SkillEffectTag.Shield)
+                {
+                    float value = effect.Value;
+                    if (value == 0 && totalValue > 0) value = totalValue; // Use scaled value if provided
 
-                     currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, value, effect.Duration, effect.Param));
-                     didHeal = true; // Treating shield as positive
-                 }
-                 else if (effect.Tag == SkillEffectTag.Heal)
-                 {
-                     int healAmount = (int)totalValue;
-                     if (healAmount == 0) healAmount = (int)effect.Value;
+                    currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, value, effect.Duration, effect.Param));
+                    didHeal = true; // Treating shield as positive
+                }
+                else if (effect.Tag == SkillEffectTag.Heal)
+                {
+                    int healAmount = (int)totalValue;
+                    if (healAmount == 0) healAmount = (int)effect.Value;
 
-                     currentTarget.Character.Heal(healAmount);
-                     didHeal = true;
-                 }
-                 else if (effect.Tag == SkillEffectTag.BuffStats)
-                 {
-                      var rng = new Random();
-                      if (rng.NextDouble() <= effect.Chance)
-                      {
-                          float value = effect.Value;
-                          // If value is 0 but we have scaling, use the calculated totalValue (for dynamic buffs)
-                          if (value == 0 && totalValue > 0) value = totalValue;
+                    currentTarget.Character.Heal(healAmount);
+                    didHeal = true;
+                }
+                else if (effect.Tag == SkillEffectTag.BuffStats)
+                {
+                    var rng = new Random();
+                    if (rng.NextDouble() <= effect.Chance)
+                    {
+                        float value = effect.Value;
+                        // If value is 0 but we have scaling, use the calculated totalValue (for dynamic buffs)
+                        if (value == 0 && totalValue > 0) value = totalValue;
 
-                          currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, value, effect.Duration, effect.Param));
-                      }
-                 }
-                 else if (effect.Tag == SkillEffectTag.DebuffStats)
-                 {
-                      float hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance, skill.HitRules);
-                      var rng = new Random();
-                      if (rng.NextDouble() <= hitChance)
-                      {
-                          currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param));
-                      }
-                 }
-                 else if (effect.Tag == SkillEffectTag.Cleanse)
-                 {
-                     var negativeTags = new[] { SkillEffectTag.Burn, SkillEffectTag.DebuffStats, SkillEffectTag.Seal };
-                     foreach (var tag in negativeTags)
-                     {
-                         if (currentTarget.StatusEffects.Any(e => e.Tag == tag))
-                         {
-                             currentTarget.RemoveStatusEffect(tag);
-                             didHeal = true; // Treating cleanse as a "positive" outcome for messaging
-                         }
-                     }
-                 }
-                 else if (effect.Tag == SkillEffectTag.Dispel)
-                 {
-                     var positiveTags = new[] { SkillEffectTag.BuffStats, SkillEffectTag.Shield, SkillEffectTag.Heal };
+                        currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, value, effect.Duration, effect.Param));
+                    }
+                }
+                else if (effect.Tag == SkillEffectTag.DebuffStats)
+                {
+                    float hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance, skill.HitRules);
+                    var rng = new Random();
+                    if (rng.NextDouble() <= hitChance)
+                    {
+                        currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param));
+                    }
+                }
+                else if (effect.Tag == SkillEffectTag.Cleanse)
+                {
+                    var negativeTags = new[] { SkillEffectTag.Burn, SkillEffectTag.DebuffStats, SkillEffectTag.Seal };
+                    foreach (var tag in negativeTags)
+                    {
+                        if (currentTarget.StatusEffects.Any(e => e.Tag == tag))
+                        {
+                            currentTarget.RemoveStatusEffect(tag);
+                            didHeal = true; // Treating cleanse as a "positive" outcome for messaging
+                        }
+                    }
+                }
+                else if (effect.Tag == SkillEffectTag.Dispel)
+                {
+                    var positiveTags = new[] { SkillEffectTag.BuffStats, SkillEffectTag.Shield, SkillEffectTag.Heal };
 
-                     var toRemove = currentTarget.StatusEffects
-                         .Where(e => e.Tag == SkillEffectTag.BuffStats || e.Tag == SkillEffectTag.Shield)
-                         .ToList();
+                    var toRemove = currentTarget.StatusEffects
+                        .Where(e => e.Tag == SkillEffectTag.BuffStats || e.Tag == SkillEffectTag.Shield)
+                        .ToList();
 
-                     foreach (var eff in toRemove)
-                     {
-                         currentTarget.StatusEffects.Remove(eff);
-                         didHeal = true; // Treating dispel as a significant event
-                     }
-                 }
-                 else if (effect.Tag == SkillEffectTag.Seal)
-                 {
-                     float hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance, skill.HitRules);
-                     var rng = new Random();
-                     if (rng.NextDouble() <= hitChance)
-                     {
-                         currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param));
-                         didDamage = true; // Treating seal application as offensive success
-                     }
-                 }
-                 else if (effect.Tag == SkillEffectTag.Burn)
-                 {
-                     var rng = new Random();
-                     if (rng.NextDouble() <= effect.Chance)
-                     {
-                         currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param));
-                     }
-                 }
+                    foreach (var eff in toRemove)
+                    {
+                        currentTarget.StatusEffects.Remove(eff);
+                        didHeal = true; // Treating dispel as a significant event
+                    }
+                }
+                else if (effect.Tag == SkillEffectTag.Seal)
+                {
+                    float hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance, skill.HitRules);
+                    var rng = new Random();
+                    if (rng.NextDouble() <= hitChance)
+                    {
+                        currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param));
+                        didDamage = true; // Treating seal application as offensive success
+                    }
+                }
+                else if (effect.Tag == SkillEffectTag.Burn)
+                {
+                    var rng = new Random();
+                    if (rng.NextDouble() <= effect.Chance)
+                    {
+                        currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value, effect.Duration, effect.Param));
+                    }
+                }
             }
         }
 
@@ -318,8 +318,8 @@ public class BattleInstance
         }
         if (didHeal)
         {
-             OnSkillUsed?.Invoke(actor.Character.Id, skill.SkillId);
-             return $"{actor.Character.Name} uses {skill.Name} and heals!";
+            OnSkillUsed?.Invoke(actor.Character.Id, skill.SkillId);
+            return $"{actor.Character.Name} uses {skill.Name} and heals!";
         }
 
         OnSkillUsed?.Invoke(actor.Character.Id, skill.SkillId);
@@ -381,10 +381,10 @@ public class BattleInstance
 
         foreach (var effect in c.StatusEffects)
         {
-             if (effect.Tag == SkillEffectTag.BuffStats && effect.Param == statName)
-                 baseVal += effect.Value;
-             if (effect.Tag == SkillEffectTag.DebuffStats && effect.Param == statName)
-                 baseVal -= effect.Value;
+            if (effect.Tag == SkillEffectTag.BuffStats && effect.Param == statName)
+                baseVal += effect.Value;
+            if (effect.Tag == SkillEffectTag.DebuffStats && effect.Param == statName)
+                baseVal -= effect.Value;
         }
         return (int)baseVal;
     }

@@ -89,7 +89,7 @@ namespace TWL.Tests.Domain
         [Fact]
         public void BattleEnd_Victory()
         {
-             var p = new TestCharacter("Hero", 10);
+            var p = new TestCharacter("Hero", 10);
             var e = new TestEnemy("Slime", 5);
             e.Health = 1;
 

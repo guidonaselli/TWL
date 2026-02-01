@@ -17,24 +17,24 @@ public class UseSkillHandlerTests
     {
         if (SkillRegistry.Instance.GetSkillById(1001) == null)
         {
-             string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
-             if (!System.IO.File.Exists(path))
-             {
-                 // Try looking from project root (if running from root)
-                 path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
-             }
+            string path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
+            if (!System.IO.File.Exists(path))
+            {
+                // Try looking from project root (if running from root)
+                path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/skills.json");
+            }
 
-             if (System.IO.File.Exists(path))
-             {
-                 var json = System.IO.File.ReadAllText(path);
-                 SkillRegistry.Instance.LoadSkills(json);
-             }
-             else
-             {
-                 // Fallback: Manually register the skill needed for test
-                 var manualJson = "[{\"SkillId\":1001,\"Name\":\"Rock Smash\",\"SpCost\":5,\"Scaling\":[{\"Stat\":\"Atk\",\"Coefficient\":1.2}],\"Effects\":[{\"Tag\":\"Damage\"}]}]";
-                 SkillRegistry.Instance.LoadSkills(manualJson);
-             }
+            if (System.IO.File.Exists(path))
+            {
+                var json = System.IO.File.ReadAllText(path);
+                SkillRegistry.Instance.LoadSkills(json);
+            }
+            else
+            {
+                // Fallback: Manually register the skill needed for test
+                var manualJson = "[{\"SkillId\":1001,\"Name\":\"Rock Smash\",\"SpCost\":5,\"Scaling\":[{\"Stat\":\"Atk\",\"Coefficient\":1.2}],\"Effects\":[{\"Tag\":\"Damage\"}]}]";
+                SkillRegistry.Instance.LoadSkills(manualJson);
+            }
         }
 
         var mockRng = new MockRandomService(0.5f);

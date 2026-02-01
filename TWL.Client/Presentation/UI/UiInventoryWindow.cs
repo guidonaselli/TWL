@@ -34,9 +34,9 @@ public class UiInventoryWindow : UiWindow
 
     public void LoadContent(ContentManager content)
     {
-        _bg      = SafeLoadTex(content, "UI/inventory_background");
+        _bg = SafeLoadTex(content, "UI/inventory_background");
         _slotTex = SafeLoadTex(content, "UI/inventory_slot");
-        _font    = content.Load<SpriteFont>("Fonts/DefaultFont");
+        _font = content.Load<SpriteFont>("Fonts/DefaultFont");
     }
 
     private static Texture2D SafeLoadTex(ContentManager c, string asset)
