@@ -31,28 +31,28 @@ public class EconomyServiceMockTests
     {
         public List<string> CallLog { get; } = new();
 
-        public PurchaseGemsIntentResponseDTO InitiatePurchase(int userId, string productId)
+        public PurchaseGemsIntentResponseDTO InitiatePurchase(int userId, string productId, string? traceId = null)
         {
             CallLog.Add($"InitiatePurchase({userId}, {productId})");
             return new PurchaseGemsIntentResponseDTO { OrderId = "MOCK_ORDER" };
         }
 
         public EconomyOperationResultDTO VerifyPurchase(int userId, string orderId, string receiptToken,
-            ServerCharacter character)
+            ServerCharacter character, string? traceId = null)
         {
             CallLog.Add($"VerifyPurchase({userId}, {orderId}, {receiptToken})");
             return new EconomyOperationResultDTO { Success = true, Message = "Mock Success" };
         }
 
         public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity,
-            string operationId = null)
+            string operationId = null, string? traceId = null)
         {
             CallLog.Add($"BuyShopItem({character.Id}, {shopItemId}, {quantity})");
             return new EconomyOperationResultDTO { Success = true, Message = "Mock Success" };
         }
 
         public EconomyOperationResultDTO GiftShopItem(ServerCharacter giver, ServerCharacter receiver, int shopItemId,
-            int quantity, string operationId)
+            int quantity, string operationId, string? traceId = null)
         {
             CallLog.Add($"GiftShopItem({giver.Id}, {receiver.Id}, {shopItemId}, {quantity})");
             return new EconomyOperationResultDTO { Success = true, Message = "Mock Success" };

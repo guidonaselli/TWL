@@ -86,7 +86,7 @@ public class EconomyManager : IEconomyService, IDisposable
         }
     }
 
-    public PurchaseGemsIntentResponseDTO InitiatePurchase(int userId, string productId)
+    public PurchaseGemsIntentResponseDTO InitiatePurchase(int userId, string productId, string? traceId = null)
     {
         if (!CheckRateLimit(userId))
         {
@@ -110,7 +110,7 @@ public class EconomyManager : IEconomyService, IDisposable
 
         _transactions[orderId] = tx;
 
-        LogLedger("PurchaseIntent", userId, $"Order:{orderId}, Product:{productId}", 0, 0);
+        LogLedger("PurchaseIntent", userId, $"Order:{orderId}, Product:{productId}", 0, 0, traceId);
 
         return new PurchaseGemsIntentResponseDTO
         {
@@ -120,24 +120,24 @@ public class EconomyManager : IEconomyService, IDisposable
     }
 
     public EconomyOperationResultDTO VerifyPurchase(int userId, string orderId, string receiptToken,
-        ServerCharacter character)
+        ServerCharacter character, string? traceId = null)
     {
         if (!CheckRateLimit(userId))
         {
-            SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, "Reason:RateLimitExceeded");
+            SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, "Reason:RateLimitExceeded", traceId);
             return new EconomyOperationResultDTO { Success = false, Message = "Rate limit exceeded" };
         }
 
         if (!_transactions.TryGetValue(orderId, out var tx))
         {
-            SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, $"Reason:OrderNotFound OrderId:{orderId}");
+            SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, $"Reason:OrderNotFound OrderId:{orderId}", traceId);
             return new EconomyOperationResultDTO { Success = false, Message = "Order not found" };
         }
 
         if (tx.UserId != userId)
         {
             SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId,
-                $"Reason:UserMismatch OrderId:{orderId} TxUser:{tx.UserId}");
+                $"Reason:UserMismatch OrderId:{orderId} TxUser:{tx.UserId}", traceId);
             return new EconomyOperationResultDTO { Success = false, Message = "User mismatch" };
         }
 
@@ -158,14 +158,14 @@ public class EconomyManager : IEconomyService, IDisposable
             if (tx.State != TransactionState.Pending)
             {
                 SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId,
-                    $"Reason:InvalidState State:{tx.State}");
+                    $"Reason:InvalidState State:{tx.State}", traceId);
                 return new EconomyOperationResultDTO { Success = false, Message = "Invalid state" };
             }
 
             // Verify receipt (Mock Signature Validation)
             if (!ValidateReceipt(receiptToken, orderId))
             {
-                SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, "Reason:InvalidSignature");
+                SecurityLogger.LogSecurityEvent("PurchaseVerifyFailed", userId, "Reason:InvalidSignature", traceId);
                 return new EconomyOperationResultDTO { Success = false, Message = "Invalid receipt signature" };
             }
 
@@ -176,7 +176,7 @@ public class EconomyManager : IEconomyService, IDisposable
             tx.State = TransactionState.Completed;
 
             LogLedger("PurchaseVerify", userId, $"Order:{orderId}, Product:{tx.ProductId}", gemsToAdd,
-                character.PremiumCurrency);
+                character.PremiumCurrency, traceId);
 
             return new EconomyOperationResultDTO
             {
@@ -189,11 +189,11 @@ public class EconomyManager : IEconomyService, IDisposable
     }
 
     public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity,
-        string? operationId)
+        string? operationId, string? traceId = null)
     {
         if (!CheckRateLimit(character.Id))
         {
-            SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id, "Reason:RateLimitExceeded");
+            SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id, "Reason:RateLimitExceeded", traceId);
             return new EconomyOperationResultDTO { Success = false, Message = "Rate limit exceeded" };
         }
 
@@ -258,7 +258,7 @@ public class EconomyManager : IEconomyService, IDisposable
                 }
             }
 
-            SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id, $"Reason:ItemNotFound Item:{shopItemId}");
+            SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id, $"Reason:ItemNotFound Item:{shopItemId}", traceId);
             return new EconomyOperationResultDTO { Success = false, Message = "Item not found" };
         }
 
@@ -275,7 +275,7 @@ public class EconomyManager : IEconomyService, IDisposable
             }
 
             SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id,
-                $"Reason:InsufficientFunds Cost:{totalCost} Has:{character.PremiumCurrency}");
+                $"Reason:InsufficientFunds Cost:{totalCost} Has:{character.PremiumCurrency}", traceId);
             return new EconomyOperationResultDTO { Success = false, Message = "Insufficient funds" };
         }
 
@@ -301,7 +301,7 @@ public class EconomyManager : IEconomyService, IDisposable
                 }
             }
 
-            LogLedger("ShopBuyFailed", character.Id, details + ", Reason:InventoryFull", 0, character.PremiumCurrency);
+            LogLedger("ShopBuyFailed", character.Id, details + ", Reason:InventoryFull", 0, character.PremiumCurrency, traceId);
 
             return new EconomyOperationResultDTO { Success = false, Message = "Inventory full" };
         }
@@ -315,7 +315,7 @@ public class EconomyManager : IEconomyService, IDisposable
             }
         }
 
-        LogLedger("ShopBuy", character.Id, details, -totalCost, character.PremiumCurrency);
+        LogLedger("ShopBuy", character.Id, details, -totalCost, character.PremiumCurrency, traceId);
 
         return new EconomyOperationResultDTO
         {
@@ -327,7 +327,7 @@ public class EconomyManager : IEconomyService, IDisposable
     }
 
     public EconomyOperationResultDTO GiftShopItem(ServerCharacter giver, ServerCharacter receiver, int shopItemId,
-        int quantity, string operationId)
+        int quantity, string operationId, string? traceId = null)
     {
         if (giver == null || receiver == null)
         {
@@ -447,7 +447,7 @@ public class EconomyManager : IEconomyService, IDisposable
                 }
             }
 
-            LogLedger("GiftBuyFailed", giver.Id, details + ", Reason:ReceiverInventoryFull", 0, giver.PremiumCurrency);
+            LogLedger("GiftBuyFailed", giver.Id, details + ", Reason:ReceiverInventoryFull", 0, giver.PremiumCurrency, traceId);
 
             return new EconomyOperationResultDTO { Success = false, Message = "Receiver inventory full" };
         }
@@ -461,7 +461,7 @@ public class EconomyManager : IEconomyService, IDisposable
             }
         }
 
-        LogLedger("GiftBuy", giver.Id, details, -totalCost, giver.PremiumCurrency);
+        LogLedger("GiftBuy", giver.Id, details, -totalCost, giver.PremiumCurrency, traceId);
 
         return new EconomyOperationResultDTO
         {
@@ -637,7 +637,7 @@ public class EconomyManager : IEconomyService, IDisposable
     }
 
     public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity) =>
-        BuyShopItem(character, shopItemId, quantity, null);
+        BuyShopItem(character, shopItemId, quantity, null, null);
 
     private bool ValidateReceipt(string receiptToken, string orderId)
     {
@@ -652,7 +652,7 @@ public class EconomyManager : IEconomyService, IDisposable
         return receiptToken == $"mock_sig_{orderId}";
     }
 
-    private void LogLedger(string type, int userId, string details, long delta, long newBalance)
+    private void LogLedger(string type, int userId, string details, long delta, long newBalance, string? traceId = null)
     {
         var line = $"{DateTime.UtcNow:O},{type},{userId},{details},{delta},{newBalance}\n";
 
@@ -661,7 +661,7 @@ public class EconomyManager : IEconomyService, IDisposable
 
         // Audit via SecurityLogger as well
         SecurityLogger.LogSecurityEvent($"Economy_{type}", userId,
-            $"{details} | Delta:{delta} NewBalance:{newBalance}");
+            $"{details} | Delta:{delta} NewBalance:{newBalance}", traceId);
     }
 
     private void TryCleanup()
