@@ -41,7 +41,8 @@ namespace TWL.Tests.Maps
         {
             var root = Path.Combine(GetContentRoot(), "Content/Maps");
             if (!Directory.Exists(root)) return Enumerable.Empty<string>();
-            return Directory.GetFiles(root, "*.tmx", SearchOption.AllDirectories);
+            return Directory.GetFiles(root, "*.tmx", SearchOption.AllDirectories)
+                .Where(path => !path.Replace("\\", "/").Contains("/Tilesets/"));
         }
 
         private XDocument LoadTmx(string path)

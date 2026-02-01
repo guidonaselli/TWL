@@ -1,6 +1,18 @@
 {
   "nodes": [
     {
+      "id": 1,
+      "name": "Playa del Naufragio",
+      "region": "IslaBrisa",
+      "type": "SafeZone"
+    },
+    {
+      "id": 2,
+      "name": "Costa de Mareas",
+      "region": "IslaBrisa",
+      "type": "Field"
+    },
+    {
       "id": 1000,
       "name": "Puerto Roca City",
       "region": "PuertoRoca",
@@ -26,6 +38,7 @@
     }
   ],
   "edges": [
+    { "from": 1, "to": 2, "bidirectional": true },
     { "from": 1000, "to": 1001, "bidirectional": true },
     { "from": 1000, "to": 1002, "bidirectional": true },
     { "from": 1000, "to": 1003, "bidirectional": true }

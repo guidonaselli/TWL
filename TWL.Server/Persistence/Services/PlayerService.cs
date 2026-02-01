@@ -68,6 +68,12 @@ public class PlayerService
         }
     }
 
+    public void FlushAllDirty()
+    {
+        // Wrapper for synchronous calls
+        FlushAllDirtyAsync().GetAwaiter().GetResult();
+    }
+
     public async Task FlushAllDirtyAsync()
     {
         var flushId = Guid.NewGuid().ToString();
