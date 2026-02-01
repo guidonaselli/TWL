@@ -68,10 +68,9 @@ public class PlayerService
         }
     }
 
-    public async Task FlushAllDirtyAsync()
+    public void FlushAllDirty()
     {
-        // Wrapper for synchronous calls (e.g. from Stop)
-        // We block here to ensure completion
+        // Wrapper for synchronous calls
         FlushAllDirtyAsync().GetAwaiter().GetResult();
     }
 

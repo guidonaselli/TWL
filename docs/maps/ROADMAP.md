@@ -2,6 +2,7 @@
 
 ## Conventions
 - **Map IDs**: Integer, 4 digits.
+    - 0xxx: Isla Brisa (Starter Island)
     - 1xxx: Puerto Roca & Surroundings
     - 2xxx: North Island
     - 3xxx: South Island
@@ -34,6 +35,20 @@
     - **Connections:** 1000
     - **Mobs:** Cave Bat (9101).
 
+## Region 0: Isla Brisa (Starter Island)
+
+### Phase 1: Crash Site
+- [x] **0001 - Playa del Naufragio**
+    - **Status:** Implemented
+    - **Type:** Safe Zone / Beach
+    - **Connections:** 0002 (Costa de Mareas)
+    - **Entities:** Capitana Maren, Dr. Calloway.
+
+- [x] **0002 - Costa de Mareas**
+    - **Status:** Implemented (Skeleton)
+    - **Type:** Adventure Field
+    - **Connections:** 0001 (Playa del Naufragio)
+
 ## Backlog
-- [ ] Starter Island (Tutorial)
+- [ ] Starter Island (Tutorial) - Remaining maps (0003-0099)
 - [ ] South Island Jungle

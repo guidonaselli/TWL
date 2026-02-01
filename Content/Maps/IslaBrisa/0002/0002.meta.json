@@ -1,0 +1,23 @@
+{
+  "MapId": 2,
+  "RegionId": "IslaBrisa",
+  "Biome": "Tropical",
+  "RecommendedLevelMin": 2,
+  "RecommendedLevelMax": 5,
+  "EntryPoints": [ 1 ],
+  "Exits": [
+    {
+      "TargetMapId": 1,
+      "SpawnId": 1,
+      "Gating": { "MinLevel": 1 }
+    }
+  ],
+  "AmbientProfile": {
+    "MusicKey": "BGM_BEACH_02",
+    "AmbienceKey": "AMB_WAVES",
+    "PaletteHintKey": "DAY_CYCLE"
+  },
+  "WorldFlagsSet": [],
+  "WorldFlagsCleared": [],
+  "Notes": "Skeleton map for transition testing."
+}

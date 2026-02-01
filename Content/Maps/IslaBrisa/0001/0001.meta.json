@@ -1,0 +1,23 @@
+{
+  "MapId": 1,
+  "RegionId": "IslaBrisa",
+  "Biome": "Tropical",
+  "RecommendedLevelMin": 1,
+  "RecommendedLevelMax": 5,
+  "EntryPoints": [ 1 ],
+  "Exits": [
+    {
+      "TargetMapId": 2,
+      "SpawnId": 1,
+      "Gating": { "MinLevel": 1 }
+    }
+  ],
+  "AmbientProfile": {
+    "MusicKey": "BGM_BEACH_01",
+    "AmbienceKey": "AMB_WAVES",
+    "PaletteHintKey": "DAY_CYCLE"
+  },
+  "WorldFlagsSet": [],
+  "WorldFlagsCleared": [],
+  "Notes": "Initial map. Placeholder assets."
+}
