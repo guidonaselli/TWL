@@ -33,15 +33,15 @@ public class HiddenRuinsQuestTests
     [Fact]
     public void HiddenRuins_FullChain_Progression()
     {
-        // 1. Start Quest 1201
+        // 1. Start Quest 1301
         // Prereq 1103 must be completed if we were enforcing it strictly,
         // but CanStartQuest checks QuestStates of prerequisites.
         // For this test, let's force-set prereq 1103 as completed if needed.
         // Actually, let's just cheat and assume we can start it if we satisfy prereqs manually.
         SetQuestCompleted(1103);
 
-        Assert.True(_questComponent.StartQuest(1201), "Should be able to start 1201");
-        Assert.Equal(QuestState.InProgress, _questComponent.QuestStates[1201]);
+        Assert.True(_questComponent.StartQuest(1301), "Should be able to start 1301");
+        Assert.Equal(QuestState.InProgress, _questComponent.QuestStates[1301]);
 
         // 2. Interact with StrangeStoneDebris
         var interactionType = _interactionManager.ProcessInteraction(_character, _questComponent, "StrangeStoneDebris");
@@ -50,13 +50,13 @@ public class HiddenRuinsQuestTests
 
         // 3. Update Progress (simulated client/server event)
         _questComponent.TryProgress("Collect", "StrangeStoneDebris");
-        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1201]);
+        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1301]);
 
         // 4. Claim Reward
-        Assert.True(_questComponent.ClaimReward(1201));
+        Assert.True(_questComponent.ClaimReward(1301));
 
-        // 5. Start Quest 1202
-        Assert.True(_questComponent.StartQuest(1202));
+        // 5. Start Quest 1302
+        Assert.True(_questComponent.StartQuest(1302));
 
         // 6. Interact AncientTablet
         interactionType = _interactionManager.ProcessInteraction(_character, _questComponent, "AncientTablet");
@@ -65,7 +65,7 @@ public class HiddenRuinsQuestTests
 
         // 7. Update Progress
         _questComponent.TryProgress("Collect", "AncientTablet");
-        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1202]);
+        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1302]);
 
         // 8. Claim Reward (Gets Key 8103)
         // Note: ClaimReward in component updates state, but ClientSession applies rewards.
@@ -73,27 +73,27 @@ public class HiddenRuinsQuestTests
         // ProcessInteraction gives items, but Quest Rewards are handled by ClientSession logic usually.
         // Let's manually give the key to simulate reward
         _character.AddItem(8103, 1);
-        Assert.True(_questComponent.ClaimReward(1202));
+        Assert.True(_questComponent.ClaimReward(1302));
 
-        // 9. Start Quest 1203
-        Assert.True(_questComponent.StartQuest(1203));
+        // 9. Start Quest 1303
+        Assert.True(_questComponent.StartQuest(1303));
 
         // 10. Kill RuinsGuardian
         // No interaction for kill, just direct progress update from CombatManager
         _questComponent.TryProgress("Kill", "RuinsGuardian");
-        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1203]);
-        Assert.True(_questComponent.ClaimReward(1203));
+        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1303]);
+        Assert.True(_questComponent.ClaimReward(1303));
 
-        // 11. Start Quest 1204
-        Assert.True(_questComponent.StartQuest(1204));
+        // 11. Start Quest 1304
+        Assert.True(_questComponent.StartQuest(1304));
 
         // 12. Interact RuinsEntrance
-        // This interaction gives no items, but requires Quest 1204 to be InProgress (checked by InteractionManager)
+        // This interaction gives no items, but requires Quest 1304 to be InProgress (checked by InteractionManager)
         interactionType = _interactionManager.ProcessInteraction(_character, _questComponent, "RuinsEntrance");
         Assert.NotNull(interactionType);
 
         _questComponent.TryProgress("Interact", "RuinsEntrance");
-        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1204]);
+        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1304]);
     }
 
     private void SetQuestCompleted(int questId)

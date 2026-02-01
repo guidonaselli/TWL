@@ -379,8 +379,8 @@ public class MapValidationTests
     private class GraphNode
     {
         public int Id { get; set; }
-        public string Name { get; } = "";
-        public string Region { get; } = "";
+        public string Name { get; set; } = "";
+        public string Region { get; set; } = "";
     }
 
     private class GraphEdge
