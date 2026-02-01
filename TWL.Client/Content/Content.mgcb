@@ -1,10 +1,6 @@
-# Referencias a MonoGame.Extended
-/reference:D:\…\MonoGame.Extended.Content.Pipeline.dll
-/reference:D:\…\MonoGame.Extended.dll
-
 # Ajustes globales
-/outputDir:bin/$(Platform)/$(Configuration)
-/intermediateDir:obj/$(Platform)/$(Configuration)
+/outputDir:bin/$(Platform)/Content
+/intermediateDir:obj/$(Platform)/Content
 /platform:DesktopGL
 /profile:Reach
 /quiet
@@ -24,18 +20,6 @@
 /processor:FontDescriptionProcessor
 /processorParam:PremultiplyAlpha=True
 /build:Fonts/DefaultFont.spritefont
-
-# Texturas
-/importer:TextureImporter
-/processor:TextureProcessor
-/build:Tilesets/GreenTile.png
-
-# Mapas TMX
-/importer:TiledMapImporter
-/processor:TiledMapProcessor
-/processorParam:GenerateMipmaps=False
-/processorParam:TilePaddingPixels=2
-/build:Maps/GreenMap.tmx
 
 # Sprites del jugador
 /importer:TextureImporter
@@ -62,6 +46,30 @@
 /importer:TextureImporter
 /processor:TextureProcessor
 /build:Sprites/Characters/RegularMale/Base/Idle/pelo_mapa.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/arriba_cuerpo_base.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/arriba_cuerpo_mapa.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/arriba_pelo_base.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/arriba_pelo_mapa.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/lateral_cuerpo_base.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/lateral_cuerpo_mapa.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/lateral_pelo_base.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/lateral_pelo_mapa.png
 
 # Effects
 /importer:EffectImporter

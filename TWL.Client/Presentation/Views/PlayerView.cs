@@ -19,10 +19,18 @@ public class PlayerView : IDisposable
     // Dictionary to store equipment textures by key (Slot_AssetId_Dir)
     private readonly Dictionary<string, Texture2D> _equipmentTextures = new();
     private readonly PlayerCharacter _player;
-    private Texture2D _bodyBase;
-    private Texture2D _bodyMap;
-    private Texture2D _hairBase;
-    private Texture2D _hairMap;
+    private Texture2D _bodyBaseDown;
+    private Texture2D _bodyMapDown;
+    private Texture2D _bodyBaseUp;
+    private Texture2D _bodyMapUp;
+    private Texture2D _bodyBaseSide;
+    private Texture2D _bodyMapSide;
+    private Texture2D _hairBaseDown;
+    private Texture2D _hairMapDown;
+    private Texture2D _hairBaseUp;
+    private Texture2D _hairMapUp;
+    private Texture2D _hairBaseSide;
+    private Texture2D _hairMapSide;
     private Texture2D _down, _up, _left, _right;
     private FacingDirection _lastDirection = FacingDirection.Down; // Force update on first frame
     private Effect _paletteEffect;
@@ -37,7 +45,8 @@ public class PlayerView : IDisposable
         // Do NOT dispose generated textures here if they are cached globally.
         // Only clear local references.
         _down = _up = _left = _right = null;
-        _bodyBase = _bodyMap = _hairBase = _hairMap = null;
+        _bodyBaseDown = _bodyMapDown = _bodyBaseUp = _bodyMapUp = _bodyBaseSide = _bodyMapSide = null;
+        _hairBaseDown = _hairMapDown = _hairBaseUp = _hairMapUp = _hairBaseSide = _hairMapSide = null;
         _paletteEffect = null;
         _equipmentTextures.Clear();
         _currentFrameOverlays.Clear();
@@ -46,7 +55,13 @@ public class PlayerView : IDisposable
     public Effect PaletteEffect => _paletteEffect;
 
     public bool HasLayeredSprites =>
-        _bodyBase != null && _bodyMap != null && _hairBase != null && _hairMap != null && _paletteEffect != null;
+        _bodyBaseDown != null && _bodyMapDown != null
+        && _bodyBaseUp != null && _bodyMapUp != null
+        && _bodyBaseSide != null && _bodyMapSide != null
+        && _hairBaseDown != null && _hairMapDown != null
+        && _hairBaseUp != null && _hairMapUp != null
+        && _hairBaseSide != null && _hairMapSide != null
+        && _paletteEffect != null;
 
     public void Load(ContentManager content, GraphicsDevice gd)
     {
@@ -56,26 +71,35 @@ public class PlayerView : IDisposable
 
         // Note: Hardcoding to RegularMale/Base/Idle for vertical slice as per instructions (Finish the game not the engine)
         var basePath = "Sprites/Characters/RegularMale/Base/Idle";
-        var clientColors = GetClientColors();
-
-        _down = GetSwappedTexture(content, gd, $"{basePath}/player_down", clientColors);
-        _up = GetSwappedTexture(content, gd, $"{basePath}/player_up", clientColors);
-        _left = GetSwappedTexture(content, gd, $"{basePath}/player_left", clientColors);
-        _right = GetSwappedTexture(content, gd, $"{basePath}/player_right", clientColors);
+        _down = _up = _left = _right = null;
 
         try
         {
-            _bodyBase = content.Load<Texture2D>($"{basePath}/cuerpo_base");
-            _bodyMap = content.Load<Texture2D>($"{basePath}/cuerpo_mapa");
-            _hairBase = content.Load<Texture2D>($"{basePath}/pelo_base");
-            _hairMap = content.Load<Texture2D>($"{basePath}/pelo_mapa");
+            _bodyBaseDown = content.Load<Texture2D>($"{basePath}/cuerpo_base");
+            _bodyMapDown = content.Load<Texture2D>($"{basePath}/cuerpo_mapa");
+            _hairBaseDown = content.Load<Texture2D>($"{basePath}/pelo_base");
+            _hairMapDown = content.Load<Texture2D>($"{basePath}/pelo_mapa");
+
+            _bodyBaseUp = content.Load<Texture2D>($"{basePath}/arriba_cuerpo_base");
+            _bodyMapUp = content.Load<Texture2D>($"{basePath}/arriba_cuerpo_mapa");
+            _hairBaseUp = content.Load<Texture2D>($"{basePath}/arriba_pelo_base");
+            _hairMapUp = content.Load<Texture2D>($"{basePath}/arriba_pelo_mapa");
+
+            _bodyBaseSide = content.Load<Texture2D>($"{basePath}/lateral_cuerpo_base");
+            _bodyMapSide = content.Load<Texture2D>($"{basePath}/lateral_cuerpo_mapa");
+            _hairBaseSide = content.Load<Texture2D>($"{basePath}/lateral_pelo_base");
+            _hairMapSide = content.Load<Texture2D>($"{basePath}/lateral_pelo_mapa");
+
             _paletteEffect = content.Load<Effect>("Effects/PaletteSwap");
         }
         catch
         {
-            _bodyBase = _bodyMap = _hairBase = _hairMap = null;
+            _bodyBaseDown = _bodyMapDown = _bodyBaseUp = _bodyMapUp = _bodyBaseSide = _bodyMapSide = null;
+            _hairBaseDown = _hairMapDown = _hairBaseUp = _hairMapUp = _hairBaseSide = _hairMapSide = null;
             _paletteEffect = null;
         }
+
+
 
         // Load Equipment Visuals
         foreach (var part in _player.Appearance.EquipmentVisuals)
@@ -187,17 +211,24 @@ public class PlayerView : IDisposable
 
         var colors = GetClientColors();
 
-        _paletteEffect.Parameters["MapTexture"]?.SetValue(_bodyMap);
+        var (bodyBase, bodyMap, hairBase, hairMap, effects) = GetLayeredSet();
+
+        if (bodyBase == null || bodyMap == null || hairBase == null || hairMap == null)
+        {
+            return;
+        }
+
+        _paletteEffect.Parameters["MapTexture"]?.SetValue(bodyMap);
         _paletteEffect.Parameters["ColorPiel"]?.SetValue(colors.Skin.ToVector4());
         _paletteEffect.Parameters["ColorRopa"]?.SetValue(colors.Cloth.ToVector4());
         _paletteEffect.Parameters["ColorPelo"]?.SetValue(colors.Hair.ToVector4());
 
-        sb.Draw(_bodyBase, _player.Position, Color.White);
+        sb.Draw(bodyBase, _player.Position, null, Color.White, 0f, Vector2.Zero, 1f, effects, 0f);
 
-        _paletteEffect.Parameters["MapTexture"]?.SetValue(_hairMap);
+        _paletteEffect.Parameters["MapTexture"]?.SetValue(hairMap);
         _paletteEffect.Parameters["ColorPelo"]?.SetValue(colors.Hair.ToVector4());
 
-        sb.Draw(_hairBase, _player.Position, Color.White);
+        sb.Draw(hairBase, _player.Position, null, Color.White, 0f, Vector2.Zero, 1f, effects, 0f);
     }
 
     public void DrawEquipment(SpriteBatch sb)
@@ -227,6 +258,22 @@ public class PlayerView : IDisposable
         if (tex != null)
         {
             sb.Draw(tex, _player.Position, Color.White);
+        }
+    }
+
+    private (Texture2D BodyBase, Texture2D BodyMap, Texture2D HairBase, Texture2D HairMap, SpriteEffects Effects)
+        GetLayeredSet()
+    {
+        switch (_player.CurrentDirection)
+        {
+            case FacingDirection.Up:
+                return (_bodyBaseUp, _bodyMapUp, _hairBaseUp, _hairMapUp, SpriteEffects.None);
+            case FacingDirection.Left:
+                return (_bodyBaseSide, _bodyMapSide, _hairBaseSide, _hairMapSide, SpriteEffects.FlipHorizontally);
+            case FacingDirection.Right:
+                return (_bodyBaseSide, _bodyMapSide, _hairBaseSide, _hairMapSide, SpriteEffects.None);
+            default:
+                return (_bodyBaseDown, _bodyMapDown, _hairBaseDown, _hairMapDown, SpriteEffects.None);
         }
     }
 }
