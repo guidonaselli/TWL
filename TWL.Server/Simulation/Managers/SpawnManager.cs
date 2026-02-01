@@ -7,6 +7,7 @@ using System.Text.Json;
 using System.Threading;
 using System.Threading.Tasks;
 using TWL.Server.Domain.World;
+using TWL.Shared.Domain.World;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Net.Messages;
@@ -117,12 +118,14 @@ public class SpawnManager
 
         // 2. Create Encounter
         int encounterId = Interlocked.Increment(ref _nextEncounterId);
+        int seed = Random.Shared.Next();
 
         var serverMobs = new List<ServerCharacter>();
         int mobIdCounter = -1000 * encounterId; // distinct negative IDs for mobs
 
-        foreach (var def in mobs)
+        for (int i = 0; i < mobs.Count; i++)
         {
+            var def = mobs[i];
             var mob = new ServerCharacter
             {
                 Id = mobIdCounter--,
@@ -134,9 +137,10 @@ public class SpawnManager
                 Int = def.BaseInt,
                 Wis = def.BaseWis,
                 Agi = def.BaseAgi,
+                CharacterElement = def.Element,
                 Team = Team.Enemy
-                // TODO: Set Element, etc.
             };
+            mob.SetLevel(def.Level);
             serverMobs.Add(mob);
         }
 
@@ -144,15 +148,24 @@ public class SpawnManager
         var participants = new List<ServerCharacter> { session.Character };
         participants.AddRange(serverMobs);
 
-        _combatManager.StartEncounter(encounterId, participants);
+        _combatManager.StartEncounter(encounterId, participants, seed);
 
         // 4. Notify Client
-        // We need a payload.
         var payload = new
         {
             EncounterId = encounterId,
             Source = source.ToString(),
-            Monsters = serverMobs.Select(m => new { m.Id, m.Name, m.Hp }).ToList()
+            Seed = seed,
+            Monsters = serverMobs.Select((m, index) => new {
+                m.Id,
+                m.Name,
+                m.Hp,
+                m.MaxHp,
+                m.Level,
+                m.CharacterElement,
+                MonsterId = mobs[index].MonsterId,
+                SpritePath = mobs[index].SpritePath
+            }).ToList()
         };
 
         var msg = new NetMessage
