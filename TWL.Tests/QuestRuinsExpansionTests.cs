@@ -37,11 +37,11 @@ public class QuestRuinsExpansionTests
     [Fact]
     public void SecretsOfTheRuins_Chain_Progression()
     {
-        // Setup Prereq: 1204 Completed (Entering Ruins)
-        SetQuestCompleted(1204);
+        // Setup Prereq: 1304 Completed (Entering Ruins)
+        SetQuestCompleted(1304);
 
-        // --- Quest 1205: Dark Corridors ---
-        Assert.True(_questComponent.StartQuest(1205), "Should be able to start 1205");
+        // --- Quest 1305: Dark Corridors ---
+        Assert.True(_questComponent.StartQuest(1305), "Should be able to start 1305");
 
         // Talk to Console
         _questComponent.TryProgress("Talk", "RuinsConsole");
@@ -53,11 +53,11 @@ public class QuestRuinsExpansionTests
         _questComponent.TryProgress("Kill", "RuinsBat");
         _questComponent.TryProgress("Kill", "GiantSpider");
 
-        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1205]);
-        Assert.True(_questComponent.ClaimReward(1205));
+        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1305]);
+        Assert.True(_questComponent.ClaimReward(1305));
 
-        // --- Quest 1206: Ancient Power ---
-        Assert.True(_questComponent.StartQuest(1206), "Should be able to start 1206");
+        // --- Quest 1306: Ancient Power ---
+        Assert.True(_questComponent.StartQuest(1306), "Should be able to start 1306");
 
         // Collect Power Crystal
         // Check interaction logic first
@@ -68,28 +68,29 @@ public class QuestRuinsExpansionTests
         _questComponent.TryProgress("Collect", "PowerCrystalSource");
 
         // Talk to Console
+        Assert.NotNull(_interactionManager.ProcessInteraction(_character, _questComponent, "RuinsConsole"));
         _questComponent.TryProgress("Talk", "RuinsConsole");
 
-        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1206]);
-        Assert.True(_questComponent.ClaimReward(1206));
+        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1306]);
+        Assert.True(_questComponent.ClaimReward(1306));
 
-        // --- Quest 1207: The Hologram ---
-        Assert.True(_questComponent.StartQuest(1207), "Should be able to start 1207");
+        // --- Quest 1307: The Hologram ---
+        Assert.True(_questComponent.StartQuest(1307), "Should be able to start 1307");
 
         // Interact Projector
         _questComponent.TryProgress("Interact", "HologramProjector");
 
-        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1207]);
+        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1307]);
     }
 
     [Fact]
     public void Sidequest_BatWings()
     {
-        // Setup Prereq: 1205 Completed
-        SetQuestCompleted(1205);
+        // Setup Prereq: 1305 Completed
+        SetQuestCompleted(1305);
 
-        // Start 2203
-        Assert.True(_questComponent.StartQuest(2203), "Should be able to start 2203");
+        // Start 2303
+        Assert.True(_questComponent.StartQuest(2303), "Should be able to start 2303");
 
         // Gather 5 Wings
         for (var i = 0; i < 5; i++)
@@ -100,6 +101,6 @@ public class QuestRuinsExpansionTests
         }
 
         Assert.True(_character.HasItem(8106, 5), "Should have 5 Bat Wings (8106)");
-        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[2203]);
+        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[2303]);
     }
 }

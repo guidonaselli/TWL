@@ -733,7 +733,7 @@
     ]
   },
   {
-    "QuestId": 1301,
+    "QuestId": 1201,
     "Title": "Into the Deep",
     "Description": "Build a Raft to traverse the open ocean.",
     "Requirements": [
@@ -768,358 +768,171 @@
     ]
   },
   {
-    "QuestId": 1201,
-    "Title": "Strange Signals",
+    "QuestId": 1301,
+    "Title": "Strange Stone Debris",
     "Description": "Investigate the strange debris near the ruins.",
-    "Requirements": [
-      1103
-    ],
+    "Requirements": [1103],
     "Objectives": [
       {
         "Type": "Collect",
         "TargetName": "StrangeStoneDebris",
         "RequiredCount": 1,
-        "Description": "Interact with debris."
+        "Description": "Collect Strange Stone Debris."
       }
     ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
   },
   {
-    "QuestId": 1202,
+    "QuestId": 1302,
     "Title": "Ancient Tablet",
-    "Description": "Read the ancient tablet.",
-    "Requirements": [
-      1201
-    ],
+    "Description": "Decipher the ancient tablet.",
+    "Requirements": [1301],
     "Objectives": [
       {
         "Type": "Collect",
         "TargetName": "AncientTablet",
         "RequiredCount": 1,
-        "Description": "Interact with tablet."
+        "Description": "Collect Ancient Rubbing."
       }
     ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [{"ItemId": 8103, "Quantity": 1}] }
   },
   {
-    "QuestId": 1203,
-    "Title": "The Guardian",
-    "Description": "Defeat the guardian.",
-    "Requirements": [
-      1202
-    ],
+    "QuestId": 1303,
+    "Title": "Ruins Guardian",
+    "Description": "Defeat the guardian protecting the ruins.",
+    "Requirements": [1302],
     "Objectives": [
       {
         "Type": "Kill",
         "TargetName": "RuinsGuardian",
         "RequiredCount": 1,
-        "Description": "Kill Guardian."
+        "Description": "Kill Ruins Guardian."
       }
     ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 0,
-      "Items": []
-    }
+    "Rewards": { "Exp": 200, "Gold": 50, "Items": [] }
   },
   {
-    "QuestId": 1204,
-    "Title": "Enter the Ruins",
-    "Description": "Enter the ancient ruins.",
-    "Requirements": [
-      1203
-    ],
+    "QuestId": 1304,
+    "Title": "Enter Ruins",
+    "Description": "Enter the ruins.",
+    "Requirements": [1303],
     "Objectives": [
       {
         "Type": "Interact",
         "TargetName": "RuinsEntrance",
         "RequiredCount": 1,
-        "Description": "Enter."
+        "Description": "Interact with Ruins Entrance."
       }
     ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1205,
-    "Title": "Dark Corridors",
-    "Description": "Explore the corridors.",
-    "Requirements": [
-      1204
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "RuinsConsole",
-        "RequiredCount": 1,
-        "Description": "Talk to console."
-      },
-      {
-        "Type": "Kill",
-        "TargetName": "RuinsBat",
-        "RequiredCount": 3,
-        "Description": "Kill Bats."
-      },
-      {
-        "Type": "Kill",
-        "TargetName": "GiantSpider",
-        "RequiredCount": 1,
-        "Description": "Kill Spider."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1206,
-    "Title": "Ancient Power",
-    "Description": "Restore power.",
-    "Requirements": [
-      1205
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "PowerCrystalSource",
-        "RequiredCount": 1,
-        "Description": "Get Crystal."
-      },
-      {
-        "Type": "Talk",
-        "TargetName": "RuinsConsole",
-        "RequiredCount": 1,
-        "Description": "Power up."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1207,
-    "Title": "The Hologram",
-    "Description": "View the message.",
-    "Requirements": [
-      1206
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HologramProjector",
-        "RequiredCount": 1,
-        "Description": "View."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 2203,
-    "Title": "Bat Wings",
-    "Description": "Collect wings.",
-    "Requirements": [
-      1205
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "BatNest",
-        "RequiredCount": 5,
-        "Description": "Collect wings."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
   },
   {
     "QuestId": 1305,
-    "Title": "Coastal Scouting",
-    "Description": "Scout the coast.",
-    "Requirements": [],
+    "Title": "Dark Corridors",
+    "Description": "Explore the dark corridors.",
+    "Requirements": [1304],
     "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Scout",
-        "RequiredCount": 1,
-        "Description": "Talk."
-      }
+      { "Type": "Talk", "TargetName": "RuinsConsole", "RequiredCount": 1, "Description": "Talk to Console" },
+      { "Type": "Kill", "TargetName": "RuinsBat", "RequiredCount": 3, "Description": "Kill 3 Ruins Bat" },
+      { "Type": "Kill", "TargetName": "GiantSpider", "RequiredCount": 1, "Description": "Kill Giant Spider" }
     ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": []
-    }
+    "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
+  },
+  {
+    "QuestId": 1306,
+    "Title": "Ancient Power",
+    "Description": "Restore power to the ruins.",
+    "Requirements": [1305],
+    "Objectives": [
+      { "Type": "Collect", "TargetName": "PowerCrystalSource", "RequiredCount": 1, "Description": "Collect Power Crystal" },
+      { "Type": "Talk", "TargetName": "RuinsConsole", "RequiredCount": 1, "Description": "Talk to Console" }
+    ],
+    "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
+  },
+  {
+    "QuestId": 1307,
+    "Title": "The Hologram",
+    "Description": "Activate the hologram.",
+    "Requirements": [1306],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "HologramProjector", "RequiredCount": 1, "Description": "Interact with Projector" }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 2303,
+    "Title": "Bat Wings",
+    "Description": "Collect bat wings.",
+    "Requirements": [1305],
+    "Objectives": [
+      { "Type": "Collect", "TargetName": "BatNest", "RequiredCount": 5, "Description": "Collect 5 Bat Wings" }
+    ],
+    "Rewards": { "Exp": 150, "Gold": 50, "Items": [] }
   },
   {
     "QuestId": 1401,
-    "Title": "Echoes",
-    "Description": "Investigate echoes.",
-    "Requirements": [
-      1305
-    ],
+    "Title": "Echoes from the Sea",
+    "Description": "Investigate the signal.",
+    "Requirements": [1305],
     "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "RepairedRadioTower",
-        "RequiredCount": 1,
-        "Description": "Check tower."
-      },
-      {
-        "Type": "Interact",
-        "TargetName": "NorthEastCliff",
-        "RequiredCount": 1,
-        "Description": "Check cliff."
-      }
+      { "Type": "Interact", "TargetName": "RepairedRadioTower", "RequiredCount": 1, "Description": "Check Radio Tower" },
+      { "Type": "Interact", "TargetName": "NorthEastCliff", "RequiredCount": 1, "Description": "Check Cliff" }
     ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
   },
   {
     "QuestId": 1402,
     "Title": "Blocked Passage",
-    "Description": "Clear the rocks.",
-    "Requirements": [
-      1401
-    ],
+    "Description": "Clear the blockage.",
+    "Requirements": [1401],
     "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HeavyRocks",
-        "RequiredCount": 1,
-        "Description": "Check rocks."
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "SulfurVent",
-        "RequiredCount": 1,
-        "Description": "Get Sulfur."
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "BurntTree",
-        "RequiredCount": 1,
-        "Description": "Get Charcoal."
-      },
-      {
-        "Type": "Craft",
-        "TargetName": "AlchemyTable",
-        "RequiredCount": 1,
-        "Description": "Craft Powder."
-      }
+      { "Type": "Interact", "TargetName": "HeavyRocks", "RequiredCount": 1, "Description": "Check Rocks" },
+      { "Type": "Collect", "TargetName": "SulfurVent", "RequiredCount": 1, "Description": "Collect Sulfur" },
+      { "Type": "Collect", "TargetName": "BurntTree", "RequiredCount": 1, "Description": "Collect Charcoal" },
+      { "Type": "Craft", "TargetName": "AlchemyTable", "RequiredCount": 1, "Description": "Craft Black Powder" }
     ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 0,
-      "Items": []
-    }
+    "Rewards": { "Exp": 200, "Gold": 50, "Items": [] }
   },
   {
     "QuestId": 1403,
-    "Title": "Clearing Way",
+    "Title": "Clearing the Way",
     "Description": "Blast the rocks.",
-    "Requirements": [
-      1402
-    ],
+    "Requirements": [1402],
     "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HeavyRocks",
-        "RequiredCount": 1,
-        "Description": "Blast."
-      }
+      { "Type": "Interact", "TargetName": "HeavyRocks", "RequiredCount": 1, "Description": "Blast Rocks" }
     ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
   },
   {
     "QuestId": 1404,
     "Title": "Hidden Dock",
-    "Description": "Find the dock.",
-    "Requirements": [
-      1403
-    ],
+    "Description": "Find the hidden dock.",
+    "Requirements": [1403],
     "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HiddenDock",
-        "RequiredCount": 1,
-        "Description": "Find dock."
-      }
+      { "Type": "Interact", "TargetName": "HiddenDock", "RequiredCount": 1, "Description": "Inspect Dock" }
     ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 2011,
-    "Title": "Fishing Intro",
-    "Description": "Learn to fish.",
-    "Requirements": [],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "Fish",
-        "RequiredCount": 1,
-        "Description": "Catch fish."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": []
-    }
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
   },
   {
     "QuestId": 2401,
-    "Title": "Rare Catch",
-    "Description": "Catch rare fish.",
-    "Requirements": [
-      2011,
-      1404
-    ],
+    "Title": "Fisherman Sidequest",
+    "Description": "Help the fisherman.",
+    "Requirements": [2011, 1404],
     "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "FishingSpot",
-        "RequiredCount": 1,
-        "Description": "Fish."
-      }
+      { "Type": "Collect", "TargetName": "FishingSpot", "RequiredCount": 1, "Description": "Fish at the spot" }
     ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
+    "Rewards": { "Exp": 100, "Gold": 50, "Items": [] }
+  },
+  {
+    "QuestId": 2011,
+    "Title": "First Catch",
+    "Description": "Catch your first fish.",
+    "Requirements": [],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "AnyFishingSpot", "RequiredCount": 1, "Description": "Fish somewhere" }
+    ],
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
   },
   {
     "QuestId": 2010,
