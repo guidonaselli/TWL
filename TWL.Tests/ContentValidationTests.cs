@@ -7,6 +7,7 @@ using System.Text.Json.Serialization;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Skills;
+using TWL.Shared.Domain.World;
 using Xunit;
 
 namespace TWL.Tests
@@ -302,6 +303,80 @@ namespace TWL.Tests
             foreach (var skill in coreT1)
             {
                 Assert.InRange(skill.SpCost, 5, 20); // 5-20 SP Budget for T1
+            }
+        }
+
+        private List<MonsterDefinition> LoadMonsters()
+        {
+            var root = GetContentRoot();
+            var path = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/monsters.json");
+            // Ensure path exists
+            if (!File.Exists(path)) throw new FileNotFoundException($"Could not find monsters.json at {Path.GetFullPath(path)}");
+
+            var json = File.ReadAllText(path);
+            return JsonSerializer.Deserialize<List<MonsterDefinition>>(json, GetJsonOptions()) ?? new List<MonsterDefinition>();
+        }
+
+        private List<ZoneSpawnConfig> LoadSpawnConfigs()
+        {
+             var root = GetContentRoot();
+             var spawnDir = System.IO.Path.Combine(System.AppContext.BaseDirectory, "Content/Data/spawns");
+             if (!Directory.Exists(spawnDir)) return new List<ZoneSpawnConfig>();
+
+             var files = Directory.GetFiles(spawnDir, "*.spawns.json", SearchOption.AllDirectories);
+             var list = new List<ZoneSpawnConfig>();
+
+             foreach (var file in files)
+             {
+                 var json = File.ReadAllText(file);
+                 var config = JsonSerializer.Deserialize<ZoneSpawnConfig>(json, GetJsonOptions());
+                 if (config != null) list.Add(config);
+             }
+             return list;
+        }
+
+        [Fact]
+        public void ValidateMonsterElements()
+        {
+            var monsters = LoadMonsters();
+            foreach (var monster in monsters)
+            {
+                if (monster.Element == Element.None)
+                {
+                     Assert.Contains("QuestOnly", monster.Tags);
+                }
+            }
+        }
+
+        [Fact]
+        public void ValidatePetElements()
+        {
+            var pets = LoadPets();
+            foreach (var pet in pets)
+            {
+                Assert.NotEqual(Element.None, pet.Element);
+            }
+        }
+
+        [Fact]
+        public void ValidateSpawnConfigs()
+        {
+            var configs = LoadSpawnConfigs();
+            var monsters = LoadMonsters();
+            var monsterIds = monsters.Select(m => m.MonsterId).ToHashSet();
+            // Families are not strictly defined in a JSON yet, assuming implicit or 1-3 from monsters.json
+
+            foreach (var config in configs)
+            {
+                Assert.True(config.MapId > 0, "MapId must be positive");
+
+                foreach (var region in config.SpawnRegions)
+                {
+                     foreach (var mid in region.AllowedMonsterIds)
+                     {
+                         Assert.True(monsterIds.Contains(mid), $"Spawn config for map {config.MapId} references unknown MonsterId {mid}");
+                     }
+                }
             }
         }
     }

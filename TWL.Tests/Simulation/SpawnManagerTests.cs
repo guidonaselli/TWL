@@ -7,6 +7,7 @@ using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Domain.World;
+using TWL.Shared.Domain.World;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Net.Messages;
@@ -71,7 +72,7 @@ public class SpawnManagerTests
         mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition { MonsterId = 1, Name = "TestMob", BaseHp = 10 });
 
         var mockCombat = new Mock<CombatManager>(null, null, null, null);
-        mockCombat.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>())).Verifiable();
+        mockCombat.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>())).Verifiable();
 
         var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object);
 
@@ -100,7 +101,7 @@ public class SpawnManagerTests
         manager.OnPlayerMoved(session);
 
         // Assert
-        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>()), Times.Once);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Once);
         Assert.NotNull(session.LastMessage);
         Assert.Equal(Opcode.EncounterStarted, session.LastMessage.Op);
 
@@ -142,7 +143,8 @@ public class SpawnManagerTests
         manager.OnPlayerMoved(session);
 
         // Assert
-        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>()), Times.Never);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Never);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Never);
         Assert.Null(session.LastMessage);
 
         Directory.Delete(tempDir, true);

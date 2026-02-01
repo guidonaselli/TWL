@@ -48,12 +48,13 @@ public class CombatManager
         return combatant;
     }
 
-    public virtual void StartEncounter(int encounterId, List<ServerCharacter> participants)
+    public virtual void StartEncounter(int encounterId, List<ServerCharacter> participants, int seed = 0)
     {
         foreach (var p in participants)
         {
             RegisterCombatant(p);
         }
+        // Seed can be used to initialize determinstic RNG for this encounter
     }
 
     // Legacy / Convenience

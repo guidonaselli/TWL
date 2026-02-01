@@ -45,6 +45,7 @@ public class ServerCharacter : ServerCombatant
 
     public ICollection<int> KnownSkills => SkillMastery.Keys;
     public int Level { get; private set; } = 1;
+    public void SetLevel(int level) => Level = level; // For mobs
     public int ExpToNextLevel { get; private set; } = 100;
     public int StatPoints { get; private set; } = 0;
 

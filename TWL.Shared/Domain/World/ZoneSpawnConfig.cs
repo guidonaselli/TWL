@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace TWL.Server.Domain.World;
+namespace TWL.Shared.Domain.World;
 
 public class ZoneSpawnConfig
 {
