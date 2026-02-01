@@ -766,5 +766,151 @@
     "FlagsSet": [
       "VEHICLE_RAFT_UNLOCKED"
     ]
+  },
+  {
+    "QuestId": 2010,
+    "Title": "A Worried Wife",
+    "Description": "Maria is worried about her husband who went missing in the jungle.",
+    "Requirements": [
+      1104
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Maria",
+        "RequiredCount": 1,
+        "Description": "Talk to Maria in Puerto Roca."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2011,
+    "Title": "Searching the Jungle",
+    "Description": "Look for signs of the missing merchant in the jungle.",
+    "Requirements": [
+      2010
+    ],
+    "Objectives": [
+      {
+        "Type": "Explore",
+        "TargetName": "Jungle Clearing",
+        "RequiredCount": 1,
+        "Description": "Explore the Jungle Clearing."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2012,
+    "Title": "The Merchant Found",
+    "Description": "You found the merchant, but he is injured and his goods are stolen.",
+    "Requirements": [
+      2011
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Injured Merchant",
+        "RequiredCount": 1,
+        "Description": "Talk to the Injured Merchant."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2013,
+    "Title": "Recover the Goods",
+    "Description": "Defeat the bandits and recover the stolen goods. (Option A)",
+    "Requirements": [
+      2012
+    ],
+    "MutualExclusionGroup": "MerchantRescue",
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Stolen Goods",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Stolen Goods from Bandits.",
+        "DataId": 7601
+      }
+    ],
+    "FlagsSet": [
+      "MERCHANT_SAVED"
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 500,
+      "Items": [
+        {
+          "ItemId": 3005,
+          "Quantity": 5
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 2014,
+    "Title": "Safety First",
+    "Description": "Escort the merchant back to safety immediately. (Option B)",
+    "Requirements": [
+      2012
+    ],
+    "MutualExclusionGroup": "MerchantRescue",
+    "Objectives": [
+      {
+        "Type": "Escort",
+        "TargetName": "Injured Merchant",
+        "RequiredCount": 1,
+        "Description": "Escort the merchant to Puerto Roca Gate."
+      }
+    ],
+    "FlagsSet": [
+      "MERCHANT_SAVED"
+    ],
+    "Rewards": {
+      "Exp": 500,
+      "Gold": 100,
+      "Items": [
+        {
+          "ItemId": 4001,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 2015,
+    "Title": "The Merchant's Gratitude",
+    "Description": "Tell Maria that her husband is safe.",
+    "Requirements": [],
+    "RequiredFlags": [
+      "MERCHANT_SAVED"
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Maria",
+        "RequiredCount": 1,
+        "Description": "Return to Maria."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 200,
+      "Items": []
+    }
   }
 ]

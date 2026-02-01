@@ -78,6 +78,7 @@ public class ServerWorker : IHostedService
 
         _log.LogInformation("Loading Maps...");
         _worldTriggerService.RegisterHandler(new MapTransitionHandler());
+        _worldTriggerService.RegisterHandler(new QuestTriggerHandler(_playerService));
 
         if (Directory.Exists("Content/Maps"))
         {
