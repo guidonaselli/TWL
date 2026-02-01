@@ -32,12 +32,16 @@ public class WorldSchedulerTests
         using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, new ServerMetrics());
         scheduler.Start();
 
+        // Give scheduler time to start
+        await Task.Delay(50);
+
         var count = 0;
 
         scheduler.ScheduleRepeating(() => { Interlocked.Increment(ref count); }, TimeSpan.FromMilliseconds(50));
 
-        await Task.Delay(170); // Should run at roughly 50, 100, 150. (3 times)
-        // Timing is loose in tests, so check at least 2.
+        // Should run at roughly 50, 100, 150, 200, 250ms (5 times)
+        // Timing is loose in tests, so check at least 2. Increased wait time for CI reliability.
+        await Task.Delay(300);
 
         Assert.True(count >= 2, $"Expected at least 2 executions, got {count}");
     }

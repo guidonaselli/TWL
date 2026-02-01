@@ -69,17 +69,18 @@ public class EconomyLedgerBenchmark
 
             var sw = Stopwatch.StartNew();
 
-            var manager = new EconomyManager(ledgerFile);
+            using (var manager = new EconomyManager(ledgerFile))
+            {
+                sw.Stop();
+                var finalMemory = GC.GetAllocatedBytesForCurrentThread();
+                var allocated = finalMemory - initialMemory;
 
-            sw.Stop();
-            var finalMemory = GC.GetAllocatedBytesForCurrentThread();
-            var allocated = finalMemory - initialMemory;
+                _output.WriteLine($"Entries: {entries}");
+                _output.WriteLine($"Time: {sw.ElapsedMilliseconds} ms");
+                _output.WriteLine($"Allocated: {allocated / 1024.0 / 1024.0:F2} MB");
 
-            _output.WriteLine($"Entries: {entries}");
-            _output.WriteLine($"Time: {sw.ElapsedMilliseconds} ms");
-            _output.WriteLine($"Allocated: {allocated / 1024.0 / 1024.0:F2} MB");
-
-            Assert.True(manager.Metrics.ReplayedTransactionCount > 0);
+                Assert.True(manager.Metrics.ReplayedTransactionCount > 0);
+            }
         }
         finally
         {
