@@ -46,15 +46,6 @@ public class MockPlayerRepository : IPlayerRepository
 
     public PlayerSaveData? Load(int userId) => null;
 
-    public async Task SaveAsync(int userId, PlayerSaveData data)
-    {
-        if (ShouldThrow) throw new Exception("Simulated disk failure");
-
-        // Mimic I/O delay
-        await Task.Delay(5);
-        SaveCallCount++;
-    }
-
     public Task<PlayerSaveData?> LoadAsync(int userId) => Task.FromResult<PlayerSaveData?>(null);
 }
 
