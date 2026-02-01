@@ -70,13 +70,6 @@ public class PlayerService
 
     public async Task FlushAllDirtyAsync()
     {
-        // Wrapper for synchronous calls (e.g. from Stop)
-        // We block here to ensure completion
-        FlushAllDirtyAsync().GetAwaiter().GetResult();
-    }
-
-    public async Task FlushAllDirtyAsync()
-    {
         var flushId = Guid.NewGuid().ToString();
         var sw = Stopwatch.StartNew();
 
