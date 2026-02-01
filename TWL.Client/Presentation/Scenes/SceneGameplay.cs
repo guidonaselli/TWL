@@ -235,19 +235,30 @@ public sealed class SceneGameplay : SceneBase, IPayloadReceiver
     {
         _mapRenderer.Draw(Camera.GetViewMatrix());
 
+        var viewMatrix = Camera.GetViewMatrix();
+
         if (_playerView.HasLayeredSprites && _playerView.PaletteEffect != null)
         {
+            // Draw body with palette effect
             sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null,
-                _playerView.PaletteEffect);
-            _playerView.DrawLayeredBase(sb);
+                _playerView.PaletteEffect, viewMatrix);
+            _playerView.DrawLayeredBody(sb);
             sb.End();
-            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
+
+            // Draw hair with palette effect (separate batch to ensure shader parameters update)
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null,
+                _playerView.PaletteEffect, viewMatrix);
+            _playerView.DrawLayeredHair(sb);
+            sb.End();
+
+            // Draw equipment without palette effect
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, viewMatrix);
             _playerView.DrawEquipment(sb);
             sb.End();
         }
         else
         {
-            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null, null, viewMatrix);
             _playerView.Draw(sb);
             sb.End();
         }

@@ -8,16 +8,7 @@
 #endif
 
 // Base grayscale texture
-texture Texture;
-sampler TextureSampler = sampler_state
-{
-    Texture = <Texture>;
-    MinFilter = Point;
-    MagFilter = Point;
-    MipFilter = Point;
-    AddressU = Clamp;
-    AddressV = Clamp;
-};
+sampler TextureSampler : register(s0);
 
 // Map texture with color IDs
 texture MapTexture;
@@ -31,58 +22,65 @@ sampler MapSampler = sampler_state
     AddressV = Clamp;
 };
 
-// Color replacement values (with sensible defaults)
-float4 ColorPiel = float4(0.992, 0.737, 0.706, 1.0);   // Peach skin (#FDBCB4)
-float4 ColorRopa = float4(0.420, 0.447, 0.502, 1.0);   // Gray clothes (#6B7280)
-float4 ColorPelo = float4(1.0, 0.6, 0.2, 1.0);         // Orange hair (#FF9933)
-float4 ColorExtra = float4(0.290, 0.565, 0.886, 1.0);  // Blue eyes (#4A90E2)
+// Debug mode: 0 = normal, 1 = show map only, 2 = show base only
+float DebugMode = 0;
+
+// Color replacement values
+float4 ColorPiel = float4(0.992, 0.737, 0.706, 1.0);
+float4 ColorRopa = float4(0.420, 0.447, 0.502, 1.0);
+float4 ColorPelo = float4(1.0, 0.6, 0.2, 1.0);
+float4 ColorExtra = float4(0.290, 0.565, 0.886, 1.0);
 float HairMinLum = 0.35;
 
 float4 MainPS(float4 position : SV_POSITION, float4 color : COLOR0, float2 texCoord : TEXCOORD0) : COLOR
 {
-    // Read the grayscale base texture
     float4 grayPixel = tex2D(TextureSampler, texCoord);
+    float4 mapPixel = tex2D(MapSampler, texCoord);
+
+    // Debug mode 1: Show map texture directly
+    if (DebugMode > 0.5 && DebugMode < 1.5)
+    {
+        return mapPixel;
+    }
+
+    // Debug mode 2: Show base texture directly
+    if (DebugMode > 1.5)
+    {
+        return grayPixel;
+    }
 
     // Early exit if transparent
     if (grayPixel.a < 0.01)
         return grayPixel;
 
-    // Read the color map at the same coordinate
-    float4 mapPixel = tex2D(MapSampler, texCoord);
-
     // If map is transparent, return base as-is
     if (mapPixel.a < 0.01)
         return grayPixel;
 
-    // Calculate luminance from grayscale base to preserve shading
+    // Calculate luminance
     float lum = dot(grayPixel.rgb, float3(0.299, 0.587, 0.114));
 
-    // Default to keeping the gray color
+    // Default to gray
     float3 targetColor = grayPixel.rgb;
 
-    // Detect which region this pixel belongs to based on map color
-    // Very permissive thresholds to handle near-pure colors from image compression
-    // Your maps use colors like (251,3,1) instead of (255,0,0)
-
-    // YELLOW (R+G) = Extra/Eyes (check this first since it has two channels high)
+    // YELLOW first (two channels high)
     if (mapPixel.r > 0.85 && mapPixel.g > 0.85 && mapPixel.b < 0.1)
     {
         targetColor = ColorExtra.rgb * lum;
     }
-    // RED = Skin (red is dominant, others are very low)
+    // RED = Skin
     else if (mapPixel.r > 0.85 && mapPixel.g < 0.1 && mapPixel.b < 0.1)
     {
         targetColor = ColorPiel.rgb * lum;
     }
-    // GREEN = Clothing (green is dominant, others are very low)
+    // GREEN = Clothing
     else if (mapPixel.g > 0.85 && mapPixel.r < 0.1 && mapPixel.b < 0.1)
     {
         targetColor = ColorRopa.rgb * lum;
     }
-    // BLUE = Hair (blue is dominant, others are very low)
+    // BLUE = Hair
     else if (mapPixel.b > 0.85 && mapPixel.r < 0.1 && mapPixel.g < 0.1)
     {
-        // Apply minimum luminance for hair to prevent it from being too dark
         lum = max(lum, HairMinLum);
         targetColor = ColorPelo.rgb * lum;
     }

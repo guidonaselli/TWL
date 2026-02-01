@@ -13,6 +13,8 @@ namespace TWL.Client.Presentation.Views;
 
 public class PlayerView : IDisposable
 {
+    private static readonly Vector2 BodyOriginDefault = new(250f, 500f);
+    private static readonly Vector2 HairOriginDefault = new(250f, 500f);
     // Cache for current frame textures to avoid dictionary lookups/allocations in Draw
     private readonly List<Texture2D> _currentFrameOverlays = new();
 
@@ -31,6 +33,12 @@ public class PlayerView : IDisposable
     private Texture2D _hairMapUp;
     private Texture2D _hairBaseSide;
     private Texture2D _hairMapSide;
+    private Vector2 _bodyOriginDown = BodyOriginDefault;
+    private Vector2 _bodyOriginUp = BodyOriginDefault;
+    private Vector2 _bodyOriginSide = BodyOriginDefault;
+    private Vector2 _hairOriginDown = HairOriginDefault;
+    private Vector2 _hairOriginUp = HairOriginDefault;
+    private Vector2 _hairOriginSide = HairOriginDefault;
     private Texture2D _down, _up, _left, _right;
     private FacingDirection _lastDirection = FacingDirection.Down; // Force update on first frame
     private Effect _paletteEffect;
@@ -47,6 +55,8 @@ public class PlayerView : IDisposable
         _down = _up = _left = _right = null;
         _bodyBaseDown = _bodyMapDown = _bodyBaseUp = _bodyMapUp = _bodyBaseSide = _bodyMapSide = null;
         _hairBaseDown = _hairMapDown = _hairBaseUp = _hairMapUp = _hairBaseSide = _hairMapSide = null;
+        _bodyOriginDown = _bodyOriginUp = _bodyOriginSide = BodyOriginDefault;
+        _hairOriginDown = _hairOriginUp = _hairOriginSide = HairOriginDefault;
         _paletteEffect = null;
         _equipmentTextures.Clear();
         _currentFrameOverlays.Clear();
@@ -75,10 +85,10 @@ public class PlayerView : IDisposable
 
         try
         {
-            _bodyBaseDown = content.Load<Texture2D>($"{basePath}/cuerpo_base");
-            _bodyMapDown = content.Load<Texture2D>($"{basePath}/cuerpo_mapa");
-            _hairBaseDown = content.Load<Texture2D>($"{basePath}/pelo_base");
-            _hairMapDown = content.Load<Texture2D>($"{basePath}/pelo_mapa");
+            _bodyBaseDown = content.Load<Texture2D>($"{basePath}/abajo_cuerpo_base");
+            _bodyMapDown = content.Load<Texture2D>($"{basePath}/abajo_cuerpo_mapa");
+            _hairBaseDown = content.Load<Texture2D>($"{basePath}/abajo_pelo_base");
+            _hairMapDown = content.Load<Texture2D>($"{basePath}/abajo_pelo_mapa");
 
             _bodyBaseUp = content.Load<Texture2D>($"{basePath}/arriba_cuerpo_base");
             _bodyMapUp = content.Load<Texture2D>($"{basePath}/arriba_cuerpo_mapa");
@@ -91,11 +101,21 @@ public class PlayerView : IDisposable
             _hairMapSide = content.Load<Texture2D>($"{basePath}/lateral_pelo_mapa");
 
             _paletteEffect = content.Load<Effect>("Effects/PaletteSwap");
+
+            _bodyOriginDown = GetCanvasOrigin(_bodyBaseDown);
+            _bodyOriginUp = GetCanvasOrigin(_bodyBaseUp);
+            _bodyOriginSide = GetCanvasOrigin(_bodyBaseSide);
+
+            _hairOriginDown = GetCanvasOrigin(_hairBaseDown);
+            _hairOriginUp = GetCanvasOrigin(_hairBaseUp);
+            _hairOriginSide = GetCanvasOrigin(_hairBaseSide);
         }
         catch
         {
             _bodyBaseDown = _bodyMapDown = _bodyBaseUp = _bodyMapUp = _bodyBaseSide = _bodyMapSide = null;
             _hairBaseDown = _hairMapDown = _hairBaseUp = _hairMapUp = _hairBaseSide = _hairMapSide = null;
+            _bodyOriginDown = _bodyOriginUp = _bodyOriginSide = BodyOriginDefault;
+            _hairOriginDown = _hairOriginUp = _hairOriginSide = HairOriginDefault;
             _paletteEffect = null;
         }
 
@@ -202,7 +222,37 @@ public class PlayerView : IDisposable
         DrawEquipment(sb);
     }
 
-    public void DrawLayeredBase(SpriteBatch sb)
+    public void DrawLayeredBody(SpriteBatch sb)
+    {
+        if (!HasLayeredSprites)
+        {
+            System.Console.WriteLine("[DEBUG] No layered sprites available");
+            return;
+        }
+
+        var colors = GetClientColors();
+        var (bodyBase, bodyMap, _, _, effects, bodyOrigin, _) = GetLayeredSet();
+
+        if (bodyBase == null || bodyMap == null)
+        {
+            System.Console.WriteLine($"[DEBUG] Missing textures - Body Base: {bodyBase != null}, Body Map: {bodyMap != null}");
+            return;
+        }
+
+        System.Console.WriteLine($"[DEBUG BODY] Direction: {_player.CurrentDirection}");
+        System.Console.WriteLine($"[DEBUG BODY] Skin: {colors.Skin}, Cloth: {colors.Cloth}, Eye: {colors.Eye}");
+        System.Console.WriteLine($"[DEBUG BODY] Body Base: {bodyBase.Width}x{bodyBase.Height}, Map: {bodyMap.Width}x{bodyMap.Height}");
+
+        // Configure shader for body
+        _paletteEffect.Parameters["MapTexture"]?.SetValue(bodyMap);
+        _paletteEffect.Parameters["ColorPiel"]?.SetValue(colors.Skin.ToVector4());
+        _paletteEffect.Parameters["ColorRopa"]?.SetValue(colors.Cloth.ToVector4());
+        _paletteEffect.Parameters["ColorExtra"]?.SetValue(colors.Eye.ToVector4());
+
+        sb.Draw(bodyBase, _player.Position, null, Color.White, 0f, bodyOrigin, 1f, effects, 0f);
+    }
+
+    public void DrawLayeredHair(SpriteBatch sb)
     {
         if (!HasLayeredSprites)
         {
@@ -210,25 +260,19 @@ public class PlayerView : IDisposable
         }
 
         var colors = GetClientColors();
+        var (_, _, hairBase, hairMap, effects, _, hairOrigin) = GetLayeredSet();
 
-        var (bodyBase, bodyMap, hairBase, hairMap, effects) = GetLayeredSet();
-
-        if (bodyBase == null || bodyMap == null || hairBase == null || hairMap == null)
+        if (hairBase == null || hairMap == null)
         {
             return;
         }
 
-        _paletteEffect.Parameters["MapTexture"]?.SetValue(bodyMap);
-        _paletteEffect.Parameters["ColorPiel"]?.SetValue(colors.Skin.ToVector4());
-        _paletteEffect.Parameters["ColorRopa"]?.SetValue(colors.Cloth.ToVector4());
-        _paletteEffect.Parameters["ColorPelo"]?.SetValue(colors.Hair.ToVector4());
-
-        sb.Draw(bodyBase, _player.Position, null, Color.White, 0f, Vector2.Zero, 1f, effects, 0f);
-
+        // Configure shader for hair
         _paletteEffect.Parameters["MapTexture"]?.SetValue(hairMap);
         _paletteEffect.Parameters["ColorPelo"]?.SetValue(colors.Hair.ToVector4());
+        _paletteEffect.Parameters["HairMinLum"]?.SetValue(0.45f);
 
-        sb.Draw(hairBase, _player.Position, null, Color.White, 0f, Vector2.Zero, 1f, effects, 0f);
+        sb.Draw(hairBase, _player.Position, null, Color.White, 0f, hairOrigin, 1f, effects, 0f);
     }
 
     public void DrawEquipment(SpriteBatch sb)
@@ -261,19 +305,46 @@ public class PlayerView : IDisposable
         }
     }
 
-    private (Texture2D BodyBase, Texture2D BodyMap, Texture2D HairBase, Texture2D HairMap, SpriteEffects Effects)
+    private (Texture2D BodyBase, Texture2D BodyMap, Texture2D HairBase, Texture2D HairMap, SpriteEffects Effects,
+        Vector2 BodyOrigin, Vector2 HairOrigin)
         GetLayeredSet()
     {
         switch (_player.CurrentDirection)
         {
             case FacingDirection.Up:
-                return (_bodyBaseUp, _bodyMapUp, _hairBaseUp, _hairMapUp, SpriteEffects.None);
+                return (_bodyBaseUp, _bodyMapUp, _hairBaseUp, _hairMapUp, SpriteEffects.None,
+                    _bodyOriginUp, _hairOriginUp);
             case FacingDirection.Left:
-                return (_bodyBaseSide, _bodyMapSide, _hairBaseSide, _hairMapSide, SpriteEffects.FlipHorizontally);
+                return (_bodyBaseSide, _bodyMapSide, _hairBaseSide, _hairMapSide, SpriteEffects.FlipHorizontally,
+                    FlipOrigin(_bodyBaseSide, _bodyOriginSide),
+                    FlipOrigin(_hairBaseSide, _hairOriginSide));
             case FacingDirection.Right:
-                return (_bodyBaseSide, _bodyMapSide, _hairBaseSide, _hairMapSide, SpriteEffects.None);
+                return (_bodyBaseSide, _bodyMapSide, _hairBaseSide, _hairMapSide, SpriteEffects.None,
+                    _bodyOriginSide, _hairOriginSide);
             default:
-                return (_bodyBaseDown, _bodyMapDown, _hairBaseDown, _hairMapDown, SpriteEffects.None);
+                return (_bodyBaseDown, _bodyMapDown, _hairBaseDown, _hairMapDown, SpriteEffects.None,
+                    _bodyOriginDown, _hairOriginDown);
         }
     }
+
+    private static Vector2 GetCanvasOrigin(Texture2D tex)
+    {
+        if (tex == null)
+        {
+            return BodyOriginDefault;
+        }
+        return new Vector2(tex.Width / 2f, tex.Height);
+    }
+
+    private static Vector2 FlipOrigin(Texture2D tex, Vector2 origin)
+    {
+        if (tex == null)
+        {
+            return Vector2.Zero;
+        }
+
+        return new Vector2(tex.Width - origin.X, origin.Y);
+    }
+
+
 }

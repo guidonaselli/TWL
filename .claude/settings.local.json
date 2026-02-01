@@ -14,7 +14,14 @@
       "Bash(git restore:*)",
       "Bash(git commit:*)",
       "Bash(dotnet test:*)",
-      "Bash(git stash:*)"
+      "Bash(git stash:*)",
+      "Bash(tasklist:*)",
+      "Bash(taskkill:*)",
+      "Bash(python:*)",
+      "Bash(for f in *.png)",
+      "Bash(do if [[ ! $f == *.backup ]])",
+      "Bash(then identify \"$f\")",
+      "Bash(ls:*)"
     ]
   }
 }
