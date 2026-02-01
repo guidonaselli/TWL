@@ -136,6 +136,6 @@ public class SpecialSkillTests
 
         // 4. Verify
         Assert.NotNull(result);
-        Assert.Contains(result.AddedEffects, e => e.Tag == SkillEffectTag.Seal);
+        Assert.Contains(result[0].AddedEffects, e => e.Tag == SkillEffectTag.Seal);
     }
 }

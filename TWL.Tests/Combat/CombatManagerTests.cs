@@ -77,7 +77,8 @@ public class CombatManagerTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(200, result.Damage);
+        Assert.Single(result);
+        Assert.Equal(200, result[0].Damage);
     }
 
     [Fact]
@@ -102,7 +103,8 @@ public class CombatManagerTests
         var result = manager.UseSkill(request);
 
         // Assert
-        Assert.Equal(190, result.Damage);
+        Assert.Single(result);
+        Assert.Equal(190, result[0].Damage);
     }
 
     [Fact]
@@ -127,6 +129,7 @@ public class CombatManagerTests
         var result = manager.UseSkill(request);
 
         // Assert
-        Assert.Equal(210, result.Damage);
+        Assert.Single(result);
+        Assert.Equal(210, result[0].Damage);
     }
 }

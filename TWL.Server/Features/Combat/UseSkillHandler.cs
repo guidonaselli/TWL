@@ -4,7 +4,7 @@ using TWL.Shared.Domain.Requests;
 
 namespace TWL.Server.Features.Combat;
 
-public class UseSkillHandler : ICommandHandler<UseSkillCommand, CombatResult>
+public class UseSkillHandler : ICommandHandler<UseSkillCommand, List<CombatResult>>
 {
     private readonly CombatManager _combatManager;
 
@@ -13,7 +13,7 @@ public class UseSkillHandler : ICommandHandler<UseSkillCommand, CombatResult>
         _combatManager = combatManager;
     }
 
-    public Task<CombatResult> Handle(UseSkillCommand command, CancellationToken cancellationToken)
+    public Task<List<CombatResult>> Handle(UseSkillCommand command, CancellationToken cancellationToken)
     {
         var result = _combatManager.UseSkill(command.Request);
         return Task.FromResult(result);

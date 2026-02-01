@@ -3,7 +3,7 @@ using TWL.Shared.Domain.Requests;
 
 namespace TWL.Server.Features.Combat;
 
-public class UseSkillCommand : ICommand<CombatResult>
+public class UseSkillCommand : ICommand<List<CombatResult>>
 {
     public UseSkillCommand(UseSkillRequest request)
     {

@@ -122,7 +122,7 @@ public class SkillRulesTests
 
         // Assert
         Assert.NotNull(result);
-        var applied = result.AddedEffects[0];
+        var applied = result[0].AddedEffects[0];
         // Partial: Duration / 2 -> 4/2 = 2. Value * 0.5 -> 50 * 0.5 = 25.
         Assert.Equal(2, applied.TurnsRemaining);
         Assert.Equal(25, applied.Value);
@@ -173,6 +173,6 @@ public class SkillRulesTests
         var result = manager.UseSkill(new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = skillId });
 
         // Assert
-        Assert.Empty(result.AddedEffects); // Should be blocked
+        Assert.Empty(result[0].AddedEffects); // Should be blocked
     }
 }

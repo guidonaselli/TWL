@@ -74,8 +74,8 @@ public class SkillMechanicsTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Single(result.AddedEffects);
-        var effect = result.AddedEffects[0];
+        Assert.Single(result[0].AddedEffects);
+        var effect = result[0].AddedEffects[0];
         Assert.Equal(2, effect.TurnsRemaining); // Halved from 4
     }
 
@@ -115,7 +115,7 @@ public class SkillMechanicsTests
 
         // Assert
         Assert.NotNull(result);
-        Assert.Empty(result.AddedEffects);
+        Assert.Empty(result[0].AddedEffects);
     }
 
     [Fact]
@@ -137,7 +137,7 @@ public class SkillMechanicsTests
 
         // Act 2: Second Use (Should fail)
         var result2 = _combatManager.UseSkill(new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 101 });
-        Assert.Null(result2);
+        Assert.Empty(result2);
 
         // Act 3: Tick
         attacker.TickCooldowns(); // 1 turn left

@@ -85,12 +85,13 @@ public class QuestCombatIntegrationTests
         var result1 = _combatManager.UseSkill(request1);
 
         Assert.NotNull(result1);
-        Assert.True(result1.NewTargetHp <= 0, "Mob should be dead");
+        Assert.Single(result1);
+        Assert.True(result1[0].NewTargetHp <= 0, "Mob should be dead");
 
         // Simulate ClientSession logic
-        if (result1.NewTargetHp <= 0)
+        if (result1[0].NewTargetHp <= 0)
         {
-            var target = _combatManager.GetCharacter(result1.TargetId);
+            var target = _combatManager.GetCharacter(result1[0].TargetId);
             Assert.NotNull(target);
             Assert.Equal("WeakCrab", target.Name);
 
@@ -105,11 +106,12 @@ public class QuestCombatIntegrationTests
         var request2 = new UseSkillRequest { PlayerId = 1, TargetId = 3, SkillId = 999 };
         var result2 = _combatManager.UseSkill(request2);
 
-        Assert.True(result2.NewTargetHp <= 0);
+        Assert.Single(result2);
+        Assert.True(result2[0].NewTargetHp <= 0);
 
-        if (result2.NewTargetHp <= 0)
+        if (result2[0].NewTargetHp <= 0)
         {
-            var target = _combatManager.GetCharacter(result2.TargetId);
+            var target = _combatManager.GetCharacter(result2[0].TargetId);
             var updated = _playerQuests.TryProgress("Kill", target.Name);
             Assert.Single(updated);
         }
@@ -132,14 +134,14 @@ public class QuestCombatIntegrationTests
         var request = new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 999 };
         var result = _combatManager.UseSkill(request);
 
-        Assert.True(result.NewTargetHp > 0);
+        Assert.True(result[0].NewTargetHp > 0);
 
         // Simulate ClientSession Logic
         var updated = new List<int>();
-        if (result.NewTargetHp <= 0)
+        if (result[0].NewTargetHp <= 0)
         {
             // Should not reach here
-            var target = _combatManager.GetCharacter(result.TargetId);
+            var target = _combatManager.GetCharacter(result[0].TargetId);
             updated = _playerQuests.TryProgress("Kill", target.Name);
         }
 
