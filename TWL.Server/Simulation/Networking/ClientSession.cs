@@ -190,7 +190,7 @@ public class ClientSession
         switch (msg.Op)
         {
             case Opcode.LoginRequest:
-                await HandleLoginAsync(msg.JsonPayload);
+                await HandleLoginAsync(msg.JsonPayload, traceId);
                 break;
             case Opcode.MoveRequest:
                 await HandleMoveAsync(msg.JsonPayload);
@@ -202,19 +202,19 @@ public class ClientSession
                 await HandleClaimRewardAsync(msg.JsonPayload);
                 break;
             case Opcode.InteractRequest:
-                await HandleInteractAsync(msg.JsonPayload);
+                await HandleInteractAsync(msg.JsonPayload, traceId);
                 break;
             case Opcode.AttackRequest:
                 await HandleAttackAsync(msg.JsonPayload);
                 break;
             case Opcode.PurchaseGemsIntent:
-                await HandlePurchaseGemsIntentAsync(msg.JsonPayload);
+                await HandlePurchaseGemsIntentAsync(msg.JsonPayload, traceId);
                 break;
             case Opcode.PurchaseGemsVerify:
-                await HandlePurchaseGemsVerifyAsync(msg.JsonPayload);
+                await HandlePurchaseGemsVerifyAsync(msg.JsonPayload, traceId);
                 break;
             case Opcode.BuyShopItemRequest:
-                await HandleBuyShopItemAsync(msg.JsonPayload);
+                await HandleBuyShopItemAsync(msg.JsonPayload, traceId);
                 break;
             case Opcode.PetActionRequest:
                 await HandlePetActionAsync(msg.JsonPayload);
@@ -259,7 +259,7 @@ public class ClientSession
         });
     }
 
-    private async Task HandlePurchaseGemsIntentAsync(string payload)
+    private async Task HandlePurchaseGemsIntentAsync(string payload, string traceId)
     {
         if (UserId <= 0)
         {
@@ -271,18 +271,18 @@ public class ClientSession
         // Validation
         if (request == null || string.IsNullOrEmpty(request.ProductId))
         {
-            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing ProductId");
+            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing ProductId", traceId);
             return;
         }
 
         if (request.ProductId.Length > 20 || !request.ProductId.StartsWith("gems_"))
         {
             SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId,
-                $"Invalid ProductId format: {request.ProductId}");
+                $"Invalid ProductId format: {request.ProductId}", traceId);
             return;
         }
 
-        var result = _economyManager.InitiatePurchase(UserId, request.ProductId);
+        var result = _economyManager.InitiatePurchase(UserId, request.ProductId, traceId);
         if (result == null)
         {
             return;
@@ -292,7 +292,7 @@ public class ClientSession
             { Op = Opcode.PurchaseGemsIntent, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
     }
 
-    private async Task HandlePurchaseGemsVerifyAsync(string payload)
+    private async Task HandlePurchaseGemsVerifyAsync(string payload, string traceId)
     {
         if (UserId <= 0 || Character == null)
         {
@@ -304,23 +304,23 @@ public class ClientSession
         // Validation
         if (request == null || string.IsNullOrEmpty(request.OrderId))
         {
-            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing OrderId");
+            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing OrderId", traceId);
             return;
         }
 
         if (string.IsNullOrEmpty(request.ReceiptToken))
         {
-            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing ReceiptToken");
+            SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId, "Missing ReceiptToken", traceId);
             return;
         }
 
-        var result = _economyManager.VerifyPurchase(UserId, request.OrderId, request.ReceiptToken, Character);
+        var result = _economyManager.VerifyPurchase(UserId, request.OrderId, request.ReceiptToken, Character, traceId);
 
         await SendAsync(new NetMessage
             { Op = Opcode.PurchaseGemsVerify, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
     }
 
-    private async Task HandleBuyShopItemAsync(string payload)
+    private async Task HandleBuyShopItemAsync(string payload, string traceId)
     {
         if (UserId <= 0 || Character == null)
         {
@@ -337,11 +337,11 @@ public class ClientSession
         if (request.Quantity <= 0 || request.Quantity > 999)
         {
             SecurityLogger.LogSecurityEvent("InvalidEconomyInput", UserId,
-                $"Invalid Shop Quantity: {request.Quantity}");
+                $"Invalid Shop Quantity: {request.Quantity}", traceId);
             return;
         }
 
-        var result = _economyManager.BuyShopItem(Character, request.ShopItemId, request.Quantity);
+        var result = _economyManager.BuyShopItem(Character, request.ShopItemId, request.Quantity, null, traceId);
 
         await SendAsync(new NetMessage
             { Op = Opcode.BuyShopItemRequest, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
@@ -379,7 +379,7 @@ public class ClientSession
         }
     }
 
-    private async Task HandleInteractAsync(string payload)
+    private async Task HandleInteractAsync(string payload, string traceId)
     {
         if (string.IsNullOrEmpty(payload) || payload.Length > 256)
         {
@@ -403,7 +403,7 @@ public class ClientSession
 
         if (dto.TargetName.Length > 64)
         {
-            SecurityLogger.LogSecurityEvent("InvalidInput", UserId, "TargetName too long");
+            SecurityLogger.LogSecurityEvent("InvalidInput", UserId, "TargetName too long", traceId);
             return;
         }
 
@@ -514,7 +514,7 @@ public class ClientSession
         });
     }
 
-    private async Task HandleLoginAsync(string payload)
+    private async Task HandleLoginAsync(string payload, string traceId)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
         if (string.IsNullOrEmpty(payload) || payload.Length > 512)
