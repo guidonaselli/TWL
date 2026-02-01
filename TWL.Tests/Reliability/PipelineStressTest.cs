@@ -40,11 +40,12 @@ public class PipelineStressTest
         var mockWorldTrigger = new Mock<IWorldTriggerService>();
         var spawnManager = new SpawnManager(new MonsterManager(), combatManager);
 
-        var port = 9124; // Different port
-        var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
+        // Dynamic port assignment: use port 0 to let OS assign a free port
+        var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
             playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object, spawnManager);
 
         server.Start();
+        var port = server.Port;
 
         try
         {

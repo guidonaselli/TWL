@@ -26,6 +26,8 @@ public class NetworkServer
     private CancellationTokenSource _cts;
     private bool _running;
 
+    public int Port => ((IPEndPoint)_listener.LocalEndpoint).Port;
+
     public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
         IEconomyService economyManager, ServerMetrics metrics, PetService petService,

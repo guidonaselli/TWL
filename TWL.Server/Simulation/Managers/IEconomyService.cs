@@ -11,7 +11,7 @@ public interface IEconomyService
         ServerCharacter character);
 
     EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity,
-        string operationId = null);
+        string? operationId = null);
 
     EconomyOperationResultDTO GiftShopItem(ServerCharacter giver, ServerCharacter receiver, int shopItemId,
         int quantity, string operationId);
