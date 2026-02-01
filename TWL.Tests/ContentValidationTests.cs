@@ -309,11 +309,36 @@ public class ContentValidationTests
     public void ValidateTierBudgets()
     {
         var skills = LoadSkills();
-        var coreT1 = skills.Where(s => s.Family == SkillFamily.Core && s.Tier == 1).ToList();
 
+        // Tier 1 (Core): SP 5-20, Cooldown 0-2
+        var coreT1 = skills.Where(s => s.Family == SkillFamily.Core && s.Tier == 1).ToList();
         foreach (var skill in coreT1)
         {
-            Assert.InRange(skill.SpCost, 5, 20); // 5-20 SP Budget for T1
+            Assert.True(skill.SpCost >= 5 && skill.SpCost <= 20,
+                $"Skill {skill.SkillId} ({skill.Name}) Tier 1 Core violated SP Budget [5-20]. Value: {skill.SpCost}");
+            Assert.True(skill.Cooldown >= 0 && skill.Cooldown <= 2,
+                $"Skill {skill.SkillId} ({skill.Name}) Tier 1 Core violated CD Budget [0-2]. Value: {skill.Cooldown}");
+        }
+
+        // Tier 2 (Core): SP 15-40, Cooldown 1-3
+        var coreT2 = skills.Where(s => s.Family == SkillFamily.Core && s.Tier == 2).ToList();
+        foreach (var skill in coreT2)
+        {
+            Assert.True(skill.SpCost >= 15 && skill.SpCost <= 40,
+                $"Skill {skill.SkillId} ({skill.Name}) Tier 2 Core violated SP Budget [15-40]. Value: {skill.SpCost}");
+            Assert.True(skill.Cooldown >= 1 && skill.Cooldown <= 3,
+                $"Skill {skill.SkillId} ({skill.Name}) Tier 2 Core violated CD Budget [1-3]. Value: {skill.Cooldown}");
+        }
+
+        // Tier 3 (Core / Special): SP 30-100, Cooldown 3-6
+        var tier3 = skills.Where(s => s.Tier == 3 &&
+                                      (s.Family == SkillFamily.Core || s.Family == SkillFamily.Special)).ToList();
+        foreach (var skill in tier3)
+        {
+            Assert.True(skill.SpCost >= 30 && skill.SpCost <= 100,
+                $"Skill {skill.SkillId} ({skill.Name}) Tier 3 violated SP Budget [30-100]. Value: {skill.SpCost}");
+            Assert.True(skill.Cooldown >= 3 && skill.Cooldown <= 6,
+                $"Skill {skill.SkillId} ({skill.Name}) Tier 3 violated CD Budget [3-6]. Value: {skill.Cooldown}");
         }
     }
 
