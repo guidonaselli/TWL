@@ -22,8 +22,8 @@ public class PlayerService
     private readonly IPlayerRepository _repo;
     private readonly ServerMetrics _serverMetrics;
     private readonly ConcurrentDictionary<int, ClientSession> _sessions = new();
-    private CancellationTokenSource _cts;
-    private Task _backgroundTask;
+    private CancellationTokenSource? _cts;
+    private Task? _backgroundTask;
 
     public PlayerService(IPlayerRepository repo, ServerMetrics serverMetrics)
     {
@@ -45,7 +45,10 @@ public class PlayerService
         {
             _backgroundTask?.Wait(2000);
         }
-        catch { }
+        catch (Exception ex)
+        {
+            PersistenceLogger.LogEvent("ServiceStopError", ex.Message, errors: 1);
+        }
 
         FlushAllDirtyAsync().GetAwaiter().GetResult();
         PersistenceLogger.LogEvent("ServiceStop", "PlayerService stopped and flushed.");
@@ -93,6 +96,11 @@ public class PlayerService
 
         await Parallel.ForEachAsync(dirtySessions, parallelOptions, async (session, token) =>
         {
+            if (token.IsCancellationRequested)
+            {
+                return;
+            }
+
             var (success, error, userId) = await ProcessSessionSaveAsync(session);
             if (success)
             {
@@ -115,7 +123,7 @@ public class PlayerService
             Metrics.TotalSessionsSaved += savedCount;
             Metrics.TotalSaveErrors += errorCount;
 
-            _serverMetrics?.RecordPersistenceFlush(sw.ElapsedMilliseconds, errorCount);
+            _serverMetrics.RecordPersistenceFlush(sw.ElapsedMilliseconds, errorCount);
 
             PersistenceLogger.LogEvent("FlushComplete", "Batch flush finished", count: savedCount, durationMs: sw.ElapsedMilliseconds, errors: errorCount);
             PipelineLogger.LogStage(flushId, "PersistBatch", sw.Elapsed.TotalMilliseconds, $"Count:{savedCount} Errors:{errorCount}");
@@ -148,7 +156,7 @@ public class PlayerService
         _sessions.TryRemove(userId, out _);
     }
 
-    public virtual ClientSession? GetSession(int userId)
+    public ClientSession? GetSession(int userId)
     {
         _sessions.TryGetValue(userId, out var session);
         return session;
