@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.Globalization;
+using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
 using TWL.Server.Security;
@@ -20,6 +21,7 @@ public class EconomyManager : IEconomyService, IDisposable
         RegexOptions.Compiled);
 
     private readonly string _ledgerFile;
+    private readonly string _snapshotFile;
 
     private readonly object _ledgerLock = new();
     private readonly Channel<string> _logChannel;
@@ -47,7 +49,10 @@ public class EconomyManager : IEconomyService, IDisposable
 
     public EconomyManager(string ledgerFile = "economy_ledger.log")
     {
+        Metrics = new EconomyMetrics(this);
         _ledgerFile = ledgerFile;
+        _snapshotFile = Path.ChangeExtension(_ledgerFile, ".snapshot.json");
+
         // Ensure ledger exists
         if (!File.Exists(_ledgerFile))
         {
@@ -55,7 +60,8 @@ public class EconomyManager : IEconomyService, IDisposable
         }
         else
         {
-            ReplayLedger();
+            var snapshotTime = LoadSnapshot();
+            ReplayLedger(snapshotTime);
         }
 
         // Initialize Async Logging
@@ -63,10 +69,12 @@ public class EconomyManager : IEconomyService, IDisposable
         _logTask = Task.Run(ProcessLogQueue);
     }
 
-    public EconomyMetrics Metrics { get; } = new();
+    public EconomyMetrics Metrics { get; }
 
     public void Dispose()
     {
+        SaveSnapshot();
+
         try
         {
             _logChannel.Writer.TryComplete();
@@ -88,6 +96,8 @@ public class EconomyManager : IEconomyService, IDisposable
 
     public PurchaseGemsIntentResponseDTO InitiatePurchase(int userId, string productId, string? traceId = null)
     {
+        TryCleanup();
+
         if (!CheckRateLimit(userId))
         {
             return null;
@@ -191,6 +201,8 @@ public class EconomyManager : IEconomyService, IDisposable
     public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity,
         string? operationId, string? traceId = null)
     {
+        TryCleanup();
+
         if (!CheckRateLimit(character.Id))
         {
             SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id, "Reason:RateLimitExceeded", traceId);
@@ -495,7 +507,59 @@ public class EconomyManager : IEconomyService, IDisposable
         }
     }
 
-    private void ReplayLedger()
+    private DateTime? LoadSnapshot()
+    {
+        if (!File.Exists(_snapshotFile))
+        {
+            return null;
+        }
+
+        try
+        {
+            var json = File.ReadAllText(_snapshotFile);
+            var data = JsonSerializer.Deserialize<SnapshotData>(json);
+            if (data == null)
+            {
+                return null;
+            }
+
+            foreach (var tx in data.Transactions)
+            {
+                _transactions[tx.OrderId] = tx;
+            }
+
+            Console.WriteLine($"[EconomyManager] Loaded snapshot from {data.Timestamp:O} with {data.Transactions.Count} transactions.");
+            return data.Timestamp;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[EconomyManager] Failed to load snapshot: {ex.Message}");
+            return null;
+        }
+    }
+
+    private void SaveSnapshot()
+    {
+        try
+        {
+            var data = new SnapshotData
+            {
+                Timestamp = DateTime.UtcNow,
+                Transactions = _transactions.Values.ToList()
+            };
+            var json = JsonSerializer.Serialize(data, new JsonSerializerOptions { WriteIndented = true });
+            var tmp = _snapshotFile + ".tmp";
+            File.WriteAllText(tmp, json);
+            File.Move(tmp, _snapshotFile, true);
+            Console.WriteLine($"[EconomyManager] Saved snapshot with {_transactions.Count} transactions.");
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[EconomyManager] Failed to save snapshot: {ex.Message}");
+        }
+    }
+
+    private void ReplayLedger(DateTime? startTime = null)
     {
         var sw = Stopwatch.StartNew();
         var count = 0;
@@ -524,6 +588,11 @@ public class EconomyManager : IEconomyService, IDisposable
                 var timestamp = DateTime.TryParse(timestampStr, null, DateTimeStyles.RoundtripKind, out var ts)
                     ? ts
                     : DateTime.UtcNow;
+
+                if (startTime.HasValue && timestamp <= startTime.Value)
+                {
+                    continue;
+                }
 
                 string? orderId = null;
                 string? productId = null;
@@ -703,9 +772,24 @@ public class EconomyManager : IEconomyService, IDisposable
         public DateTime WindowStart { get; set; }
     }
 
+    private class SnapshotData
+    {
+        public DateTime Timestamp { get; set; }
+        public List<Transaction> Transactions { get; set; } = new();
+    }
+
     public class EconomyMetrics
     {
+        private readonly EconomyManager _manager;
+
+        public EconomyMetrics(EconomyManager manager)
+        {
+            _manager = manager;
+        }
+
         public int ReplayedTransactionCount { get; set; }
         public long ReplayDurationMs { get; set; }
+        public int ActiveTransactions => _manager._transactions.Count;
+        public int PendingTransactions => _manager._transactions.Values.Count(t => t.State == TransactionState.Pending);
     }
 }
