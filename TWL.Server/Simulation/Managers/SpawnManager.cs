@@ -4,6 +4,7 @@ using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.World;
 using TWL.Shared.Net.Network;
+using TWL.Shared.Services;
 
 namespace TWL.Server.Simulation.Managers;
 
@@ -20,13 +21,15 @@ public class SpawnManager
     private readonly Dictionary<int, ZoneSpawnConfig> _configs = new();
     private readonly MonsterManager _monsterManager;
     private readonly ConcurrentDictionary<int, float> _playerSteps = new(); // PlayerId -> Steps
+    private readonly IRandomService _random;
 
     private int _nextEncounterId = 1;
 
-    public SpawnManager(MonsterManager monsterManager, CombatManager combatManager)
+    public SpawnManager(MonsterManager monsterManager, CombatManager combatManager, IRandomService random)
     {
         _monsterManager = monsterManager;
         _combatManager = combatManager;
+        _random = random;
     }
 
     public void Load(string path)
@@ -96,7 +99,7 @@ public class SpawnManager
         _playerSteps[pid] = steps;
 
         // Check chance
-        if (Random.Shared.NextDouble() < config.StepChance)
+        if (_random.NextDouble() < config.StepChance)
         {
             // Reset steps
             _playerSteps[pid] = 0;
@@ -127,7 +130,7 @@ public class SpawnManager
 
         // 2. Create Encounter
         var encounterId = Interlocked.Increment(ref _nextEncounterId);
-        var seed = Random.Shared.Next();
+        var seed = _random.Next();
 
         var serverMobs = new List<ServerCharacter>();
         var mobIdCounter = -1000 * encounterId; // distinct negative IDs for mobs
@@ -219,7 +222,7 @@ public class SpawnManager
         }
 
         // Pick 1-3 based on weight
-        var count = Random.Shared.Next(1, 4);
+        var count = _random.Next(1, 4);
         for (var i = 0; i < count; i++)
         {
             var pick = SelectWeighted(candidates, totalWeight);
@@ -234,7 +237,7 @@ public class SpawnManager
 
     private MonsterDefinition? SelectWeighted(List<MonsterDefinition> candidates, int totalWeight)
     {
-        var roll = Random.Shared.Next(0, totalWeight);
+        var roll = _random.Next(0, totalWeight);
         var current = 0;
         foreach (var def in candidates)
         {

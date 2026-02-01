@@ -83,7 +83,7 @@ public class GameServer
         PetService = new PetService(PlayerService, PetManager, CombatManager, random);
         EconomyManager = new EconomyManager();
 
-        SpawnManager = new SpawnManager(MonsterManager, CombatManager);
+        SpawnManager = new SpawnManager(MonsterManager, CombatManager, random);
         SpawnManager.Load("Content/Data/spawns");
 
         // Init World System

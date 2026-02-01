@@ -20,6 +20,10 @@ public class MockRandomService : IRandomService
 
     public float NextFloat(float min, float max) => min + (max - min) * FixedFloat;
 
+    public double NextDouble() => FixedFloat;
+
+    public int Next() => FixedInt;
+
     public int Next(int min, int max)
     {
         if (FixedInt >= min && FixedInt < max)
