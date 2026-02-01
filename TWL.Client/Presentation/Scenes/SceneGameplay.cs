@@ -234,8 +234,27 @@ public sealed class SceneGameplay : SceneBase, IPayloadReceiver
     public override void Draw(SpriteBatch sb)
     {
         _mapRenderer.Draw(Camera.GetViewMatrix());
-        _playerView.Draw(sb);
+
+        if (_playerView.HasLayeredSprites && _playerView.PaletteEffect != null)
+        {
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null,
+                _playerView.PaletteEffect);
+            _playerView.DrawLayeredBase(sb);
+            sb.End();
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
+            _playerView.DrawEquipment(sb);
+            sb.End();
+        }
+        else
+        {
+            sb.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.PointClamp, null, null);
+            _playerView.Draw(sb);
+            sb.End();
+        }
+
+        sb.Begin();
         _ui.Draw(sb);
+        sb.End();
     }
 
     private void OnBattleFinished(BattleFinished e)

@@ -51,8 +51,8 @@ public sealed class SceneMainMenu : SceneBase
 
     public override void Draw(SpriteBatch spriteBatch)
     {
-        // Aquí Game1.Draw() ya habrá hecho Begin() / Clear()
-        // Simplemente delego el dibujado de la UI
+        spriteBatch.Begin();
         _ui.Draw(spriteBatch);
+        spriteBatch.End();
     }
 }

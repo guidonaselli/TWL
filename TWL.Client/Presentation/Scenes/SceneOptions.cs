@@ -38,5 +38,10 @@ public sealed class SceneOptions : SceneBase
     ) =>
         _ui.Update(gameTime);
 
-    public override void Draw(SpriteBatch spriteBatch) => _ui.Draw(spriteBatch);
+    public override void Draw(SpriteBatch spriteBatch)
+    {
+        spriteBatch.Begin();
+        _ui.Draw(spriteBatch);
+        spriteBatch.End();
+    }
 }

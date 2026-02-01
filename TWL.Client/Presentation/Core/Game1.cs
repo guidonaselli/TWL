@@ -116,10 +116,7 @@ public sealed class Game1 : Game
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        // Todas las escenas dibujan sobre este único SpriteBatch
-        _spriteBatch.Begin();
         _scenes.Draw(_spriteBatch);
-        _spriteBatch.End();
 
         base.Draw(gameTime);
     }

@@ -332,6 +332,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
     {
         GraphicsDevice.Clear(Color.Black);
 
+        sb.Begin();
         sb.DrawString(_font, _status, new Vector2(50, 20), Color.White);
 
         if (_uiState == BattleUiState.Result)
@@ -347,6 +348,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
             }
 
             sb.DrawString(_font, msg, new Vector2(200, 200), Color.Yellow);
+            sb.End();
             return;
         }
 
@@ -379,6 +381,8 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
                 DrawMenu(sb, new Vector2(50, 300));
             }
         }
+
+        sb.End();
     }
 
     private void DrawGroup(SpriteBatch sb, List<Combatant> group, Vector2 pos, Color color)

@@ -44,8 +44,10 @@ public sealed class SceneMarketplace : SceneBase
 
     public override void Draw(SpriteBatch sb)
     {
+        sb.Begin();
         sb.DrawString(_font, "Marketplace",
             new Vector2(20, 20), Color.Black);
         _uiMarketplace.Draw(sb);
+        sb.End();
     }
 }

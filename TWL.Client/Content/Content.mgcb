@@ -50,6 +50,23 @@
 /importer:TextureImporter
 /processor:TextureProcessor
 /build:Sprites/Characters/RegularMale/Base/Idle/player_right.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/cuerpo_base.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/cuerpo_mapa.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/pelo_base.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/build:Sprites/Characters/RegularMale/Base/Idle/pelo_mapa.png
+
+# Effects
+/importer:EffectImporter
+/processor:EffectProcessor
+/build:Effects/PaletteSwap.fx
 
 # UI
 /importer:TextureImporter
