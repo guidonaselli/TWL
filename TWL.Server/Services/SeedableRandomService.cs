@@ -69,4 +69,32 @@ public class SeedableRandomService : IRandomService
             return val;
         }
     }
+
+    public double NextDouble()
+    {
+        lock (_lock)
+        {
+            var val = _random.NextDouble();
+            if (_logger.IsEnabled(LogLevel.Trace))
+            {
+                _logger.LogTrace("RNG NextDouble: {Value}", val);
+            }
+
+            return val;
+        }
+    }
+
+    public int Next()
+    {
+        lock (_lock)
+        {
+            var val = _random.Next();
+            if (_logger.IsEnabled(LogLevel.Trace))
+            {
+                _logger.LogTrace("RNG Next: {Value}", val);
+            }
+
+            return val;
+        }
+    }
 }

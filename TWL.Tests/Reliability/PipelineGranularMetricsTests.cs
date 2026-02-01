@@ -38,7 +38,7 @@ public class PipelineGranularMetricsTests
         var mockEconomy = new Mock<IEconomyService>();
         var petService = new PetService(playerService, mockPet.Object, combatManager, mockRandom.Object);
         var mockWorldTrigger = new Mock<IWorldTriggerService>();
-        var spawnManager = new SpawnManager(new MonsterManager(), combatManager);
+        var spawnManager = new SpawnManager(new MonsterManager(), combatManager, mockRandom.Object);
 
         // Dynamic port assignment: use port 0 to let OS assign a free port
         var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,

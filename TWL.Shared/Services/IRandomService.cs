@@ -16,6 +16,16 @@ public interface IRandomService
     float NextFloat(float min, float max);
 
     /// <summary>
+    ///     Returns a random floating-point number that is greater than or equal to 0.0, and less than 1.0.
+    /// </summary>
+    double NextDouble();
+
+    /// <summary>
+    ///     Returns a non-negative random integer.
+    /// </summary>
+    int Next();
+
+    /// <summary>
     ///     Returns a random integer that is within a specified range.
     /// </summary>
     int Next(int min, int max);
