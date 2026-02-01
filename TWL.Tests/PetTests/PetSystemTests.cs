@@ -148,8 +148,9 @@ public class PetSystemTests : IDisposable
 
         // Assert
         Assert.NotNull(result);
-        Assert.Equal(-100, result.TargetId);
-        Assert.Equal(50, result.Damage);
+        Assert.Single(result);
+        Assert.Equal(-100, result[0].TargetId);
+        Assert.Equal(50, result[0].Damage);
         // Verify pet took damage
         Assert.True(pet.Hp < pet.MaxHp);
     }

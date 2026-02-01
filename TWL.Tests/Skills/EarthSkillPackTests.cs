@@ -152,7 +152,7 @@ public class EarthSkillPackTests
         // Cast again
         var result = _combatManager.UseSkill(request);
         Assert.NotNull(result); // Ensure skill executed
-        Assert.NotEmpty(result.AddedEffects); // Ensure effect applied
+        Assert.NotEmpty(result[0].AddedEffects); // Ensure effect applied
 
         // Assert - Should refresh to 3
         buff = ally.StatusEffects.FirstOrDefault(e => e.Tag == SkillEffectTag.BuffStats && e.Param == "Def");

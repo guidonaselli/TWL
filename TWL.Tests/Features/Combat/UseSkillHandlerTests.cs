@@ -53,7 +53,9 @@ public class UseSkillHandlerTests
         var result = await handler.Handle(command, CancellationToken.None);
 
         Assert.NotNull(result);
-        Assert.Equal(1, result.AttackerId);
-        Assert.Equal(2, result.TargetId);
+        Assert.Single(result);
+        var hit = result[0];
+        Assert.Equal(1, hit.AttackerId);
+        Assert.Equal(2, hit.TargetId);
     }
 }

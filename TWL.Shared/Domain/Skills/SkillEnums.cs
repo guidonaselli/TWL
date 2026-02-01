@@ -19,7 +19,9 @@ public enum SkillTargetType
     AllEnemies,
     AllAllies,
     RowEnemies, // E.g. front row
-    RowAllies
+    RowAllies,
+    ColumnEnemies,
+    CrossEnemies
 }
 
 [JsonConverter(typeof(JsonStringEnumConverter))]

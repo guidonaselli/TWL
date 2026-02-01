@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using TWL.Server.Features.Combat;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
@@ -59,152 +60,158 @@ public class CombatManager
     /// <summary>
     ///     Usa una skill (basado en la petición del cliente).
     /// </summary>
-    public CombatResult UseSkill(UseSkillRequest request)
+    public List<CombatResult> UseSkill(UseSkillRequest request)
     {
         // 1) Obtenemos los objetos server-side
         if (!_combatants.TryGetValue(request.PlayerId, out var attacker) ||
-            !_combatants.TryGetValue(request.TargetId, out var target))
+            !_combatants.TryGetValue(request.TargetId, out var primaryTarget))
         {
-            return null;
+            return new List<CombatResult>();
         }
 
         var skill = _skills.GetSkillById(request.SkillId);
         if (skill == null)
         {
-            return null;
+            return new List<CombatResult>();
         }
 
         if (attacker.IsSkillOnCooldown(skill.SkillId))
         {
-            return null;
+            return new List<CombatResult>();
         }
 
         if (!attacker.ConsumeSp(skill.SpCost))
         {
-            return null;
+            return new List<CombatResult>();
         }
 
-        int newTargetHp;
-        // 2) Apply Effects & Calculate Damage
-        var appliedEffects = new List<StatusEffectInstance>();
+        var targets = SkillTargetingHelper.GetTargets(skill, attacker, primaryTarget, GetAllCombatants());
+        var results = new List<CombatResult>();
 
-        foreach (var effect in skill.Effects)
+        foreach (var target in targets)
         {
-            var chance = effect.Chance;
+            int newTargetHp;
+            // 2) Apply Effects & Calculate Damage
+            var appliedEffects = new List<StatusEffectInstance>();
 
-            if (skill.HitRules != null && effect.Tag == SkillEffectTag.Seal)
+            foreach (var effect in skill.Effects)
             {
-                // Basic formula: Base + (Int - Wis)*0.01 (clamped)
-                var statDiff = (attacker.Int - target.Wis) * 0.01f;
-                chance = skill.HitRules.BaseChance + statDiff;
-                if (chance < skill.HitRules.MinChance)
+                var chance = effect.Chance;
+
+                if (skill.HitRules != null && effect.Tag == SkillEffectTag.Seal)
                 {
-                    chance = skill.HitRules.MinChance;
-                }
-
-                if (chance > skill.HitRules.MaxChance)
-                {
-                    chance = skill.HitRules.MaxChance;
-                }
-            }
-
-            var resist = false;
-            var finalDuration = effect.Duration;
-            var finalValue = effect.Value;
-
-            if (effect.ResistanceTags != null && effect.ResistanceTags.Count > 0)
-            {
-                foreach (var tag in effect.ResistanceTags)
-                {
-                    var resistance = target.GetResistance(tag);
-
-                    // Immunity Check
-                    if (resistance >= 1.0f)
+                    // Basic formula: Base + (Int - Wis)*0.01 (clamped)
+                    var statDiff = (attacker.Int - target.Wis) * 0.01f;
+                    chance = skill.HitRules.BaseChance + statDiff;
+                    if (chance < skill.HitRules.MinChance)
                     {
-                        resist = true;
-                        break;
+                        chance = skill.HitRules.MinChance;
                     }
 
-                    // Resistance Roll
-                    if (_random.NextFloat() < resistance)
+                    if (chance > skill.HitRules.MaxChance)
                     {
-                        if (effect.Outcome == OutcomeModel.Partial)
+                        chance = skill.HitRules.MaxChance;
+                    }
+                }
+
+                var resist = false;
+                var finalDuration = effect.Duration;
+                var finalValue = effect.Value;
+
+                if (effect.ResistanceTags != null && effect.ResistanceTags.Count > 0)
+                {
+                    foreach (var tag in effect.ResistanceTags)
+                    {
+                        var resistance = target.GetResistance(tag);
+
+                        // Immunity Check
+                        if (resistance >= 1.0f)
                         {
-                            finalDuration = Math.Max(1, finalDuration / 2);
-                            finalValue *= 0.5f;
-                        }
-                        else
-                        {
-                            // OutcomeModel.Resist (or default)
                             resist = true;
                             break;
                         }
+
+                        // Resistance Roll
+                        if (_random.NextFloat() < resistance)
+                        {
+                            if (effect.Outcome == OutcomeModel.Partial)
+                            {
+                                finalDuration = Math.Max(1, finalDuration / 2);
+                                finalValue *= 0.5f;
+                            }
+                            else
+                            {
+                                // OutcomeModel.Resist (or default)
+                                resist = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (!resist && _random.NextFloat() <= chance)
+                {
+                    switch (effect.Tag)
+                    {
+                        case SkillEffectTag.Cleanse:
+                            target.CleanseDebuffs(_statusEngine);
+                            break;
+                        case SkillEffectTag.Dispel:
+                            target.DispelBuffs(_statusEngine);
+                            break;
+                        case SkillEffectTag.Damage:
+                            break;
+                        case SkillEffectTag.Heal:
+                            var healAmount = _resolver.CalculateHeal(attacker, target, request);
+                            healAmount += (int)finalValue;
+                            target.Heal(healAmount);
+                            break;
+                        default:
+                            var status = new StatusEffectInstance(effect.Tag, finalValue, finalDuration, effect.Param)
+                            {
+                                SourceSkillId = skill.SkillId,
+                                StackingPolicy = effect.StackingPolicy,
+                                MaxStacks = effect.MaxStacks,
+                                Priority = effect.Priority,
+                                ConflictGroup = effect.ConflictGroup
+                            };
+                            target.AddStatusEffect(status, _statusEngine);
+                            appliedEffects.Add(status);
+                            break;
                     }
                 }
             }
 
-            if (!resist && _random.NextFloat() <= chance)
+            var finalDamage = _resolver.CalculateDamage(attacker, target, request);
+            newTargetHp = target.ApplyDamage(finalDamage);
+
+            if (finalDamage > 0)
             {
-                switch (effect.Tag)
-                {
-                    case SkillEffectTag.Cleanse:
-                        target.CleanseDebuffs(_statusEngine);
-                        break;
-                    case SkillEffectTag.Dispel:
-                        target.DispelBuffs(_statusEngine);
-                        break;
-                    case SkillEffectTag.Damage:
-                        break;
-                    case SkillEffectTag.Heal:
-                        var healAmount = _resolver.CalculateHeal(attacker, target, request);
-                        healAmount += (int)finalValue;
-                        target.Heal(healAmount);
-                        break;
-                    default:
-                        var status = new StatusEffectInstance(effect.Tag, finalValue, finalDuration, effect.Param)
-                        {
-                            SourceSkillId = skill.SkillId,
-                            StackingPolicy = effect.StackingPolicy,
-                            MaxStacks = effect.MaxStacks,
-                            Priority = effect.Priority,
-                            ConflictGroup = effect.ConflictGroup
-                        };
-                        target.AddStatusEffect(status, _statusEngine);
-                        appliedEffects.Add(status);
-                        break;
-                }
+                target.LastAttackerId = attacker.Id;
             }
-        }
 
-        var finalDamage = _resolver.CalculateDamage(attacker, target, request);
-        newTargetHp = target.ApplyDamage(finalDamage);
+            // Check for death
+            if (newTargetHp <= 0)
+            {
+                OnCombatantDeath?.Invoke(target);
+            }
 
-        if (finalDamage > 0)
-        {
-            target.LastAttackerId = attacker.Id;
+            results.Add(new CombatResult
+            {
+                AttackerId = attacker.Id,
+                TargetId = target.Id,
+                Damage = finalDamage,
+                NewTargetHp = newTargetHp,
+                AddedEffects = appliedEffects,
+                TargetDied = newTargetHp <= 0
+            });
         }
 
         attacker.IncrementSkillUsage(skill.SkillId);
         attacker.SetSkillCooldown(skill.SkillId, skill.Cooldown);
         CheckSkillEvolution(attacker, skill);
 
-        // Check for death
-        if (newTargetHp <= 0)
-        {
-            OnCombatantDeath?.Invoke(target);
-        }
-
-        // 3) Retornar el resultado para avisar al cliente.
-        var result = new CombatResult
-        {
-            AttackerId = attacker.Id,
-            TargetId = target.Id,
-            Damage = finalDamage,
-            NewTargetHp = newTargetHp,
-            AddedEffects = appliedEffects
-        };
-
-        return result;
+        return results;
     }
 
     private void CheckSkillEvolution(ServerCombatant combatant, Skill skill)

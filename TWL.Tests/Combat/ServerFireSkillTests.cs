@@ -64,7 +64,7 @@ public class ServerFireSkillTests
         var result = manager.UseSkill(request);
 
         Assert.NotNull(result);
-        Assert.Equal(62, result.Damage);
+        Assert.Equal(62, result[0].Damage);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class ServerFireSkillTests
         var result = manager.UseSkill(request);
 
         Assert.NotNull(result);
-        Assert.Contains(result.AddedEffects, e => e.Tag == SkillEffectTag.BuffStats && e.Param == "Atk");
+        Assert.Contains(result[0].AddedEffects, e => e.Tag == SkillEffectTag.BuffStats && e.Param == "Atk");
 
         // Verify ServerCharacter logic for buffs
         // Skill 4201: BuffStats Atk +20

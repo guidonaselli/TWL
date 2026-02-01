@@ -54,7 +54,7 @@ public class ServerWaterSkillTests
         var result = manager.UseSkill(request);
 
         Assert.NotNull(result);
-        Assert.Equal(38, result.Damage);
+        Assert.Equal(38, result[0].Damage);
     }
 
     [Fact]
@@ -89,7 +89,7 @@ public class ServerWaterSkillTests
         var result = manager.UseSkill(request);
 
         Assert.NotNull(result);
-        Assert.Equal(0, result.Damage); // Should not deal damage
+        Assert.Equal(0, result[0].Damage); // Should not deal damage
         Assert.Equal(100, target.Hp); // 50 + 50 = 100.
     }
 }

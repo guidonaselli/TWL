@@ -49,6 +49,6 @@ public class ServerEarthSkillTests
         var result = manager.UseSkill(request);
 
         Assert.NotNull(result);
-        Assert.Equal(38, result.Damage);
+        Assert.Equal(38, result[0].Damage);
     }
 }
