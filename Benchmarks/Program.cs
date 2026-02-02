@@ -2,6 +2,7 @@ using System;
 using System.Diagnostics;
 using System.IO;
 using System.Threading.Tasks;
+using Benchmarks;
 using TWL.Server.Simulation.Managers;
 
 public class Program
@@ -10,9 +11,17 @@ public class Program
     private const int Iterations = 1000;
     private const int ThreadCount = 20;
 
-    public static async Task Main()
+    public static async Task Main(string[] args)
     {
+        if (args.Length > 0 && args[0].ToLower() == "load")
+        {
+            var test = new LoadTest();
+            await test.RunAsync();
+            return;
+        }
+
         Console.WriteLine($"Running EconomyManager benchmarks with {ThreadCount} threads, {Iterations} iterations each.");
+        Console.WriteLine("Pass 'load' argument to run Full Stack Load Test.");
 
         if (File.Exists(LedgerFile)) File.Delete(LedgerFile);
 
