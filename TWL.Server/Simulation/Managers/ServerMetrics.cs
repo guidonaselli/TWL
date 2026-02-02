@@ -106,6 +106,18 @@ public class ServerMetrics
     private long _worldLoopTotalDurationMs;
     private long _worldSchedulerQueueDepth;
 
+    private long _loginAttempts;
+    private long _loginFailures;
+
+    public void RecordLoginAttempt(bool success)
+    {
+        Interlocked.Increment(ref _loginAttempts);
+        if (!success)
+        {
+            Interlocked.Increment(ref _loginFailures);
+        }
+    }
+
     public void RecordNetBytesReceived(long bytes) => Interlocked.Add(ref _netBytesReceived, bytes);
     public void RecordNetBytesSent(long bytes) => Interlocked.Add(ref _netBytesSent, bytes);
     public void RecordNetMessageProcessed() => Interlocked.Increment(ref _netMessagesProcessed);
@@ -194,6 +206,9 @@ public class ServerMetrics
             PipelineValidateDurationTicks = Interlocked.Read(ref _pipelineValidateDurationTicks),
             PipelineResolveDurationTicks = Interlocked.Read(ref _pipelineResolveDurationTicks),
 
+            LoginAttempts = Interlocked.Read(ref _loginAttempts),
+            LoginFailures = Interlocked.Read(ref _loginFailures),
+
             ValidateHistogram = _validateHistogram.GetSnapshot(),
             ResolveHistogram = _resolveHistogram.GetSnapshot(),
             PersistHistogram = _persistHistogram.GetSnapshot()
@@ -202,6 +217,8 @@ public class ServerMetrics
 
     public void Reset()
     {
+        Interlocked.Exchange(ref _loginAttempts, 0);
+        Interlocked.Exchange(ref _loginFailures, 0);
         Interlocked.Exchange(ref _netBytesReceived, 0);
         Interlocked.Exchange(ref _netBytesSent, 0);
         Interlocked.Exchange(ref _netMessagesProcessed, 0);
@@ -250,6 +267,9 @@ public class MetricsSnapshot
     public long PipelineValidateDurationTicks { get; set; }
     public long PipelineResolveDurationTicks { get; set; }
 
+    public long LoginAttempts { get; set; }
+    public long LoginFailures { get; set; }
+
     public HistogramSnapshot ValidateHistogram { get; set; }
     public HistogramSnapshot ResolveHistogram { get; set; }
     public HistogramSnapshot PersistHistogram { get; set; }
@@ -278,6 +298,7 @@ public class MetricsSnapshot
     {
         return
             $"[Metrics] Net: {NetMessagesProcessed} msgs, AvgProc: {AverageMessageProcessingTimeMs:F2}ms (Val: {AverageValidateTimeMs:F2}ms, Res: {AverageResolveTimeMs:F2}ms). " +
+            $"Logins: {_loginAttempts} (Fail: {_loginFailures}). " +
             $"World: {WorldLoopTicks} ticks (Avg {AverageWorldLoopDurationMs:F2}ms), Queue: {WorldSchedulerQueueDepth}, SlowTicks: {WorldLoopSlowTicks}, SlowTasks: {WorldLoopSlowTasks}. " +
             $"Triggers: {TriggersExecuted}. " +
             $"Persist: {PersistenceFlushes} flushes, {PersistenceErrors} errs. " +

@@ -519,6 +519,8 @@ public class ClientSession
         // payload podría ser {"username":"xxx","passHash":"abc"}
         if (string.IsNullOrEmpty(payload) || payload.Length > 512)
         {
+            _metrics.RecordLoginAttempt(false);
+            await SendLoginError("Invalid payload size");
             return;
         }
 
@@ -529,33 +531,44 @@ public class ClientSession
         }
         catch (JsonException)
         {
+            _metrics.RecordLoginAttempt(false);
+            await SendLoginError("Invalid JSON");
             return;
         }
 
         if (loginDto == null || string.IsNullOrWhiteSpace(loginDto.Username) ||
             string.IsNullOrWhiteSpace(loginDto.PassHash))
         {
+            _metrics.RecordLoginAttempt(false);
+            await SendLoginError("Missing credentials");
             return;
         }
 
         if (loginDto.Username.Length > 50)
         {
+            _metrics.RecordLoginAttempt(false);
+            await SendLoginError("Username too long");
             return;
         }
 
         if (loginDto.PassHash.Length < 64 || loginDto.PassHash.Length > 128)
         {
+            _metrics.RecordLoginAttempt(false);
+            await SendLoginError("Invalid hash length");
             return;
         }
 
         if (!IsHex(loginDto.PassHash))
         {
+            _metrics.RecordLoginAttempt(false);
+            await SendLoginError("Invalid hash format");
             return;
         }
 
         var uid = await _dbService.CheckLoginAsync(loginDto.Username, loginDto.PassHash);
         if (uid < 0)
         {
+            _metrics.RecordLoginAttempt(false);
             // login fallido
             await SendAsync(new NetMessage
             {
@@ -569,6 +582,7 @@ public class ClientSession
         }
         else
         {
+            _metrics.RecordLoginAttempt(true);
             UserId = uid;
 
             var data = _playerService.LoadData(uid);

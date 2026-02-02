@@ -19,14 +19,14 @@ public class DbService : IDisposable
     }
 
     // Method called by GameServer.Start()
-    public void Init()
+    public virtual void Init()
     {
         Console.WriteLine("Initializing database...");
         InitDatabase();
         Console.WriteLine("Database initialized successfully.");
     }
 
-    public void InitDatabase()
+    public virtual void InitDatabase()
     {
         // Ejemplo: crear tablas si no existen
         using var con = new NpgsqlConnection(_connString);
@@ -51,7 +51,7 @@ public class DbService : IDisposable
     }
 
     // Ejemplo: login
-    public async Task<int> CheckLoginAsync(string username, string passHash)
+    public virtual async Task<int> CheckLoginAsync(string username, string passHash)
     {
         await using var con = new NpgsqlConnection(_connString);
         await con.OpenAsync();
