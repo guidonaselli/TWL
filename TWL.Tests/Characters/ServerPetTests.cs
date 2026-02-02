@@ -39,7 +39,7 @@ public class ServerPetTests
             PetTypeId = 1,
             BaseHp = 10,
             Name = "Test",
-            Element = Element.Earth,
+            Element = Element.Fire,
             SkillIds = new List<int>(),
             RebirthSprite = ""
         };

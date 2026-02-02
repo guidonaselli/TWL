@@ -216,12 +216,12 @@ public class ServerPet : ServerCombatant
         Hp = 0;
         Sp = 0;
 
-        ChangeAmity(-10);
+        ChangeAmity(-1);
 
         IsDirty = true;
     }
 
-    public void Revive()
+    public void Revive(int? hpOverride = null)
     {
         if (!IsDead)
         {
@@ -229,7 +229,7 @@ public class ServerPet : ServerCombatant
         }
 
         IsDead = false;
-        Hp = MaxHp;
+        Hp = hpOverride.HasValue ? Math.Min(hpOverride.Value, MaxHp) : MaxHp;
         Sp = MaxSp;
 
         IsDirty = true;

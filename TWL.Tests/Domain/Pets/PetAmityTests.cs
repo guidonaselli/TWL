@@ -8,7 +8,7 @@ public class PetAmityTests
     [Fact]
     public void TestAmityBounds()
     {
-        var def = new PetDefinition { PetTypeId = 1, Name = "Test", Element = Element.Water };
+        var def = new PetDefinition { PetTypeId = 1, Name = "Test", Element = Element.Earth };
         var pet = new ServerPet(def);
         pet.Amity = 50;
 
@@ -22,7 +22,7 @@ public class PetAmityTests
     [Fact]
     public void TestRebellious()
     {
-        var def = new PetDefinition { PetTypeId = 1, Name = "Test", Element = Element.Fire };
+        var def = new PetDefinition { PetTypeId = 1, Name = "Test", Element = Element.Earth };
         var pet = new ServerPet(def);
         pet.Amity = 10;
         Assert.True(pet.IsRebellious);
