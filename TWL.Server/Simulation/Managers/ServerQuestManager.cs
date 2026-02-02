@@ -1,11 +1,16 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using TWL.Shared.Domain.Quests;
 
 namespace TWL.Server.Simulation.Managers;
 
 public class ServerQuestManager
 {
-    private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
+    private static readonly JsonSerializerOptions _jsonOptions = new()
+    {
+        PropertyNameCaseInsensitive = true,
+        Converters = { new JsonStringEnumConverter() }
+    };
     private readonly Dictionary<int, QuestDefinition> _questDefinitions = new();
 
     public void Load(string path)

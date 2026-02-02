@@ -1079,5 +1079,68 @@
       "Gold": 200,
       "Items": []
     }
+  },
+  {
+    "QuestId": 2050,
+    "Title": "Bounty: Wolf Pack",
+    "Description": "Reduce the wolf population near the town.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Wolf",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Wolves."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": []
+    },
+    "Repeatability": "Daily",
+    "MutualExclusionGroup": "DailyBounty_T1"
+  },
+  {
+    "QuestId": 2051,
+    "Title": "Bounty: Crab Menace",
+    "Description": "Clear the crabs from the beach.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Crab",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Crabs."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": []
+    },
+    "Repeatability": "Daily",
+    "MutualExclusionGroup": "DailyBounty_T1"
+  },
+  {
+    "QuestId": 2052,
+    "Title": "Bounty: Road Bandits",
+    "Description": "Patrol the road and defeat bandits.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Bandit",
+        "RequiredCount": 3,
+        "Description": "Defeat 3 Bandits."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 100,
+      "Items": []
+    },
+    "Repeatability": "Daily",
+    "MutualExclusionGroup": "DailyBounty_T1"
   }
 ]
