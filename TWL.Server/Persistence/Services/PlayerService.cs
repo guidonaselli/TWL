@@ -165,6 +165,8 @@ public class PlayerService
         return session;
     }
 
+    public IEnumerable<ClientSession> GetAllSessions() => _sessions.Values;
+
     public PlayerSaveData? LoadData(int userId)
     {
         // Keeping synchronous LoadData for compatibility if needed

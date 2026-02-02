@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
+using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.World;
@@ -22,14 +23,20 @@ public class SpawnManager
     private readonly MonsterManager _monsterManager;
     private readonly ConcurrentDictionary<int, float> _playerSteps = new(); // PlayerId -> Steps
     private readonly IRandomService _random;
+    private readonly PlayerService _playerService;
 
     private int _nextEncounterId = 1;
+    private readonly List<ServerCharacter> _roamingMobs = new();
+    private float _respawnTimer;
+    private const float RespawnCheckInterval = 5.0f;
 
-    public SpawnManager(MonsterManager monsterManager, CombatManager combatManager, IRandomService random)
+    public SpawnManager(MonsterManager monsterManager, CombatManager combatManager, IRandomService random,
+        PlayerService playerService)
     {
         _monsterManager = monsterManager;
         _combatManager = combatManager;
         _random = random;
+        _playerService = playerService;
     }
 
     public void Load(string path)
@@ -107,25 +114,25 @@ public class SpawnManager
         }
     }
 
-    public void StartEncounter(ClientSession session, ZoneSpawnConfig config, EncounterSource source)
+    public int StartEncounter(ClientSession session, ZoneSpawnConfig config, EncounterSource source)
     {
         if (session.Character == null)
         {
-            return;
+            return 0;
         }
 
         // Check if already in combat
         if (_combatManager.GetCombatant(session.Character.Id) != null)
         {
             Console.WriteLine($"Player {session.Character.Id} is already in combat. Encounter ignored.");
-            return;
+            return 0;
         }
 
         // 1. Select Monsters
         var mobs = SelectMonsters(config, session.Character);
         if (mobs.Count == 0)
         {
-            return;
+            return 0;
         }
 
         // 2. Create Encounter
@@ -150,7 +157,9 @@ public class SpawnManager
                 Wis = def.BaseWis,
                 Agi = def.BaseAgi,
                 CharacterElement = def.Element,
-                Team = Team.Enemy
+                Team = Team.Enemy,
+                MonsterId = def.MonsterId,
+                SpritePath = def.SpritePath
             };
             mob.SetLevel(def.Level);
             serverMobs.Add(mob);
@@ -188,6 +197,56 @@ public class SpawnManager
         };
 
         _ = session.SendAsync(msg);
+        return encounterId;
+    }
+
+    public int StartEncounter(ClientSession session, ServerCharacter roamingMob)
+    {
+        if (session.Character == null)
+        {
+            return 0;
+        }
+
+        if (_combatManager.GetCombatant(session.Character.Id) != null)
+        {
+            return 0;
+        }
+
+        var encounterId = Interlocked.Increment(ref _nextEncounterId);
+        var seed = _random.Next();
+
+        var serverMobs = new List<ServerCharacter> { roamingMob };
+
+        var participants = new List<ServerCharacter> { session.Character, roamingMob };
+        _combatManager.StartEncounter(encounterId, participants, seed);
+
+        // Notify Client
+        var payload = new
+        {
+            EncounterId = encounterId,
+            Source = EncounterSource.Roaming.ToString(),
+            Seed = seed,
+            Monsters = serverMobs.Select((m) => new
+            {
+                m.Id,
+                m.Name,
+                m.Hp,
+                m.MaxHp,
+                m.Level,
+                m.CharacterElement,
+                m.MonsterId,
+                m.SpritePath
+            }).ToList()
+        };
+
+        var msg = new NetMessage
+        {
+            Op = Opcode.EncounterStarted,
+            JsonPayload = JsonSerializer.Serialize(payload)
+        };
+
+        _ = session.SendAsync(msg);
+        return encounterId;
     }
 
     private List<MonsterDefinition> SelectMonsters(ZoneSpawnConfig config, ServerCharacter player)
@@ -254,6 +313,143 @@ public class SpawnManager
 
     public void Update(float dt)
     {
-        // Roaming mob logic placeholder
+        _respawnTimer += dt;
+        if (_respawnTimer >= RespawnCheckInterval)
+        {
+            _respawnTimer = 0;
+            CheckRespawns();
+        }
+
+        UpdateRoamingMobs(dt);
+    }
+
+    private void UpdateRoamingMobs(float dt)
+    {
+        var activeSessions = _playerService.GetAllSessions()
+            .Where(s => s.Character != null && s.Character.Hp > 0)
+            .ToList();
+
+        lock (_roamingMobs)
+        {
+            for (var i = _roamingMobs.Count - 1; i >= 0; i--)
+            {
+                var mob = _roamingMobs[i];
+
+                // Patrol Logic
+                var def = _monsterManager.GetDefinition(mob.MonsterId);
+                var speed = def?.Behavior?.PatrolSpeed ?? 1.0f; // Tiles per second
+                var distanceToMove = speed * 32f * dt;
+
+                // Pick a new target occasionally or if idle (simplified for now: random walk per frame with smoothing)
+                // For a proper system we'd need Mob State (Idle, Patrol, Chase).
+                // Here we just apply a small vector if random chance hits, but scaled by dt.
+
+                // 2% chance per frame (at 60fps) to change direction is frequent.
+                // Instead, let's just move them in a consistent random direction for a duration.
+                // But without extra state, we'll stick to a simple Brownian-like motion but smoothed.
+
+                if (_random.NextDouble() < 0.05) // 5% chance to pick a new direction
+                {
+                    // Store direction in a transient way if we could, but ServerCharacter doesn't have it.
+                    // We'll just impulse move for now but respect speed.
+                    var angle = _random.NextDouble() * Math.PI * 2;
+                    var dx = Math.Cos(angle) * distanceToMove * 10; // Move for ~10 frames worth
+                    var dy = Math.Sin(angle) * distanceToMove * 10;
+
+                    mob.X += (float)dx;
+                    mob.Y += (float)dy;
+                }
+
+                // Collision Check
+                foreach (var session in activeSessions)
+                {
+                    if (session.Character.MapId == mob.MapId)
+                    {
+                        var distSq = Microsoft.Xna.Framework.Vector2.DistanceSquared(
+                            new Microsoft.Xna.Framework.Vector2(session.Character.X, session.Character.Y),
+                            new Microsoft.Xna.Framework.Vector2(mob.X, mob.Y)
+                        );
+
+                        // 32px threshold -> 1024 sq
+                        if (distSq < 1024)
+                        {
+                            StartEncounter(session, mob);
+                            _roamingMobs.RemoveAt(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    private void CheckRespawns()
+    {
+        foreach (var kvp in _configs)
+        {
+            var mapId = kvp.Key;
+            var config = kvp.Value;
+
+            var count = 0;
+            lock (_roamingMobs)
+            {
+                count = _roamingMobs.Count(m => m.MapId == mapId);
+            }
+
+            if (count < config.MinMobCount)
+            {
+                var needed = config.MinMobCount - count;
+                // Limit spawn per tick to avoid spikes
+                var toSpawn = Math.Min(needed, 5);
+                for (var i = 0; i < toSpawn; i++)
+                {
+                    SpawnMob(mapId, config);
+                }
+            }
+        }
+    }
+
+    private void SpawnMob(int mapId, ZoneSpawnConfig config)
+    {
+        if (config.SpawnRegions.Count == 0) return;
+        var region = config.SpawnRegions[_random.Next(0, config.SpawnRegions.Count)];
+
+        if (region.AllowedMonsterIds.Count == 0) return;
+        var monsterId = region.AllowedMonsterIds[_random.Next(0, region.AllowedMonsterIds.Count)];
+
+        var def = _monsterManager.GetDefinition(monsterId);
+        if (def == null) return;
+
+        // Create Mob
+        // Note: Using negative IDs to distinguish from players
+        // In a real system we might want a persistent unique ID generator or GUIDs
+        // For now, simple random negative int
+        var mobId = -100000 - _random.Next(0, 1000000);
+
+        var mob = new ServerCharacter
+        {
+            Id = mobId,
+            Name = def.Name,
+            Hp = def.BaseHp,
+            Sp = def.BaseSp,
+            Str = def.BaseStr,
+            Con = def.BaseCon,
+            Int = def.BaseInt,
+            Wis = def.BaseWis,
+            Agi = def.BaseAgi,
+            CharacterElement = def.Element,
+            Team = Team.Enemy,
+            MapId = mapId,
+            MonsterId = monsterId,
+            SpritePath = def.SpritePath,
+            X = region.X * 32 + _random.Next(0, region.Width * 32),
+            Y = region.Y * 32 + _random.Next(0, region.Height * 32)
+        };
+        mob.SetLevel(def.Level);
+
+        lock (_roamingMobs)
+        {
+            _roamingMobs.Add(mob);
+        }
     }
 }
