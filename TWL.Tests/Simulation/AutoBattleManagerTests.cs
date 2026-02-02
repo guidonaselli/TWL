@@ -16,7 +16,7 @@ public class AutoBattleManagerTests
     {
         _catalog = new MockSkillCatalog();
         _random = new MockRandomService(0.5f);
-        _manager = new AutoBattleManager(_catalog, _random);
+        _manager = new AutoBattleManager(_catalog);
     }
 
     private ServerCharacter CreateActor(int id, Team team)

@@ -1,0 +1,83 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  TWL.Shared -> /app/TWL.Shared/bin/Debug/net10.0/TWL.Shared.dll
+  TWL.Server -> /app/TWL.Server/bin/Debug/net10.0/TWL.Server.dll
+  TWL.Tests -> /app/TWL.Tests/bin/Debug/net10.0/TWL.Tests.dll
+Test run for /app/TWL.Tests/bin/Debug/net10.0/TWL.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+/app/TWL.Tests/bin/Debug/net10.0/TWL.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.0)
+[xUnit.net 00:00:00.16]   Discovering: TWL.Tests
+[xUnit.net 00:00:00.30]   Discovered:  TWL.Tests
+[xUnit.net 00:00:00.35]   Starting:    TWL.Tests
+Loaded 1 spawn configs.
+SelectMonsters: Player Pos (200, 200) -> Tile (6.25, 6.25)
+Checking Region: X=0, Y=0, W=10, H=10
+Region Matched!
+[xUnit.net 00:00:00.72]       Moq.MockException :
+[xUnit.net 00:00:00.72]       Expected invocation on the mock should never have been performed, but was 1 times: c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>())
+[xUnit.net 00:00:00.72]
+[xUnit.net 00:00:00.72]       Performed invocations:
+[xUnit.net 00:00:00.72]
+[xUnit.net 00:00:00.72]          Mock<CombatManager:1> (c):
+[xUnit.net 00:00:00.72]
+[xUnit.net 00:00:00.72]             CombatManager.GetCombatant(1)
+[xUnit.net 00:00:00.72]             CombatManager.StartEncounter(2, [ServerCharacter, ServerCharacter], 1712597933)
+[xUnit.net 00:00:00.72]
+[xUnit.net 00:00:00.72]       Stack Trace:
+[xUnit.net 00:00:00.72]         C:\projects\moq4\src\Moq\Mock.cs(330,0): at Moq.Mock.Verify(Mock mock, LambdaExpression expression, Times times, String failMessage)
+[xUnit.net 00:00:00.72]         C:\projects\moq4\src\Moq\Mock`1.cs(727,0): at Moq.Mock`1.Verify(Expression`1 expression, Times times)
+[xUnit.net 00:00:00.72]         C:\projects\moq4\src\Moq\Mock`1.cs(741,0): at Moq.Mock`1.Verify(Expression`1 expression, Func`1 times)
+[xUnit.net 00:00:00.72]         /app/TWL.Tests/Simulation/SpawnManagerTests.cs(160,0): at TWL.Tests.Simulation.SpawnManagerTests.OnPlayerMoved_ShouldNOTTriggerEncounter_WhenOutsideRegion()
+[xUnit.net 00:00:00.72]            at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+[xUnit.net 00:00:00.72]            at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+Loaded 1 spawn configs.
+SelectMonsters: Player Pos (10, 10) -> Tile (0.3125, 0.3125)
+Checking Region: X=0, Y=0, W=100, H=100
+Region Matched!
+Player 1 is already in combat. Encounter ignored.
+Loaded 1 spawn configs.
+SelectMonsters: Player Pos (10, 10) -> Tile (0.3125, 0.3125)
+Checking Region: X=0, Y=0, W=100, H=100
+Region Matched!
+Loaded 1 spawn configs.
+Loaded 1 spawn configs.
+Loaded 1 spawn configs.
+SelectMonsters: Player Pos (10, 10) -> Tile (0.3125, 0.3125)
+Checking Region: X=0, Y=0, W=100, H=100
+Region Matched!
+SelectMonsters: Player Pos (10, 10) -> Tile (0.3125, 0.3125)
+Checking Region: X=0, Y=0, W=100, H=100
+Region Matched!
+[xUnit.net 00:00:00.79]   Finished:    TWL.Tests
+  Failed TWL.Tests.Simulation.SpawnManagerTests.OnPlayerMoved_ShouldNOTTriggerEncounter_WhenOutsideRegion [291 ms]
+  Error Message:
+   Moq.MockException :
+Expected invocation on the mock should never have been performed, but was 1 times: c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>())
+
+Performed invocations:
+
+   Mock<CombatManager:1> (c):
+
+      CombatManager.GetCombatant(1)
+      CombatManager.StartEncounter(2, [ServerCharacter, ServerCharacter], 1712597933)
+
+  Stack Trace:
+     at Moq.Mock.Verify(Mock mock, LambdaExpression expression, Times times, String failMessage) in C:\projects\moq4\src\Moq\Mock.cs:line 330
+   at Moq.Mock`1.Verify(Expression`1 expression, Times times) in C:\projects\moq4\src\Moq\Mock`1.cs:line 727
+   at Moq.Mock`1.Verify(Expression`1 expression, Func`1 times) in C:\projects\moq4\src\Moq\Mock`1.cs:line 741
+   at TWL.Tests.Simulation.SpawnManagerTests.OnPlayerMoved_ShouldNOTTriggerEncounter_WhenOutsideRegion() in /app/TWL.Tests/Simulation/SpawnManagerTests.cs:line 160
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Passed TWL.Tests.Simulation.SpawnManagerTests.OnPlayerMoved_ShouldNOTTriggerEncounter_WhenAlreadyInCombat [18 ms]
+  Passed TWL.Tests.Simulation.SpawnManagerTests.OnPlayerMoved_ShouldTriggerEncounter_WhenChanceIsHigh_AndPositionValid [18 ms]
+  Passed TWL.Tests.Simulation.SpawnManagerTests.Load_ShouldLoadConfigs [5 ms]
+  Passed TWL.Tests.Simulation.SpawnManagerTests.StartEncounter_ShouldBeDeterministic_WithSameSeed [17 ms]
+
+Total tests: 5
+     Passed: 4
+     Failed: 1
+ Total time: 1.7979 Seconds

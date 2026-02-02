@@ -103,7 +103,7 @@ public class SpawnManagerTests
         manager.Load(tempDir);
 
         // Setup Player
-        var player = new ServerCharacter { Id = 1, Name = "TestPlayer", MapId = 1001, X = 10, Y = 10 };
+        var player = new ServerCharacter { Id = 1, Name = "TestPlayer", MapId = 1001, X = 10, Y = 10, CharacterElement = Element.Earth };
         var session = new TestClientSession(player);
 
         // Act
@@ -140,7 +140,7 @@ public class SpawnManagerTests
             StepChance = 2.0f,
             SpawnRegions = new List<SpawnRegion>
             {
-                new() { X = 0, Y = 0, Width = 10, Height = 10, AllowedMonsterIds = new List<int> { 1 } }
+                new() { X = 0, Y = 0, Width = 5, Height = 5, AllowedMonsterIds = new List<int> { 1 } }
             }
         };
 
@@ -150,7 +150,7 @@ public class SpawnManagerTests
         manager.Load(tempDir);
 
         // Setup Player OUTSIDE region (X=20 > 10)
-        var player = new ServerCharacter { Id = 1, Name = "TestPlayer", MapId = 1001, X = 20, Y = 20 };
+        var player = new ServerCharacter { Id = 1, Name = "TestPlayer", MapId = 1001, X = 200, Y = 200, CharacterElement = Element.Earth };
         var session = new TestClientSession(player);
 
         // Act
@@ -197,14 +197,14 @@ public class SpawnManagerTests
         File.WriteAllText(Path.Combine(tempDir, "1001.spawns.json"), JsonSerializer.Serialize(config));
         manager.Load(tempDir);
 
-        var player = new ServerCharacter { Id = 1, Name = "TestPlayer", MapId = 1001, X = 10, Y = 10 };
+        var player = new ServerCharacter { Id = 1, Name = "TestPlayer", MapId = 1001, X = 10, Y = 10, CharacterElement = Element.Earth };
         var session = new TestClientSession(player);
 
         // Act
         manager.OnPlayerMoved(session);
 
         // Assert
-        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>()), Times.Never);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Never);
         Assert.Null(session.LastMessage);
 
         Directory.Delete(tempDir, true);
@@ -271,8 +271,8 @@ public class SpawnManagerTests
         manager1.Load(tempDir);
         manager2.Load(tempDir);
 
-        var player1 = new ServerCharacter { Id = 1, Name = "P1", MapId = 1001, X = 10, Y = 10 };
-        var player2 = new ServerCharacter { Id = 2, Name = "P2", MapId = 1001, X = 10, Y = 10 }; // Different player ID shouldn't affect RNG if called in same order
+        var player1 = new ServerCharacter { Id = 1, Name = "P1", MapId = 1001, X = 10, Y = 10, CharacterElement = Element.Earth };
+        var player2 = new ServerCharacter { Id = 2, Name = "P2", MapId = 1001, X = 10, Y = 10, CharacterElement = Element.Earth }; // Different player ID shouldn't affect RNG if called in same order
 
         var session1 = new TestClientSession(player1);
         var session2 = new TestClientSession(player2);

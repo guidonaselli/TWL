@@ -70,6 +70,11 @@ public class ServerPet : ServerCombatant
 
     public void Hydrate(PetDefinition def)
     {
+        if (def.Element == Element.None)
+        {
+            throw new InvalidOperationException($"Pet {def.PetTypeId} ({def.Name}) has Element.None which is forbidden.");
+        }
+
         _definition = def;
         CharacterElement = def.Element;
         // Ensure Name is set if missing (e.g. from old save)
