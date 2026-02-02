@@ -104,6 +104,10 @@ public class ServerCharacter : ServerCombatant
     public float X { get; set; }
     public float Y { get; set; }
 
+    // Mob Info
+    public int MonsterId { get; set; }
+    public string? SpritePath { get; set; }
+
     public int MaxInventorySlots { get; set; } = 100;
 
     public IReadOnlyList<Item> Inventory

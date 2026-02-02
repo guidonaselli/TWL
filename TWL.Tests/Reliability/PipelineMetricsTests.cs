@@ -45,7 +45,7 @@ public class PipelineMetricsTests
 
         var petService = new PetService(playerService, mockPet.Object, combatManager, mockRandom.Object);
         var mockWorldTrigger = new Mock<IWorldTriggerService>();
-        var spawnManager = new SpawnManager(new MonsterManager(), combatManager, mockRandom.Object);
+        var spawnManager = new SpawnManager(new MonsterManager(), combatManager, mockRandom.Object, playerService);
 
         var port = 9123;
         var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,

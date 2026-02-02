@@ -334,5 +334,35 @@
       "IsPassive": true
     },
     "EncounterWeight": 20
+  },
+  {
+    "MonsterId": 9999,
+    "Name": "Quest Dummy (None)",
+    "Code": "MOB_QUEST_DUMMY",
+    "FamilyId": 99,
+    "Element": "None",
+    "Level": 1,
+    "BaseHp": 10,
+    "BaseSp": 0,
+    "BaseStr": 1,
+    "BaseCon": 1,
+    "BaseInt": 1,
+    "BaseWis": 1,
+    "BaseAgi": 1,
+    "SpritePath": "Monsters/mob_quest_dummy.png",
+    "PortraitPath": "Portraits/mob_quest_dummy_portrait.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 1,
+    "Tags": [
+      "QuestOnly"
+    ],
+    "Behavior": {
+      "AggroRadius": 0.0,
+      "LeashRadius": 0.0,
+      "PatrolSpeed": 0.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 0
   }
 ]
