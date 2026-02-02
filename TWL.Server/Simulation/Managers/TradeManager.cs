@@ -128,9 +128,35 @@ public class TradeManager
         }
 
         // 4. Add to Target
+        var addedToTarget = new List<(int ItemId, int Qty, BindPolicy Policy, int? BoundToId)>();
+        var success = true;
+
         foreach (var m in movedItems)
         {
-            target.AddItem(m.ItemId, m.Qty, m.Policy, m.BoundToId);
+            if (!target.AddItem(m.ItemId, m.Qty, m.Policy, m.BoundToId))
+            {
+                success = false;
+                break;
+            }
+            addedToTarget.Add(m);
+        }
+
+        if (!success)
+        {
+            // ROLLBACK Target (Remove what was just added)
+            foreach (var m in addedToTarget)
+            {
+                target.RemoveItem(m.ItemId, m.Qty, m.Policy);
+            }
+
+            // ROLLBACK Source (Add back what was taken)
+            foreach (var m in movedItems)
+            {
+                source.AddItem(m.ItemId, m.Qty, m.Policy, m.BoundToId);
+            }
+
+            SecurityLogger.LogSecurityEvent("TradeTargetFull", source.Id, "Target inventory full or rejected item.");
+            return false;
         }
 
         SecurityLogger.LogSecurityEvent("TradeSuccess", source.Id, $"To:{target.Id} Item:{itemId} Qty:{quantity}");
