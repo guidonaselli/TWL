@@ -1,4 +1,6 @@
+using System.Collections.Concurrent;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Domain.Skills;
@@ -9,121 +11,274 @@ namespace TWL.Server.Simulation.Managers;
 public class AutoBattleManager
 {
     private readonly ISkillCatalog _skillCatalog;
-    private readonly IRandomService _random;
 
-    public AutoBattleManager(ISkillCatalog skillCatalog, IRandomService random)
+    public int MinSpThreshold { get; set; } = 10;
+    public float CriticalHpPercent { get; set; } = 0.3f;
+
+    public AutoBattleManager(ISkillCatalog skillCatalog)
     {
         _skillCatalog = skillCatalog;
-        _random = random;
     }
 
-    public UseSkillRequest? GetBestAction(ServerCombatant actor, IEnumerable<ServerCombatant> combatants)
+    public UseSkillRequest? GetBestAction(
+        ServerCombatant actor,
+        IEnumerable<ServerCombatant> combatants,
+        AutoBattlePolicy policy = AutoBattlePolicy.Balanced)
     {
         var validTargets = combatants.Where(c => c.Hp > 0).ToList();
         var enemies = validTargets.Where(c => c.Team != actor.Team).ToList();
         var allies = validTargets.Where(c => c.Team == actor.Team).ToList();
 
-        if (enemies.Count == 0) return null; // No enemies
+        if (enemies.Count == 0) return null;
 
-        // 1. Get Available Skills
-        var availableSkills = new List<Skill>();
-
-        foreach (var kvp in actor.SkillMastery)
+        // 1. Survival: Heal (High Priority)
+        if (policy != AutoBattlePolicy.Aggressive)
         {
-            if (actor.IsSkillOnCooldown(kvp.Key)) continue;
-
-            var skill = _skillCatalog.GetSkillById(kvp.Key);
-            if (skill == null) continue;
-            if (actor.Sp < skill.SpCost) continue;
-
-            availableSkills.Add(skill);
-        }
-
-        if (availableSkills.Count == 0) return null;
-
-        // 2. Heuristics
-
-        // A. Survival / Sustain (Priority High)
-        // If Self or Ally HP < 30% -> Heal
-        var criticalAllies = allies.Where(a => (float)a.Hp / a.MaxHp < 0.3f).OrderBy(a => a.Hp).ToList();
-        if (criticalAllies.Any())
-        {
-            var healSkill = availableSkills
-                .Where(s => s.Effects.Any(e => e.Tag == SkillEffectTag.Heal))
-                .OrderByDescending(s => s.Scaling.FirstOrDefault(sc => sc.Stat == StatType.Wis)?.Coefficient ?? 0)
+            var lowHpAlly = allies
+                .Where(a => (float)a.Hp / a.MaxHp < CriticalHpPercent)
+                .OrderBy(a => a.Hp)
                 .FirstOrDefault();
 
-            if (healSkill != null)
+            if (lowHpAlly != null)
             {
-                var target = criticalAllies.First();
+                var healSkillId = FindBestSkill(actor, SkillEffectTag.Heal, SkillTargetType.SingleAlly, true);
+                if (healSkillId.HasValue)
+                {
+                    return new UseSkillRequest
+                    {
+                        PlayerId = actor.Id,
+                        SkillId = healSkillId.Value,
+                        TargetId = lowHpAlly.Id
+                    };
+                }
+            }
+        }
+
+        // 2. Support: Cleanse
+        if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced)
+        {
+            var debuffedAlly = allies.FirstOrDefault(a =>
+                a.StatusEffects.Any(e => e.Tag == SkillEffectTag.Seal || e.Tag == SkillEffectTag.DebuffStats ||
+                                         e.Tag == SkillEffectTag.Burn));
+
+            if (debuffedAlly != null)
+            {
+                var cleanseSkillId = FindBestSkill(actor, SkillEffectTag.Cleanse, SkillTargetType.SingleAlly, true);
+                if (cleanseSkillId.HasValue)
+                {
+                    return new UseSkillRequest
+                    {
+                        PlayerId = actor.Id,
+                        SkillId = cleanseSkillId.Value,
+                        TargetId = debuffedAlly.Id
+                    };
+                }
+            }
+        }
+
+        // 3. Control: Dispel Enemy Buffs
+        if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced ||
+            policy == AutoBattlePolicy.Aggressive)
+        {
+            var buffedEnemy = enemies.FirstOrDefault(e =>
+                e.StatusEffects.Any(s => s.Tag == SkillEffectTag.BuffStats || s.Tag == SkillEffectTag.Shield));
+
+            if (buffedEnemy != null)
+            {
+                var dispelSkillId = FindBestSkill(actor, SkillEffectTag.Dispel, SkillTargetType.SingleEnemy, false);
+                if (dispelSkillId.HasValue)
+                {
+                    return new UseSkillRequest
+                    {
+                        PlayerId = actor.Id,
+                        SkillId = dispelSkillId.Value,
+                        TargetId = buffedEnemy.Id
+                    };
+                }
+            }
+        }
+
+        // 4. Control: Seal
+        if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced ||
+            policy == AutoBattlePolicy.Aggressive)
+        {
+            var targetEnemy = enemies
+                .Where(e => !e.StatusEffects.Any(s => s.Tag == SkillEffectTag.Seal))
+                .OrderByDescending(e => e.Atk + e.Mat) // Target strongest
+                .FirstOrDefault();
+
+            if (targetEnemy != null)
+            {
+                var sealSkillId = FindBestSkill(actor, SkillEffectTag.Seal, SkillTargetType.SingleEnemy, false);
+                if (sealSkillId.HasValue)
+                {
+                    return new UseSkillRequest
+                    {
+                        PlayerId = actor.Id,
+                        SkillId = sealSkillId.Value,
+                        TargetId = targetEnemy.Id
+                    };
+                }
+            }
+        }
+
+        // 5. Buffs
+        if (policy == AutoBattlePolicy.Supportive || policy == AutoBattlePolicy.Balanced)
+        {
+            // Sort for determinism
+            var sortedSkills = actor.SkillMastery.Keys.OrderBy(k => k).ToList();
+
+            foreach (var skillId in sortedSkills)
+            {
+                var skill = _skillCatalog.GetSkillById(skillId);
+                if (skill == null || actor.IsSkillOnCooldown(skill.SkillId) || actor.Sp < skill.SpCost)
+                {
+                    continue;
+                }
+
+                if (actor.Sp - skill.SpCost < MinSpThreshold)
+                {
+                    continue;
+                }
+
+                // Only consider SingleAlly buffs for now to keep it simple
+                if (skill.TargetType != SkillTargetType.SingleAlly && skill.TargetType != SkillTargetType.AllAllies)
+                {
+                    continue;
+                }
+
+                var buffEffect = skill.Effects.FirstOrDefault(e => e.Tag == SkillEffectTag.BuffStats);
+                if (buffEffect != null)
+                {
+                    var targetAlly = allies.FirstOrDefault(a => !HasConflictingBuff(a, buffEffect));
+
+                    if (targetAlly != null)
+                    {
+                        return new UseSkillRequest
+                        {
+                            PlayerId = actor.Id,
+                            SkillId = skill.SkillId,
+                            TargetId = targetAlly.Id
+                        };
+                    }
+                }
+            }
+        }
+
+        // 6. Attack
+        // Target selection: Weakest HP to secure kill
+        var target = enemies.OrderBy(e => e.Hp).First();
+
+        // Try to find a damage skill if SP permits
+        if (actor.Sp > MinSpThreshold)
+        {
+            var damageSkillId = FindBestSkill(actor, SkillEffectTag.Damage, SkillTargetType.SingleEnemy, false);
+            if (damageSkillId.HasValue)
+            {
                 return new UseSkillRequest
                 {
                     PlayerId = actor.Id,
-                    SkillId = healSkill.SkillId,
+                    SkillId = damageSkillId.Value,
                     TargetId = target.Id
                 };
             }
         }
 
-        // B. Support (Debuffed Ally -> Cleanse)
-        foreach (var ally in allies)
+        // Fallback: Basic Attack (Any cheap damage skill, ignoring threshold)
+        var basicAttack = FindBestSkill(actor, SkillEffectTag.Damage, SkillTargetType.SingleEnemy, true);
+        if (basicAttack.HasValue)
         {
-             if (ally.StatusEffects.Any(e => e.Tag == SkillEffectTag.DebuffStats || e.Tag == SkillEffectTag.Seal || e.Tag == SkillEffectTag.Burn))
-             {
-                 var cleanseSkill = availableSkills.FirstOrDefault(s => s.Effects.Any(e => e.Tag == SkillEffectTag.Cleanse));
-                 if (cleanseSkill != null)
-                 {
-                     return new UseSkillRequest { PlayerId = actor.Id, SkillId = cleanseSkill.SkillId, TargetId = ally.Id };
-                 }
-             }
-        }
-
-        // C. Aggression (Killable Target / Max Damage)
-        // Pick strongest attack (highest SP cost as proxy for power)
-        var attackSkills = availableSkills
-            .Where(s => s.Branch == SkillBranch.Physical || s.Branch == SkillBranch.Magical)
-            .OrderByDescending(s => s.SpCost)
-            .ToList();
-
-        if (attackSkills.Any())
-        {
-            var bestAttack = attackSkills.First();
-
-            // Target Selection:
-            // If AoE, just pick random or first enemy as primary?
-            // If Single, pick weakest enemy (lowest HP).
-            var weakestEnemy = enemies.OrderBy(e => e.Hp).First();
-
             return new UseSkillRequest
             {
                 PlayerId = actor.Id,
-                SkillId = bestAttack.SkillId,
-                TargetId = weakestEnemy.Id
+                SkillId = basicAttack.Value,
+                TargetId = target.Id
             };
         }
 
-        // Fallback: Just use random available skill on random valid target
-        var randomSkill = availableSkills[_random.Next(0, availableSkills.Count)];
+        return null;
+    }
 
-        ServerCombatant randomTarget;
-        if (randomSkill.TargetType == SkillTargetType.SingleAlly || randomSkill.TargetType == SkillTargetType.AllAllies || randomSkill.TargetType == SkillTargetType.RowAllies)
+    private int? FindBestSkill(
+        ServerCombatant actor,
+        SkillEffectTag effectTag,
+        SkillTargetType targetType,
+        bool ignoreThreshold)
+    {
+        int? bestSkillId = null;
+        var maxCost = -1;
+
+        // Sort for determinism
+        var sortedSkills = actor.SkillMastery.Keys.OrderBy(k => k).ToList();
+
+        foreach (var skillId in sortedSkills)
         {
-            randomTarget = allies[_random.Next(0, allies.Count)];
-        }
-        else if (randomSkill.TargetType == SkillTargetType.Self)
-        {
-            randomTarget = actor;
-        }
-        else
-        {
-            randomTarget = enemies[_random.Next(0, enemies.Count)];
+            var skill = _skillCatalog.GetSkillById(skillId);
+            if (skill == null)
+            {
+                continue;
+            }
+
+            if (actor.IsSkillOnCooldown(skillId))
+            {
+                continue;
+            }
+
+            if (actor.Sp < skill.SpCost)
+            {
+                continue;
+            }
+
+            if (!ignoreThreshold && actor.Sp - skill.SpCost < MinSpThreshold)
+            {
+                continue;
+            }
+
+            // Check target type compatibility (loose check)
+            var targetMatch = false;
+
+            if (targetType == SkillTargetType.SingleAlly && (skill.TargetType == SkillTargetType.SingleAlly ||
+                                                             skill.TargetType == SkillTargetType.AllAllies))
+            {
+                targetMatch = true;
+            }
+            else if (targetType == SkillTargetType.SingleEnemy &&
+                     (skill.TargetType == SkillTargetType.SingleEnemy ||
+                      skill.TargetType == SkillTargetType.AllEnemies ||
+                      skill.TargetType == SkillTargetType.RowEnemies))
+            {
+                targetMatch = true;
+            }
+
+            if (targetMatch)
+            {
+                if (skill.Effects.Any(e => e.Tag == effectTag))
+                {
+                    // Pick the most expensive one (heuristic for power)
+                    if (skill.SpCost > maxCost)
+                    {
+                        maxCost = skill.SpCost;
+                        bestSkillId = skillId;
+                    }
+                }
+            }
         }
 
-        return new UseSkillRequest
+        return bestSkillId;
+    }
+
+    private bool HasConflictingBuff(ServerCombatant combatant, SkillEffect newEffect)
+    {
+        if (!string.IsNullOrEmpty(newEffect.ConflictGroup))
         {
-            PlayerId = actor.Id,
-            SkillId = randomSkill.SkillId,
-            TargetId = randomTarget.Id
-        };
+            return combatant.StatusEffects.Any(e => e.ConflictGroup == newEffect.ConflictGroup);
+        }
+
+        if (newEffect.Tag == SkillEffectTag.BuffStats && !string.IsNullOrEmpty(newEffect.Param))
+        {
+            return combatant.StatusEffects.Any(e => e.Tag == SkillEffectTag.BuffStats && e.Param == newEffect.Param);
+        }
+
+        return false;
     }
 }
