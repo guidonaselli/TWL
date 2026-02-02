@@ -46,7 +46,7 @@ public class ServerFireSkillTests
         // Skill 4001 (Flame Smash) Scaling: 1.2 * Atk = 48.
 
         var target = new ServerCharacter
-            { Id = 2, Name = "Target", Hp = 100, Con = 5, Agi = 10, CharacterElement = Element.Wind };
+            { Id = 2, Name = "Target", Hp = 100, Con = 5, Agi = 10, CharacterElement = Element.Wind, Team = Team.Enemy };
         // Def = 10.
         // Element: Fire vs Wind => 1.5x Multiplier.
 

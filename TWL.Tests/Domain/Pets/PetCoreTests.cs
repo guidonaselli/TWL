@@ -12,6 +12,7 @@ public class PetCoreTests
         {
             PetTypeId = 1,
             Name = "Test",
+            Element = Element.Water,
             BaseHp = 100
         };
         // Ensure stats are calculated so MaxHp is valid
@@ -33,6 +34,7 @@ public class PetCoreTests
         {
             PetTypeId = 1,
             Name = "Test",
+            Element = Element.Water,
             BaseHp = 100,
             BaseStr = 10,
             BaseCon = 10
@@ -57,6 +59,7 @@ public class PetCoreTests
             PetTypeId = 1,
             BaseStr = 10,
             BaseHp = 100, // Explicit base stats to avoid 0
+            Element = Element.Fire,
             GrowthModel = new PetGrowthModel
             {
                 CurveType = GrowthCurveType.EarlyPeaker,
@@ -79,6 +82,7 @@ public class PetCoreTests
             PetTypeId = 2,
             BaseStr = 10,
             BaseHp = 100,
+            Element = Element.Water,
             GrowthModel = new PetGrowthModel
             {
                 CurveType = GrowthCurveType.LateBloomer,

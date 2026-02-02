@@ -12,21 +12,20 @@ public class ContentValidationTests
     private string GetContentRoot()
     {
         var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-        // Try to find the path by going up levels
         var current = new DirectoryInfo(baseDir);
-        while (current != null)
+        // Try to find the path by going up levels
+        for (int i = 0; i < 6; i++)
         {
+            if (current == null) break;
             var candidate = Path.Combine(current.FullName, "Content/Data");
             if (Directory.Exists(candidate))
             {
                 return candidate;
             }
-
             current = current.Parent;
         }
 
-        // Fallback for direct test execution if structure differs
-        return "../../../../Content/Data";
+        throw new DirectoryNotFoundException($"Could not find Content/Data directory starting from {baseDir}");
     }
 
     private JsonSerializerOptions GetJsonOptions()
@@ -43,11 +42,10 @@ public class ContentValidationTests
     private List<Skill> LoadSkills()
     {
         var root = GetContentRoot();
-        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/skills.json");
-        // Ensure path exists
+        var path = Path.Combine(root, "skills.json");
         if (!File.Exists(path))
         {
-            throw new FileNotFoundException($"Could not find skills.json at {Path.GetFullPath(path)}");
+            throw new FileNotFoundException($"Could not find skills.json at {path}");
         }
 
         var json = File.ReadAllText(path);
@@ -57,29 +55,62 @@ public class ContentValidationTests
     private List<QuestDefinition> LoadQuests()
     {
         var root = GetContentRoot();
-        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json");
-        // Ensure path exists
-        if (!File.Exists(path))
+        var quests = new List<QuestDefinition>();
+
+        // Load quests.json
+        var path = Path.Combine(root, "quests.json");
+        if (File.Exists(path))
         {
-            throw new FileNotFoundException($"Could not find quests.json at {Path.GetFullPath(path)}");
+            var json = File.ReadAllText(path);
+            quests.AddRange(JsonSerializer.Deserialize<List<QuestDefinition>>(json, GetJsonOptions()) ?? new List<QuestDefinition>());
         }
 
-        var json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize<List<QuestDefinition>>(json, GetJsonOptions()) ?? new List<QuestDefinition>();
+        // Load quests_messenger.json
+        var pathMessenger = Path.Combine(root, "quests_messenger.json");
+        if (File.Exists(pathMessenger))
+        {
+             var json = File.ReadAllText(pathMessenger);
+             quests.AddRange(JsonSerializer.Deserialize<List<QuestDefinition>>(json, GetJsonOptions()) ?? new List<QuestDefinition>());
+        }
+
+        if (quests.Count == 0)
+        {
+             throw new FileNotFoundException($"Could not find any quest files in {root}");
+        }
+        return quests;
     }
 
     private List<PetDefinition> LoadPets()
     {
         var root = GetContentRoot();
-        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/pets.json");
-        // Ensure path exists
+        var path = Path.Combine(root, "pets.json");
         if (!File.Exists(path))
         {
-            throw new FileNotFoundException($"Could not find pets.json at {Path.GetFullPath(path)}");
+            throw new FileNotFoundException($"Could not find pets.json at {path}");
         }
 
         var json = File.ReadAllText(path);
         return JsonSerializer.Deserialize<List<PetDefinition>>(json, GetJsonOptions()) ?? new List<PetDefinition>();
+    }
+
+    [Fact]
+    public void ValidateSkillCategories()
+    {
+        var skills = LoadSkills();
+        var allowedCategories = new HashSet<SkillCategory>
+        {
+            SkillCategory.None,
+            SkillCategory.RebirthJob,
+            SkillCategory.ElementSpecial,
+            SkillCategory.Fairy,
+            SkillCategory.Dragon,
+            SkillCategory.Goddess
+        };
+
+        foreach (var skill in skills)
+        {
+            Assert.Contains(skill.Category, allowedCategories);
+        }
     }
 
     [Fact]
@@ -242,6 +273,28 @@ public class ContentValidationTests
     }
 
     [Fact]
+    public void ValidateQuestIdempotency()
+    {
+        var quests = LoadQuests();
+        foreach (var quest in quests)
+        {
+            if (quest.Rewards.GrantSkillId.HasValue)
+            {
+                // If a quest grants a skill, it must be idempotent.
+                // Either the quest itself is one-off (Repeatability.None)
+                // OR it has explicit AntiAbuseRules containing "UniquePerCharacter".
+
+                var isOneOff = quest.Repeatability == QuestRepeatability.None;
+                var hasUniqueRule = !string.IsNullOrEmpty(quest.AntiAbuseRules) &&
+                                    quest.AntiAbuseRules.Contains("UniquePerCharacter");
+
+                Assert.True(isOneOff || hasUniqueRule,
+                    $"Quest {quest.QuestId} grants a skill but is repeatable and lacks 'UniquePerCharacter' AntiAbuseRule.");
+            }
+        }
+    }
+
+    [Fact]
     public void ValidateUniqueDisplayNameKeys()
     {
         var skills = LoadSkills();
@@ -345,11 +398,10 @@ public class ContentValidationTests
     private List<MonsterDefinition> LoadMonsters()
     {
         var root = GetContentRoot();
-        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/monsters.json");
-        // Ensure path exists
+        var path = Path.Combine(root, "monsters.json");
         if (!File.Exists(path))
         {
-            throw new FileNotFoundException($"Could not find monsters.json at {Path.GetFullPath(path)}");
+            throw new FileNotFoundException($"Could not find monsters.json at {path}");
         }
 
         var json = File.ReadAllText(path);
@@ -360,7 +412,7 @@ public class ContentValidationTests
     private List<ZoneSpawnConfig> LoadSpawnConfigs()
     {
         var root = GetContentRoot();
-        var spawnDir = Path.Combine(AppContext.BaseDirectory, "Content/Data/spawns");
+        var spawnDir = Path.Combine(root, "spawns");
         if (!Directory.Exists(spawnDir))
         {
             return new List<ZoneSpawnConfig>();
@@ -411,7 +463,6 @@ public class ContentValidationTests
         var configs = LoadSpawnConfigs();
         var monsters = LoadMonsters();
         var monsterIds = monsters.Select(m => m.MonsterId).ToHashSet();
-        // Families are not strictly defined in a JSON yet, assuming implicit or 1-3 from monsters.json
 
         foreach (var config in configs)
         {

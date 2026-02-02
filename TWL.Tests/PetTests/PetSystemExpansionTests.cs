@@ -39,6 +39,7 @@ public class PetSystemExpansionTests : IDisposable
     ""PetTypeId"": 1001,
     ""Name"": ""Slime"",
     ""Type"": ""Capture"",
+    ""Element"": ""Water"",
     ""BaseHp"": 100,
     ""GrowthModel"": { ""HpGrowthPerLevel"": 10 },
     ""SkillSet"": [],

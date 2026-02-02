@@ -40,7 +40,7 @@ public class ServerWaterSkillTests
         // Skill scaling: 1.2 * Atk = 48.
 
         var target = new ServerCharacter
-            { Id = 2, Name = "Target", Hp = 100, Con = 5, CharacterElement = Element.Water };
+            { Id = 2, Name = "Target", Hp = 100, Con = 5, CharacterElement = Element.Water, Team = Team.Enemy };
         // Def = 10.
         // Element same: 1.0x
 

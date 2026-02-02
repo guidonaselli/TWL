@@ -9,7 +9,7 @@ public class PetSwitchingTests
     public void SetActivePet_ShouldWork_WhenPetOwned()
     {
         var chara = new ServerCharacter();
-        var def = new PetDefinition { PetTypeId = 1, Name = "Test" };
+        var def = new PetDefinition { PetTypeId = 1, Name = "Test", Element = Element.Earth };
         var pet = new ServerPet(def);
         chara.AddPet(pet);
 
@@ -37,7 +37,7 @@ public class PetSwitchingTests
     public void SetActivePet_ShouldClear_WhenNullPassed()
     {
         var chara = new ServerCharacter();
-        var def = new PetDefinition { PetTypeId = 1, Name = "Test" };
+        var def = new PetDefinition { PetTypeId = 1, Name = "Test", Element = Element.Earth };
         var pet = new ServerPet(def);
         chara.AddPet(pet);
         chara.SetActivePet(pet.InstanceId);
