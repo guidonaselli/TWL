@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="200">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="40" height="40" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="400">
  <tileset firstgid="1" source="../../Tilesets/Tiraka/tiraka.tsx"/>
  <layer id="1" name="Ground" width="40" height="40">
   <data encoding="csv">
@@ -310,9 +310,39 @@
   </data>
  </layer>
  <objectgroup id="8" name="Collisions">
+  <object id="301" x="0" y="0" width="1280" height="32">
+   <properties>
+    <property name="CollisionType" value="Solid"/>
+   </properties>
+  </object>
+  <object id="302" x="0" y="1248" width="1280" height="32">
+   <properties>
+    <property name="CollisionType" value="Solid"/>
+   </properties>
+  </object>
+  <object id="303" x="0" y="32" width="32" height="576">
+   <properties>
+    <property name="CollisionType" value="Solid"/>
+   </properties>
+  </object>
+  <object id="304" x="0" y="704" width="32" height="544">
+   <properties>
+    <property name="CollisionType" value="Solid"/>
+   </properties>
+  </object>
+  <object id="305" x="1248" y="32" width="32" height="576">
+   <properties>
+    <property name="CollisionType" value="Solid"/>
+   </properties>
+  </object>
+  <object id="306" x="1248" y="704" width="32" height="544">
+   <properties>
+    <property name="CollisionType" value="Solid"/>
+   </properties>
+  </object>
  </objectgroup>
  <objectgroup id="9" name="Spawns">
-  <object id="101" x="64" y="320">
+  <object id="101" x="64" y="640">
    <properties>
     <property name="Id" value="1"/>
     <property name="SpawnType" value="PlayerStart"/>
@@ -326,26 +356,33 @@
    </properties>
    <point/>
   </object>
+  <object id="103" x="640" y="640">
+   <properties>
+    <property name="Id" value="3"/>
+    <property name="SpawnType" value="Monster"/>
+    <property name="MonsterId" value="2005"/>
+    <property name="RespawnSeconds" value="60"/>
+    <property name="LevelRange" value="6"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="104" x="800" y="500">
+   <properties>
+    <property name="Id" value="4"/>
+    <property name="SpawnType" value="Monster"/>
+    <property name="MonsterId" value="2009"/>
+    <property name="RespawnSeconds" value="60"/>
+   </properties>
+   <point/>
+  </object>
  </objectgroup>
  <objectgroup id="10" name="Triggers">
-  <object id="201" x="0" y="320" width="32" height="64">
+  <object id="201" x="0" y="608" width="32" height="96">
    <properties>
     <property name="TriggerType" value="MapTransition"/>
     <property name="Id" value="100"/>
-    <property name="TargetMapId" value="1"/>
-    <property name="TargetSpawnId" value="1"/>
-    <property name="Cooldown" value="0"/>
-    <property name="OncePerCharacter" value="false"/>
-    <property name="RequiredLevel" value="0"/>
-    <property name="RequiredFlags" value=""/>
-   </properties>
-  </object>
-  <object id="202" x="1248" y="608" width="32" height="96">
-   <properties>
-    <property name="TriggerType" value="MapTransition"/>
-    <property name="Id" value="101"/>
-    <property name="TargetMapId" value="3"/>
-    <property name="TargetSpawnId" value="1"/>
+    <property name="TargetMapId" value="2"/>
+    <property name="TargetSpawnId" value="2"/>
     <property name="Cooldown" value="0"/>
     <property name="OncePerCharacter" value="false"/>
     <property name="RequiredLevel" value="0"/>

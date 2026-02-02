@@ -10,6 +10,11 @@
       "TargetMapId": 1,
       "SpawnId": 1,
       "Gating": { "MinLevel": 1 }
+    },
+    {
+      "TargetMapId": 3,
+      "SpawnId": 1,
+      "Gating": { "MinLevel": 1 }
     }
   ],
   "AmbientProfile": {

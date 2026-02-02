@@ -1,0 +1,23 @@
+{
+  "MapId": 3,
+  "RegionId": "IslaBrisa",
+  "Biome": "Tropical",
+  "RecommendedLevelMin": 3,
+  "RecommendedLevelMax": 6,
+  "EntryPoints": [ 1, 2 ],
+  "Exits": [
+    {
+      "TargetMapId": 2,
+      "SpawnId": 2,
+      "Gating": { "MinLevel": 1 }
+    }
+  ],
+  "AmbientProfile": {
+    "MusicKey": "BGM_JUNGLE_01",
+    "AmbienceKey": "AMB_JUNGLE",
+    "PaletteHintKey": "DAY_CYCLE"
+  },
+  "WorldFlagsSet": [],
+  "WorldFlagsCleared": [],
+  "Notes": "Jungle edge path leading to Cueva del Eco."
+}
