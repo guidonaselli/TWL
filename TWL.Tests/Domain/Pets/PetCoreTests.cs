@@ -12,6 +12,7 @@ public class PetCoreTests
         {
             PetTypeId = 1,
             Name = "Test",
+            Element = Element.Earth,
             BaseHp = 100
         };
         // Ensure stats are calculated so MaxHp is valid
@@ -23,7 +24,7 @@ public class PetCoreTests
         Assert.True(pet.IsDead);
         Assert.Equal(0, pet.Hp);
         Assert.Equal(0, pet.Sp);
-        Assert.Equal(40, pet.Amity); // 50 - 10
+        Assert.Equal(49, pet.Amity); // 50 - 1
     }
 
     [Fact]
@@ -33,6 +34,7 @@ public class PetCoreTests
         {
             PetTypeId = 1,
             Name = "Test",
+            Element = Element.Earth,
             BaseHp = 100,
             BaseStr = 10,
             BaseCon = 10
@@ -55,6 +57,7 @@ public class PetCoreTests
         var earlyDef = new PetDefinition
         {
             PetTypeId = 1,
+            Element = Element.Earth,
             BaseStr = 10,
             BaseHp = 100, // Explicit base stats to avoid 0
             GrowthModel = new PetGrowthModel
@@ -77,6 +80,7 @@ public class PetCoreTests
         var lateDef = new PetDefinition
         {
             PetTypeId = 2,
+            Element = Element.Earth,
             BaseStr = 10,
             BaseHp = 100,
             GrowthModel = new PetGrowthModel

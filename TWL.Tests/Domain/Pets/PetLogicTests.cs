@@ -12,6 +12,7 @@ public class PetLogicTests
         {
             PetTypeId = 1,
             Name = "Test",
+            Element = Element.Earth,
             SkillSet = new List<PetSkillSet>
             {
                 new() { SkillId = 101, UnlockLevel = 5, UnlockAmity = 0 },
@@ -48,6 +49,7 @@ public class PetLogicTests
         {
             PetTypeId = 1,
             Name = "Test",
+            Element = Element.Earth,
             RebirthEligible = true,
             RebirthSkillId = 999
         };

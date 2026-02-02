@@ -128,6 +128,10 @@ public class PetService : IPetService
         return pet.InstanceId;
     }
 
+    public const int ItemRevive1Hp = 801;
+    public const int ItemRevive100Hp = 802;
+    public const int ItemRevive500Hp = 803;
+
     public bool RevivePet(int ownerId, string petInstanceId)
     {
         var session = _playerService.GetSession(ownerId);
@@ -152,14 +156,26 @@ public class PetService : IPetService
             return false; // Cannot revive expired pets
         }
 
-        var cost = pet.Level * 50; // Simple cost formula
-        if (!session.Character.TryConsumeGold(cost))
+        // Priority: Use cheapest/lowest HP item first
+        if (session.Character.RemoveItem(ItemRevive1Hp, 1))
         {
-            return false;
+            pet.Revive(1);
+            return true;
         }
 
-        pet.Revive();
-        return true;
+        if (session.Character.RemoveItem(ItemRevive100Hp, 1))
+        {
+            pet.Revive(100);
+            return true;
+        }
+
+        if (session.Character.RemoveItem(ItemRevive500Hp, 1))
+        {
+            pet.Revive(500);
+            return true;
+        }
+
+        return false;
     }
 
     public bool DismissPet(int ownerId, string petInstanceId)

@@ -12,6 +12,7 @@ public class ServerPetTests
         {
             PetTypeId = 101,
             Name = "Test Parrot",
+            Element = Element.Wind,
             BaseHp = 30,
             IsQuestUnique = true,
             SkillIds = new List<int>(),
@@ -38,6 +39,7 @@ public class ServerPetTests
             PetTypeId = 1,
             BaseHp = 10,
             Name = "Test",
+            Element = Element.Fire,
             SkillIds = new List<int>(),
             RebirthSprite = ""
         };
