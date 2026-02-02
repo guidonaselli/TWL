@@ -47,7 +47,13 @@
 - [x] **0002 - Costa de Mareas**
     - **Status:** Implemented (Skeleton)
     - **Type:** Adventure Field
-    - **Connections:** 0001 (Playa del Naufragio)
+    - **Connections:** 0001 (Playa del Naufragio), 0003 (Sendero de la Selva)
+
+- [x] **0003 - Sendero de la Selva**
+    - **Status:** Implemented
+    - **Type:** Adventure Field
+    - **Connections:** 0002 (Costa de Mareas)
+    - **Mobs:** Rock Monkey (2005), Root Vine (2009).
 
 ## Backlog
 - [ ] Starter Island (Tutorial) - Remaining maps (0003-0099)
