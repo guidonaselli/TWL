@@ -162,6 +162,57 @@ public class PlayerQuestComponent
         }
     }
 
+    private bool IsBlockedByMutualExclusion(QuestDefinition def)
+    {
+        if (string.IsNullOrEmpty(def.MutualExclusionGroup))
+        {
+            return false;
+        }
+
+        foreach (var kvp in QuestStates)
+        {
+            var otherDef = _questManager.GetDefinition(kvp.Key);
+            if (otherDef == null || !string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup,
+                    StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            if (kvp.Value == QuestState.InProgress)
+            {
+                return true;
+            }
+
+            if (kvp.Value == QuestState.Completed || kvp.Value == QuestState.RewardClaimed)
+            {
+                if (QuestCompletionTimes.TryGetValue(kvp.Key, out var completionTime))
+                {
+                    if (otherDef.Repeatability == QuestRepeatability.Daily)
+                    {
+                        if (completionTime.Date == DateTime.UtcNow.Date)
+                        {
+                            return true;
+                        }
+                    }
+                    else if (otherDef.Repeatability == QuestRepeatability.Weekly)
+                    {
+                        var cal = CultureInfo.InvariantCulture.Calendar;
+                        var week1 = cal.GetWeekOfYear(completionTime, CalendarWeekRule.FirstFourDayWeek,
+                            DayOfWeek.Monday);
+                        var week2 = cal.GetWeekOfYear(DateTime.UtcNow, CalendarWeekRule.FirstFourDayWeek,
+                            DayOfWeek.Monday);
+                        if (week1 == week2 && completionTime.Year == DateTime.UtcNow.Year)
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
+        return false;
+    }
+
     private bool CheckGating(QuestDefinition def)
     {
         if (Character == null)
@@ -336,37 +387,9 @@ public class PlayerQuestComponent
             }
 
             // Exclusivity: Mutual Exclusion Group
-            if (!string.IsNullOrEmpty(def.MutualExclusionGroup))
+            if (IsBlockedByMutualExclusion(def))
             {
-                foreach (var kvp in QuestStates)
-                {
-                    if (kvp.Value == QuestState.InProgress)
-                    {
-                        var otherDef = _questManager.GetDefinition(kvp.Key);
-                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup,
-                                StringComparison.OrdinalIgnoreCase))
-                        {
-                            return false;
-                        }
-                    }
-                }
-            }
-
-            // Exclusivity: Mutual Exclusion Group
-            if (!string.IsNullOrEmpty(def.MutualExclusionGroup))
-            {
-                foreach (var kvp in QuestStates)
-                {
-                    if (kvp.Value == QuestState.InProgress)
-                    {
-                        var otherDef = _questManager.GetDefinition(kvp.Key);
-                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup,
-                                StringComparison.OrdinalIgnoreCase))
-                        {
-                            return false;
-                        }
-                    }
-                }
+                return false;
             }
 
 
@@ -456,20 +479,9 @@ public class PlayerQuestComponent
             }
 
             // Exclusivity: Mutual Exclusion Group
-            if (!string.IsNullOrEmpty(def.MutualExclusionGroup))
+            if (IsBlockedByMutualExclusion(def))
             {
-                foreach (var kvp in QuestStates)
-                {
-                    if (kvp.Value == QuestState.InProgress)
-                    {
-                        var otherDef = _questManager.GetDefinition(kvp.Key);
-                        if (otherDef != null && string.Equals(otherDef.MutualExclusionGroup, def.MutualExclusionGroup,
-                                StringComparison.OrdinalIgnoreCase))
-                        {
-                            return false;
-                        }
-                    }
-                }
+                return false;
             }
 
 

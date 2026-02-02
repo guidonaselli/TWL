@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using TWL.Server.Simulation.Managers;
 using TWL.Shared.Domain.Quests;
 
@@ -129,8 +130,12 @@ public class QuestValidationTests
 
         // Parse and validate
         var json = File.ReadAllText(questsPath);
-        var quests = JsonSerializer.Deserialize<List<QuestDefinition>>(json,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var options = new JsonSerializerOptions
+        {
+            PropertyNameCaseInsensitive = true,
+            Converters = { new JsonStringEnumConverter() }
+        };
+        var quests = JsonSerializer.Deserialize<List<QuestDefinition>>(json, options);
 
         Assert.NotNull(quests);
 
