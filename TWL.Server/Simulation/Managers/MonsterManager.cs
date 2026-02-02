@@ -34,8 +34,7 @@ public class MonsterManager
                 {
                     if (def.Element == Element.None && !def.Tags.Contains("QuestOnly"))
                     {
-                        Console.WriteLine($"Error: Monster {def.MonsterId} ({def.Name}) has Element.None but is missing 'QuestOnly' tag. Skipping.");
-                        continue;
+                        throw new InvalidDataException($"Monster {def.MonsterId} ({def.Name}) has Element.None but is missing 'QuestOnly' tag.");
                     }
 
                     if (_definitions.ContainsKey(def.MonsterId))

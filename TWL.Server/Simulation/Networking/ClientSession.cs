@@ -604,8 +604,23 @@ public class ClientSession
             }
             else
             {
-                Character = new ServerCharacter { Id = uid, Name = loginDto.Username, Hp = 100 };
+                // New Character
+                Character = new ServerCharacter
+                {
+                    Id = uid,
+                    Name = loginDto.Username,
+                    Hp = 100,
+                    CharacterElement = Element.Earth // Default to Earth to prevent Element.None
+                };
                 QuestComponent.Character = Character;
+            }
+
+            // Migration: Ensure Element is not None
+            if (Character != null && Character.CharacterElement == Element.None)
+            {
+                Console.WriteLine($"[Migration] Player {Character.Name} ({Character.Id}) has Element.None. Setting to Earth.");
+                Character.CharacterElement = Element.Earth;
+                Character.IsDirty = true;
             }
 
             _playerService.RegisterSession(this);
