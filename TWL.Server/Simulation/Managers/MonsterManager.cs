@@ -32,6 +32,12 @@ public class MonsterManager
             {
                 foreach (var def in list)
                 {
+                    if (def.Element == Element.None && !def.Tags.Contains("QuestOnly"))
+                    {
+                        Console.WriteLine($"Error: Monster {def.MonsterId} ({def.Name}) has Element.None but is missing 'QuestOnly' tag. Skipping.");
+                        continue;
+                    }
+
                     if (_definitions.ContainsKey(def.MonsterId))
                     {
                         Console.WriteLine($"Warning: Duplicate monster ID {def.MonsterId}");
