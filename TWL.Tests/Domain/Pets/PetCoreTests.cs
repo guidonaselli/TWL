@@ -60,6 +60,7 @@ public class PetCoreTests
             Element = Element.Earth,
             BaseStr = 10,
             BaseHp = 100, // Explicit base stats to avoid 0
+            Element = Element.Fire,
             GrowthModel = new PetGrowthModel
             {
                 CurveType = GrowthCurveType.EarlyPeaker,
@@ -83,6 +84,7 @@ public class PetCoreTests
             Element = Element.Earth,
             BaseStr = 10,
             BaseHp = 100,
+            Element = Element.Water,
             GrowthModel = new PetGrowthModel
             {
                 CurveType = GrowthCurveType.LateBloomer,

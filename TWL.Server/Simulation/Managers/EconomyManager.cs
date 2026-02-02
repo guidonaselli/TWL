@@ -153,7 +153,10 @@ public class EconomyManager : IEconomyService, IDisposable
 
         lock (tx)
         {
-            if (tx.State == TransactionState.Completed)
+            // HARDENING: Check character-local persistence for double-spend prevention.
+            // If the global ledger failed to record completion but the character was saved with the order marked,
+            // we must treat it as completed to avoid giving currency twice.
+            if (tx.State == TransactionState.Completed || character.HasProcessedOrder(orderId))
             {
                 // Idempotent success
                 return new EconomyOperationResultDTO
@@ -182,6 +185,9 @@ public class EconomyManager : IEconomyService, IDisposable
             // Credit Gems
             var gemsToAdd = _productPrices[tx.ProductId];
             character.AddPremiumCurrency(gemsToAdd);
+
+            // Mark locally on character (critical for anti-double spend if ledger write fails)
+            character.MarkOrderProcessed(orderId);
 
             tx.State = TransactionState.Completed;
 

@@ -55,7 +55,6 @@ public enum SkillCategory
     ElementSpecial,
     Fairy,
     Dragon,
-    Griffin,
     Goddess
 }
 

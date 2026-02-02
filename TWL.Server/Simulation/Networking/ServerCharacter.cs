@@ -14,6 +14,8 @@ public class ServerCharacter : ServerCombatant
 
     private readonly List<ServerPet> _pets = new();
     private readonly object _progressLock = new();
+    private readonly object _orderLock = new();
+    private readonly HashSet<string> _processedOrders = new();
 
     private int _exp;
 
@@ -148,6 +150,23 @@ public class ServerCharacter : ServerCombatant
     public event Action<ServerPet>? OnPetAdded;
     public event Action<ServerCharacter, int, int>? OnTradeCommitted;
     public void SetLevel(int level) => Level = level; // For mobs
+
+    public bool HasProcessedOrder(string orderId)
+    {
+        lock (_orderLock)
+        {
+            return _processedOrders.Contains(orderId);
+        }
+    }
+
+    public void MarkOrderProcessed(string orderId)
+    {
+        lock (_orderLock)
+        {
+            _processedOrders.Add(orderId);
+            IsDirty = true;
+        }
+    }
 
     public override void ReplaceSkill(int oldId, int newId)
     {
@@ -474,9 +493,16 @@ public class ServerCharacter : ServerCombatant
 
     public ServerCharacterData GetSaveData()
     {
+        HashSet<string> ordersCopy;
+        lock (_orderLock)
+        {
+            ordersCopy = new HashSet<string>(_processedOrders);
+        }
+
         var data = new ServerCharacterData
         {
             Id = Id,
+            ProcessedOrders = ordersCopy,
             Name = Name,
             Hp = _hp,
             Sp = _sp,
@@ -534,6 +560,18 @@ public class ServerCharacter : ServerCombatant
     public void LoadSaveData(ServerCharacterData data)
     {
         Id = data.Id;
+        lock (_orderLock)
+        {
+            _processedOrders.Clear();
+            if (data.ProcessedOrders != null)
+            {
+                foreach (var order in data.ProcessedOrders)
+                {
+                    _processedOrders.Add(order);
+                }
+            }
+        }
+
         Name = data.Name;
         _hp = data.Hp;
         _sp = data.Sp;
