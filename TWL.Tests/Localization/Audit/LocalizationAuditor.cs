@@ -10,7 +10,7 @@ public class LocalizationAuditor
     private readonly string _clientPath;
     private readonly string _serverPath;
     private readonly string _solutionRoot;
-    private AuditConfig _config;
+    private AuditConfig _config = new();
 
     public LocalizationAuditor(string solutionRoot, string clientPath, string serverPath)
     {
@@ -22,13 +22,14 @@ public class LocalizationAuditor
 
     private void LoadConfig()
     {
+        AuditConfig? loadedConfig = null;
         var configPath = Path.Combine(_solutionRoot, "config", "localization-audit-allowlist.json");
         if (File.Exists(configPath))
         {
             try
             {
                 var json = File.ReadAllText(configPath);
-                _config = JsonSerializer.Deserialize<AuditConfig>(json);
+                loadedConfig = JsonSerializer.Deserialize<AuditConfig>(json);
             }
             catch (Exception ex)
             {
@@ -37,13 +38,10 @@ public class LocalizationAuditor
         }
 
         // Defaults if load failed or file missing
-        if (_config == null)
+        _config = loadedConfig ?? new AuditConfig
         {
-            _config = new AuditConfig
-            {
-                RequiredLanguages = new List<string> { "base", "en" }
-            };
-        }
+            RequiredLanguages = new List<string> { "base", "en" }
+        };
     }
 
     public AuditResults RunAudit()
