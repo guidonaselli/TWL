@@ -3,19 +3,23 @@ using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.Requests;
 using TWL.Shared.Domain.Skills;
+using TWL.Shared.Services;
 
 namespace TWL.Tests.Skills;
 
 public class DailySkillsTests
 {
-    private readonly AutoBattleService _autoBattle;
+    private readonly AutoBattleManager _autoBattle;
     private readonly Mock<ISkillCatalog> _skillCatalogMock;
+    private readonly Mock<IRandomService> _randomMock;
 
     public DailySkillsTests()
     {
         _skillCatalogMock = new Mock<ISkillCatalog>();
-        _autoBattle = new AutoBattleService(_skillCatalogMock.Object);
+        _randomMock = new Mock<IRandomService>();
+        _autoBattle = new AutoBattleManager(_skillCatalogMock.Object);
     }
 
     [Fact]
@@ -53,7 +57,7 @@ public class DailySkillsTests
         var actor = new ServerCharacter { Id = 1, Sp = 100 };
         actor.LearnSkill(100);
         // Enemy: Con=10->Hp100, Str=25->Atk50, Int=25->Mat50
-        var enemy = new ServerCharacter { Id = 2, Hp = 100, Con = 10, Str = 25, Int = 25 };
+        var enemy = new ServerCharacter { Id = 2, Hp = 100, Con = 10, Str = 25, Int = 25, Team = Team.Enemy };
         var ally = new ServerCharacter { Id = 3, Hp = 100, Con = 10 };
 
         var sealSkill = new Skill
@@ -67,13 +71,12 @@ public class DailySkillsTests
         _skillCatalogMock.Setup(x => x.GetSkillById(100)).Returns(sealSkill);
 
         // Act
-        var action = _autoBattle.SelectAction(actor, new List<ServerCharacter> { ally },
-            new List<ServerCharacter> { enemy }, 12345, AutoBattlePolicy.Supportive);
+        var result = _autoBattle.GetBestAction(actor, new List<ServerCombatant> { actor, ally, enemy }, AutoBattlePolicy.Supportive);
 
         // Assert
-        Assert.Equal(CombatActionType.Skill, action.Type);
-        Assert.Equal(100, action.SkillId);
-        Assert.Equal(2, action.TargetId);
+        Assert.NotNull(result);
+        Assert.Equal(100, result.SkillId);
+        Assert.Equal(2, result.TargetId);
     }
 
     [Fact]
@@ -82,7 +85,7 @@ public class DailySkillsTests
         // Arrange
         var actor = new ServerCharacter { Id = 1, Sp = 100 };
         actor.LearnSkill(200);
-        var enemy = new ServerCharacter { Id = 2, Hp = 10 };
+        var enemy = new ServerCharacter { Id = 2, Hp = 10, Team = Team.Enemy };
         var ally = new ServerCharacter { Id = 3, Hp = 100, Con = 10 }; // Needs buff
 
         var buffSkill = new Skill
@@ -99,13 +102,12 @@ public class DailySkillsTests
         _skillCatalogMock.Setup(x => x.GetSkillById(200)).Returns(buffSkill);
 
         // Act
-        var action = _autoBattle.SelectAction(actor, new List<ServerCharacter> { ally },
-            new List<ServerCharacter> { enemy }, 12345, AutoBattlePolicy.Supportive);
+        var result = _autoBattle.GetBestAction(actor, new List<ServerCombatant> { actor, ally, enemy }, AutoBattlePolicy.Supportive);
 
         // Assert
-        Assert.Equal(CombatActionType.Skill, action.Type);
-        Assert.Equal(200, action.SkillId);
-        Assert.Equal(3, action.TargetId);
+        Assert.NotNull(result);
+        Assert.Equal(200, result.SkillId);
+        Assert.Equal(3, result.TargetId);
     }
 
     [Fact]
@@ -132,10 +134,9 @@ public class DailySkillsTests
         _skillCatalogMock.Setup(x => x.GetSkillById(200)).Returns(buffSkill);
 
         // Act
-        var action = _autoBattle.SelectAction(actor, new List<ServerCharacter> { ally }, new List<ServerCharacter>(),
-            12345, AutoBattlePolicy.Supportive);
+        var result = _autoBattle.GetBestAction(actor, new List<ServerCombatant> { actor, ally }, AutoBattlePolicy.Supportive);
 
         // Assert
-        Assert.NotEqual(CombatActionType.Skill, action.Type);
+        Assert.Null(result); // Should skip skill
     }
 }

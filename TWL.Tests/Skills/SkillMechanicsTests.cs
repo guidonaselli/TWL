@@ -37,7 +37,7 @@ public class SkillMechanicsTests
     {
         // Arrange
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Sp = 100, Int = 20 };
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Wis = 20 };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Wis = 20, Team = Team.Enemy };
 
         // Target has resistance buff
         target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 0.5f, 3, "EarthResist"),
@@ -84,7 +84,7 @@ public class SkillMechanicsTests
     {
         // Arrange
         var attacker = new ServerCharacter { Id = 1, Sp = 100 };
-        var target = new ServerCharacter { Id = 2 };
+        var target = new ServerCharacter { Id = 2, Team = Team.Enemy };
 
         // Target has 100% resistance
         target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 1.0f, 3, "EarthResist"),
@@ -123,7 +123,7 @@ public class SkillMechanicsTests
     {
         // Arrange
         var attacker = new ServerCharacter { Id = 1, Sp = 100 };
-        var target = new ServerCharacter { Id = 2 };
+        var target = new ServerCharacter { Id = 2, Team = Team.Enemy };
         var skill = new Skill { SkillId = 101, SpCost = 10, Cooldown = 2, Effects = new List<SkillEffect>() };
 
         _skillCatalogMock.Setup(x => x.GetSkillById(101)).Returns(skill);
@@ -178,5 +178,83 @@ public class SkillMechanicsTests
         Assert.Single(effects);
         Assert.Equal(2, effects[0].StackCount);
         Assert.Equal(20, effects[0].Value);
+    }
+
+    [Fact]
+    public void UseSkill_Seal_HitChance_ScalesWithIntWis()
+    {
+        // Arrange
+        var attacker = new ServerCharacter { Id = 1, Int = 60, Sp = 100 }; // +60
+        var target = new ServerCharacter { Id = 2, Wis = 10, Hp = 100, Team = Team.Enemy };   // -10 => Diff +50 => +0.5
+
+        var skill = new Skill
+        {
+            SkillId = 500,
+            SpCost = 10,
+            HitRules = new SkillHitRules
+            {
+                BaseChance = 0.4f,
+                MinChance = 0.1f,
+                MaxChance = 1.0f
+            },
+            Effects = new List<SkillEffect>
+            {
+                new() { Tag = SkillEffectTag.Seal, Value = 0, Duration = 2 }
+            }
+        };
+
+        _skillCatalogMock.Setup(x => x.GetSkillById(500)).Returns(skill);
+        _combatManager.RegisterCombatant(attacker);
+        _combatManager.RegisterCombatant(target);
+
+        // Calculated Chance: 0.4 + (60 - 10)*0.01 = 0.4 + 0.5 = 0.9.
+        // If Random returns 0.85, it should hit.
+        _randomMock.Setup(x => x.NextFloat()).Returns(0.85f);
+
+        // Act
+        var result = _combatManager.UseSkill(new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 500 });
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Single(result[0].AddedEffects); // Hit
+    }
+
+    [Fact]
+    public void UseSkill_Seal_HitChance_ClampsToMin()
+    {
+        // Arrange
+        var attacker = new ServerCharacter { Id = 1, Int = 10, Sp = 100 };
+        var target = new ServerCharacter { Id = 2, Wis = 100, Hp = 100, Team = Team.Enemy }; // Diff -90 => -0.9
+
+        var skill = new Skill
+        {
+            SkillId = 501,
+            SpCost = 10,
+            HitRules = new SkillHitRules
+            {
+                BaseChance = 0.5f,
+                MinChance = 0.1f, // Should clamp here
+                MaxChance = 1.0f
+            },
+            Effects = new List<SkillEffect>
+            {
+                new() { Tag = SkillEffectTag.Seal }
+            }
+        };
+
+        _skillCatalogMock.Setup(x => x.GetSkillById(501)).Returns(skill);
+        _combatManager.RegisterCombatant(attacker);
+        _combatManager.RegisterCombatant(target);
+
+        // Calculated: 0.5 - 0.9 = -0.4 -> Clamped to 0.1.
+        // If Random returns 0.15, it should MISS (0.15 > 0.1).
+        _randomMock.Setup(x => x.NextFloat()).Returns(0.15f);
+
+        // Act
+        var result = _combatManager.UseSkill(new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 501 });
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Empty(result[0].AddedEffects); // Miss
     }
 }
