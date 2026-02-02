@@ -36,7 +36,7 @@ public class ServerEarthSkillTests
         // Atk = 40.
         // Skill scaling: 1.2 * Atk = 48.
 
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Con = 5, Agi = 10 };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Con = 5, Agi = 10, Team = Team.Enemy };
         // Def = 10.
 
         // Expected Damage = 48 - 10 = 38.

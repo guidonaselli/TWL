@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using TWL.Shared.Constants;
 using TWL.Shared.Domain.Quests;
 
@@ -25,8 +26,9 @@ public class ContentSafetyTests
         Assert.True(File.Exists(path), "quests.json not found");
 
         var json = File.ReadAllText(path);
-        var quests = JsonSerializer.Deserialize<List<QuestDefinition>>(json,
-            new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+        var options = new JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+        options.Converters.Add(new JsonStringEnumConverter());
+        var quests = JsonSerializer.Deserialize<List<QuestDefinition>>(json, options);
 
         // Goddess Skill IDs
         var restrictedIds = new[]

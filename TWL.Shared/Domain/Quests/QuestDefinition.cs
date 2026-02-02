@@ -58,7 +58,7 @@ public sealed record QuestDefinition
 
     // Enhanced properties for Special Skill Quests
     public string Type { get; init; } = "Regular"; // "Regular" | "SpecialSkill"
-    public string? SpecialCategory { get; init; } // "RebirthJob" | "ElementSpecial" | "Fairy" | "Dragon" | "Griffin"
+    public string? SpecialCategory { get; init; } // "RebirthJob" | "ElementSpecial" | "Fairy" | "Dragon"
     public string? MutualExclusionGroup { get; init; }
     public string? AntiAbuseRules { get; init; }
 

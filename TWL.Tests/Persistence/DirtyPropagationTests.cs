@@ -9,7 +9,7 @@ public class DirtyPropagationTests
     public void IsDirty_ShouldPropagate_FromPet()
     {
         var ch = new ServerCharacter { Id = 1, Name = "Owner" };
-        var def = new PetDefinition { PetTypeId = 100, Name = "FluffyDef" };
+        var def = new PetDefinition { PetTypeId = 100, Name = "FluffyDef", Element = Element.Earth };
         var pet = new ServerPet(def);
         ch.AddPet(pet);
 

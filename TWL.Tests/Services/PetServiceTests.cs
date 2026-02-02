@@ -44,6 +44,7 @@ public class PetServiceTests : IDisposable
         {
             PetTypeId = 100,
             Name = "Test Pet",
+            Element = Element.Fire,
             CaptureRules = new CaptureRules
             {
                 IsCapturable = true,
@@ -57,6 +58,7 @@ public class PetServiceTests : IDisposable
         {
             PetTypeId = 101,
             Name = "Temp Pet",
+            Element = Element.Wind,
             IsTemporary = true,
             DurationSeconds = 1,
             GrowthModel = new PetGrowthModel()
@@ -164,8 +166,8 @@ public class PetServiceTests : IDisposable
     {
         // Arrange
         var chara = new ServerCharacter { Id = 1 };
-        var pet1 = new ServerPet(new PetDefinition { PetTypeId = 100 }) { InstanceId = "pet1" };
-        var pet2 = new ServerPet(new PetDefinition { PetTypeId = 100 }) { InstanceId = "pet2" };
+        var pet1 = new ServerPet(new PetDefinition { PetTypeId = 100, Element = Element.Earth }) { InstanceId = "pet1" };
+        var pet2 = new ServerPet(new PetDefinition { PetTypeId = 100, Element = Element.Earth }) { InstanceId = "pet2" };
         chara.AddPet(pet1);
         chara.AddPet(pet2);
 
@@ -198,7 +200,7 @@ public class PetServiceTests : IDisposable
         // Arrange
         var chara = new ServerCharacter { Id = 1 };
         chara.AddGold(1000);
-        var pet = new ServerPet(new PetDefinition { PetTypeId = 100 })
+        var pet = new ServerPet(new PetDefinition { PetTypeId = 100, Element = Element.Water })
             { InstanceId = "pet1", Level = 10, IsDead = true };
         chara.AddPet(pet);
 
@@ -221,7 +223,7 @@ public class PetServiceTests : IDisposable
     [Fact]
     public void Amity_Effects_Stats()
     {
-        var def = new PetDefinition { PetTypeId = 100, BaseStr = 100 };
+        var def = new PetDefinition { PetTypeId = 100, BaseStr = 100, Element = Element.Fire };
         var pet = new ServerPet(def);
         pet.Amity = 50;
         pet.RecalculateStats();
@@ -244,6 +246,7 @@ public class PetServiceTests : IDisposable
         {
             PetTypeId = 101,
             IsTemporary = true,
+            Element = Element.Wind,
             DurationSeconds = 1 // 1 second duration
         };
         var pet = new ServerPet(def);
@@ -263,7 +266,7 @@ public class PetServiceTests : IDisposable
     public void SwitchPet_Expired_Fails()
     {
         var chara = new ServerCharacter { Id = 1 };
-        var pet = new ServerPet(new PetDefinition { PetTypeId = 101, IsTemporary = true, DurationSeconds = 1 })
+        var pet = new ServerPet(new PetDefinition { PetTypeId = 101, IsTemporary = true, Element = Element.Wind, DurationSeconds = 1 })
         {
             InstanceId = "pet1"
         };
@@ -286,7 +289,7 @@ public class PetServiceTests : IDisposable
     {
         var chara = new ServerCharacter { Id = 1 };
         chara.AddGold(1000);
-        var pet = new ServerPet(new PetDefinition { PetTypeId = 101, IsTemporary = true })
+        var pet = new ServerPet(new PetDefinition { PetTypeId = 101, IsTemporary = true, Element = Element.Earth })
         {
             InstanceId = "pet1",
             IsDead = true
