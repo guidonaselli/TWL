@@ -26,7 +26,13 @@
     "TargetMap",
     "TargetX",
     "TargetY",
-    "localhost"
+    "localhost",
+    "MapTexture",
+    "ColorPiel",
+    "ColorRopa",
+    "ColorExtra",
+    "ColorPelo",
+    "HairMinLum"
   ],
   "AllowedFolders": [
     "bin",
