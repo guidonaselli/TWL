@@ -26,16 +26,14 @@ public class PetLogicTests
         Assert.DoesNotContain(101, pet.UnlockedSkillIds);
 
         // Level up to 5
-        pet.Level = 5; // Hacky set for test
-        pet.CheckSkillUnlocks();
+        pet.SetLevel(5);
         Assert.Contains(101, pet.UnlockedSkillIds);
         Assert.DoesNotContain(102, pet.UnlockedSkillIds);
 
         // Amity up
         pet.ChangeAmity(10); // 60
         // Level 10
-        pet.Level = 10;
-        pet.CheckSkillUnlocks();
+        pet.SetLevel(10);
         Assert.Contains(102, pet.UnlockedSkillIds);
 
         // Rebirth skill
@@ -54,7 +52,7 @@ public class PetLogicTests
             RebirthSkillId = 999
         };
         var pet = new ServerPet(def);
-        pet.Level = 100;
+        pet.SetLevel(100);
 
         var result = pet.TryRebirth();
         Assert.True(result);
@@ -63,7 +61,7 @@ public class PetLogicTests
         Assert.Contains(999, pet.UnlockedSkillIds);
 
         // Try again
-        pet.Level = 100;
+        pet.SetLevel(100);
         result = pet.TryRebirth();
         Assert.False(result); // Already rebirthed
     }

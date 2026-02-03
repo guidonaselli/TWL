@@ -113,8 +113,7 @@ public class PetSystemExpansionTests : IDisposable
     {
         var def = _petManager.GetDefinition(1001);
         var pet = new ServerPet(def);
-        pet.Level = 100;
-        pet.RecalculateStats();
+        pet.SetLevel(100);
 
         // Act
         var success = pet.TryRebirth();

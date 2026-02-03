@@ -116,6 +116,20 @@ public class ServerPet : ServerCombatant
         }
     }
 
+    public void SetLevel(int level)
+    {
+        Level = level;
+        Exp = 0;
+        ExpToNextLevel = PetGrowthCalculator.GetExpForLevel(Level);
+
+        RecalculateStats();
+        Hp = MaxHp;
+        Sp = MaxSp;
+
+        CheckSkillUnlocks();
+        IsDirty = true;
+    }
+
     public void RecalculateStats()
     {
         if (_definition == null)
