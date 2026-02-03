@@ -599,7 +599,7 @@ public class ClientSession
             _metrics.RecordLoginAttempt(true);
             UserId = uid;
 
-            var data = _playerService.LoadData(uid);
+            var data = await _playerService.LoadDataAsync(uid);
             if (data != null)
             {
                 Character = new ServerCharacter();
