@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using TWL.Server.Architecture.Observability;
+using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Features.Combat;
 using TWL.Server.Features.Interactions;
 using TWL.Server.Persistence;
@@ -99,9 +100,10 @@ public class LoadTest
         // For simplicity, we skip loading maps, so CheckTriggers returns early.
 
         var spawnManager = new SpawnManager(new MonsterManager(), combatManager, random, _playerService);
+        var mediator = new Mediator();
 
         _server = new NetworkServer(0, db, petManager, questManager, combatManager, interactionManager,
-            _playerService, _economy, _metrics, petService, worldTrigger, spawnManager);
+            _playerService, _economy, _metrics, petService, mediator, worldTrigger, spawnManager);
     }
 
     public async Task RunAsync()
