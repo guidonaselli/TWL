@@ -1,0 +1,23 @@
+{
+  "MapId": 4,
+  "RegionId": "IslaBrisa",
+  "Biome": "Cave",
+  "RecommendedLevelMin": 3,
+  "RecommendedLevelMax": 5,
+  "EntryPoints": [ 1 ],
+  "Exits": [
+    {
+      "TargetMapId": 3,
+      "SpawnId": 2,
+      "Gating": { "MinLevel": 1 }
+    }
+  ],
+  "AmbientProfile": {
+    "MusicKey": "BGM_CAVE_01",
+    "AmbienceKey": "AMB_CAVE",
+    "PaletteHintKey": "CAVE_DARKNESS"
+  },
+  "WorldFlagsSet": [],
+  "WorldFlagsCleared": [],
+  "Notes": "TODO: Add proper Cave Bat mob (9101 missing). Add El Viejo Coral NPC (ID missing)."
+}
