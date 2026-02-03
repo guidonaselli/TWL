@@ -46,6 +46,7 @@ public class EconomyManager : IEconomyService, IDisposable
 
     private readonly ConcurrentDictionary<string, Transaction> _transactions = new();
     private int _cleanupCounter;
+    private int _isCleaningUp;
 
     public EconomyManager(string ledgerFile = "economy_ledger.log")
     {
@@ -743,15 +744,26 @@ public class EconomyManager : IEconomyService, IDisposable
     {
         if (Interlocked.Increment(ref _cleanupCounter) % CLEANUP_INTERVAL == 0)
         {
-            // Simple cleanup: fire and forget or run inline? Inline is safer for now.
-            // Using Task.Run might be better for latency but let's keep it simple.
-            var now = DateTime.UtcNow;
-            foreach (var kvp in _transactions)
+            if (Interlocked.CompareExchange(ref _isCleaningUp, 1, 0) == 0)
             {
-                if ((now - kvp.Value.Timestamp).TotalMinutes > EXPIRATION_MINUTES)
+                Task.Run(() =>
                 {
-                    _transactions.TryRemove(kvp.Key, out _);
-                }
+                    try
+                    {
+                        var now = DateTime.UtcNow;
+                        foreach (var kvp in _transactions)
+                        {
+                            if ((now - kvp.Value.Timestamp).TotalMinutes > EXPIRATION_MINUTES)
+                            {
+                                _transactions.TryRemove(kvp.Key, out _);
+                            }
+                        }
+                    }
+                    finally
+                    {
+                        Interlocked.Exchange(ref _isCleaningUp, 0);
+                    }
+                });
             }
         }
     }

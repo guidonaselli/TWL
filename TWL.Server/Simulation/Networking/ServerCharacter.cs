@@ -74,6 +74,12 @@ public class ServerCharacter : ServerCombatant
     public string ActivePetInstanceId { get; private set; }
     public DateTime LastPetSwitchTime { get; set; } = DateTime.MinValue;
 
+    // Utility Modifiers
+    public bool IsMounted { get; set; }
+    public float MoveSpeedModifier { get; set; } = 1.0f;
+    public float GatheringBonus { get; set; }
+    public float CraftingAssistBonus { get; set; }
+
     // Legacy/Alias support if needed, but preferable to use MaxHp from base
     public int MaxHealth => MaxHp;
 

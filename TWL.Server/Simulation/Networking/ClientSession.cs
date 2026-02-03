@@ -599,7 +599,7 @@ public class ClientSession
             _metrics.RecordLoginAttempt(true);
             UserId = uid;
 
-            var data = _playerService.LoadData(uid);
+            var data = await _playerService.LoadDataAsync(uid);
             if (data != null)
             {
                 Character = new ServerCharacter();
@@ -670,6 +670,19 @@ public class ClientSession
                 }, _jsonOptions)
             });
         }
+    }
+
+    private async Task SendLoginError(string errorKey)
+    {
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.LoginResponse,
+            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
+            {
+                Success = false,
+                ErrorMessage = errorKey
+            }, _jsonOptions)
+        });
     }
 
     private static bool IsHex(string value)
