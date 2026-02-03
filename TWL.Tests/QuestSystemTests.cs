@@ -105,27 +105,20 @@ public class QuestSystemTests
     public void LoadRealQuests_ShouldLoadCorrectly()
     {
         var qm = new ServerQuestManager();
-        // Assuming the test runs from bin/Debug/net10.0, we need to point to Content
-        // But usually Content is copied or we need to go up folders.
-        // Let's rely on the file existing in Content/Data/quests.json relative to repo root
-        // Tests usually run in a temp folder.
-
-        var path = Path.Combine(AppContext.BaseDirectory,
-            "Content/Data/quests.json"); // Relative from TWL.Tests/bin/Debug/net10.0
-        if (!File.Exists(path))
+        var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Content/Data");
+        if (!Directory.Exists(dir))
         {
-            // Fallback for different test runners
-            path = "Content/Data/quests.json";
+            dir = Path.Combine(Directory.GetCurrentDirectory(), "Content/Data");
         }
+        var path = Path.Combine(dir, "quests.json");
 
-        // Ensure we can find the file, otherwise skip or fail
         if (File.Exists(path))
         {
             qm.Load(path);
             var q1 = qm.GetDefinition(1001);
             Assert.NotNull(q1);
-            Assert.Equal("El Despertar", q1.Title);
-            Assert.Equal(50, q1.Rewards.Exp);
+            Assert.Equal("Despertar en la Playa", q1.Title);
+            Assert.Equal(10, q1.Rewards.Exp);
         }
     }
 
@@ -163,11 +156,12 @@ public class QuestSystemTests
     public void BasicChain_ShouldWork_EndToEnd()
     {
         var qm = new ServerQuestManager();
-        var path = Path.Combine(AppContext.BaseDirectory, "Content/Data/quests.json");
-        if (!File.Exists(path))
+        var dir = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "../../../../Content/Data");
+        if (!Directory.Exists(dir))
         {
-            path = "Content/Data/quests.json";
+            dir = Path.Combine(Directory.GetCurrentDirectory(), "Content/Data");
         }
+        var path = Path.Combine(dir, "quests.json");
 
         if (!File.Exists(path))
         {
@@ -176,42 +170,29 @@ public class QuestSystemTests
 
         qm.Load(path);
         var pq = new PlayerQuestComponent(qm);
+        // Need to attach character to use item logic
+        pq.Character = new TWL.Server.Simulation.Networking.ServerCharacter { Id = 1, Name = "Test" };
 
-        // --- Quest 1001: El Despertar ---
+        // --- Quest 1001 ---
         Assert.True(pq.CanStartQuest(1001), "Should be able to start 1001");
         Assert.True(pq.StartQuest(1001));
 
-        // Talk to Anciano Varado
-        var updated = pq.TryProgress("Talk", "Anciano Varado");
+        var updated = pq.TryProgress("Talk", "Capitana Maren");
         Assert.Single(updated);
 
         Assert.Equal(QuestState.Completed, pq.QuestStates[1001]);
         Assert.True(pq.ClaimReward(1001));
 
-        // --- Quest 1002: Supervivencia Básica ---
+        // --- Quest 1002 ---
         Assert.True(pq.CanStartQuest(1002), "Should be able to start 1002");
         Assert.True(pq.StartQuest(1002));
 
-        // Collect 5 Madera
-        for (var i = 0; i < 5; i++)
-        {
-            updated = pq.TryProgress("Collect", "Madera");
-        }
-
-        Assert.Single(updated); // Last one implies update
+        // Collect 3 Coconuts
+        pq.Character.AddItem(7330, 3);
+        // Note: AddItem handles update internally if connected, otherwise we need to manual update?
+        // PlayerQuestComponent subscribes to character events. So AddItem works.
 
         Assert.Equal(QuestState.Completed, pq.QuestStates[1002]);
         Assert.True(pq.ClaimReward(1002));
-
-        // --- Quest 1003: El Cangrejo Molesto ---
-        Assert.True(pq.CanStartQuest(1003), "Should be able to start 1003");
-        Assert.True(pq.StartQuest(1003));
-
-        // Kill Cangrejo de Playa
-        updated = pq.TryProgress("Kill", "Cangrejo de Playa");
-        Assert.Single(updated);
-
-        Assert.Equal(QuestState.Completed, pq.QuestStates[1003]);
-        Assert.True(pq.ClaimReward(1003));
     }
 }

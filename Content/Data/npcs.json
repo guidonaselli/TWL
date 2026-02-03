@@ -1,5 +1,50 @@
 [
   {
+    "NpcId": 1001,
+    "Name": "Capitana Maren",
+    "Title": "Survivor Leader",
+    "SpritePath": "Npcs/npc_maren_64.png",
+    "PortraitPath": "Portraits/npc_maren_256.png",
+    "DefaultDialogueKey": "NPC_Maren_Hello",
+    "Region": "Isla Brisa"
+  },
+  {
+    "NpcId": 1002,
+    "Name": "Nia",
+    "Title": "Survivor",
+    "SpritePath": "Npcs/npc_nia_64.png",
+    "PortraitPath": "Portraits/npc_nia_256.png",
+    "DefaultDialogueKey": "NPC_Nia_Hello",
+    "Region": "Isla Brisa"
+  },
+  {
+    "NpcId": 1003,
+    "Name": "Dr. Calloway",
+    "Title": "Medic",
+    "SpritePath": "Npcs/npc_calloway_64.png",
+    "PortraitPath": "Portraits/npc_calloway_256.png",
+    "DefaultDialogueKey": "NPC_Calloway_Hello",
+    "Region": "Isla Brisa"
+  },
+  {
+    "NpcId": 1004,
+    "Name": "Ruk",
+    "Title": "Craftsman",
+    "SpritePath": "Npcs/npc_ruk_64.png",
+    "PortraitPath": "Portraits/npc_ruk_256.png",
+    "DefaultDialogueKey": "NPC_Ruk_Hello",
+    "Region": "Isla Brisa"
+  },
+  {
+    "NpcId": 1005,
+    "Name": "El Viejo Coral",
+    "Title": "Hermit",
+    "SpritePath": "Npcs/npc_coral_64.png",
+    "PortraitPath": "Portraits/npc_coral_256.png",
+    "DefaultDialogueKey": "NPC_Coral_Hello",
+    "Region": "Isla Brisa"
+  },
+  {
     "NpcId": 3001,
     "Name": "Harbor Quartermaster",
     "Title": "Quartermaster",

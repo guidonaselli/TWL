@@ -786,10 +786,10 @@ public class PlayerQuestComponent
     ///     Attempts to progress any active quest that matches the given type and target.
     /// </summary>
     /// <returns>List of QuestIds that were updated.</returns>
-    public List<int> TryProgress(string type, string targetName, int amount = 1)
+    public List<int> TryProgress(string type, string targetName, int amount = 1, int? dataId = null)
     {
         var updatedQuests = new List<int>();
-        TryProgress(updatedQuests, targetName, amount, type);
+        TryProgress(updatedQuests, targetName, amount, dataId, type);
         return updatedQuests;
     }
 
@@ -802,7 +802,13 @@ public class PlayerQuestComponent
     /// <summary>
     ///     Optimized overload to check multiple types at once and use an existing collection with amount.
     /// </summary>
-    public void TryProgress(ICollection<int> output, string targetName, int amount, params string[] types)
+    public void TryProgress(ICollection<int> output, string targetName, int amount, params string[] types) =>
+        TryProgress(output, targetName, amount, null, types);
+
+    /// <summary>
+    ///     Optimized overload to check multiple types at once and use an existing collection with amount and DataID.
+    /// </summary>
+    public void TryProgress(ICollection<int> output, string targetName, int amount, int? dataId, params string[] types)
     {
         lock (_lock)
         {
@@ -830,13 +836,8 @@ public class PlayerQuestComponent
                 {
                     var obj = def.Objectives[i];
 
-                    // Match TargetName first (fast string check)
-                    if (!string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase))
-                    {
-                        continue;
-                    }
-
-                    // Match Type
+                    // Match Logic:
+                    // 1. Type must match
                     var typeMatch = false;
                     for (var t = 0; t < types.Length; t++)
                     {
@@ -847,7 +848,39 @@ public class PlayerQuestComponent
                         }
                     }
 
-                    if (typeMatch)
+                    if (!typeMatch) continue;
+
+                    // 2. DataId Match (Primary) or TargetName Match (Fallback/Secondary)
+                    var match = false;
+                    if (dataId.HasValue && obj.DataId.HasValue)
+                    {
+                        if (obj.DataId.Value == dataId.Value)
+                        {
+                            match = true;
+                        }
+                    }
+
+                    // If no DataId match (or not provided), check Name
+                    if (!match)
+                    {
+                        // Match TargetName (string check)
+                        if (string.Equals(obj.TargetName, targetName, StringComparison.OrdinalIgnoreCase))
+                        {
+                            // If Objective REQUIRES DataId but we didn't match it above, be careful.
+                            // But usually if Objective has DataId, we prefer DataId match.
+                            // If the event provides DataId but objective has different DataId, it shouldn't match even if name matches.
+                            if (dataId.HasValue && obj.DataId.HasValue && dataId.Value != obj.DataId.Value)
+                            {
+                                match = false;
+                            }
+                            else
+                            {
+                                match = true;
+                            }
+                        }
+                    }
+
+                    if (match)
                     {
                         // Check if not already complete
                         if (QuestProgress[questId][i] < obj.RequiredCount)

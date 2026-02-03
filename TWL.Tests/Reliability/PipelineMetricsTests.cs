@@ -11,6 +11,7 @@ using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Services;
+using TWL.Server.Architecture.Pipeline;
 
 namespace TWL.Tests.Reliability;
 
@@ -49,7 +50,7 @@ public class PipelineMetricsTests
 
         var port = 9123;
         var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
-            playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object, spawnManager);
+            playerService, mockEconomy.Object, metrics, petService, new Mock<IMediator>().Object, mockWorldTrigger.Object, spawnManager);
 
         server.Start();
 
