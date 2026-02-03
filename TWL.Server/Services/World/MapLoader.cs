@@ -2,6 +2,7 @@ using System.Text.Json;
 using System.Xml.Linq;
 using Microsoft.Extensions.Logging;
 using TWL.Server.Domain.World;
+using TWL.Server.Domain.World.Conditions;
 
 namespace TWL.Server.Services.World;
 
@@ -153,6 +154,24 @@ public class MapLoader
         if (trigger.Properties.TryGetValue("Id", out var customId))
         {
             trigger.Id = customId;
+        }
+
+        // Parse Conditions
+        if (trigger.Properties.TryGetValue("ReqLevel", out var reqLevelStr) && int.TryParse(reqLevelStr, out var reqLevel))
+        {
+            trigger.Conditions.Add(new LevelCondition(reqLevel));
+        }
+
+        if (trigger.Properties.TryGetValue("ReqQuestId", out var reqQuestIdStr) && int.TryParse(reqQuestIdStr, out var reqQuestId))
+        {
+            var reqQuestStatus = trigger.Properties.TryGetValue("ReqQuestStatus", out var status) ? status : "Completed";
+            trigger.Conditions.Add(new QuestCondition(reqQuestId, reqQuestStatus));
+        }
+
+        if (trigger.Properties.TryGetValue("ReqItemId", out var reqItemIdStr) && int.TryParse(reqItemIdStr, out var reqItemId))
+        {
+            var reqItemCount = trigger.Properties.TryGetValue("ReqItemCount", out var countStr) && int.TryParse(countStr, out var count) ? count : 1;
+            trigger.Conditions.Add(new ItemCondition(reqItemId, reqItemCount));
         }
 
         return trigger;

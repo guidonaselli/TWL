@@ -1,5 +1,6 @@
 using Microsoft.Extensions.Logging;
 using TWL.Server.Domain.World;
+using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 
@@ -11,11 +12,13 @@ public class WorldTriggerService : IWorldTriggerService
     private readonly ILogger<WorldTriggerService> _logger;
     private readonly Dictionary<int, ServerMap> _maps = new();
     private readonly ServerMetrics _metrics;
+    private readonly PlayerService _playerService;
 
-    public WorldTriggerService(ILogger<WorldTriggerService> logger, ServerMetrics metrics)
+    public WorldTriggerService(ILogger<WorldTriggerService> logger, ServerMetrics metrics, PlayerService playerService)
     {
         _logger = logger;
         _metrics = metrics;
+        _playerService = playerService;
     }
 
     public void LoadMaps(IEnumerable<ServerMap> maps)
@@ -49,6 +52,11 @@ public class WorldTriggerService : IWorldTriggerService
         var handler = _handlers.FirstOrDefault(h => h.CanHandle(trigger.Type));
         if (handler != null)
         {
+            if (!CheckConditions(character, trigger))
+            {
+                return;
+            }
+
             _logger.LogDebug("Character {CharId} entered trigger {TriggerId} ({Type})", character.Id, triggerId,
                 trigger.Type);
             _metrics.RecordTriggerExecuted(trigger.Type);
@@ -72,11 +80,29 @@ public class WorldTriggerService : IWorldTriggerService
         var handler = _handlers.FirstOrDefault(h => h.CanHandle(trigger.Type));
         if (handler != null)
         {
+            if (!CheckConditions(character, trigger))
+            {
+                return;
+            }
+
             _logger.LogDebug("Character {CharId} interacted with trigger {TriggerId} ({Type})", character.Id, triggerId,
                 trigger.Type);
             _metrics.RecordTriggerExecuted(trigger.Type);
             handler.ExecuteInteract(character, trigger, this);
         }
+    }
+
+    private bool CheckConditions(ServerCharacter character, ServerTrigger trigger)
+    {
+        foreach (var condition in trigger.Conditions)
+        {
+            if (!condition.IsMet(character, _playerService))
+            {
+                // Can send message to player here if needed (e.g. "Locked")
+                return false;
+            }
+        }
+        return true;
     }
 
     public void CheckTriggers(ServerCharacter character)
