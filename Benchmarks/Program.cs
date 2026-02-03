@@ -20,8 +20,16 @@ public class Program
             return;
         }
 
+        if (args.Length > 0 && args[0].ToLower() == "login")
+        {
+            var test = new LoginBenchmark();
+            await test.RunAsync();
+            return;
+        }
+
         Console.WriteLine($"Running EconomyManager benchmarks with {ThreadCount} threads, {Iterations} iterations each.");
         Console.WriteLine("Pass 'load' argument to run Full Stack Load Test.");
+        Console.WriteLine("Pass 'login' argument to run Login Benchmark.");
 
         if (File.Exists(LedgerFile)) File.Delete(LedgerFile);
 

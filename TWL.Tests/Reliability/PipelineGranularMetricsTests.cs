@@ -1,6 +1,7 @@
 using System.Net.Sockets;
 using System.Text.Json;
 using Moq;
+using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
@@ -42,7 +43,7 @@ public class PipelineGranularMetricsTests
 
         // Dynamic port assignment: use port 0 to let OS assign a free port
         var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
-            playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object, spawnManager);
+            playerService, mockEconomy.Object, metrics, petService, new Mediator(), mockWorldTrigger.Object, spawnManager);
 
         server.Start();
         var port = server.Port;

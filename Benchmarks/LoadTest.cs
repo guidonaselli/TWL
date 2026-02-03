@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using TWL.Server.Architecture.Observability;
+using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Features.Combat;
 using TWL.Server.Features.Interactions;
 using TWL.Server.Persistence;
@@ -101,7 +102,7 @@ public class LoadTest
         var spawnManager = new SpawnManager(new MonsterManager(), combatManager, random, _playerService);
 
         _server = new NetworkServer(0, db, petManager, questManager, combatManager, interactionManager,
-            _playerService, _economy, _metrics, petService, worldTrigger, spawnManager);
+            _playerService, _economy, _metrics, petService, new Mediator(), worldTrigger, spawnManager);
     }
 
     public async Task RunAsync()

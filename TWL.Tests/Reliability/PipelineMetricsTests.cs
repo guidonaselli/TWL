@@ -1,6 +1,7 @@
 using System.Net.Sockets;
 using System.Text.Json;
 using Moq;
+using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
@@ -49,7 +50,7 @@ public class PipelineMetricsTests
 
         var port = 9123;
         var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
-            playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object, spawnManager);
+            playerService, mockEconomy.Object, metrics, petService, new Mediator(), mockWorldTrigger.Object, spawnManager);
 
         server.Start();
 
