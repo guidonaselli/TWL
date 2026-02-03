@@ -8,6 +8,7 @@ using TWL.Server.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Server.Architecture.Pipeline;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Services;
@@ -46,10 +47,11 @@ public class PipelineMetricsTests
         var petService = new PetService(playerService, mockPet.Object, combatManager, mockRandom.Object);
         var mockWorldTrigger = new Mock<IWorldTriggerService>();
         var spawnManager = new SpawnManager(new MonsterManager(), combatManager, mockRandom.Object, playerService);
+        var mockMediator = new Mock<IMediator>();
 
         var port = 9123;
         var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
-            playerService, mockEconomy.Object, metrics, petService, mockWorldTrigger.Object, spawnManager);
+            playerService, mockEconomy.Object, metrics, petService, mockMediator.Object, mockWorldTrigger.Object, spawnManager);
 
         server.Start();
 
