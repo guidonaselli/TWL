@@ -709,6 +709,12 @@ public class ClientSession
             return; // no logueado
         }
 
+        // Block movement if in combat
+        if (_combatManager.GetCombatant(Character.Id) != null)
+        {
+            return;
+        }
+
         var moveDto = JsonSerializer.Deserialize<MoveDTO>(payload, _jsonOptions);
 
         if (moveDto == null)
