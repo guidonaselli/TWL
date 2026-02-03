@@ -13,15 +13,26 @@ public class Program
 
     public static async Task Main(string[] args)
     {
-        if (args.Length > 0 && args[0].ToLower() == "load")
+        if (args.Length > 0)
         {
-            var test = new LoadTest();
-            await test.RunAsync();
-            return;
+            if (args[0].ToLower() == "load")
+            {
+                var test = new LoadTest();
+                await test.RunAsync();
+                return;
+            }
+            if (args[0].ToLower() == "alloc")
+            {
+                var bench = new AllocationBenchmark();
+                bench.Setup();
+                bench.Run();
+                return;
+            }
         }
 
         Console.WriteLine($"Running EconomyManager benchmarks with {ThreadCount} threads, {Iterations} iterations each.");
         Console.WriteLine("Pass 'load' argument to run Full Stack Load Test.");
+        Console.WriteLine("Pass 'alloc' argument to run Allocation Benchmark.");
 
         if (File.Exists(LedgerFile)) File.Delete(LedgerFile);
 
