@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
@@ -17,6 +18,7 @@ public class NetworkServer
     private readonly InteractionManager _interactionManager;
     private readonly TcpListener _listener;
     private readonly ServerMetrics _metrics;
+    private readonly IMediator _mediator;
     private readonly PetManager _petManager;
     private readonly PetService _petService;
     private readonly PlayerService _playerService;
@@ -30,7 +32,7 @@ public class NetworkServer
 
     public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
-        IEconomyService economyManager, ServerMetrics metrics, PetService petService,
+        IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
         IWorldTriggerService worldTriggerService, SpawnManager spawnManager)
     {
         _listener = new TcpListener(IPAddress.Any, port);
@@ -43,6 +45,7 @@ public class NetworkServer
         _economyManager = economyManager;
         _metrics = metrics;
         _petService = petService;
+        _mediator = mediator;
         _worldTriggerService = worldTriggerService;
         _spawnManager = spawnManager;
     }
@@ -72,7 +75,8 @@ public class NetworkServer
                 var client = await _listener.AcceptTcpClientAsync(token);
                 Console.WriteLine("New client connected!");
                 var session = new ClientSession(client, _dbService, _petManager, _questManager, _combatManager,
-                    _interactionManager, _playerService, _economyManager, _metrics, _petService, _worldTriggerService,
+                    _interactionManager, _playerService, _economyManager, _metrics, _petService, _mediator,
+                    _worldTriggerService,
                     _spawnManager);
                 session.StartHandling();
             }

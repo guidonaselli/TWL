@@ -52,7 +52,7 @@ public class ClientSession
 
     public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
-        IEconomyService economyManager, ServerMetrics metrics, PetService petService,
+        IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
         IWorldTriggerService worldTriggerService, SpawnManager spawnManager)
     {
         _client = client;
@@ -66,6 +66,7 @@ public class ClientSession
         _economyManager = economyManager;
         _metrics = metrics;
         _petService = petService;
+        _mediator = mediator;
         _worldTriggerService = worldTriggerService;
         _spawnManager = spawnManager;
         QuestComponent = new PlayerQuestComponent(questManager, petManager);
@@ -511,19 +512,6 @@ public class ClientSession
         {
             Op = Opcode.QuestUpdateBroadcast,
             JsonPayload = json
-        });
-    }
-
-    private async Task SendLoginError(string errorMessage)
-    {
-        await SendAsync(new NetMessage
-        {
-            Op = Opcode.LoginResponse,
-            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
-            {
-                Success = false,
-                ErrorMessage = errorMessage
-            }, _jsonOptions)
         });
     }
 

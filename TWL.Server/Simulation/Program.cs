@@ -95,6 +95,7 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<EconomyManager>(),
                 sp.GetRequiredService<ServerMetrics>(),
                 sp.GetRequiredService<PetService>(),
+                sp.GetRequiredService<IMediator>(),
                 sp.GetRequiredService<IWorldTriggerService>(),
                 sp.GetRequiredService<SpawnManager>()
             );
