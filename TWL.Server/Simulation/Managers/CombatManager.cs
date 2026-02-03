@@ -46,6 +46,7 @@ public class CombatManager
     {
         foreach (var p in participants)
         {
+            p.EncounterId = encounterId;
             RegisterCombatant(p);
         }
         // Seed can be used to initialize determinstic RNG for this encounter

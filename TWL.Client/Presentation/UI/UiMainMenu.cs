@@ -328,7 +328,8 @@ public class UiMainMenu
 
         if (response == null || !response.Success)
         {
-            _loginStatusMessage = response?.ErrorMessage ?? Loc.T("UI_LoginStatus_LoginFailed");
+            var errorKey = response?.ErrorMessage;
+            _loginStatusMessage = !string.IsNullOrEmpty(errorKey) ? Loc.T(errorKey) : Loc.T("UI_LoginStatus_LoginFailed");
             _loginStatusColor = Color.OrangeRed;
             return;
         }

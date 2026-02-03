@@ -125,10 +125,50 @@ public class SpawnManager
         }
 
         // Check if already in combat
-        if (_combatManager.GetCombatant(session.Character.Id) != null)
+        var existing = _combatManager.GetCombatant(session.Character.Id);
+        if (existing != null)
         {
-            Console.WriteLine($"Player {session.Character.Id} is already in combat. Encounter ignored.");
-            return 0;
+            // Idempotency: Return existing encounter ID and resend packet to handle retries/reconnects
+            var existingId = existing.EncounterId;
+            Console.WriteLine($"Player {session.Character.Id} is already in encounter {existingId}. Resending state.");
+
+            // Reconstruct payload from existing combatants
+            var allCombatants = _combatManager.GetAllCombatants();
+            var encounterEnemies = allCombatants
+                .Where(c => c.EncounterId == existingId && c.Team == Team.Enemy && c is ServerCharacter)
+                .Cast<ServerCharacter>()
+                .ToList();
+
+            if (encounterEnemies.Count > 0)
+            {
+                 var existingPayload = new
+                 {
+                     EncounterId = existingId,
+                     Source = source.ToString(),
+                     Seed = seed ?? 0, // We don't track seed in combatant currently, but for retry 0 or placeholder is acceptable if not strictly required for sync
+                     Monsters = encounterEnemies.Select(m => new
+                     {
+                         m.Id,
+                         m.Name,
+                         m.Hp,
+                         m.MaxHp,
+                         m.Level,
+                         m.CharacterElement,
+                         m.MonsterId,
+                         m.SpritePath
+                     }).ToList()
+                 };
+
+                 var retryMsg = new NetMessage
+                 {
+                     Op = Opcode.EncounterStarted,
+                     JsonPayload = JsonSerializer.Serialize(existingPayload)
+                 };
+
+                 _ = session.SendAsync(retryMsg);
+            }
+
+            return existingId;
         }
 
         if (enemies == null || enemies.Count == 0)

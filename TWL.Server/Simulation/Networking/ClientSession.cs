@@ -514,13 +514,26 @@ public class ClientSession
         });
     }
 
+    private async Task SendLoginError(string errorMessage)
+    {
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.LoginResponse,
+            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
+            {
+                Success = false,
+                ErrorMessage = errorMessage
+            }, _jsonOptions)
+        });
+    }
+
     private async Task HandleLoginAsync(string payload, string traceId)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
         if (string.IsNullOrEmpty(payload) || payload.Length > 512)
         {
             _metrics.RecordLoginAttempt(false);
-            await SendLoginError("Invalid payload size");
+            await SendLoginError("ERR_LOGIN_PAYLOAD_SIZE");
             return;
         }
 
@@ -532,7 +545,7 @@ public class ClientSession
         catch (JsonException)
         {
             _metrics.RecordLoginAttempt(false);
-            await SendLoginError("Invalid JSON");
+            await SendLoginError("ERR_LOGIN_INVALID_JSON");
             return;
         }
 
@@ -540,28 +553,28 @@ public class ClientSession
             string.IsNullOrWhiteSpace(loginDto.PassHash))
         {
             _metrics.RecordLoginAttempt(false);
-            await SendLoginError("Missing credentials");
+            await SendLoginError("ERR_LOGIN_MISSING_CREDS");
             return;
         }
 
         if (loginDto.Username.Length > 50)
         {
             _metrics.RecordLoginAttempt(false);
-            await SendLoginError("Username too long");
+            await SendLoginError("ERR_LOGIN_USER_TOO_LONG");
             return;
         }
 
         if (loginDto.PassHash.Length < 64 || loginDto.PassHash.Length > 128)
         {
             _metrics.RecordLoginAttempt(false);
-            await SendLoginError("Invalid hash length");
+            await SendLoginError("ERR_LOGIN_HASH_LENGTH");
             return;
         }
 
         if (!IsHex(loginDto.PassHash))
         {
             _metrics.RecordLoginAttempt(false);
-            await SendLoginError("Invalid hash format");
+            await SendLoginError("ERR_LOGIN_HASH_FORMAT");
             return;
         }
 
@@ -576,7 +589,7 @@ public class ClientSession
                 JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
                 {
                     Success = false,
-                    ErrorMessage = "Invalid credentials."
+                    ErrorMessage = "ERR_LOGIN_INVALID_CREDS"
                 }, _jsonOptions)
             });
         }
@@ -694,6 +707,12 @@ public class ClientSession
         if (UserId < 0 || Character == null)
         {
             return; // no logueado
+        }
+
+        // Block movement if in combat
+        if (_combatManager.GetCombatant(Character.Id) != null)
+        {
+            return;
         }
 
         var moveDto = JsonSerializer.Deserialize<MoveDTO>(payload, _jsonOptions);

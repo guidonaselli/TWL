@@ -325,4 +325,25 @@
     <data name="SKILL_FieryWillIII" xml:space="preserve">
     <value>Fiery Will III</value>
   </data>
+    <data name="ERR_LOGIN_PAYLOAD_SIZE" xml:space="preserve">
+    <value>Invalid payload size</value>
+  </data>
+    <data name="ERR_LOGIN_INVALID_JSON" xml:space="preserve">
+    <value>Invalid JSON</value>
+  </data>
+    <data name="ERR_LOGIN_MISSING_CREDS" xml:space="preserve">
+    <value>Missing credentials</value>
+  </data>
+    <data name="ERR_LOGIN_USER_TOO_LONG" xml:space="preserve">
+    <value>Username too long</value>
+  </data>
+    <data name="ERR_LOGIN_HASH_LENGTH" xml:space="preserve">
+    <value>Invalid hash length</value>
+  </data>
+    <data name="ERR_LOGIN_HASH_FORMAT" xml:space="preserve">
+    <value>Invalid hash format</value>
+  </data>
+    <data name="ERR_LOGIN_INVALID_CREDS" xml:space="preserve">
+    <value>Invalid credentials.</value>
+  </data>
 </root>
