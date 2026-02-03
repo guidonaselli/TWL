@@ -167,6 +167,19 @@ public class PlayerService
 
     public IEnumerable<ClientSession> GetAllSessions() => _sessions.Values;
 
+    public void GetSessions(List<ClientSession> buffer, Func<ClientSession, bool>? filter = null)
+    {
+        buffer.Clear();
+        foreach (var kvp in _sessions)
+        {
+            var session = kvp.Value;
+            if (filter == null || filter(session))
+            {
+                buffer.Add(session);
+            }
+        }
+    }
+
     public PlayerSaveData? LoadData(int userId)
     {
         // Keeping synchronous LoadData for compatibility if needed
