@@ -4,6 +4,7 @@ using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
 using Xunit.Abstractions;
+using TWL.Server.Simulation.Networking;
 
 namespace TWL.Tests.Performance;
 
@@ -98,5 +99,45 @@ public class QuestPerformanceTests
         // Plus List<int> results.
         // It should be > 0.
         Assert.True(allocated > 0);
+    }
+
+    [Fact]
+    public void Benchmark_HandleItemAdded()
+    {
+        var questManager = CreateQuestManager();
+        var component = new PlayerQuestComponent(questManager);
+        var character = new ServerCharacter();
+        // Initialize inventory capacity high enough to avoid early full inventory returns
+        character.MaxInventorySlots = 20000;
+        component.Character = character;
+
+        // Start all quests
+        for (var i = 1; i <= 100; i++)
+        {
+            component.StartQuest(i);
+        }
+
+        const int iterations = 10000;
+
+        GC.Collect();
+        GC.WaitForPendingFinalizers();
+        var initialMemory = GC.GetAllocatedBytesForCurrentThread();
+        var sw = Stopwatch.StartNew();
+
+        for (var k = 0; k < iterations; k++)
+        {
+             // Add Item triggers HandleItemAdded
+             // We use a dummy item ID 9999
+             character.AddItem(9999, 1);
+        }
+
+        sw.Stop();
+        var finalMemory = GC.GetAllocatedBytesForCurrentThread();
+        var allocated = finalMemory - initialMemory;
+
+        _output.WriteLine($"HandleItemAdded Iterations: {iterations}");
+        _output.WriteLine($"Time: {sw.ElapsedMilliseconds} ms");
+        _output.WriteLine($"Allocated: {allocated / 1024.0:F2} KB");
+        _output.WriteLine($"Allocated per op: {allocated / (double)iterations} bytes");
     }
 }
