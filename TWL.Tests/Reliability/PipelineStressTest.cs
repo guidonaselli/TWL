@@ -1,6 +1,7 @@
 using System.Net.Sockets;
 using System.Text.Json;
 using Moq;
+using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
@@ -8,6 +9,7 @@ using TWL.Server.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Server.Architecture.Pipeline;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Services;
@@ -40,6 +42,7 @@ public class PipelineStressTest
         var petService = new PetService(playerService, mockPet.Object, combatManager, mockRandom.Object);
         var mockWorldTrigger = new Mock<IWorldTriggerService>();
         var spawnManager = new SpawnManager(new MonsterManager(), combatManager, mockRandom.Object, playerService);
+        var mockMediator = new Mock<IMediator>();
 
         // Dynamic port assignment: use port 0 to let OS assign a free port
         var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,

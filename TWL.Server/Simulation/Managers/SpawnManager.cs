@@ -27,6 +27,7 @@ public class SpawnManager
 
     private int _nextEncounterId = 1;
     private readonly List<ServerCharacter> _roamingMobs = new();
+    private readonly List<ClientSession> _sessionBuffer = new();
     private float _respawnTimer;
     private const float RespawnCheckInterval = 5.0f;
 
@@ -334,9 +335,7 @@ public class SpawnManager
 
     private void UpdateRoamingMobs(float dt)
     {
-        var activeSessions = _playerService.GetAllSessions()
-            .Where(s => s.Character != null && s.Character.Hp > 0)
-            .ToList();
+        _playerService.GetSessions(_sessionBuffer, s => s.Character != null && s.Character.Hp > 0);
 
         lock (_roamingMobs)
         {
@@ -370,7 +369,7 @@ public class SpawnManager
                 // For now, let them roam freely.
 
                 // Collision Check
-                foreach (var session in activeSessions)
+                foreach (var session in _sessionBuffer)
                 {
                     if (session.Character.MapId == mob.MapId)
                     {
@@ -390,6 +389,7 @@ public class SpawnManager
                 }
             }
         }
+        _sessionBuffer.Clear();
     }
 
     private void CheckRespawns()

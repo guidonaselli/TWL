@@ -521,6 +521,19 @@ public class ClientSession
         });
     }
 
+    private async Task SendLoginError(string errorCode)
+    {
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.LoginResponse,
+            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
+            {
+                Success = false,
+                ErrorMessage = errorCode
+            }, _jsonOptions)
+        });
+    }
+
     private async Task HandleLoginAsync(string payload, string traceId)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
@@ -592,7 +605,7 @@ public class ClientSession
             _metrics.RecordLoginAttempt(true);
             UserId = uid;
 
-            var data = _playerService.LoadData(uid);
+            var data = await _playerService.LoadDataAsync(uid);
             if (data != null)
             {
                 Character = new ServerCharacter();

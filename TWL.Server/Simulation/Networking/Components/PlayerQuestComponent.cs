@@ -12,6 +12,8 @@ public class PlayerQuestComponent
     private readonly object _lock = new();
     private readonly PetManager _petManager;
     private readonly ServerQuestManager _questManager;
+    private DateTime _lastFailureCheckTime = DateTime.MinValue;
+    private static readonly TimeSpan FailureCheckThrottle = TimeSpan.FromSeconds(1);
 
     private ServerCharacter? _character;
 
@@ -744,6 +746,12 @@ public class PlayerQuestComponent
     private void CheckFailures()
     {
         var now = DateTime.UtcNow;
+        if (now - _lastFailureCheckTime < FailureCheckThrottle)
+        {
+            return;
+        }
+
+        _lastFailureCheckTime = now;
         var failedIds = new List<int>();
 
         foreach (var kvp in QuestStates)

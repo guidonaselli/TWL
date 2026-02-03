@@ -130,7 +130,7 @@ public class PetSystemTests : IDisposable
     {
         // Setup
         var petDef = _petManager.GetDefinition(9999);
-        var pet = new ServerPet(petDef) { Id = -100 }; // Runtime ID
+        var pet = new ServerPet(petDef) { Id = -100, Team = Team.Enemy }; // Runtime ID
         _combatManager.RegisterCombatant(pet);
 
         var attacker = new ServerCharacter { Id = 1, Str = 50 };

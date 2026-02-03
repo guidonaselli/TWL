@@ -294,6 +294,12 @@ public class PetService : IPetService
 
     public bool UseUtility(int ownerId, string petInstanceId, PetUtilityType type)
     {
+        var session = _playerService.GetSession(ownerId);
+        if (session == null || session.Character == null)
+        {
+            return false;
+        }
+
         var pet = GetPet(ownerId, petInstanceId);
         if (pet == null)
         {
@@ -306,12 +312,57 @@ public class PetService : IPetService
             return false;
         }
 
-        // Apply utility logic
-        // For now just return true as "Activated"
-        // Actual mounting logic would involve Player state change (Speed mod)
-        // Gathering would involve looting.
+        var chara = session.Character;
 
-        // TODO: Emit event or apply effect
+        switch (type)
+        {
+            case PetUtilityType.Mount:
+                if (chara.IsMounted)
+                {
+                    chara.IsMounted = false;
+                    chara.MoveSpeedModifier = 1.0f;
+                }
+                else
+                {
+                    chara.IsMounted = true;
+                    // value is treated as the bonus (e.g. 0.5 -> 1.5x speed)
+                    chara.MoveSpeedModifier = 1.0f + value;
+                }
+
+                break;
+
+            case PetUtilityType.Gathering:
+                // Toggle Gathering Mode/Bonus
+                if (chara.GatheringBonus > 0)
+                {
+                    chara.GatheringBonus = 0f;
+                }
+                else
+                {
+                    chara.GatheringBonus = value;
+                }
+
+                break;
+
+            case PetUtilityType.CraftingAssist:
+                // Toggle Crafting Assist
+                if (chara.CraftingAssistBonus > 0)
+                {
+                    chara.CraftingAssistBonus = 0f;
+                }
+                else
+                {
+                    chara.CraftingAssistBonus = value;
+                }
+
+                break;
+
+            case PetUtilityType.Delivery:
+            default:
+                // Not implemented or unsupported type
+                return false;
+        }
+
         return true;
     }
 
