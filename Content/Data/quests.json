@@ -1,44 +1,45 @@
 [
   {
     "QuestId": 1001,
-    "Title": "El Despertar",
-    "Description": "Has despertado en la playa de una isla desconocida. Habla con el Anciano para entender dónde estás.",
+    "Title": "Despertar en la Playa",
+    "Description": "Everything hurts. The sun is blinding. Someone is shouting your name.",
     "Requirements": [],
     "Objectives": [
       {
         "Type": "Talk",
-        "TargetName": "Anciano Varado",
+        "TargetName": "Capitana Maren",
         "RequiredCount": 1,
-        "Description": "Habla con el Anciano Varado."
+        "Description": "Talk to Capitana Maren."
       }
     ],
     "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
+      "Exp": 10,
+      "Gold": 5,
       "Items": []
     }
   },
   {
     "QuestId": 1002,
-    "Title": "Supervivencia Básica",
-    "Description": "Necesitas fuego para sobrevivir la noche. Recoge madera a la deriva en la playa.",
+    "Title": "Primer Sustento",
+    "Description": "We need to eat. Nia says there are coconuts along the shore. Bring 3.",
     "Requirements": [
       1001
     ],
     "Objectives": [
       {
         "Type": "Collect",
-        "TargetName": "Madera",
-        "RequiredCount": 5,
-        "Description": "Recoge 5 trozos de madera."
+        "TargetName": "Coconut (Pulp)",
+        "RequiredCount": 3,
+        "Description": "Collect 3 Coconuts.",
+        "DataId": 7330
       }
     ],
     "Rewards": {
-      "Exp": 100,
-      "Gold": 10,
+      "Exp": 20,
+      "Gold": 0,
       "Items": [
         {
-          "ItemId": 7316,
+          "ItemId": 7330,
           "Quantity": 1
         }
       ]
@@ -46,43 +47,118 @@
   },
   {
     "QuestId": 1003,
-    "Title": "El Cangrejo Molesto",
-    "Description": "Un cangrejo gigante está asustando a la niña en la orilla.",
-    "Requirements": [
-      1001
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "Cangrejo de Playa",
-        "RequiredCount": 1,
-        "Description": "Derrota al Cangrejo de Playa."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1004,
-    "Title": "Compañero Fiel",
-    "Description": "Aprende a capturar una mascota para que te acompañe.",
+    "Title": "Reconocimiento",
+    "Description": "Good. Now check on Dr. Calloway - she's tending the wounded near the rocks.",
     "Requirements": [
       1002
     ],
     "Objectives": [
       {
-        "Type": "Capture",
-        "TargetName": "Cangrejo Pequeño",
+        "Type": "Talk",
+        "TargetName": "Dr. Calloway",
         "RequiredCount": 1,
-        "Description": "Captura un Cangrejo Pequeño."
+        "Description": "Talk to Dr. Calloway."
       }
     ],
     "Rewards": {
-      "Exp": 200,
+      "Exp": 30,
       "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 8105,
+          "Quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1004,
+    "Title": "Defensa Improvisada",
+    "Description": "The crabs are getting aggressive at night. Ruk can make a weapon if you bring driftwood.",
+    "Requirements": [
+      1003
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Wooden Stick",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Driftwood.",
+        "DataId": 7316
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 7316,
+          "Quantity": 1
+        }
+      ]
+    },
+    "AntiAbuseRules": "UniquePerCharacter",
+    "FlagsSet": [
+      "BindOnAcquire"
+    ]
+  },
+  {
+    "QuestId": 1005,
+    "Title": "Fuego y Refugio",
+    "Description": "We need a proper camp. Find a water source and kindling in the jungle edge.",
+    "Requirements": [
+      1004
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Fresh Water Source",
+        "RequiredCount": 1,
+        "Description": "Find Fresh Water Source."
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "Bendable Branch",
+        "RequiredCount": 3,
+        "Description": "Collect 3 Kindling.",
+        "DataId": 301
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "Strange Stone",
+        "RequiredCount": 2,
+        "Description": "Collect 2 Flint.",
+        "DataId": 8101
+      }
+    ],
+    "Rewards": {
+      "Exp": 80,
+      "Gold": 15,
+      "Items": []
+    },
+    "FlagsSet": [
+      "CAMP_UNLOCKED"
+    ]
+  },
+  {
+    "QuestId": 1006,
+    "Title": "Primera Sangre",
+    "Description": "Time to test that sword. Clear the crabs from the tide pools so we can fish safely.",
+    "Requirements": [
+      1005
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Tide Crab (Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Tide Crabs.",
+        "DataId": 2002
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 20,
       "Items": []
     }
   },

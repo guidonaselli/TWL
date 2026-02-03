@@ -93,7 +93,13 @@ public class ClientSession
         // Handle Quest Progress (Kill)
         if (victim.LastAttackerId.HasValue && victim.LastAttackerId.Value == Character.Id)
         {
-            var updated = QuestComponent.TryProgress("Kill", victim.Name);
+            int? monsterId = null;
+            if (victim is ServerCharacter mob && mob.MonsterId > 0)
+            {
+                monsterId = mob.MonsterId;
+            }
+
+            var updated = QuestComponent.TryProgress("Kill", victim.Name, 1, monsterId);
             foreach (var qid in updated)
             {
                 _ = SendQuestUpdateAsync(qid);

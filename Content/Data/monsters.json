@@ -336,6 +336,34 @@
     "EncounterWeight": 20
   },
   {
+    "MonsterId": 3001,
+    "Name": "Stone Guardian",
+    "Code": "MOB_STONE_GUARDIAN",
+    "FamilyId": 99,
+    "Element": "Earth",
+    "Level": 5,
+    "BaseHp": 200,
+    "BaseSp": 0,
+    "BaseStr": 15,
+    "BaseCon": 20,
+    "BaseInt": 5,
+    "BaseWis": 5,
+    "BaseAgi": 2,
+    "SpritePath": "Monsters/mob_stone_guardian.png",
+    "PortraitPath": "Portraits/mob_stone_guardian_portrait.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 100,
+    "Tags": ["QuestOnly"],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 10.0,
+      "PatrolSpeed": 0.5,
+      "IsPassive": false
+    },
+    "EncounterWeight": 0
+  },
+  {
     "MonsterId": 9999,
     "Name": "Quest Dummy (None)",
     "Code": "MOB_QUEST_DUMMY",
