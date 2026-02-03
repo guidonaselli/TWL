@@ -515,6 +515,19 @@ public class ClientSession
         });
     }
 
+    private async Task SendLoginError(string errorKey)
+    {
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.LoginResponse,
+            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
+            {
+                Success = false,
+                ErrorMessage = errorKey
+            }, _jsonOptions)
+        });
+    }
+
     private async Task HandleLoginAsync(string payload, string traceId)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
