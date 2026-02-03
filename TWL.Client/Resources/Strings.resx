@@ -76,17 +76,17 @@
     <data name="SKILL_AquaRecoverIII" xml:space="preserve">
     <value>Aqua Recover III</value>
   </data>
-    <data name="SKILL_Shrink" xml:space="preserve">
-    <value>Shrink</value>
+    <data name="SKILL_Diminution" xml:space="preserve">
+    <value>Diminution</value>
   </data>
-    <data name="SKILL_Blockage" xml:space="preserve">
-    <value>Blockage</value>
+    <data name="SKILL_SupportSeal" xml:space="preserve">
+    <value>Support Seal</value>
   </data>
-    <data name="SKILL_Hotfire" xml:space="preserve">
-    <value>Hotfire</value>
+    <data name="SKILL_EmberSurge" xml:space="preserve">
+    <value>Ember Surge</value>
   </data>
-    <data name="SKILL_Vanish" xml:space="preserve">
-    <value>Vanish</value>
+    <data name="SKILL_UntouchableVeil" xml:space="preserve">
+    <value>Untouchable Veil</value>
   </data>
     <data name="SKILL_FairyLight" xml:space="preserve">
     <value>Fairy Light</value>

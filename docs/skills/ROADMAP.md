@@ -58,7 +58,7 @@
 - [ ] **SKL-007**: Pack T1 Fire (3 branches: Flame Smash, Fireball, Fiery Will) + tests
 - [ ] **SKL-008**: Pack T1 Wind (3 branches: Wind Slash, Air Blade, Breeze) + tests
 - [ ] **SKL-009**: Packs T2 (all elements, stage evolution from T1 Rank 10)
-- [ ] **SKL-011**: Goddess Skills (Shrink, Blockage, Hotfire, Vanish) - auto-grant by element on login
+- [ ] **SKL-011**: Goddess Skills (Diminution, Support Seal, Ember Surge, Untouchable Veil) - auto-grant by element on login
 
 ### P2 - Specialization
 - [ ] **SKL-012**: Life Skills (Alchemy, Mining, Fishing passives affecting economy rates)
