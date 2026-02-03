@@ -11,7 +11,7 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
 *   **Unique IDs**: SkillIds must be unique across all files.
 *   **Goddess Skills Exception**:
     *   IDs 2001-2004 are reserved for Goddess Skills.
-    *   **Names MUST be exactly**: "Shrink", "Blockage", "Hotfire", "Vanish".
+    *   **Names MUST be exactly**: "Diminution", "Support Seal", "Ember Surge", "Untouchable Veil".
     *   **Family**: `Special`.
     *   **Category**: `Goddess`.
     *   **Origin**: These skills are NOT granted by Quests. They are granted via specific game logic (Spirit contract).
@@ -39,7 +39,7 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
 
 ## 6. Skill Categories Definition
 *   **None**: Core skills (Tier 1-3).
-*   **Goddess**: Special skills granted at start (Shrink, Blockage, Hotfire, Vanish).
+*   **Goddess**: Special skills granted at start (Diminution, Support Seal, Ember Surge, Untouchable Veil).
 *   **Dragon**: Legendary Fire physical skills.
 *   **Fairy**: Support/Healing skills from Fairy quests.
 *   **RebirthJob**: Skills unlocked after Rebirth.
