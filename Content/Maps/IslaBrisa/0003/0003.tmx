@@ -389,5 +389,17 @@
     <property name="RequiredFlags" value=""/>
    </properties>
   </object>
+  <object id="202" x="1248" y="608" width="32" height="96">
+   <properties>
+    <property name="TriggerType" value="MapTransition"/>
+    <property name="Id" value="101"/>
+    <property name="TargetMapId" value="4"/>
+    <property name="TargetSpawnId" value="1"/>
+    <property name="Cooldown" value="0"/>
+    <property name="OncePerCharacter" value="false"/>
+    <property name="RequiredLevel" value="0"/>
+    <property name="RequiredFlags" value=""/>
+   </properties>
+  </object>
  </objectgroup>
 </map>

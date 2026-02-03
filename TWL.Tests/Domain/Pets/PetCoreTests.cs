@@ -57,10 +57,9 @@ public class PetCoreTests
         var earlyDef = new PetDefinition
         {
             PetTypeId = 1,
-            Element = Element.Earth,
+            Element = Element.Fire,
             BaseStr = 10,
             BaseHp = 100, // Explicit base stats to avoid 0
-            Element = Element.Fire,
             GrowthModel = new PetGrowthModel
             {
                 CurveType = GrowthCurveType.EarlyPeaker,
@@ -81,10 +80,9 @@ public class PetCoreTests
         var lateDef = new PetDefinition
         {
             PetTypeId = 2,
-            Element = Element.Earth,
+            Element = Element.Water,
             BaseStr = 10,
             BaseHp = 100,
-            Element = Element.Water,
             GrowthModel = new PetGrowthModel
             {
                 CurveType = GrowthCurveType.LateBloomer,
