@@ -101,6 +101,7 @@ public class LoadTest
 
         var spawnManager = new SpawnManager(new MonsterManager(), combatManager, random, _playerService);
 
+        var mediator = new Mediator(); // Using concrete Mediator for load test
         _server = new NetworkServer(0, db, petManager, questManager, combatManager, interactionManager,
             _playerService, _economy, _metrics, petService, new Mediator(), worldTrigger, spawnManager);
     }
