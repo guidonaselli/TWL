@@ -298,7 +298,7 @@ public class MetricsSnapshot
     {
         return
             $"[Metrics] Net: {NetMessagesProcessed} msgs, AvgProc: {AverageMessageProcessingTimeMs:F2}ms (Val: {AverageValidateTimeMs:F2}ms, Res: {AverageResolveTimeMs:F2}ms). " +
-            $"Logins: {_loginAttempts} (Fail: {_loginFailures}). " +
+            $"Logins: {LoginAttempts} (Fail: {LoginFailures}). " +
             $"World: {WorldLoopTicks} ticks (Avg {AverageWorldLoopDurationMs:F2}ms), Queue: {WorldSchedulerQueueDepth}, SlowTicks: {WorldLoopSlowTicks}, SlowTasks: {WorldLoopSlowTasks}. " +
             $"Triggers: {TriggersExecuted}. " +
             $"Persist: {PersistenceFlushes} flushes, {PersistenceErrors} errs. " +

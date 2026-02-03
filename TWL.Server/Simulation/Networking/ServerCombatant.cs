@@ -25,6 +25,7 @@ public abstract class ServerCombatant
     protected int _hp;
     protected int _sp;
     public int Id;
+    public int EncounterId { get; set; }
     public string Name;
     public Element CharacterElement { get; set; }
     public Team Team { get; set; }

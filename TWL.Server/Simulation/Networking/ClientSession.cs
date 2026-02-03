@@ -658,6 +658,19 @@ public class ClientSession
         }
     }
 
+    private async Task SendLoginError(string message)
+    {
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.LoginResponse,
+            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
+            {
+                Success = false,
+                ErrorMessage = message
+            }, _jsonOptions)
+        });
+    }
+
     private static bool IsHex(string value)
     {
         for (var i = 0; i < value.Length; i++)
@@ -681,6 +694,12 @@ public class ClientSession
         if (UserId < 0 || Character == null)
         {
             return; // no logueado
+        }
+
+        // Block movement if in combat
+        if (_combatManager.GetCombatant(Character.Id) != null)
+        {
+            return;
         }
 
         var moveDto = JsonSerializer.Deserialize<MoveDTO>(payload, _jsonOptions);
