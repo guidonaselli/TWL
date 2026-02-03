@@ -273,7 +273,6 @@ public class PetServiceTests : IDisposable
             PetTypeId = 101,
             Element = Element.Wind,
             IsTemporary = true,
-            Element = Element.Wind,
             DurationSeconds = 1 // 1 second duration
         };
         var pet = new ServerPet(def);
