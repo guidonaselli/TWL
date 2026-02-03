@@ -100,10 +100,11 @@ public class LoadTest
         // For simplicity, we skip loading maps, so CheckTriggers returns early.
 
         var spawnManager = new SpawnManager(new MonsterManager(), combatManager, random, _playerService);
+        var mediator = new Mediator();
 
         var mediator = new Mediator(); // Using concrete Mediator for load test
         _server = new NetworkServer(0, db, petManager, questManager, combatManager, interactionManager,
-            _playerService, _economy, _metrics, petService, new Mediator(), worldTrigger, spawnManager);
+            _playerService, _economy, _metrics, petService, mediator, worldTrigger, spawnManager);
     }
 
     public async Task RunAsync()
