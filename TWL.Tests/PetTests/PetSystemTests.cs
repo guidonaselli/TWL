@@ -20,6 +20,7 @@ public class PetSystemTests : IDisposable
     private readonly Mock<ICombatResolver> _mockResolver;
     private readonly Mock<ISkillCatalog> _mockSkills;
     private readonly Mock<IStatusEngine> _mockStatusEngine;
+    private readonly Mock<MonsterManager> _mockMonsterManager;
     private readonly PetManager _petManager;
     private readonly PetService _petService;
 
@@ -63,10 +64,11 @@ public class PetSystemTests : IDisposable
         _mockResolver = new Mock<ICombatResolver>();
         _mockSkills = new Mock<ISkillCatalog>();
         _mockRandom = new Mock<IRandomService>();
+        _mockMonsterManager = new Mock<MonsterManager>();
 
         _combatManager = new CombatManager(_mockResolver.Object, _mockRandom.Object, _mockSkills.Object,
             _mockStatusEngine.Object);
-        _petService = new PetService(_playerService, _petManager, _combatManager, _mockRandom.Object);
+        _petService = new PetService(_playerService, _petManager, _mockMonsterManager.Object, _combatManager, _mockRandom.Object);
     }
 
     public void Dispose()
@@ -85,15 +87,27 @@ public class PetSystemTests : IDisposable
         session.SetCharacter(new ServerCharacter { Id = 1, Name = "Trainer" });
         _playerService.RegisterSession(session);
 
-        // Setup Enemy
-        var enemyDef = new EnemyCharacter("Wild Wolf", Element.Earth, true)
+        // Define Enemy Monster
+        var enemyMonsterDef = new MonsterDefinition
         {
+            MonsterId = 200,
+            Name = "Wild Wolf",
+            Element = Element.Earth,
+            IsCapturable = true,
             PetTypeId = 9999,
-            CaptureThreshold = 0.5f,
-            Health = 10,
-            MaxHealth = 100
+            CaptureThreshold = 0.5f
         };
-        var enemy = new ServerEnemy(enemyDef) { Id = 200, Hp = 10 };
+        _mockMonsterManager.Setup(m => m.GetDefinition(200)).Returns(enemyMonsterDef);
+
+        var enemy = new ServerCharacter
+        {
+            Id = 200, // Runtime ID
+            MonsterId = 200,
+            Name = "Wild Wolf",
+            Hp = 10,
+            Con = 10,
+            Team = Team.Enemy
+        };
         _combatManager.RegisterCombatant(enemy);
 
         // Mock RNG
@@ -129,8 +143,8 @@ public class PetSystemTests : IDisposable
     public void Combat_PetCanBeTarget()
     {
         // Setup
-        var petDef = _petManager.GetDefinition(9999);
-        var pet = new ServerPet(petDef) { Id = -100, Team = Team.Enemy }; // Runtime ID
+        var def = _petManager.GetDefinition(9999);
+        var pet = new ServerPet(def) { Id = -100, Team = Team.Enemy }; // Runtime ID
         _combatManager.RegisterCombatant(pet);
 
         var attacker = new ServerCharacter { Id = 1, Str = 50 };
