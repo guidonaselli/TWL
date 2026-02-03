@@ -20,7 +20,7 @@ public class ServerWorker : IHostedService
     private readonly MapLoader _mapLoader;
     private readonly ServerMetrics _metrics;
     private readonly MonsterManager _monsterManager;
-    private readonly NetworkServer _net;
+    private readonly INetworkServer _net;
     private readonly PetManager _petManager;
     private readonly PlayerService _playerService;
     private readonly ServerQuestManager _questManager;
@@ -28,7 +28,7 @@ public class ServerWorker : IHostedService
     private readonly IWorldScheduler _worldScheduler;
     private readonly IWorldTriggerService _worldTriggerService;
 
-    public ServerWorker(NetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager,
+    public ServerWorker(INetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager,
         ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService,
         IWorldScheduler worldScheduler, ServerMetrics metrics, MapLoader mapLoader,
         IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager)
@@ -120,13 +120,25 @@ public class ServerWorker : IHostedService
         return Task.CompletedTask;
     }
 
-    public Task StopAsync(CancellationToken ct)
+    public async Task StopAsync(CancellationToken ct)
     {
+        var sw = System.Diagnostics.Stopwatch.StartNew();
         _log.LogInformation("Stopping server...");
+
         _net.Stop();
+
+        _log.LogInformation("Disconnecting players...");
+        await _playerService.DisconnectAllAsync("Server Shutdown");
+
+        // Allow buffers to flush
+        await Task.Delay(500, ct);
+
         _worldScheduler.Stop();
         _playerService.Stop();
-        _log.LogInformation("Server stopped.");
-        return Task.CompletedTask;
+
+        sw.Stop();
+        _metrics.RecordShutdown(sw.ElapsedMilliseconds, _playerService.Metrics.SessionsSavedInLastFlush);
+
+        _log.LogInformation("Server stopped in {Elapsed}ms.", sw.ElapsedMilliseconds);
     }
 }

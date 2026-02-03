@@ -10,7 +10,7 @@ using TWL.Shared.Net.Messages;
 
 namespace TWL.Server.Simulation.Networking;
 
-public class NetworkServer
+public class NetworkServer : INetworkServer
 {
     private readonly CombatManager _combatManager;
     private readonly DbService _dbService;
