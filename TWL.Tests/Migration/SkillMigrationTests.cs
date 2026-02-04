@@ -18,27 +18,27 @@ public class SkillMigrationTests
         SkillRegistry.Instance.LoadSkills(json);
 
         // Verify Water
-        var waterSkill = SkillRegistry.Instance.GetSkillById(SkillIds.GS_WATER_DIMINUTION);
+        var waterSkill = SkillRegistry.Instance.GetSkillById(SkillIds.GS_WATER_SHRINK);
         Assert.NotNull(waterSkill);
-        Assert.Equal("Diminution", waterSkill.Name);
-        Assert.Equal("SKILL_Diminution", waterSkill.DisplayNameKey);
+        Assert.Equal("Shrink", waterSkill.Name);
+        Assert.Equal("Skill_Shrink", waterSkill.DisplayNameKey);
 
         // Verify Earth
-        var earthSkill = SkillRegistry.Instance.GetSkillById(SkillIds.GS_EARTH_SUPPORT_SEAL);
+        var earthSkill = SkillRegistry.Instance.GetSkillById(SkillIds.GS_EARTH_BLOCKAGE);
         Assert.NotNull(earthSkill);
-        Assert.Equal("Support Seal", earthSkill.Name);
-        Assert.Equal("SKILL_SupportSeal", earthSkill.DisplayNameKey);
+        Assert.Equal("Blockage", earthSkill.Name);
+        Assert.Equal("Skill_Blockage", earthSkill.DisplayNameKey);
 
         // Verify Fire
-        var fireSkill = SkillRegistry.Instance.GetSkillById(SkillIds.GS_FIRE_EMBER_SURGE);
+        var fireSkill = SkillRegistry.Instance.GetSkillById(SkillIds.GS_FIRE_HOTFIRE);
         Assert.NotNull(fireSkill);
-        Assert.Equal("Ember Surge", fireSkill.Name);
-        Assert.Equal("SKILL_EmberSurge", fireSkill.DisplayNameKey);
+        Assert.Equal("Hotfire", fireSkill.Name);
+        Assert.Equal("Skill_Hotfire", fireSkill.DisplayNameKey);
 
         // Verify Wind
-        var windSkill = SkillRegistry.Instance.GetSkillById(SkillIds.GS_WIND_UNTOUCHABLE_VEIL);
+        var windSkill = SkillRegistry.Instance.GetSkillById(SkillIds.GS_WIND_VANISH);
         Assert.NotNull(windSkill);
-        Assert.Equal("Untouchable Veil", windSkill.Name);
-        Assert.Equal("SKILL_UntouchableVeil", windSkill.DisplayNameKey);
+        Assert.Equal("Vanish", windSkill.Name);
+        Assert.Equal("Skill_Vanish", windSkill.DisplayNameKey);
     }
 }

@@ -119,10 +119,10 @@ public class ContentValidationTests
         var skills = LoadSkills();
         var goddessMap = new Dictionary<int, string>
         {
-            { 2001, "Diminution" },
-            { 2002, "Support Seal" },
-            { 2003, "Ember Surge" },
-            { 2004, "Untouchable Veil" }
+            { 2001, "Shrink" },
+            { 2002, "Blockage" },
+            { 2003, "Hotfire" },
+            { 2004, "Vanish" }
         };
 
         foreach (var kvp in goddessMap)

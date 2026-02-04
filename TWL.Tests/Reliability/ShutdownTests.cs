@@ -46,7 +46,8 @@ public class ShutdownTests
             null!, // MapLoader
             null!, // WorldTriggerService
             null!, // MonsterManager
-            null!  // SpawnManager
+            null!,  // SpawnManager
+            null!  // ILoggerFactory
         );
 
         // Act
