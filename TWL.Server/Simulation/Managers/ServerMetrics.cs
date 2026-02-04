@@ -109,6 +109,15 @@ public class ServerMetrics
     private long _loginAttempts;
     private long _loginFailures;
 
+    private long _shutdownDurationMs;
+    private long _playersSavedOnShutdown;
+
+    public void RecordShutdown(long durationMs, int playersSaved)
+    {
+        Interlocked.Exchange(ref _shutdownDurationMs, durationMs);
+        Interlocked.Exchange(ref _playersSavedOnShutdown, playersSaved);
+    }
+
     public void RecordLoginAttempt(bool success)
     {
         Interlocked.Increment(ref _loginAttempts);
@@ -209,6 +218,9 @@ public class ServerMetrics
             LoginAttempts = Interlocked.Read(ref _loginAttempts),
             LoginFailures = Interlocked.Read(ref _loginFailures),
 
+            ShutdownDurationMs = Interlocked.Read(ref _shutdownDurationMs),
+            PlayersSavedOnShutdown = Interlocked.Read(ref _playersSavedOnShutdown),
+
             ValidateHistogram = _validateHistogram.GetSnapshot(),
             ResolveHistogram = _resolveHistogram.GetSnapshot(),
             PersistHistogram = _persistHistogram.GetSnapshot()
@@ -269,6 +281,9 @@ public class MetricsSnapshot
 
     public long LoginAttempts { get; set; }
     public long LoginFailures { get; set; }
+
+    public long ShutdownDurationMs { get; set; }
+    public long PlayersSavedOnShutdown { get; set; }
 
     public HistogramSnapshot ValidateHistogram { get; set; }
     public HistogramSnapshot ResolveHistogram { get; set; }

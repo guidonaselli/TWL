@@ -81,7 +81,7 @@ Host.CreateDefaultBuilder(args)
             return mediator;
         });
 
-        svcs.AddSingleton<NetworkServer>(sp =>
+        svcs.AddSingleton<INetworkServer>(sp =>
         {
             var port = ctx.Configuration.GetValue<int>("Network:Port");
             return new NetworkServer(
@@ -101,6 +101,7 @@ Host.CreateDefaultBuilder(args)
             );
         });
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer
+        svcs.AddHostedService<HealthCheckService>();
     })
     .Build()
     .Run();

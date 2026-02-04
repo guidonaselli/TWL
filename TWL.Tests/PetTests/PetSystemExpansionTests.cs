@@ -20,6 +20,7 @@ public class PetSystemExpansionTests : IDisposable
     private readonly Mock<ICombatResolver> _mockResolver;
     private readonly Mock<ISkillCatalog> _mockSkills;
     private readonly Mock<IStatusEngine> _mockStatusEngine;
+    private readonly Mock<MonsterManager> _mockMonsterManager;
     private readonly PetManager _petManager;
     private readonly PetService _petService;
 
@@ -56,10 +57,11 @@ public class PetSystemExpansionTests : IDisposable
         _mockResolver = new Mock<ICombatResolver>();
         _mockSkills = new Mock<ISkillCatalog>();
         _mockRandom = new Mock<IRandomService>();
+        _mockMonsterManager = new Mock<MonsterManager>();
 
         _combatManager = new CombatManager(_mockResolver.Object, _mockRandom.Object, _mockSkills.Object,
             _mockStatusEngine.Object);
-        _petService = new PetService(_playerService, _petManager, _combatManager, _mockRandom.Object);
+        _petService = new PetService(_playerService, _petManager, _mockMonsterManager.Object, _combatManager, _mockRandom.Object);
     }
 
     public void Dispose()
