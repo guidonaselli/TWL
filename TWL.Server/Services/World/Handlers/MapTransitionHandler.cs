@@ -27,4 +27,9 @@ public class MapTransitionHandler : ITriggerHandler
 
     public void ExecuteInteract(ServerCharacter character, ServerTrigger trigger, IWorldTriggerService context) =>
         ExecuteEnter(character, trigger, context);
+
+    public void ExecuteTick(ServerTrigger trigger, int mapId, IWorldTriggerService context)
+    {
+        // No periodic logic for map transitions
+    }
 }

@@ -150,6 +150,24 @@ public class MapLoader
             trigger.Type = type;
         }
 
+        if (trigger.Properties.TryGetValue("Activation", out var activationStr) &&
+            Enum.TryParse<TriggerActivationType>(activationStr, true, out var activation))
+        {
+            trigger.ActivationType = activation;
+        }
+
+        if (trigger.Properties.TryGetValue("Interval", out var intervalStr) &&
+            int.TryParse(intervalStr, out var interval))
+        {
+            trigger.IntervalMs = interval;
+        }
+
+        if (trigger.Properties.TryGetValue("Cooldown", out var cooldownStr) &&
+            int.TryParse(cooldownStr, out var cooldown))
+        {
+            trigger.CooldownMs = cooldown;
+        }
+
         // Logical Id overrides TMX Id
         if (trigger.Properties.TryGetValue("Id", out var customId))
         {

@@ -38,6 +38,9 @@ public enum Opcode
     // Encounter
     EncounterStarted,
 
+    // Status
+    StatsUpdate,
+
     // System
     Disconnect
 }

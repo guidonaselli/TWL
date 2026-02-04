@@ -24,6 +24,7 @@ public class ServerWorker : IHostedService
     private readonly PetManager _petManager;
     private readonly PlayerService _playerService;
     private readonly ServerQuestManager _questManager;
+    private readonly ILoggerFactory _loggerFactory;
     private readonly SpawnManager _spawnManager;
     private readonly IWorldScheduler _worldScheduler;
     private readonly IWorldTriggerService _worldTriggerService;
@@ -31,7 +32,8 @@ public class ServerWorker : IHostedService
     public ServerWorker(INetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager,
         ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService,
         IWorldScheduler worldScheduler, ServerMetrics metrics, MapLoader mapLoader,
-        IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager)
+        IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager,
+        ILoggerFactory loggerFactory)
     {
         _net = net;
         _db = db;
@@ -46,6 +48,7 @@ public class ServerWorker : IHostedService
         _worldTriggerService = worldTriggerService;
         _monsterManager = monsterManager;
         _spawnManager = spawnManager;
+        _loggerFactory = loggerFactory;
     }
 
     public Task StartAsync(CancellationToken ct)
@@ -89,6 +92,8 @@ public class ServerWorker : IHostedService
         _log.LogInformation("Loading Maps...");
         _worldTriggerService.RegisterHandler(new MapTransitionHandler());
         _worldTriggerService.RegisterHandler(new QuestTriggerHandler(_playerService));
+        // Manual resolution for now until DI registration for handlers is improved
+        _worldTriggerService.RegisterHandler(new DamageTriggerHandler(_loggerFactory.CreateLogger<DamageTriggerHandler>(), _playerService));
 
         if (Directory.Exists("Content/Maps"))
         {
@@ -114,6 +119,8 @@ public class ServerWorker : IHostedService
         {
             _log.LogWarning("Content/Maps not found.");
         }
+
+        _worldTriggerService.Start();
 
         _log.LogInformation("Starting server...");
         _net.Start();
