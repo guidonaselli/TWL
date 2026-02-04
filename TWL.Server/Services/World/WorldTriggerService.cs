@@ -3,6 +3,7 @@ using TWL.Server.Domain.World;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Services;
 
 namespace TWL.Server.Services.World;
 
@@ -13,12 +14,46 @@ public class WorldTriggerService : IWorldTriggerService
     private readonly Dictionary<int, ServerMap> _maps = new();
     private readonly ServerMetrics _metrics;
     private readonly PlayerService _playerService;
+    private readonly IWorldScheduler _scheduler;
+    private bool _started;
 
-    public WorldTriggerService(ILogger<WorldTriggerService> logger, ServerMetrics metrics, PlayerService playerService)
+    public WorldTriggerService(ILogger<WorldTriggerService> logger, ServerMetrics metrics, PlayerService playerService, IWorldScheduler scheduler)
     {
         _logger = logger;
         _metrics = metrics;
         _playerService = playerService;
+        _scheduler = scheduler;
+    }
+
+    public void Start()
+    {
+        if (_started) return;
+        _started = true;
+
+        foreach (var map in _maps.Values)
+        {
+            foreach (var trigger in map.Triggers)
+            {
+                if (trigger.ActivationType == TriggerActivationType.Timer && trigger.IntervalMs > 0)
+                {
+                    _scheduler.ScheduleRepeating(() =>
+                    {
+                        var handler = _handlers.FirstOrDefault(h => h.CanHandle(trigger.Type));
+                        if (handler != null)
+                        {
+                            try
+                            {
+                                handler.ExecuteTick(trigger, map.Id, this);
+                            }
+                            catch (Exception ex)
+                            {
+                                _logger.LogError(ex, "Error executing timer trigger {TriggerId} in map {MapId}", trigger.Id, map.Id);
+                            }
+                        }
+                    }, TimeSpan.FromMilliseconds(trigger.IntervalMs), $"Trigger-{map.Id}-{trigger.Id}");
+                }
+            }
+        }
     }
 
     public void LoadMaps(IEnumerable<ServerMap> maps)
@@ -131,5 +166,15 @@ public class WorldTriggerService : IWorldTriggerService
         }
 
         return map.Spawns.FirstOrDefault(s => s.Id == spawnId);
+    }
+
+    public IEnumerable<ServerCharacter> GetPlayersInTrigger(ServerTrigger trigger, int mapId)
+    {
+        var sessions = new List<ClientSession>();
+        _playerService.GetSessions(sessions, s => s.Character != null && s.Character.MapId == mapId);
+
+        return sessions.Select(s => s.Character!)
+            .Where(c => c.X >= trigger.X && c.X < trigger.X + trigger.Width &&
+                        c.Y >= trigger.Y && c.Y < trigger.Y + trigger.Height);
     }
 }

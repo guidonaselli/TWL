@@ -1,201 +1,161 @@
+using Microsoft.Extensions.Logging;
 using Moq;
 using TWL.Server.Domain.World;
-using TWL.Server.Domain.World.Conditions;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services.World;
+using TWL.Server.Services.World.Handlers;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Server.Simulation.Networking.Components;
-using TWL.Shared.Domain.Quests;
+using TWL.Shared.Services;
+using Xunit;
 
 namespace TWL.Tests.Services.World;
 
+public class TestClientSession : ClientSession
+{
+    public TestClientSession(ServerCharacter character) : base()
+    {
+        Character = character;
+    }
+}
+
 public class WorldTriggerServiceTests
 {
-    private readonly Mock<ServerMetrics> _mockMetrics;
-    private readonly Mock<IPlayerRepository> _mockRepo;
-    private readonly PlayerService _playerService;
+    private readonly Mock<IWorldScheduler> _schedulerMock;
+    private readonly Mock<PlayerService> _playerServiceMock;
+    private readonly Mock<ServerMetrics> _metricsMock;
+    private readonly Mock<ILogger<WorldTriggerService>> _loggerMock;
     private readonly WorldTriggerService _service;
-    private readonly Mock<ITriggerHandler> _mockHandler;
 
     public WorldTriggerServiceTests()
     {
-        _mockMetrics = new Mock<ServerMetrics>();
-        _mockRepo = new Mock<IPlayerRepository>();
-        _playerService = new PlayerService(_mockRepo.Object, _mockMetrics.Object);
-        _service = new WorldTriggerService(new Microsoft.Extensions.Logging.Abstractions.NullLogger<WorldTriggerService>(), _mockMetrics.Object, _playerService);
+        _schedulerMock = new Mock<IWorldScheduler>();
 
-        _mockHandler = new Mock<ITriggerHandler>();
-        _mockHandler.Setup(h => h.CanHandle(It.IsAny<string>())).Returns(true);
-        _service.RegisterHandler(_mockHandler.Object);
+        var repoMock = new Mock<IPlayerRepository>();
+        var psLogger = new Mock<ILogger<PlayerService>>();
+        _metricsMock = new Mock<ServerMetrics>();
+
+        _playerServiceMock = new Mock<PlayerService>(repoMock.Object, psLogger.Object, _metricsMock.Object);
+        _loggerMock = new Mock<ILogger<WorldTriggerService>>();
+
+        _service = new WorldTriggerService(_loggerMock.Object, _metricsMock.Object, _playerServiceMock.Object, _schedulerMock.Object);
     }
 
     [Fact]
-    public void OnEnterTrigger_ShouldExecute_WhenNoConditions()
+    public void Start_ShouldScheduleTimerTriggers()
     {
         // Arrange
-        var mapId = 1;
-        var triggerId = "t1";
-        var trigger = new ServerTrigger { Id = triggerId, Type = "Test", Conditions = new List<ITriggerCondition>() };
-        var map = new ServerMap { Id = mapId, Triggers = new List<ServerTrigger> { trigger } };
-        _service.LoadMaps(new[] { map });
-
-        var character = new ServerCharacter { Id = 1, MapId = mapId };
-
-        // Act
-        _service.OnEnterTrigger(character, mapId, triggerId);
-
-        // Assert
-        _mockHandler.Verify(h => h.ExecuteEnter(character, trigger, _service), Times.Once);
-    }
-
-    [Fact]
-    public void OnEnterTrigger_ShouldNotExecute_WhenLevelConditionNotMet()
-    {
-        // Arrange
-        var mapId = 1;
-        var triggerId = "t1";
+        var map = new ServerMap { Id = 1 };
         var trigger = new ServerTrigger
         {
-            Id = triggerId,
-            Type = "Test",
-            Conditions = new List<ITriggerCondition>
-            {
-                new LevelCondition(10)
-            }
+            Id = "timer1",
+            Type = "TestTimer",
+            ActivationType = TriggerActivationType.Timer,
+            IntervalMs = 1000
         };
-        var map = new ServerMap { Id = mapId, Triggers = new List<ServerTrigger> { trigger } };
+        map.Triggers.Add(trigger);
+
         _service.LoadMaps(new[] { map });
 
-        var character = new ServerCharacter { Id = 1, MapId = mapId };
-        character.SetLevel(5);
-
         // Act
-        _service.OnEnterTrigger(character, mapId, triggerId);
+        _service.Start();
 
         // Assert
-        _mockHandler.Verify(h => h.ExecuteEnter(It.IsAny<ServerCharacter>(), It.IsAny<ServerTrigger>(), It.IsAny<IWorldTriggerService>()), Times.Never);
+        _schedulerMock.Verify(s => s.ScheduleRepeating(It.IsAny<Action>(), TimeSpan.FromMilliseconds(1000), It.Is<string>(n => n.Contains("timer1"))), Times.Once);
     }
 
     [Fact]
-    public void OnEnterTrigger_ShouldExecute_WhenLevelConditionMet()
+    public void ExecuteTick_ShouldInvokeHandler()
     {
         // Arrange
-        var mapId = 1;
-        var triggerId = "t1";
+        var map = new ServerMap { Id = 1 };
         var trigger = new ServerTrigger
         {
-            Id = triggerId,
-            Type = "Test",
-            Conditions = new List<ITriggerCondition>
-            {
-                new LevelCondition(10)
-            }
+            Id = "timer1",
+            Type = "TestTimer",
+            ActivationType = TriggerActivationType.Timer,
+            IntervalMs = 1000
         };
-        var map = new ServerMap { Id = mapId, Triggers = new List<ServerTrigger> { trigger } };
+        map.Triggers.Add(trigger);
+
         _service.LoadMaps(new[] { map });
 
-        var character = new ServerCharacter { Id = 1, MapId = mapId };
-        character.SetLevel(15);
+        Action? scheduledAction = null;
+        _schedulerMock.Setup(s => s.ScheduleRepeating(It.IsAny<Action>(), It.IsAny<TimeSpan>(), It.IsAny<string>()))
+            .Callback<Action, TimeSpan, string>((act, _, _) => scheduledAction = act);
+
+        var handlerMock = new Mock<ITriggerHandler>();
+        handlerMock.Setup(h => h.CanHandle("TestTimer")).Returns(true);
+        _service.RegisterHandler(handlerMock.Object);
+
+        _service.Start();
 
         // Act
-        _service.OnEnterTrigger(character, mapId, triggerId);
+        Assert.NotNull(scheduledAction);
+        scheduledAction.Invoke();
 
         // Assert
-        _mockHandler.Verify(h => h.ExecuteEnter(character, trigger, _service), Times.Once);
+        handlerMock.Verify(h => h.ExecuteTick(trigger, 1, _service), Times.Once);
     }
 
     [Fact]
-    public void OnEnterTrigger_ShouldNotExecute_WhenQuestConditionNotMet()
+    public void GetPlayersInTrigger_ShouldFilterPlayers()
     {
         // Arrange
-        var mapId = 1;
-        var triggerId = "t1";
-        var questId = 100;
         var trigger = new ServerTrigger
         {
-            Id = triggerId,
-            Type = "Test",
-            Conditions = new List<ITriggerCondition>
-            {
-                new QuestCondition(questId, "Completed")
-            }
+            X = 10,
+            Y = 10,
+            Width = 10,
+            Height = 10 // Covers 10,10 to 20,20
         };
-        var map = new ServerMap { Id = mapId, Triggers = new List<ServerTrigger> { trigger } };
-        _service.LoadMaps(new[] { map });
 
-        var character = new ServerCharacter { Id = 1, MapId = mapId };
+        var p1 = new ServerCharacter { Id = 1, MapId = 1, X = 15, Y = 15 }; // Inside
+        var p2 = new ServerCharacter { Id = 2, MapId = 1, X = 5, Y = 5 };   // Outside
+        var p3 = new ServerCharacter { Id = 3, MapId = 2, X = 15, Y = 15 }; // Wrong Map
 
-        // Setup Session
-        var session = new TestClientSession();
-        session.UserId = 1;
-        session.SetCharacter(character);
-        var questManager = new ServerQuestManager();
-        var questComp = new PlayerQuestComponent(questManager);
-        session.SetQuestComponent(questComp);
+        var s1 = new TestClientSession(p1);
+        var s2 = new TestClientSession(p2);
+        var s3 = new TestClientSession(p3);
 
-        _playerService.RegisterSession(session);
+        _playerServiceMock.Setup(ps => ps.GetSessions(It.IsAny<List<ClientSession>>(), It.IsAny<Func<ClientSession, bool>>()))
+            .Callback<List<ClientSession>, Func<ClientSession, bool>>((list, filter) =>
+            {
+                if (filter(s1)) list.Add(s1);
+                if (filter(s2)) list.Add(s2);
+                if (filter(s3)) list.Add(s3);
+            });
 
         // Act
-        _service.OnEnterTrigger(character, mapId, triggerId);
+        var players = _service.GetPlayersInTrigger(trigger, 1).ToList();
 
         // Assert
-        _mockHandler.Verify(h => h.ExecuteEnter(It.IsAny<ServerCharacter>(), It.IsAny<ServerTrigger>(), It.IsAny<IWorldTriggerService>()), Times.Never);
+        Assert.Contains(p1, players);
+        Assert.DoesNotContain(p2, players);
+        Assert.DoesNotContain(p3, players);
     }
 
     [Fact]
-    public void OnEnterTrigger_ShouldExecute_WhenQuestConditionMet()
+    public void DamageTriggerHandler_ShouldDamagePlayer()
     {
         // Arrange
-        var mapId = 1;
-        var triggerId = "t1";
-        var questId = 100;
+        _playerServiceMock.Setup(ps => ps.GetSession(It.IsAny<int>())).Returns((ClientSession?)null);
+
+        var handler = new DamageTriggerHandler(new Mock<ILogger<DamageTriggerHandler>>().Object, _playerServiceMock.Object);
         var trigger = new ServerTrigger
         {
-            Id = triggerId,
-            Type = "Test",
-            Conditions = new List<ITriggerCondition>
-            {
-                new QuestCondition(questId, "Completed")
-            }
+            Type = "DamageRegion",
+            Properties = new Dictionary<string, string> { { "DamageAmount", "10" } }
         };
-        var map = new ServerMap { Id = mapId, Triggers = new List<ServerTrigger> { trigger } };
-        _service.LoadMaps(new[] { map });
+        var p1 = new ServerCharacter { Id = 1, Hp = 100 };
+        var serviceMock = new Mock<IWorldTriggerService>();
 
-        var character = new ServerCharacter { Id = 1, MapId = mapId };
-
-        // Setup Session
-        var session = new TestClientSession();
-        session.UserId = 1;
-        session.SetCharacter(character);
-        var questManager = new ServerQuestManager();
-        // Mock quest definition to allow adding it
-        var questDef = new QuestDefinition { QuestId = questId, Objectives = new List<ObjectiveDefinition>() };
-        questManager.AddQuest(questDef);
-
-        var questComp = new PlayerQuestComponent(questManager);
-        // Force state
-        questComp.StartQuest(questId);
-        questComp.QuestStates[questId] = QuestState.Completed; // Manually set state
-
-        session.SetQuestComponent(questComp);
-
-        _playerService.RegisterSession(session);
+        serviceMock.Setup(s => s.GetPlayersInTrigger(trigger, 1)).Returns(new[] { p1 });
 
         // Act
-        _service.OnEnterTrigger(character, mapId, triggerId);
+        handler.ExecuteTick(trigger, 1, serviceMock.Object);
 
         // Assert
-        _mockHandler.Verify(h => h.ExecuteEnter(character, trigger, _service), Times.Once);
-    }
-
-    public class TestClientSession : ClientSession
-    {
-        public TestClientSession() : base()
-        {
-        }
-
-        public void SetCharacter(ServerCharacter c) { Character = c; }
-        public void SetQuestComponent(PlayerQuestComponent qc) { QuestComponent = qc; }
+        Assert.Equal(90, p1.Hp);
     }
 }

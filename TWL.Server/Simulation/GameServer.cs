@@ -87,8 +87,11 @@ public class GameServer
         SpawnManager.Load("Content/Data/spawns");
 
         // Init World System
+        var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, Metrics);
+        scheduler.Start();
+
         var mapLoader = new MapLoader(NullLogger<MapLoader>.Instance);
-        var worldTriggerService = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, Metrics, PlayerService);
+        var worldTriggerService = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, Metrics, PlayerService, scheduler);
         worldTriggerService.RegisterHandler(new MapTransitionHandler());
 
         // Load Maps
@@ -116,9 +119,6 @@ public class GameServer
         {
             Console.WriteLine("Warning: Content/Maps not found.");
         }
-
-        var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, Metrics);
-        scheduler.Start();
 
         PopulateTestWorld();
 
