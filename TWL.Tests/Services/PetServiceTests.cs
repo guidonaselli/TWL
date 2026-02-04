@@ -54,7 +54,11 @@ public class PetServiceTests : IDisposable
                 BaseChance = 0.5f,
                 RequiredItemId = 999
             },
-            GrowthModel = new PetGrowthModel()
+            GrowthModel = new PetGrowthModel(),
+            Utilities = new List<PetUtility>
+            {
+                new PetUtility { Type = PetUtilityType.Mount, Value = 0.5f, RequiredLevel = 1, RequiredAmity = 0 }
+            }
         };
         var tempDef = new PetDefinition
         {
@@ -128,23 +132,10 @@ public class PetServiceTests : IDisposable
             Con = 10, // Just to have stats
             Team = Team.Enemy // CRITICAL: Must be enemy
         };
-        // Mock MaxHp manually or ensure stats calc
-        // Since ServerCharacter calculates MaxHp from Con, it should be fine if initialized.
-        // But ServerCharacter defaults are 8. Let's set it explicitly if possible or rely on base.
-        // Actually ServerCharacter.MaxHp comes from ServerCombatant which is virtual.
-        // ServerCharacter.MaxHp uses _maxHp which is recalculated.
-        // We need to simulate init.
-        // Or we can just trust it has > 10 HP.
-        // Let's force stats.
 
         _combatManager.RegisterCombatant(enemy);
 
         _mockRandom.Setup(r => r.NextFloat()).Returns(0.0f); // Always succeed
-
-        // Debug assertions
-        Assert.NotNull(_playerService.GetSession(1));
-        Assert.NotNull(_combatManager.GetCombatant(200));
-        Assert.NotNull(_petManager.GetDefinition(100));
 
         // Act
         var result = _petService.CaptureEnemy(1, 200);
@@ -153,6 +144,7 @@ public class PetServiceTests : IDisposable
         Assert.NotNull(result);
         Assert.Single(chara.Pets);
         Assert.Equal(100, chara.Pets[0].DefinitionId);
+        // Initial capture Amity logic: 40 base (from service)
         Assert.Equal(40, chara.Pets[0].Amity);
         Assert.False(chara.HasItem(999, 1)); // Consumed
         Assert.Equal(0, enemy.Hp); // Killed
@@ -316,10 +308,6 @@ public class PetServiceTests : IDisposable
         Assert.NotNull(pet.ExpirationTime);
         Assert.False(pet.IsExpired);
 
-        // Wait slightly (in real test we shouldn't sleep ideally but for 1s it's okay-ish)
-        // Since ServerPet uses DateTime.UtcNow directly, we can't mock time easily.
-        // We'll manually set ExpirationTime for test stability.
-
         pet.ExpirationTime = DateTime.UtcNow.AddSeconds(-1);
         Assert.True(pet.IsExpired);
     }
@@ -372,7 +360,7 @@ public class PetServiceTests : IDisposable
     }
 
     [Fact]
-    public void PetDeath_ReducesAmity()
+    public void ProcessAmity_Death_ReducesAmity()
     {
         // Arrange
         var chara = new ServerCharacter { Id = 1 };
@@ -384,20 +372,106 @@ public class PetServiceTests : IDisposable
         };
         chara.AddPet(pet);
 
-        // We need to trigger HandlePetDeath via CombatManager event or call pet.Die() directly.
-        // Since HandlePetDeath is private and triggered by event, let's simulate the event.
-        // We can't easily trigger the event on the real CombatManager without a real combat context.
-        // However, we can trust pet.Die() logic if we tested ServerPet logic, OR we can test that PetService hooked it up.
-        // Since we are testing PetService integration, let's just call pet.Die() manually to verify the effect on Amity,
-        // as testing the event wiring might require more complex CombatManager mocking setup.
+        var session = new ClientSessionForTest();
+        session.SetUserId(1);
+        session.SetCharacter(chara);
+        _playerService.RegisterSession(session);
 
-        // Actually, let's just test pet.Die() logic here as part of the system test if not covered elsewhere.
+        // Act
+        var result = _petService.ProcessAmity(1, "pet1", AmityAction.Death);
 
-        var initialAmity = pet.Amity;
-        pet.Die();
+        // Assert
+        Assert.True(result);
+        Assert.Equal(40, pet.Amity); // 50 - 10
+    }
 
-        Assert.True(pet.IsDead);
-        Assert.Equal(0, pet.Hp);
-        Assert.Equal(initialAmity - 1, pet.Amity);
+    [Fact]
+    public void ProcessAmity_BattleWin_IncreasesAmity()
+    {
+        // Arrange
+        var chara = new ServerCharacter { Id = 1 };
+        var pet = new ServerPet(new PetDefinition { PetTypeId = 100, Element = Element.Earth })
+        {
+            InstanceId = "pet1",
+            Amity = 50
+        };
+        chara.AddPet(pet);
+
+        var session = new ClientSessionForTest();
+        session.SetUserId(1);
+        session.SetCharacter(chara);
+        _playerService.RegisterSession(session);
+
+        // Act
+        var result = _petService.ProcessAmity(1, "pet1", AmityAction.BattleWin);
+
+        // Assert
+        Assert.True(result);
+        Assert.Equal(51, pet.Amity); // 50 + 1
+    }
+
+    [Fact]
+    public void UseUtility_Mount_Toggles()
+    {
+        // Arrange
+        var chara = new ServerCharacter { Id = 1, MoveSpeedModifier = 1.0f };
+        var pet = new ServerPet(new PetDefinition
+        {
+            PetTypeId = 100,
+            Element = Element.Earth,
+            Utilities = new List<PetUtility>
+            {
+                new PetUtility { Type = PetUtilityType.Mount, Value = 0.5f, RequiredLevel = 1, RequiredAmity = 0 }
+            }
+        })
+        {
+            InstanceId = "pet1",
+            Level = 10,
+            Amity = 50
+        };
+        chara.AddPet(pet);
+
+        var session = new ClientSessionForTest();
+        session.SetUserId(1);
+        session.SetCharacter(chara);
+        _playerService.RegisterSession(session);
+
+        // Act 1: Enable Mount
+        var result1 = _petService.UseUtility(1, "pet1", PetUtilityType.Mount);
+        Assert.True(result1);
+        Assert.True(chara.IsMounted);
+        Assert.Equal(1.5f, chara.MoveSpeedModifier);
+
+        // Act 2: Disable Mount
+        var result2 = _petService.UseUtility(1, "pet1", PetUtilityType.Mount);
+        Assert.True(result2);
+        Assert.False(chara.IsMounted);
+        Assert.Equal(1.0f, chara.MoveSpeedModifier);
+    }
+
+    [Fact]
+    public void CheckLifecycle_RemovesExpiredPets()
+    {
+        // Arrange
+        var chara = new ServerCharacter { Id = 1 };
+        var pet = new ServerPet(new PetDefinition { PetTypeId = 101, Element = Element.Wind, IsTemporary = true, DurationSeconds = 1 })
+        {
+            InstanceId = "pet1"
+        };
+        pet.ExpirationTime = DateTime.UtcNow.AddSeconds(-10); // Expired long ago
+        chara.AddPet(pet);
+
+        var session = new ClientSessionForTest();
+        session.SetUserId(1);
+        session.SetCharacter(chara);
+        _playerService.RegisterSession(session);
+
+        Assert.Single(chara.Pets);
+
+        // Act
+        _petService.CheckLifecycle(1);
+
+        // Assert
+        Assert.Empty(chara.Pets);
     }
 }
