@@ -399,6 +399,83 @@ public class ServerCharacter : ServerCombatant
         }
     }
 
+    public bool UseItem(int slotIndex, out Item? modifiedItem)
+    {
+        modifiedItem = null;
+        lock (_inventory)
+        {
+            if (slotIndex < 0 || slotIndex >= _inventory.Count)
+            {
+                return false;
+            }
+
+            var item = _inventory[slotIndex];
+
+            // Equipment Binding Logic
+            if (item.Type == ItemType.Equipment && item.Policy == BindPolicy.BindOnEquip && item.BoundToId == null)
+            {
+                item.BoundToId = Id;
+                IsDirty = true;
+                SecurityLogger.LogSecurityEvent("ItemBound", Id, $"ItemId:{item.ItemId} Policy:{item.Policy} BoundTo:{Id}");
+
+                // Return copy
+                modifiedItem = new Item
+                {
+                    ItemId = item.ItemId,
+                    Name = item.Name,
+                    Type = item.Type,
+                    MaxStack = item.MaxStack,
+                    Quantity = item.Quantity,
+                    Policy = item.Policy,
+                    BoundToId = item.BoundToId
+                };
+                return true;
+            }
+
+            // Consumable Logic
+            if (item.Type == ItemType.Consumable)
+            {
+                item.Quantity--;
+                IsDirty = true;
+
+                // Return copy representing the state *after* use (potentially 0 qty)
+                modifiedItem = new Item
+                {
+                    ItemId = item.ItemId,
+                    Name = item.Name,
+                    Type = item.Type,
+                    MaxStack = item.MaxStack,
+                    Quantity = item.Quantity,
+                    Policy = item.Policy,
+                    BoundToId = item.BoundToId
+                };
+
+                // Update Total Quantities Cache
+                if (_itemTotalQuantities.TryGetValue(item.ItemId, out var currentTotal))
+                {
+                    var newTotal = currentTotal - 1;
+                    if (newTotal <= 0)
+                    {
+                        _itemTotalQuantities.Remove(item.ItemId);
+                    }
+                    else
+                    {
+                        _itemTotalQuantities[item.ItemId] = newTotal;
+                    }
+                }
+
+                if (item.Quantity <= 0)
+                {
+                    _inventory.RemoveAt(slotIndex);
+                }
+
+                return true;
+            }
+
+            return false;
+        }
+    }
+
     public bool RemoveItem(int itemId, int quantity) => RemoveItem(itemId, quantity, null);
 
     public bool RemoveItem(int itemId, int quantity, BindPolicy? policyFilter)

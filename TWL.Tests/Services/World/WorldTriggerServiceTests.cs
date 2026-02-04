@@ -1,11 +1,16 @@
 using Microsoft.Extensions.Logging;
 using Moq;
 using TWL.Server.Domain.World;
+using TWL.Server.Domain.World.Conditions;
+using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Services.World.Handlers;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Server.Simulation.Networking.Components;
+using TWL.Shared.Domain.Quests;
+using TWL.Shared.Domain.Requests;
 using TWL.Shared.Services;
 using Xunit;
 
@@ -150,6 +155,30 @@ public class WorldTriggerServiceTests
         var p1 = new ServerCharacter { Id = 1, Hp = 100 };
         var serviceMock = new Mock<IWorldTriggerService>();
 
+        // Setup Session
+        var session = new TestClientSession();
+        session.UserId = 1;
+        session.SetCharacter(character);
+        var questManager = new ServerQuestManager();
+        // Mock quest definition to allow adding it
+        var questDef = new QuestDefinition
+        {
+            QuestId = questId,
+            Objectives = new List<ObjectiveDefinition>(),
+            Title = "Test",
+            Description = "Test",
+            Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
+        };
+        questManager.AddQuest(questDef);
+
+        var questComp = new PlayerQuestComponent(questManager);
+        // Force state
+        questComp.StartQuest(questId);
+        questComp.QuestStates[questId] = QuestState.Completed; // Manually set state
+
+        session.SetQuestComponent(questComp);
+
+        _playerService.RegisterSession(session);
         serviceMock.Setup(s => s.GetPlayersInTrigger(trigger, 1)).Returns(new[] { p1 });
 
         // Act
