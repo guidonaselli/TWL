@@ -678,6 +678,7 @@ public class ClientSession
         }
     }
 
+
     private static bool IsHex(string value)
     {
         for (var i = 0; i < value.Length; i++)

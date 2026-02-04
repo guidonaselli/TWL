@@ -9,4 +9,5 @@ public class ServerTrigger
     public float Width { get; set; }
     public float Height { get; set; }
     public Dictionary<string, string> Properties { get; set; } = new();
+    public List<ITriggerCondition> Conditions { get; set; } = new();
 }
