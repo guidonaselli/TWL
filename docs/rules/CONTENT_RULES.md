@@ -32,6 +32,7 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
 *   **Anti-Snowball (Stage Upgrades)**:
     *   If Skill A upgrades to Skill B at Rank X (via `StageUpgradeRules`), then Skill B MUST strictly require Skill A at Rank X (via `UnlockRules`), OR have no parent requirements.
     *   Inconsistent requirements (e.g. A says Rank 10, B says Rank 20) are forbidden.
+    *   **Integrity**: `StageUpgradeRules` MUST define `NextSkillId`. Partial rules (e.g. only RankThreshold) without a target are forbidden.
 
 ## 5. Content Validation
 *   `TWL.Tests.ContentValidationTests` is the enforcement mechanism.

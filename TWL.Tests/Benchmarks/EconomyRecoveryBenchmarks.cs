@@ -29,7 +29,8 @@ public class EconomyRecoveryBenchmarks
             using (var sw = new StreamWriter(ledgerFile))
             {
                 sw.WriteLine("Timestamp,Type,UserId,Details,Delta,NewBalance");
-                var now = DateTime.UtcNow.AddHours(-1);
+                // Ensure all transactions are in the past so snapshot covers them all
+                var now = DateTime.UtcNow.AddHours(-4);
                 for (int i = 0; i < transactionCount; i++)
                 {
                     var orderId = $"ord_{i}";

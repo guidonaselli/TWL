@@ -124,10 +124,7 @@
       "ParentSkillId": 1003,
       "ParentSkillRank": 10
     },
-    "Stage": 1,
-    "StageUpgradeRules": {
-      "RankThreshold": 10
-    }
+    "Stage": 1
   },
   {
     "SkillId": 1101,
@@ -254,10 +251,7 @@
       "ParentSkillId": 1103,
       "ParentSkillRank": 10
     },
-    "Stage": 1,
-    "StageUpgradeRules": {
-      "RankThreshold": 10
-    }
+    "Stage": 1
   },
   {
     "SkillId": 1201,
@@ -407,10 +401,7 @@
       "MinChance": 0.1,
       "MaxChance": 1.0
     },
-    "Stage": 1,
-    "StageUpgradeRules": {
-      "RankThreshold": 10
-    }
+    "Stage": 1
   },
   {
     "SkillId": 3001,
