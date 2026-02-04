@@ -101,6 +101,9 @@ public class ServerMetrics
 
     private long _worldLoopSlowTicks;
 
+    private long _worldLoopDriftTotalMs;
+    private long _worldLoopBudgetExhausted;
+
     // New Observability Metrics
     private long _worldLoopTicks;
     private long _worldLoopTotalDurationMs;
@@ -160,6 +163,10 @@ public class ServerMetrics
 
     public void RecordSlowWorldTask(string taskName, long durationMs) => Interlocked.Increment(ref _worldLoopSlowTasks);
 
+    public void RecordWorldLoopDrift(long ms) => Interlocked.Add(ref _worldLoopDriftTotalMs, ms);
+
+    public void RecordWorldLoopBudgetExhausted() => Interlocked.Increment(ref _worldLoopBudgetExhausted);
+
     public void RecordTriggerExecuted(string triggerType) => Interlocked.Increment(ref _triggersExecuted);
 
     public void RecordPipelineValidateDuration(long ticks)
@@ -210,6 +217,8 @@ public class ServerMetrics
             WorldSchedulerQueueDepth = Interlocked.Read(ref _worldSchedulerQueueDepth),
             WorldLoopSlowTicks = Interlocked.Read(ref _worldLoopSlowTicks),
             WorldLoopSlowTasks = Interlocked.Read(ref _worldLoopSlowTasks),
+            WorldLoopDriftTotalMs = Interlocked.Read(ref _worldLoopDriftTotalMs),
+            WorldLoopBudgetExhausted = Interlocked.Read(ref _worldLoopBudgetExhausted),
             TriggersExecuted = Interlocked.Read(ref _triggersExecuted),
 
             PipelineValidateDurationTicks = Interlocked.Read(ref _pipelineValidateDurationTicks),
@@ -274,6 +283,8 @@ public class MetricsSnapshot
     public long WorldSchedulerQueueDepth { get; set; }
     public long WorldLoopSlowTicks { get; set; }
     public long WorldLoopSlowTasks { get; set; }
+    public long WorldLoopDriftTotalMs { get; set; }
+    public long WorldLoopBudgetExhausted { get; set; }
     public long TriggersExecuted { get; set; }
 
     public long PipelineValidateDurationTicks { get; set; }
@@ -301,6 +312,10 @@ public class MetricsSnapshot
         ? (double)WorldLoopTotalDurationMs / WorldLoopTicks
         : 0;
 
+    public double AverageWorldLoopDriftMs => WorldLoopTicks > 0
+        ? (double)WorldLoopDriftTotalMs / WorldLoopTicks
+        : 0;
+
     public double AverageValidateTimeMs => NetMessagesProcessed > 0
         ? TimeSpan.FromTicks(PipelineValidateDurationTicks).TotalMilliseconds / NetMessagesProcessed
         : 0;
@@ -314,7 +329,7 @@ public class MetricsSnapshot
         return
             $"[Metrics] Net: {NetMessagesProcessed} msgs, AvgProc: {AverageMessageProcessingTimeMs:F2}ms (Val: {AverageValidateTimeMs:F2}ms, Res: {AverageResolveTimeMs:F2}ms). " +
             $"Logins: {LoginAttempts} (Fail: {LoginFailures}). " +
-            $"World: {WorldLoopTicks} ticks (Avg {AverageWorldLoopDurationMs:F2}ms), Queue: {WorldSchedulerQueueDepth}, SlowTicks: {WorldLoopSlowTicks}, SlowTasks: {WorldLoopSlowTasks}. " +
+            $"World: {WorldLoopTicks} ticks (Avg {AverageWorldLoopDurationMs:F2}ms), Queue: {WorldSchedulerQueueDepth}, SlowTicks: {WorldLoopSlowTicks}, SlowTasks: {WorldLoopSlowTasks}, Drift: {AverageWorldLoopDriftMs:F2}ms, BudgetExhausted: {WorldLoopBudgetExhausted}. " +
             $"Triggers: {TriggersExecuted}. " +
             $"Persist: {PersistenceFlushes} flushes, {PersistenceErrors} errs. " +
             $"Histograms: [Val: {ValidateHistogram}] [Res: {ResolveHistogram}] [Persist: {PersistHistogram}]";
