@@ -1,4 +1,5 @@
 using TWL.Server.Persistence;
+using TWL.Server.Security;
 using TWL.Shared.Domain.Models;
 
 namespace TWL.Server.Simulation.Networking;
@@ -349,6 +350,8 @@ public class ServerCharacter : ServerCombatant
         if ((policy == BindPolicy.BindOnPickup || policy == BindPolicy.CharacterBound) && boundToId == null)
         {
             boundToId = Id;
+            // HARDENING: Log ownership bind
+            SecurityLogger.LogSecurityEvent("ItemBound", Id, $"ItemId:{itemId} Policy:{policy} BoundTo:{boundToId}");
         }
 
         lock (_inventory)

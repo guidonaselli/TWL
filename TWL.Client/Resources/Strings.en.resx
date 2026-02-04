@@ -238,6 +238,21 @@
     <data name="ENEMY_Bat" xml:space="preserve">
     <value>Bat</value>
   </data>
+    <data name="NPC_Maren_Hello" xml:space="preserve">
+    <value>Hello, I'm Maren.</value>
+  </data>
+    <data name="NPC_Nia_Hello" xml:space="preserve">
+    <value>Hi there, I'm Nia!</value>
+  </data>
+    <data name="NPC_Calloway_Hello" xml:space="preserve">
+    <value>Greetings, I'm Calloway.</value>
+  </data>
+    <data name="NPC_Ruk_Hello" xml:space="preserve">
+    <value>Ruk here.</value>
+  </data>
+    <data name="NPC_Coral_Hello" xml:space="preserve">
+    <value>Hello, my name is Coral.</value>
+  </data>
     <data name="NPC_HarborQuartermaster_Hello" xml:space="preserve">
     <value>Welcome to the harbor!</value>
   </data>

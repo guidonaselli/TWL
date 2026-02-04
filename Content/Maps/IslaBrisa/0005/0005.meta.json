@@ -1,0 +1,23 @@
+{
+  "MapId": 5,
+  "RegionId": "IslaBrisa",
+  "Biome": "Tropical",
+  "RecommendedLevelMin": 3,
+  "RecommendedLevelMax": 5,
+  "EntryPoints": [ 1 ],
+  "Exits": [
+    {
+      "TargetMapId": 2,
+      "SpawnId": 1,
+      "Gating": { "MinLevel": 1 }
+    }
+  ],
+  "AmbientProfile": {
+    "MusicKey": "BGM_BEACH_02",
+    "AmbienceKey": "AMB_WAVES",
+    "PaletteHintKey": "DAY_CYCLE"
+  },
+  "WorldFlagsSet": [],
+  "WorldFlagsCleared": [],
+  "Notes": "TODO: Add Lighthouse structure (Props_High). Add view of Puerto Roca (background or details). Connect properly to Map 0002 logic."
+}

@@ -283,6 +283,21 @@
     <data name="NPC_WanderingTinkerer_Hello" xml:space="preserve">
     <value>I have many gadgets.</value>
   </data>
+    <data name="NPC_Maren_Hello" xml:space="preserve">
+    <value>Hello, I'm Maren.</value>
+  </data>
+    <data name="NPC_Nia_Hello" xml:space="preserve">
+    <value>Hi there, I'm Nia!</value>
+  </data>
+    <data name="NPC_Calloway_Hello" xml:space="preserve">
+    <value>Greetings, I'm Calloway.</value>
+  </data>
+    <data name="NPC_Ruk_Hello" xml:space="preserve">
+    <value>Ruk here.</value>
+  </data>
+    <data name="NPC_Coral_Hello" xml:space="preserve">
+    <value>Hello, my name is Coral.</value>
+  </data>
     <data name="UI_LoginStatus_Connecting" xml:space="preserve">
     <value>Connecting...</value>
   </data>

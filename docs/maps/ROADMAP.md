@@ -55,6 +55,18 @@
     - **Connections:** 0002 (Costa de Mareas)
     - **Mobs:** Rock Monkey (2005), Root Vine (2009).
 
+- [x] **0004 - Cueva del Eco**
+    - **Status:** Implemented (Skeleton)
+    - **Type:** Mini-Dungeon
+    - **Connections:** 0003 (Sendero de la Selva)
+    - **Entities:** El Viejo Coral (Planned).
+
+- [x] **0005 - Mirador del Faro**
+    - **Status:** Implemented (Skeleton)
+    - **Type:** Landmark
+    - **Connections:** 0002 (Costa de Mareas)
+    - **Entities:** Ruined Lighthouse.
+
 ## Backlog
 - [ ] Starter Island (Tutorial) - Remaining maps (0003-0099)
 - [ ] South Island Jungle

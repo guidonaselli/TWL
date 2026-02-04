@@ -521,19 +521,6 @@ public class ClientSession
         });
     }
 
-    private async Task SendLoginError(string errorCode)
-    {
-        await SendAsync(new NetMessage
-        {
-            Op = Opcode.LoginResponse,
-            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
-            {
-                Success = false,
-                ErrorMessage = errorCode
-            }, _jsonOptions)
-        });
-    }
-
     private async Task HandleLoginAsync(string payload, string traceId)
     {
         // payload podría ser {"username":"xxx","passHash":"abc"}
@@ -678,6 +665,7 @@ public class ClientSession
         }
     }
 
+
     private static bool IsHex(string value)
     {
         for (var i = 0; i < value.Length; i++)
@@ -766,6 +754,32 @@ public class ClientSession
         foreach (var questId in failedQuests)
         {
             _ = SendQuestUpdateAsync(questId);
+        }
+    }
+
+    public async Task DisconnectAsync(string reason)
+    {
+        try
+        {
+            if (_client.Connected)
+            {
+                var msg = new NetMessage
+                {
+                    Op = Opcode.Disconnect,
+                    JsonPayload = JsonSerializer.Serialize(new { reason }, _jsonOptions)
+                };
+                await SendAsync(msg);
+                // Give a small moment for the packet to flush?
+                // The stream closing will happen, but TCP should buffer it.
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending disconnect packet to {UserId}: {ex.Message}");
+        }
+        finally
+        {
+            _client.Close();
         }
     }
 }

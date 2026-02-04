@@ -145,6 +145,24 @@ public class ContentValidationTests
     }
 
     [Fact]
+    public void ValidateStageUpgradeRulesIntegrity()
+    {
+        var skills = LoadSkills();
+        foreach (var skill in skills)
+        {
+            if (skill.StageUpgradeRules != null)
+            {
+                // Rule: If StageUpgradeRules exists, NextSkillId MUST be present.
+                Assert.True(skill.StageUpgradeRules.NextSkillId.HasValue,
+                    $"Skill {skill.SkillId} has StageUpgradeRules but missing NextSkillId.");
+
+                Assert.True(skill.StageUpgradeRules.RankThreshold > 0,
+                    $"Skill {skill.SkillId} has StageUpgradeRules but invalid RankThreshold {skill.StageUpgradeRules.RankThreshold}");
+            }
+        }
+    }
+
+    [Fact]
     public void ValidateContentIntegrity()
     {
         var skills = LoadSkills();

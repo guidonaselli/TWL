@@ -80,7 +80,7 @@ public class GameServer
         var statusEngine = new StatusEngine();
         CombatManager = new CombatManager(combatResolver, random, SkillRegistry.Instance, statusEngine);
 
-        PetService = new PetService(PlayerService, PetManager, CombatManager, random);
+        PetService = new PetService(PlayerService, PetManager, MonsterManager, CombatManager, random);
         EconomyManager = new EconomyManager();
 
         SpawnManager = new SpawnManager(MonsterManager, CombatManager, random, PlayerService);
@@ -88,7 +88,7 @@ public class GameServer
 
         // Init World System
         var mapLoader = new MapLoader(NullLogger<MapLoader>.Instance);
-        var worldTriggerService = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, Metrics);
+        var worldTriggerService = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, Metrics, PlayerService);
         worldTriggerService.RegisterHandler(new MapTransitionHandler());
 
         // Load Maps

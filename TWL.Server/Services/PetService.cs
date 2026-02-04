@@ -10,14 +10,16 @@ public class PetService : IPetService
 {
     private readonly CombatManager _combatManager;
     private readonly PetManager _petManager;
+    private readonly MonsterManager _monsterManager;
     private readonly PlayerService _playerService;
     private readonly IRandomService _random;
 
-    public PetService(PlayerService playerService, PetManager petManager, CombatManager combatManager,
-        IRandomService random)
+    public PetService(PlayerService playerService, PetManager petManager, MonsterManager monsterManager,
+        CombatManager combatManager, IRandomService random)
     {
         _playerService = playerService;
         _petManager = petManager;
+        _monsterManager = monsterManager;
         _combatManager = combatManager;
         _random = random;
 
@@ -58,9 +60,9 @@ public class PetService : IPetService
 
         // 1. Validate Target
         var target = _combatManager.GetCombatant(enemyCombatantId);
-        if (target is not ServerEnemy enemy)
+        if (target is not ServerCharacter enemy || enemy.Team != Team.Enemy)
         {
-            return null; // Can only capture enemies
+            return null; // Can only capture enemies (ServerCharacter)
         }
 
         // Security: Prevent capturing dead enemies (Anti-dupe)
@@ -69,21 +71,27 @@ public class PetService : IPetService
             return null;
         }
 
-        // 2. Validate Enemy Definition
-        if (!enemy.Definition.IsCapturable || enemy.Definition.PetTypeId == null)
+        // 2. Validate Enemy Definition via MonsterManager
+        var monsterDef = _monsterManager.GetDefinition(enemy.MonsterId);
+        if (monsterDef == null)
+        {
+            return null;
+        }
+
+        if (!monsterDef.IsCapturable || monsterDef.PetTypeId == null)
         {
             return null;
         }
 
         // 3. Validate HP Threshold
         var hpPercent = (float)enemy.Hp / enemy.MaxHp;
-        if (hpPercent > enemy.Definition.CaptureThreshold)
+        if (hpPercent > monsterDef.CaptureThreshold)
         {
             return null; // Too healthy
         }
 
         // 4. Validate Pet Definition Rules
-        var petDef = _petManager.GetDefinition(enemy.Definition.PetTypeId.Value);
+        var petDef = _petManager.GetDefinition(monsterDef.PetTypeId.Value);
         if (petDef == null || petDef.CaptureRules == null || !petDef.CaptureRules.IsCapturable)
         {
             return null;
@@ -122,8 +130,8 @@ public class PetService : IPetService
         session.Character.AddPet(pet);
 
         // 12. Remove Enemy (Die)
-        enemy.Die();
-        // CombatManager will handle death event via subscription
+        enemy.Hp = 0; // Force death
+        _combatManager.UnregisterCombatant(enemy.Id); // Or better: trigger death logic
 
         return pet.InstanceId;
     }

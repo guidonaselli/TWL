@@ -71,6 +71,23 @@ public class DbService : IDisposable
         return Convert.ToInt32(result);
     }
 
+    public virtual async Task<bool> CheckHealthAsync()
+    {
+        try
+        {
+            await using var con = new NpgsqlConnection(_connString);
+            await con.OpenAsync();
+            using var cmd = new NpgsqlCommand("SELECT 1", con);
+            await cmd.ExecuteScalarAsync();
+            return true;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Database health check failed: {ex.Message}");
+            return false;
+        }
+    }
+
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)
