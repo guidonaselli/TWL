@@ -115,6 +115,9 @@ public class WorldScheduler : IWorldScheduler, IDisposable
             var ticksProcessed = 0;
             while (accumulator >= TickRateMs && ticksProcessed < MaxTicksPerFrame)
             {
+                // Record drift for this specific tick
+                _metrics.RecordWorldLoopDrift((long)accumulator);
+
                 try
                 {
                     ProcessTick();
@@ -131,6 +134,7 @@ public class WorldScheduler : IWorldScheduler, IDisposable
             // If we are still behind, discard the accumulator to catch up
             if (accumulator >= TickRateMs)
             {
+                _metrics.RecordWorldLoopBudgetExhausted();
                 _logger.LogWarning("WorldScheduler skipping ticks to catch up. Accumulator: {Accumulator}ms",
                     accumulator);
                 accumulator = 0;

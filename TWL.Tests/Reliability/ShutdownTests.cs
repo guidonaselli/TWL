@@ -33,6 +33,8 @@ public class ShutdownTests
         mockPlayerService.Setup(s => s.DisconnectAllAsync(It.IsAny<string>())).Returns(Task.CompletedTask).Verifiable();
         mockPlayerService.Setup(s => s.Stop()).Verifiable();
 
+        var mockLoggerFactory = new Mock<ILoggerFactory>();
+
         var worker = new ServerWorker(
             mockNet.Object,
             mockDb.Object,
@@ -46,7 +48,8 @@ public class ShutdownTests
             null!, // MapLoader
             null!, // WorldTriggerService
             null!, // MonsterManager
-            null!  // SpawnManager
+            null!, // SpawnManager
+            mockLoggerFactory.Object
         );
 
         // Act
