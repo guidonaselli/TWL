@@ -56,7 +56,7 @@ public class CombatManager
     public void AddCharacter(ServerCharacter character) => RegisterCombatant(character);
     public void RemoveCharacter(int id) => UnregisterCombatant(id);
     public ServerCharacter? GetCharacter(int id) => GetCombatant(id) as ServerCharacter;
-    public List<ServerCharacter> GetAllCharacters() => _combatants.Values.OfType<ServerCharacter>().ToList();
+    public virtual List<ServerCharacter> GetAllCharacters() => _combatants.Values.OfType<ServerCharacter>().ToList();
 
     /// <summary>
     ///     Usa una skill (basado en la petición del cliente).
@@ -234,5 +234,5 @@ public class CombatManager
         }
     }
 
-    public List<ServerCombatant> GetAllCombatants() => _combatants.Values.ToList();
+    public virtual List<ServerCombatant> GetAllCombatants() => _combatants.Values.ToList();
 }

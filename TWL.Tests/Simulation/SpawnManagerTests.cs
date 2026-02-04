@@ -176,6 +176,8 @@ public class SpawnManagerTests
         mockCombat.Setup(c => c.GetCombatant(It.IsAny<int>()))
             .Returns(new ServerCharacter()); // Simulate existing combatant
 
+        mockCombat.Setup(c => c.GetAllCombatants()).Returns(new List<ServerCombatant>());
+
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
@@ -291,6 +293,119 @@ public class SpawnManagerTests
             Assert.Equal(participants1[i].Name, participants2[i].Name);
             Assert.Equal(participants1[i].Hp, participants2[i].Hp);
         }
+
+        Directory.Delete(tempDir, true);
+    }
+
+    [Fact]
+    public void StartEncounter_ShouldReturnExistingId_AndResendPacket_WhenAlreadyInCombat()
+    {
+        // Arrange
+        var mockMonsters = new Mock<MonsterManager>();
+        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var existingId = 999;
+
+        mockCombat.Setup(c => c.GetCombatant(It.IsAny<int>()))
+            .Returns(new ServerCharacter { EncounterId = existingId });
+
+        mockCombat.Setup(c => c.GetAllCombatants()).Returns(new List<ServerCombatant>
+        {
+            new ServerCharacter { Id = 101, EncounterId = existingId, Team = Team.Enemy, MonsterId = 2 }
+        });
+
+        var mockRepo = new Mock<IPlayerRepository>();
+        var metrics = new ServerMetrics();
+        var playerService = new PlayerService(mockRepo.Object, metrics);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+
+        var player = new ServerCharacter { Id = 1, Name = "TestPlayer", CharacterElement = Element.Earth };
+        var session = new TestClientSession(player);
+        var enemies = new List<ServerCharacter> { new ServerCharacter { MonsterId = 1 } };
+
+        // Act
+        var resultId = manager.StartEncounter(session, enemies, EncounterSource.Scripted);
+
+        // Assert
+        Assert.Equal(existingId, resultId);
+        // Should verify packet sent
+        Assert.NotNull(session.LastMessage);
+        Assert.Equal(Opcode.EncounterStarted, session.LastMessage.Op);
+    }
+
+    [Fact]
+    public void StartEncounter_ShouldFail_WhenPlayerHasElementNone()
+    {
+        // Arrange
+        var mockMonsters = new Mock<MonsterManager>();
+        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockRepo = new Mock<IPlayerRepository>();
+        var metrics = new ServerMetrics();
+        var playerService = new PlayerService(mockRepo.Object, metrics);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+
+        var player = new ServerCharacter { Id = 1, CharacterElement = Element.None };
+        var session = new TestClientSession(player);
+        var enemies = new List<ServerCharacter> { new ServerCharacter { MonsterId = 1 } };
+
+        // Act
+        var resultId = manager.StartEncounter(session, enemies, EncounterSource.Scripted);
+
+        // Assert
+        Assert.Equal(0, resultId);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Never);
+    }
+
+    [Fact]
+    public void UpdateRoamingMobs_ShouldStartEncounter_WhenPlayerCollides()
+    {
+        // Arrange
+        var mockMonsters = new Mock<MonsterManager>();
+        mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
+        {
+            MonsterId = 1,
+            Name = "Mob",
+            BaseHp = 10,
+            Behavior = new BehaviorProfile { PatrolSpeed = 0 } // Static mob
+        });
+
+        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockRepo = new Mock<IPlayerRepository>();
+        var metrics = new ServerMetrics();
+        var playerService = new PlayerService(mockRepo.Object, metrics);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+
+        // Force spawn via config
+        var config = new ZoneSpawnConfig
+        {
+            MapId = 2000,
+            MinMobCount = 1,
+            SpawnRegions = new List<SpawnRegion>
+            {
+                new() { X = 10, Y = 10, Width = 1, Height = 1, AllowedMonsterIds = new List<int> { 1 } }
+            }
+        };
+
+        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_roam_" + Guid.NewGuid());
+        Directory.CreateDirectory(tempDir);
+        File.WriteAllText(Path.Combine(tempDir, "2000.spawns.json"), JsonSerializer.Serialize(config));
+        manager.Load(tempDir);
+
+        // Update to spawn mob (interval 5s, so update 10s)
+        manager.Update(10.0f);
+
+        // Setup Player at (10, 10) tiles -> (320, 320) pixels
+        // Mob will be at ~320, 320 (random within 1 tile)
+        var player = new ServerCharacter { Id = 1, MapId = 2000, X = 325, Y = 325, Hp = 100, CharacterElement = Element.Earth };
+        var session = new TestClientSession(player);
+        session.UserId = 1;
+        playerService.RegisterSession(session);
+
+        // Act
+        // Update small dt to trigger collision check
+        manager.Update(0.1f);
+
+        // Assert
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Once);
 
         Directory.Delete(tempDir, true);
     }
