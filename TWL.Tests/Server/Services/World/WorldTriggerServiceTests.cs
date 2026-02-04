@@ -1,6 +1,8 @@
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using TWL.Server.Domain.World;
+using TWL.Server.Persistence;
+using TWL.Server.Persistence.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -14,7 +16,10 @@ public class WorldTriggerServiceTests
 
     public WorldTriggerServiceTests()
     {
-        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, new ServerMetrics());
+        var metrics = new ServerMetrics();
+        var repo = new Mock<IPlayerRepository>();
+        var playerService = new PlayerService(repo.Object, metrics);
+        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, metrics, playerService);
         _handlerMock = new Mock<ITriggerHandler>();
     }
 

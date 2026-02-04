@@ -1,12 +1,14 @@
 using Moq;
 using TWL.Server.Domain.World;
 using TWL.Server.Domain.World.Conditions;
+using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
+using TWL.Shared.Domain.Requests;
 
 namespace TWL.Tests.Services.World;
 
@@ -170,7 +172,14 @@ public class WorldTriggerServiceTests
         session.SetCharacter(character);
         var questManager = new ServerQuestManager();
         // Mock quest definition to allow adding it
-        var questDef = new QuestDefinition { QuestId = questId, Objectives = new List<ObjectiveDefinition>() };
+        var questDef = new QuestDefinition
+        {
+            QuestId = questId,
+            Objectives = new List<ObjectiveDefinition>(),
+            Title = "Test",
+            Description = "Test",
+            Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
+        };
         questManager.AddQuest(questDef);
 
         var questComp = new PlayerQuestComponent(questManager);

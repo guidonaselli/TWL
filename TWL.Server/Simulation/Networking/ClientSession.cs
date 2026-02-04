@@ -226,12 +226,59 @@ public class ClientSession
             case Opcode.PetActionRequest:
                 await HandlePetActionAsync(msg.JsonPayload);
                 break;
+            case Opcode.UseItemRequest:
+                await HandleUseItemAsync(msg.JsonPayload, traceId);
+                break;
             // etc.
         }
 
         swResolve.Stop();
         _metrics?.RecordPipelineResolveDuration(swResolve.ElapsedTicks);
         PipelineLogger.LogStage(traceId, "Resolve", swResolve.Elapsed.TotalMilliseconds, $"Op:{msg.Op}");
+    }
+
+    private async Task HandleUseItemAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null)
+        {
+            return;
+        }
+
+        UseItemRequestDTO? request = null;
+        try
+        {
+            request = JsonSerializer.Deserialize<UseItemRequestDTO>(payload, _jsonOptions);
+        }
+        catch (JsonException)
+        {
+            return;
+        }
+
+        if (request == null)
+        {
+            return;
+        }
+
+        if (Character.UseItem(request.SlotIndex, out var modifiedItem))
+        {
+            var update = new InventoryUpdate
+            {
+                PlayerId = UserId,
+                Items = Character.Inventory.ToList()
+            };
+
+            await SendAsync(new NetMessage
+            {
+                Op = Opcode.InventoryUpdate,
+                JsonPayload = JsonSerializer.Serialize(update, _jsonOptions)
+            });
+
+            PipelineLogger.LogStage(traceId, "UseItem", 0, $"Success Slot:{request.SlotIndex}");
+        }
+        else
+        {
+            PipelineLogger.LogStage(traceId, "UseItem", 0, "Failed");
+        }
     }
 
     private async Task HandlePetActionAsync(string payload)
@@ -665,6 +712,19 @@ public class ClientSession
         }
     }
 
+
+    private async Task SendLoginError(string error)
+    {
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.LoginResponse,
+            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
+            {
+                Success = false,
+                ErrorMessage = error
+            }, _jsonOptions)
+        });
+    }
 
     private static bool IsHex(string value)
     {
