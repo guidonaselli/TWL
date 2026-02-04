@@ -15,7 +15,7 @@ public static class SecurityLogger
         AppDomain.CurrentDomain.ProcessExit += (s, e) => Shutdown();
     }
 
-    public static void LogSecurityEvent(string eventType, int userId, string details, string correlationId = null)
+    public static void LogSecurityEvent(string eventType, int userId, string details, string? correlationId = null)
     {
         var timestamp = DateTime.UtcNow.ToString("O");
         var cid = correlationId ?? Guid.NewGuid().ToString();
