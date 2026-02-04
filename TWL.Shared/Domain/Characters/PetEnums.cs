@@ -29,3 +29,14 @@ public enum PetUtilityType
     Gathering,
     CraftingAssist
 }
+
+public enum AmityAction
+{
+    BattleWin,
+    Death,
+    Feed,
+    LevelUp,
+    StayOnline,
+    Capture,
+    Abandon
+}

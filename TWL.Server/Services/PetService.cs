@@ -1,3 +1,5 @@
+using System.Text.Json;
+using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -13,6 +15,10 @@ public class PetService : IPetService
     private readonly MonsterManager _monsterManager;
     private readonly PlayerService _playerService;
     private readonly IRandomService _random;
+
+    public const int ItemRevive1Hp = 801;
+    public const int ItemRevive100Hp = 802;
+    public const int ItemRevive500Hp = 803;
 
     public PetService(PlayerService playerService, PetManager petManager, MonsterManager monsterManager,
         CombatManager combatManager, IRandomService random)
@@ -125,9 +131,11 @@ public class PetService : IPetService
 
         // 9. Success!
         var pet = new ServerPet(petDef);
-        pet.Amity = 40; // Default wild amity
 
         session.Character.AddPet(pet);
+
+        // Initialize Amity for Capture
+        ProcessAmity(ownerId, pet.InstanceId, AmityAction.Capture);
 
         // 12. Remove Enemy (Die)
         enemy.Hp = 0; // Force death
@@ -135,10 +143,6 @@ public class PetService : IPetService
 
         return pet.InstanceId;
     }
-
-    public const int ItemRevive1Hp = 801;
-    public const int ItemRevive100Hp = 802;
-    public const int ItemRevive500Hp = 803;
 
     public bool RevivePet(int ownerId, string petInstanceId)
     {
@@ -213,7 +217,14 @@ public class PetService : IPetService
             return false;
         }
 
+        var oldLevel = pet.Level;
         pet.AddExp(amount);
+
+        if (pet.Level > oldLevel)
+        {
+            ProcessAmity(ownerId, petInstanceId, AmityAction.LevelUp);
+        }
+
         return true;
     }
 
@@ -226,6 +237,49 @@ public class PetService : IPetService
         }
 
         pet.ChangeAmity(amount);
+        return true;
+    }
+
+    public bool ProcessAmity(int ownerId, string petInstanceId, AmityAction action)
+    {
+        var pet = GetPet(ownerId, petInstanceId);
+        if (pet == null) return false;
+
+        int change = 0;
+        switch (action)
+        {
+            case AmityAction.BattleWin:
+                // Only gain amity if not already maxed, maybe with diminishing returns or RNG
+                if (pet.Amity < 100)
+                {
+                    change = 1;
+                }
+                break;
+            case AmityAction.Death:
+                change = -10; // Significant penalty
+                break;
+            case AmityAction.Feed:
+                change = 5; // Placeholder for feed logic
+                break;
+            case AmityAction.LevelUp:
+                change = 2;
+                break;
+            case AmityAction.StayOnline:
+                change = 1;
+                break;
+            case AmityAction.Capture:
+                // Reset/Set to wild baseline (40)
+                change = 40 - pet.Amity;
+                break;
+            case AmityAction.Abandon:
+                change = -50;
+                break;
+        }
+
+        if (change != 0)
+        {
+            pet.ChangeAmity(change);
+        }
         return true;
     }
 
@@ -297,6 +351,13 @@ public class PetService : IPetService
         if (victim is ServerPet pet)
         {
             pet.Die();
+
+            // Deduce Owner ID from Runtime ID if it follows the convention -OwnerId
+            if (pet.Id < 0)
+            {
+                var ownerId = -pet.Id;
+                ProcessAmity(ownerId, pet.InstanceId, AmityAction.Death);
+            }
         }
     }
 
@@ -372,6 +433,22 @@ public class PetService : IPetService
         }
 
         return true;
+    }
+
+    public void CheckLifecycle(int ownerId)
+    {
+        var session = _playerService.GetSession(ownerId);
+        if (session == null || session.Character == null)
+        {
+            return;
+        }
+
+        // Use a copy list to modify the collection safely
+        var expiredPets = session.Character.Pets.Where(p => p.IsExpired).ToList();
+        foreach (var pet in expiredPets)
+        {
+             DismissPet(ownerId, pet.InstanceId);
+        }
     }
 
     private ServerPet? GetPet(int ownerId, string petInstanceId)
