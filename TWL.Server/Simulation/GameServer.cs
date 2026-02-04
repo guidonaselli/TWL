@@ -88,7 +88,7 @@ public class GameServer
 
         // Init World System
         var mapLoader = new MapLoader(NullLogger<MapLoader>.Instance);
-        var worldTriggerService = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, Metrics);
+        var worldTriggerService = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, Metrics, PlayerService);
         worldTriggerService.RegisterHandler(new MapTransitionHandler());
 
         // Load Maps

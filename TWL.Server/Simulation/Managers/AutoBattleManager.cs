@@ -23,7 +23,8 @@ public class AutoBattleManager
     public UseSkillRequest? GetBestAction(
         ServerCombatant actor,
         IEnumerable<ServerCombatant> combatants,
-        AutoBattlePolicy policy = AutoBattlePolicy.Balanced)
+        AutoBattlePolicy policy = AutoBattlePolicy.Balanced,
+        IRandomService? random = null)
     {
         var validTargets = combatants.Where(c => c.Hp > 0).ToList();
         var enemies = validTargets.Where(c => c.Team != actor.Team).ToList();
@@ -37,6 +38,7 @@ public class AutoBattleManager
             var lowHpAlly = allies
                 .Where(a => (float)a.Hp / a.MaxHp < CriticalHpPercent)
                 .OrderBy(a => a.Hp)
+                .ThenBy(a => a.Id)
                 .FirstOrDefault();
 
             if (lowHpAlly != null)
@@ -105,6 +107,7 @@ public class AutoBattleManager
             var targetEnemy = enemies
                 .Where(e => !e.StatusEffects.Any(s => s.Tag == SkillEffectTag.Seal))
                 .OrderByDescending(e => e.Atk + e.Mat) // Target strongest
+                .ThenBy(e => e.Id)
                 .FirstOrDefault();
 
             if (targetEnemy != null)
@@ -167,7 +170,7 @@ public class AutoBattleManager
 
         // 6. Attack
         // Target selection: Weakest HP to secure kill
-        var target = enemies.OrderBy(e => e.Hp).First();
+        var target = enemies.OrderBy(e => e.Hp).ThenBy(e => e.Id).First();
 
         // Try to find a damage skill if SP permits
         if (actor.Sp > MinSpThreshold)
