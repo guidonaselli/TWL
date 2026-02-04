@@ -769,4 +769,30 @@ public class ClientSession
             _ = SendQuestUpdateAsync(questId);
         }
     }
+
+    public async Task DisconnectAsync(string reason)
+    {
+        try
+        {
+            if (_client.Connected)
+            {
+                var msg = new NetMessage
+                {
+                    Op = Opcode.Disconnect,
+                    JsonPayload = JsonSerializer.Serialize(new { reason }, _jsonOptions)
+                };
+                await SendAsync(msg);
+                // Give a small moment for the packet to flush?
+                // The stream closing will happen, but TCP should buffer it.
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error sending disconnect packet to {UserId}: {ex.Message}");
+        }
+        finally
+        {
+            _client.Close();
+        }
+    }
 }

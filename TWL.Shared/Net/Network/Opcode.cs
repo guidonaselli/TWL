@@ -36,5 +36,8 @@ public enum Opcode
     PetActionResponse,
 
     // Encounter
-    EncounterStarted
+    EncounterStarted,
+
+    // System
+    Disconnect
 }

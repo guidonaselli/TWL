@@ -30,14 +30,14 @@ public class PlayerService
 
     public PersistenceMetrics Metrics { get; } = new();
 
-    public void Start()
+    public virtual void Start()
     {
         _cts = new CancellationTokenSource();
         _backgroundTask = Task.Run(async () => await FlushLoopAsync(_cts.Token));
         PersistenceLogger.LogEvent("ServiceStart", "PlayerService started (persistence).");
     }
 
-    public void Stop()
+    public virtual void Stop()
     {
         _cts?.Cancel();
         try
@@ -76,6 +76,19 @@ public class PlayerService
     {
         // Wrapper for synchronous calls
         FlushAllDirtyAsync().GetAwaiter().GetResult();
+    }
+
+    public virtual async Task DisconnectAllAsync(string reason)
+    {
+        var sessions = _sessions.Values.ToList();
+        if (sessions.Count == 0) return;
+
+        PersistenceLogger.LogEvent("DisconnectAll", $"Disconnecting {sessions.Count} sessions. Reason: {reason}");
+
+        await Parallel.ForEachAsync(sessions, async (session, token) =>
+        {
+            await session.DisconnectAsync(reason);
+        });
     }
 
     public async Task FlushAllDirtyAsync()
