@@ -479,6 +479,9 @@ public class ContentValidationTests
     public void ValidateSpawnConfigs()
     {
         var configs = LoadSpawnConfigs();
+        // We expect at least some spawn configs to exist in the game
+        Assert.NotEmpty(configs);
+
         var monsters = LoadMonsters();
         var monsterIds = monsters.Select(m => m.MonsterId).ToHashSet();
 
