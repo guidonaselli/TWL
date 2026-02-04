@@ -32,6 +32,11 @@ public class MonsterDefinition
 
     // Drops
     public List<DropItem> Drops { get; set; } = new();
+
+    // Capture (Pet System)
+    public int? PetTypeId { get; set; }
+    public bool IsCapturable { get; set; }
+    public float CaptureThreshold { get; set; } = 0.5f;
 }
 
 public class DropItem

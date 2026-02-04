@@ -45,10 +45,11 @@ public class PipelineMetricsTests
         var playerService = new PlayerService(mockPlayerRepo.Object, metrics);
 
         var mockEconomy = new Mock<IEconomyService>();
+        var monsterManager = new MonsterManager();
 
-        var petService = new PetService(playerService, mockPet.Object, combatManager, mockRandom.Object);
+        var petService = new PetService(playerService, mockPet.Object, monsterManager, combatManager, mockRandom.Object);
         var mockWorldTrigger = new Mock<IWorldTriggerService>();
-        var spawnManager = new SpawnManager(new MonsterManager(), combatManager, mockRandom.Object, playerService);
+        var spawnManager = new SpawnManager(monsterManager, combatManager, mockRandom.Object, playerService);
         var mockMediator = new Mock<IMediator>();
 
         var port = 9123;

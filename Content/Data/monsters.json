@@ -25,7 +25,10 @@
       "PatrolSpeed": 1.0,
       "IsPassive": true
     },
-    "EncounterWeight": 10
+    "EncounterWeight": 10,
+    "PetTypeId": 1014,
+    "IsCapturable": true,
+    "CaptureThreshold": 0.5
   },
   {
     "MonsterId": 2002,
@@ -137,7 +140,10 @@
       "PatrolSpeed": 2.0,
       "IsPassive": false
     },
-    "EncounterWeight": 8
+    "EncounterWeight": 8,
+    "PetTypeId": 1018,
+    "IsCapturable": true,
+    "CaptureThreshold": 0.4
   },
   {
     "MonsterId": 2006,
