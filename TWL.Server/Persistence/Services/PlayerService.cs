@@ -172,15 +172,15 @@ public class PlayerService
 
     public void UnregisterSession(int userId) => _sessions.TryRemove(userId, out _);
 
-    public ClientSession? GetSession(int userId)
+    public virtual ClientSession? GetSession(int userId)
     {
         _sessions.TryGetValue(userId, out var session);
         return session;
     }
 
-    public IEnumerable<ClientSession> GetAllSessions() => _sessions.Values;
+    public virtual IEnumerable<ClientSession> GetAllSessions() => _sessions.Values;
 
-    public void GetSessions(List<ClientSession> buffer, Func<ClientSession, bool>? filter = null)
+    public virtual void GetSessions(List<ClientSession> buffer, Func<ClientSession, bool>? filter = null)
     {
         buffer.Clear();
         foreach (var kvp in _sessions)

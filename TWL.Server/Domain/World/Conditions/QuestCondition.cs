@@ -1,6 +1,6 @@
 using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Domain.Quests;
+using TWL.Shared.Domain.Requests;
 
 namespace TWL.Server.Domain.World.Conditions;
 

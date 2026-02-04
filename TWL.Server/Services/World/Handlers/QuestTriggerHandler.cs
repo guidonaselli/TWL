@@ -34,4 +34,9 @@ public class QuestTriggerHandler : ITriggerHandler
     {
         ExecuteEnter(character, trigger, context);
     }
+
+    public void ExecuteTick(ServerTrigger trigger, int mapId, IWorldTriggerService context)
+    {
+        // No periodic logic for quests
+    }
 }
