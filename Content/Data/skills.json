@@ -685,7 +685,7 @@
   {
     "SkillId": 2001,
     "Name": "Shrink",
-    "DisplayNameKey": "Skill_Shrink",
+    "DisplayNameKey": "SKILL_Shrink",
     "Description": "Goddess Skill. Shrinks the enemy, reducing their size and power.",
     "Family": "Special",
     "Category": "Goddess",
@@ -714,7 +714,7 @@
   {
     "SkillId": 2002,
     "Name": "Blockage",
-    "DisplayNameKey": "Skill_Blockage",
+    "DisplayNameKey": "SKILL_Blockage",
     "Description": "Goddess Skill. Creates a blockade preventing movement/attacks.",
     "Family": "Special",
     "Category": "Goddess",
@@ -748,7 +748,7 @@
   {
     "SkillId": 2003,
     "Name": "Hotfire",
-    "DisplayNameKey": "Skill_Hotfire",
+    "DisplayNameKey": "SKILL_Hotfire",
     "Description": "Goddess Skill. Unleashes a burst of intense heat.",
     "Family": "Special",
     "Category": "Goddess",
@@ -780,7 +780,7 @@
   {
     "SkillId": 2004,
     "Name": "Vanish",
-    "DisplayNameKey": "Skill_Vanish",
+    "DisplayNameKey": "SKILL_Vanish",
     "Description": "Goddess Skill. Hides the user from sight, increasing speed/evasion.",
     "Family": "Special",
     "Category": "Goddess",

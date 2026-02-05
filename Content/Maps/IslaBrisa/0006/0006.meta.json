@@ -1,0 +1,22 @@
+{
+  "MapId": 6,
+  "RegionId": "IslaBrisa",
+  "Biome": "Beach",
+  "RecommendedLevelMin": 3,
+  "RecommendedLevelMax": 5,
+  "EntryPoints": [
+    1
+  ],
+  "Exits": [
+    {
+      "TargetMapId": 2,
+      "SpawnId": 2
+    }
+  ],
+  "AmbientProfile": {
+    "MusicKey": "Music_Beach",
+    "AmbienceKey": "Ambience_OceanWaves",
+    "PaletteHintKey": "Palette_Day_Sunny"
+  },
+  "Notes": "TODO: Refine tile detail and add unique assets."
+}

@@ -76,17 +76,17 @@
     <data name="SKILL_AquaRecoverIII" xml:space="preserve">
     <value>Aqua Recover III</value>
   </data>
-    <data name="SKILL_Diminution" xml:space="preserve">
-    <value>Diminution</value>
+    <data name="SKILL_Shrink" xml:space="preserve">
+    <value>Shrink</value>
   </data>
-    <data name="SKILL_SupportSeal" xml:space="preserve">
-    <value>Support Seal</value>
+    <data name="SKILL_Blockage" xml:space="preserve">
+    <value>Blockage</value>
   </data>
-    <data name="SKILL_EmberSurge" xml:space="preserve">
-    <value>Ember Surge</value>
+    <data name="SKILL_Hotfire" xml:space="preserve">
+    <value>Hotfire</value>
   </data>
-    <data name="SKILL_UntouchableVeil" xml:space="preserve">
-    <value>Untouchable Veil</value>
+    <data name="SKILL_Vanish" xml:space="preserve">
+    <value>Vanish</value>
   </data>
     <data name="SKILL_FairyLight" xml:space="preserve">
     <value>Fairy Light</value>
@@ -127,9 +127,6 @@
     <data name="UI_Login" xml:space="preserve">
     <value>Login</value>
   </data>
-    <data name="UI_LoadGame" xml:space="preserve">
-    <value>Load Game</value>
-  </data>
     <data name="UI_Exit" xml:space="preserve">
     <value>Exit</value>
   </data>
@@ -144,9 +141,6 @@
   </data>
     <data name="UI_Title" xml:space="preserve">
     <value>The Wonderland</value>
-  </data>
-    <data name="UI_NoSave" xml:space="preserve">
-    <value>No save game found.</value>
   </data>
     <data name="UI_OPTIONS_TITLE" xml:space="preserve">
     <value>Options</value>

@@ -31,6 +31,12 @@
       "type": "Field"
     },
     {
+      "id": 6,
+      "name": "Cala Escondida",
+      "region": "IslaBrisa",
+      "type": "Field"
+    },
+    {
       "id": 1000,
       "name": "Puerto Roca City",
       "region": "PuertoRoca",
@@ -60,6 +66,7 @@
     { "from": 2, "to": 3, "bidirectional": true },
     { "from": 3, "to": 4, "bidirectional": true },
     { "from": 2, "to": 5, "bidirectional": true },
+    { "from": 2, "to": 6, "bidirectional": true },
     { "from": 1000, "to": 1001, "bidirectional": true },
     { "from": 1000, "to": 1002, "bidirectional": true },
     { "from": 1000, "to": 1003, "bidirectional": true }

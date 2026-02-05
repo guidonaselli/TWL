@@ -18,14 +18,19 @@ namespace TWL.Tests.Services.World;
 
 public class TestClientSession : ClientSession
 {
-    public TestClientSession() : base() { }
+    public TestClientSession() : base()
+    {
+    }
+
     public TestClientSession(ServerCharacter character) : base()
     {
         Character = character;
     }
 
-    public void SetCharacter(ServerCharacter c) => Character = c;
-    public void SetQuestComponent(PlayerQuestComponent q) => QuestComponent = q;
+    public void SetQuestComponent(PlayerQuestComponent qc)
+    {
+        QuestComponent = qc;
+    }
 }
 
 public class WorldTriggerServiceTests
@@ -44,7 +49,7 @@ public class WorldTriggerServiceTests
         var psLogger = new Mock<ILogger<PlayerService>>();
         _metricsMock = new Mock<ServerMetrics>();
 
-        _playerServiceMock = new Mock<PlayerService>(repoMock.Object, psLogger.Object, _metricsMock.Object);
+        _playerServiceMock = new Mock<PlayerService>(repoMock.Object, _metricsMock.Object);
         _loggerMock = new Mock<ILogger<WorldTriggerService>>();
 
         _service = new WorldTriggerService(_loggerMock.Object, _metricsMock.Object, _playerServiceMock.Object, _schedulerMock.Object);
@@ -144,9 +149,6 @@ public class WorldTriggerServiceTests
         Assert.DoesNotContain(p3, players);
     }
 
-    /*
-    // TODO: Fix this test. It has multiple undefined variables (character, questId, _playerService)
-    // and relies on logic not fully set up in this test fixture.
     [Fact]
     public void DamageTriggerHandler_ShouldDamagePlayer()
     {
@@ -163,29 +165,10 @@ public class WorldTriggerServiceTests
         var serviceMock = new Mock<IWorldTriggerService>();
 
         // Setup Session
-        var session = new TestClientSession();
+        var session = new TestClientSession(p1);
         session.UserId = 1;
-        session.SetCharacter(character);
-        var questManager = new ServerQuestManager();
-        // Mock quest definition to allow adding it
-        var questDef = new QuestDefinition
-        {
-            QuestId = questId,
-            Objectives = new List<ObjectiveDefinition>(),
-            Title = "Test",
-            Description = "Test",
-            Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
-        };
-        questManager.AddQuest(questDef);
 
-        var questComp = new PlayerQuestComponent(questManager);
-        // Force state
-        questComp.StartQuest(questId);
-        questComp.QuestStates[questId] = QuestState.Completed; // Manually set state
-
-        session.SetQuestComponent(questComp);
-
-        _playerService.RegisterSession(session);
+        _playerServiceMock.Setup(ps => ps.GetSession(1)).Returns(session);
         serviceMock.Setup(s => s.GetPlayersInTrigger(trigger, 1)).Returns(new[] { p1 });
 
         // Act
@@ -194,5 +177,4 @@ public class WorldTriggerServiceTests
         // Assert
         Assert.Equal(90, p1.Hp);
     }
-    */
 }
