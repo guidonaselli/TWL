@@ -683,6 +683,19 @@ public class ClientSession
         return true;
     }
 
+    private async Task SendLoginError(string errorKey)
+    {
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.LoginResponse,
+            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
+            {
+                Success = false,
+                ErrorMessage = errorKey
+            }, _jsonOptions)
+        });
+    }
+
     private async Task HandleMoveAsync(string payload)
     {
         // EJ: {"dx":1,"dy":0}
