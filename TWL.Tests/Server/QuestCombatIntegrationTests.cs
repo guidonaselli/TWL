@@ -73,8 +73,8 @@ public class QuestCombatIntegrationTests
         var player = new ServerCharacter { Id = 1, Name = "Hero", Hp = 100, Str = 50 }; // High STR to kill
         // Atk = 100. Skill = 200. Target Def = 16. Dmg = 184.
 
-        var mob1 = new ServerCharacter { Id = 2, Name = "WeakCrab", Hp = 10 };
-        var mob2 = new ServerCharacter { Id = 3, Name = "WeakCrab", Hp = 10 };
+        var mob1 = new ServerCharacter { Id = 2, Name = "WeakCrab", Hp = 10, Team = Team.Enemy };
+        var mob2 = new ServerCharacter { Id = 3, Name = "WeakCrab", Hp = 10, Team = Team.Enemy };
 
         _combatManager.AddCharacter(player);
         _combatManager.AddCharacter(mob1);
@@ -126,7 +126,7 @@ public class QuestCombatIntegrationTests
         var player = new ServerCharacter { Id = 1, Name = "Hero", Hp = 100, Str = 5 }; // Low STR
         // Atk = 10. Skill = 20. Target Def = 16. Dmg = 4.
 
-        var mob = new ServerCharacter { Id = 2, Name = "WeakCrab", Hp = 100 };
+        var mob = new ServerCharacter { Id = 2, Name = "WeakCrab", Hp = 100, Team = Team.Enemy };
 
         _combatManager.AddCharacter(player);
         _combatManager.AddCharacter(mob);

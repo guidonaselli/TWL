@@ -121,7 +121,7 @@ public class SpecialSkillTests
         var attacker = new ServerCharacter { Id = 1, Int = 100, Wis = 50 }; // Int - Wis = 50. StatDiff = 0.5.
         // Base 0.5 + 0.5 = 1.0. Clamped to MaxChance 0.9.
 
-        var target = new ServerCharacter { Id = 2, Int = 10, Wis = 10 };
+        var target = new ServerCharacter { Id = 2, Int = 10, Wis = 10, Team = Team.Enemy };
 
         manager.AddCharacter(attacker);
         manager.AddCharacter(target);

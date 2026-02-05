@@ -85,7 +85,7 @@ public class ContentIntegrationTests
     public void ValidateMonstersContent()
     {
         var monsters = LoadContent<MonsterDefinition>("monsters.json");
-        Assert.Equal(12, monsters.Count);
+        Assert.Equal(14, monsters.Count);
 
         // Verify a few sample mobs
         Assert.Contains(monsters, m => m.MonsterId == 2001 && m.Element == Element.Earth);
@@ -125,7 +125,7 @@ public class ContentIntegrationTests
     public void ValidateNpcsContent()
     {
         var npcs = LoadContent<NpcDefinition>("npcs.json");
-        Assert.Equal(3, npcs.Count);
+        Assert.Equal(8, npcs.Count);
 
         Assert.Contains(npcs, n => n.NpcId == 3001 && n.Name == "Harbor Quartermaster");
         Assert.Contains(npcs, n => n.NpcId == 3002 && n.Name == "Herbalist Apprentice");

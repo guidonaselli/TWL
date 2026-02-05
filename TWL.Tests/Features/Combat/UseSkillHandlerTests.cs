@@ -42,7 +42,7 @@ public class UseSkillHandlerTests
         var handler = new UseSkillHandler(combatManager);
 
         var attacker = new ServerCharacter { Id = 1, Name = "P1", Sp = 100, Str = 10 };
-        var target = new ServerCharacter { Id = 2, Name = "P2", Hp = 100, Con = 5 };
+        var target = new ServerCharacter { Id = 2, Name = "P2", Hp = 100, Con = 5, Team = Team.Enemy };
 
         combatManager.AddCharacter(attacker);
         combatManager.AddCharacter(target);
