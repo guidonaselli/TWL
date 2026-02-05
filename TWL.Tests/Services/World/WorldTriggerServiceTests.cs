@@ -22,6 +22,11 @@ public class TestClientSession : ClientSession
     {
         Character = character;
     }
+
+    public void SetQuestComponent(PlayerQuestComponent qc)
+    {
+        QuestComponent = qc;
+    }
 }
 
 public class WorldTriggerServiceTests
@@ -156,29 +161,10 @@ public class WorldTriggerServiceTests
         var serviceMock = new Mock<IWorldTriggerService>();
 
         // Setup Session
-        var session = new TestClientSession();
+        var session = new TestClientSession(p1);
         session.UserId = 1;
-        session.SetCharacter(character);
-        var questManager = new ServerQuestManager();
-        // Mock quest definition to allow adding it
-        var questDef = new QuestDefinition
-        {
-            QuestId = questId,
-            Objectives = new List<ObjectiveDefinition>(),
-            Title = "Test",
-            Description = "Test",
-            Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
-        };
-        questManager.AddQuest(questDef);
 
-        var questComp = new PlayerQuestComponent(questManager);
-        // Force state
-        questComp.StartQuest(questId);
-        questComp.QuestStates[questId] = QuestState.Completed; // Manually set state
-
-        session.SetQuestComponent(questComp);
-
-        _playerService.RegisterSession(session);
+        _playerServiceMock.Setup(ps => ps.GetSession(1)).Returns(session);
         serviceMock.Setup(s => s.GetPlayersInTrigger(trigger, 1)).Returns(new[] { p1 });
 
         // Act

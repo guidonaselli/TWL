@@ -6,6 +6,7 @@ using TWL.Server.Persistence.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Services;
 
 namespace TWL.Tests.Server.Services.World;
 
@@ -19,7 +20,8 @@ public class WorldTriggerServiceTests
         var metrics = new ServerMetrics();
         var repo = new Mock<IPlayerRepository>();
         var playerService = new PlayerService(repo.Object, metrics);
-        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, metrics, playerService);
+        var scheduler = new Mock<IWorldScheduler>();
+        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, metrics, playerService, scheduler.Object);
         _handlerMock = new Mock<ITriggerHandler>();
     }
 
