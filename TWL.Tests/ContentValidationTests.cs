@@ -57,26 +57,18 @@ public class ContentValidationTests
         var root = GetContentRoot();
         var quests = new List<QuestDefinition>();
 
-        // Load quests.json
-        var path = Path.Combine(root, "quests.json");
-        if (File.Exists(path))
+        var files = Directory.GetFiles(root, "quests*.json");
+        if (files.Length == 0)
         {
-            var json = File.ReadAllText(path);
+            throw new FileNotFoundException($"Could not find any quest files in {root}");
+        }
+
+        foreach (var file in files)
+        {
+            var json = File.ReadAllText(file);
             quests.AddRange(JsonSerializer.Deserialize<List<QuestDefinition>>(json, GetJsonOptions()) ?? new List<QuestDefinition>());
         }
 
-        // Load quests_messenger.json
-        var pathMessenger = Path.Combine(root, "quests_messenger.json");
-        if (File.Exists(pathMessenger))
-        {
-             var json = File.ReadAllText(pathMessenger);
-             quests.AddRange(JsonSerializer.Deserialize<List<QuestDefinition>>(json, GetJsonOptions()) ?? new List<QuestDefinition>());
-        }
-
-        if (quests.Count == 0)
-        {
-             throw new FileNotFoundException($"Could not find any quest files in {root}");
-        }
         return quests;
     }
 
