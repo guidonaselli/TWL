@@ -24,7 +24,8 @@ public static class QuestValidator
         "PayGold"
     };
 
-    public static List<string> Validate(IEnumerable<QuestDefinition> quests)
+    public static List<string> Validate(IEnumerable<QuestDefinition> quests,
+        IReadOnlyDictionary<int, QuestDefinition>? externalContext = null)
     {
         var errors = new List<string>();
         // Check for duplicates first
@@ -48,14 +49,14 @@ public static class QuestValidator
 
         foreach (var quest in definitions.Values)
         {
-            ValidateQuest(quest, definitions, errors);
+            ValidateQuest(quest, definitions, errors, externalContext);
         }
 
         return errors;
     }
 
     private static void ValidateQuest(QuestDefinition quest, Dictionary<int, QuestDefinition> lookup,
-        List<string> errors)
+        List<string> errors, IReadOnlyDictionary<int, QuestDefinition>? externalContext = null)
     {
         // 1. Basic Metadata
         if (string.IsNullOrWhiteSpace(quest.Title))
@@ -78,7 +79,10 @@ public static class QuestValidator
         {
             foreach (var reqId in quest.Requirements)
             {
-                if (!lookup.ContainsKey(reqId))
+                var existsLocally = lookup.ContainsKey(reqId);
+                var existsExternally = externalContext != null && externalContext.ContainsKey(reqId);
+
+                if (!existsLocally && !existsExternally)
                 {
                     errors.Add($"Quest {quest.QuestId}: Prerequisite quest {reqId} does not exist.");
                 }
@@ -92,7 +96,10 @@ public static class QuestValidator
         // 3. Chain ID
         if (quest.ChainId.HasValue)
         {
-            if (!lookup.ContainsKey(quest.ChainId.Value))
+            var existsLocally = lookup.ContainsKey(quest.ChainId.Value);
+            var existsExternally = externalContext != null && externalContext.ContainsKey(quest.ChainId.Value);
+
+            if (!existsLocally && !existsExternally)
             {
                 errors.Add($"Quest {quest.QuestId}: ChainId {quest.ChainId} does not exist.");
             }

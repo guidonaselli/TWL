@@ -1243,4 +1243,10 @@ public class PlayerQuestComponent
         // If failure is due to timeout/distance, we might need a separate call.
         return new List<int>();
     }
+
+    public List<int> HandlePuzzle(string puzzleId) => TryProgress("Puzzle", puzzleId);
+
+    public List<int> HandlePartyAction(string action) => TryProgress("Party", action);
+
+    public List<int> HandleGuildAction(string action) => TryProgress("Guild", action);
 }
