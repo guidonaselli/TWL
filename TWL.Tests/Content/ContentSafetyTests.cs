@@ -10,10 +10,10 @@ public class ContentSafetyTests
     private static readonly string[] ForbiddenTerms = new[]
     {
         "ForbiddenTermPlaceholder",
-        "Shrink",
-        "Blockage",
-        "Hotfire",
-        "Vanish"
+        "Diminution",
+        "Support Seal",
+        "Ember Surge",
+        "Untouchable Veil"
     };
 
     [Fact]
@@ -36,10 +36,10 @@ public class ContentSafetyTests
         // Goddess Skill IDs
         var restrictedIds = new[]
         {
-            SkillIds.GS_WATER_DIMINUTION,
-            SkillIds.GS_EARTH_SUPPORT_SEAL,
-            SkillIds.GS_FIRE_EMBER_SURGE,
-            SkillIds.GS_WIND_UNTOUCHABLE_VEIL
+            SkillIds.GS_WATER_SHRINK,
+            SkillIds.GS_EARTH_BLOCKAGE,
+            SkillIds.GS_FIRE_HOTFIRE,
+            SkillIds.GS_WIND_VANISH
         };
 
         foreach (var def in quests)

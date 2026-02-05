@@ -684,8 +684,8 @@
   },
   {
     "SkillId": 2001,
-    "Name": "Diminution",
-    "DisplayNameKey": "SKILL_Diminution",
+    "Name": "Shrink",
+    "DisplayNameKey": "SKILL_Shrink",
     "Description": "Goddess Skill. Shrinks the enemy, reducing their size and power.",
     "Family": "Special",
     "Category": "Goddess",
@@ -713,8 +713,8 @@
   },
   {
     "SkillId": 2002,
-    "Name": "Support Seal",
-    "DisplayNameKey": "SKILL_SupportSeal",
+    "Name": "Blockage",
+    "DisplayNameKey": "SKILL_Blockage",
     "Description": "Goddess Skill. Creates a blockade preventing movement/attacks.",
     "Family": "Special",
     "Category": "Goddess",
@@ -747,8 +747,8 @@
   },
   {
     "SkillId": 2003,
-    "Name": "Ember Surge",
-    "DisplayNameKey": "SKILL_EmberSurge",
+    "Name": "Hotfire",
+    "DisplayNameKey": "SKILL_Hotfire",
     "Description": "Goddess Skill. Unleashes a burst of intense heat.",
     "Family": "Special",
     "Category": "Goddess",
@@ -779,8 +779,8 @@
   },
   {
     "SkillId": 2004,
-    "Name": "Untouchable Veil",
-    "DisplayNameKey": "SKILL_UntouchableVeil",
+    "Name": "Vanish",
+    "DisplayNameKey": "SKILL_Vanish",
     "Description": "Goddess Skill. Hides the user from sight, increasing speed/evasion.",
     "Family": "Special",
     "Category": "Goddess",

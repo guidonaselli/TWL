@@ -515,20 +515,20 @@ public class ClientSession
         switch (Character.CharacterElement)
         {
             case Element.Water:
-                skillId = SkillIds.GS_WATER_DIMINUTION;
-                skillName = "Diminution";
+                skillId = SkillIds.GS_WATER_SHRINK;
+                skillName = "Shrink";
                 break;
             case Element.Earth:
-                skillId = SkillIds.GS_EARTH_SUPPORT_SEAL;
-                skillName = "Support Seal";
+                skillId = SkillIds.GS_EARTH_BLOCKAGE;
+                skillName = "Blockage";
                 break;
             case Element.Fire:
-                skillId = SkillIds.GS_FIRE_EMBER_SURGE;
-                skillName = "Ember Surge";
+                skillId = SkillIds.GS_FIRE_HOTFIRE;
+                skillName = "Hotfire";
                 break;
             case Element.Wind:
-                skillId = SkillIds.GS_WIND_UNTOUCHABLE_VEIL;
-                skillName = "Untouchable Veil";
+                skillId = SkillIds.GS_WIND_VANISH;
+                skillName = "Vanish";
                 break;
         }
 
