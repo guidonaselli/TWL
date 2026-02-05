@@ -62,7 +62,7 @@ public class CombatManagerTests
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 }; // Atk=200? No, Str=100.
         // Skill scaling: Str * 2 = 200.
 
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0, Team = Team.Enemy };
         // Con 0 -> Def 0. To match previous test behavior where Defense was ignored.
 
         manager.AddCharacter(attacker);
@@ -92,7 +92,7 @@ public class CombatManagerTests
         var manager = new CombatManager(resolver, mockRandom, catalog, new StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0, Team = Team.Enemy };
         manager.AddCharacter(attacker);
         manager.AddCharacter(target);
 
@@ -118,7 +118,7 @@ public class CombatManagerTests
         var manager = new CombatManager(resolver, mockRandom, catalog, new StatusEngine());
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0 };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0, Team = Team.Enemy };
         manager.AddCharacter(attacker);
         manager.AddCharacter(target);
 

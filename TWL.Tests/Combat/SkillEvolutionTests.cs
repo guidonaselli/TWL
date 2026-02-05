@@ -113,7 +113,7 @@ public class SkillEvolutionTests
 
         // Use again (fail)
         var result = manager.UseSkill(request);
-        Assert.Null(result);
+        Assert.Empty(result);
         Assert.Equal(0, attacker.Sp);
     }
 }

@@ -26,6 +26,7 @@ public class SpawnManager
     private readonly PlayerService _playerService;
 
     private int _nextEncounterId = 1;
+    private static int _nextMobId = -1;
     private readonly List<ServerCharacter> _roamingMobs = new();
     private readonly List<ClientSession> _sessionBuffer = new();
     private float _respawnTimer;
@@ -443,8 +444,8 @@ public class SpawnManager
 
     private ServerCharacter CreateMobInstance(MonsterDefinition def, int mapId, float x, float y)
     {
-        // Generate a random temporary negative ID
-        var mobId = -100000 - _random.Next(0, 1000000); // Simple collision avoidance
+        // Generate a unique temporary negative ID
+        var mobId = Interlocked.Decrement(ref _nextMobId);
 
         var mob = new ServerCharacter
         {

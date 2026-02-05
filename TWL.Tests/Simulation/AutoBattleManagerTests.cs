@@ -57,8 +57,18 @@ public class AutoBattleManagerTests
         var actor = CreateActor(1, Team.Player);
         var enemy = CreateActor(2, Team.Enemy);
 
-        var weakAttack = new Skill { SkillId = 101, Name = "Weak", SpCost = 5, Branch = SkillBranch.Physical, TargetType = SkillTargetType.SingleEnemy };
-        var strongAttack = new Skill { SkillId = 102, Name = "Strong", SpCost = 20, Branch = SkillBranch.Physical, TargetType = SkillTargetType.SingleEnemy };
+        var weakAttack = new Skill
+        {
+            SkillId = 101, Name = "Weak", SpCost = 5, Branch = SkillBranch.Physical, TargetType = SkillTargetType.SingleEnemy,
+            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } },
+            Scaling = new List<SkillScaling> { new SkillScaling { Stat = StatType.Str, Coefficient = 1.0f } }
+        };
+        var strongAttack = new Skill
+        {
+            SkillId = 102, Name = "Strong", SpCost = 20, Branch = SkillBranch.Physical, TargetType = SkillTargetType.SingleEnemy,
+            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } },
+            Scaling = new List<SkillScaling> { new SkillScaling { Stat = StatType.Str, Coefficient = 2.0f } }
+        };
 
         _catalog.AddSkill(weakAttack);
         _catalog.AddSkill(strongAttack);

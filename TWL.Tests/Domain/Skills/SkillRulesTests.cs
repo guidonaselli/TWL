@@ -108,7 +108,7 @@ public class SkillRulesTests
         var manager = new CombatManager(resolver, mockRandom, catalog, _statusEngine);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker" };
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100 };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Team = Team.Enemy };
 
         // Add 50% resistance
         target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 0.5f, 99, "SpdResist"),
@@ -160,7 +160,7 @@ public class SkillRulesTests
         var manager = new CombatManager(resolver, mockRandom, catalog, _statusEngine);
 
         var attacker = new ServerCharacter { Id = 1, Name = "Attacker" };
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100 };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 100, Team = Team.Enemy };
 
         // Add 50% resistance
         target.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 0.5f, 99, "SealResist"),

@@ -175,11 +175,9 @@ public class EncounterTests
         var session = new EncounterTestClientSession(player);
 
         // Mock Random to return success for encounter check
-        // _randomMock.Setup(r => r.NextDouble()).Returns(0.0); // 0.0 < 1.0
-        // Wait, NextDouble is used for step check AND monster selection.
-        // We need it to work for both.
-        // Using Mock Behavior.Strict might be annoying. Default is Loose.
-        // Loose returns default (0.0 for double).
+        _randomMock.Setup(r => r.NextDouble()).Returns(0.0); // 0.0 < 1.0
+        _randomMock.Setup(r => r.Next(It.IsAny<int>(), It.IsAny<int>())).Returns((int min, int max) => min); // Return min value (e.g., 1 for count)
+        _randomMock.Setup(r => r.Next(It.IsAny<int>())).Returns(0); // For selection
 
         // Act - Move
         _spawnManager.OnPlayerMoved(session);
