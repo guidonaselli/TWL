@@ -1,3 +1,4 @@
+using TWL.Shared.Domain.Characters;
 using System.Text.Json;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;

@@ -1,0 +1,135 @@
+[
+  {
+    "QuestId": 1007,
+    "Title": "Cocina de Supervivencia",
+    "Description": "Debemos aprovechar los recursos. Prepara algo de comer con los cangrejos.",
+    "Requirements": [
+      1006
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Carne de Cangrejo",
+        "RequiredCount": 3,
+        "Description": "Recoge 3 Carne de Cangrejo (Raw Fish).",
+        "DataId": 304
+      },
+      {
+        "Type": "Craft",
+        "TargetName": "Cangrejo Asado",
+        "RequiredCount": 1,
+        "Description": "Cocina 1 Cangrejo Asado (Cooked Fish).",
+        "DataId": 305
+      }
+    ],
+    "Rewards": {
+      "Exp": 120,
+      "Gold": 25,
+      "Items": [
+        {
+          "ItemId": 305,
+          "Quantity": 2
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1008,
+    "Title": "El Huevo Misterioso",
+    "Description": "He visto aves anidando cerca. Investiga el Nido Oculto.",
+    "Requirements": [
+      1007
+    ],
+    "Objectives": [
+      {
+        "Type": "Explore",
+        "TargetName": "Nido Oculto",
+        "RequiredCount": 1,
+        "Description": "Explora el Nido Oculto."
+      },
+      {
+        "Type": "Interact",
+        "TargetName": "Huevo Extraño",
+        "RequiredCount": 1,
+        "Description": "Recoge el Huevo Extraño."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 7376,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1009,
+    "Title": "Un Compañero Fiel",
+    "Description": "Lleva el huevo al Entrenador de Bestias. Él sabrá qué hacer.",
+    "Requirements": [
+      1008
+    ],
+    "RequiredItems": [
+      {
+        "ItemId": 7376,
+        "Quantity": 1
+      }
+    ],
+    "Objectives": [
+      {
+        "Type": "Deliver",
+        "TargetName": "Entrenador de Bestias",
+        "RequiredCount": 1,
+        "Description": "Entrega el Huevo Extraño.",
+        "DataId": 7376
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": [],
+      "PetUnlockId": 1001
+    }
+  },
+  {
+    "QuestId": 1090,
+    "Title": "Mecanismo Antiguo",
+    "Description": "Resuelve el puzzle de las ruinas.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Puzzle",
+        "TargetName": "Ruins_Puzzle_01",
+        "RequiredCount": 1,
+        "Description": "Completa la secuencia de luces."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1091,
+    "Title": "La Unión Hace la Fuerza",
+    "Description": "Únete a una Party para enfrentar desafíos mayores.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Party",
+        "TargetName": "Join",
+        "RequiredCount": 1,
+        "Description": "Únete a una Party."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  }
+]

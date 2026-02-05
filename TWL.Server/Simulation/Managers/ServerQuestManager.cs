@@ -42,7 +42,7 @@ public class ServerQuestManager
         var list = JsonSerializer.Deserialize<List<QuestDefinition>>(json, _jsonOptions);
         if (list != null)
         {
-            var errors = QuestValidator.Validate(list);
+            var errors = QuestValidator.Validate(list, _questDefinitions);
             if (errors.Count > 0)
             {
                 Console.WriteLine($"QUEST VALIDATION FAILED ({path}):");
@@ -71,7 +71,7 @@ public class ServerQuestManager
     public void AddQuest(QuestDefinition quest)
     {
         var list = new List<QuestDefinition> { quest };
-        var errors = QuestValidator.Validate(list);
+        var errors = QuestValidator.Validate(list, _questDefinitions);
         if (errors.Count > 0)
         {
             throw new InvalidOperationException($"Quest validation failed: {string.Join(", ", errors)}");
