@@ -91,9 +91,6 @@
     <data name="UI_Login" xml:space="preserve">
     <value>Login</value>
   </data>
-    <data name="UI_LoadGame" xml:space="preserve">
-    <value>Load Game</value>
-  </data>
     <data name="UI_Exit" xml:space="preserve">
     <value>Exit</value>
   </data>
@@ -108,9 +105,6 @@
   </data>
     <data name="UI_Title" xml:space="preserve">
     <value>The Wonderland</value>
-  </data>
-    <data name="UI_NoSave" xml:space="preserve">
-    <value>No save game found.</value>
   </data>
     <data name="UI_OPTIONS_TITLE" xml:space="preserve">
     <value>Options</value>

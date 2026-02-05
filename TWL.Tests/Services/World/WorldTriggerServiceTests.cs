@@ -18,6 +18,10 @@ namespace TWL.Tests.Services.World;
 
 public class TestClientSession : ClientSession
 {
+    public TestClientSession() : base()
+    {
+    }
+
     public TestClientSession(ServerCharacter character) : base()
     {
         Character = character;
@@ -45,7 +49,7 @@ public class WorldTriggerServiceTests
         var psLogger = new Mock<ILogger<PlayerService>>();
         _metricsMock = new Mock<ServerMetrics>();
 
-        _playerServiceMock = new Mock<PlayerService>(repoMock.Object, psLogger.Object, _metricsMock.Object);
+        _playerServiceMock = new Mock<PlayerService>(repoMock.Object, _metricsMock.Object);
         _loggerMock = new Mock<ILogger<WorldTriggerService>>();
 
         _service = new WorldTriggerService(_loggerMock.Object, _metricsMock.Object, _playerServiceMock.Object, _schedulerMock.Object);
