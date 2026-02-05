@@ -59,5 +59,14 @@
     "AssetLoader.cs",
     "GameClientManager.cs",
     "ClientCombatManager.cs"
+  ],
+  "IgnoredOrphanKeys": [
+    "ERR_LOGIN_PAYLOAD_SIZE",
+    "ERR_LOGIN_INVALID_JSON",
+    "ERR_LOGIN_MISSING_CREDS",
+    "ERR_LOGIN_USER_TOO_LONG",
+    "ERR_LOGIN_HASH_LENGTH",
+    "ERR_LOGIN_HASH_FORMAT",
+    "ERR_LOGIN_INVALID_CREDS"
   ]
 }

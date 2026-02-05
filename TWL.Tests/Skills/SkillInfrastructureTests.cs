@@ -66,7 +66,7 @@ public class SkillInfrastructureTests
         session.TriggerGrantGoddessSkills();
 
         // After grant
-        Assert.Contains(2001, charData.KnownSkills); // Diminution
+        Assert.Contains(2001, charData.KnownSkills); // Shrink
         Assert.Contains("GS_GRANTED", session.QuestComponent.Flags);
     }
 
