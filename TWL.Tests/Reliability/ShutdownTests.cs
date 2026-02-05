@@ -46,7 +46,8 @@ public class ShutdownTests
             null!, // MapLoader
             null!, // WorldTriggerService
             null!, // MonsterManager
-            null!  // SpawnManager
+            null!,  // SpawnManager
+            new Mock<ILoggerFactory>().Object
         );
 
         // Act

@@ -18,9 +18,23 @@ namespace TWL.Tests.Services.World;
 
 public class TestClientSession : ClientSession
 {
+    public TestClientSession() : base()
+    {
+    }
+
     public TestClientSession(ServerCharacter character) : base()
     {
         Character = character;
+    }
+
+    public void SetCharacter(ServerCharacter character)
+    {
+        Character = character;
+    }
+
+    public void SetQuestComponent(PlayerQuestComponent questComponent)
+    {
+        QuestComponent = questComponent;
     }
 }
 
@@ -40,7 +54,7 @@ public class WorldTriggerServiceTests
         var psLogger = new Mock<ILogger<PlayerService>>();
         _metricsMock = new Mock<ServerMetrics>();
 
-        _playerServiceMock = new Mock<PlayerService>(repoMock.Object, psLogger.Object, _metricsMock.Object);
+        _playerServiceMock = new Mock<PlayerService>(repoMock.Object, _metricsMock.Object);
         _loggerMock = new Mock<ILogger<WorldTriggerService>>();
 
         _service = new WorldTriggerService(_loggerMock.Object, _metricsMock.Object, _playerServiceMock.Object, _schedulerMock.Object);
@@ -158,13 +172,15 @@ public class WorldTriggerServiceTests
         // Setup Session
         var session = new TestClientSession();
         session.UserId = 1;
+        var character = p1;
         session.SetCharacter(character);
         var questManager = new ServerQuestManager();
+        var questId = 1;
         // Mock quest definition to allow adding it
         var questDef = new QuestDefinition
         {
             QuestId = questId,
-            Objectives = new List<ObjectiveDefinition>(),
+            Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition { Description = "Test" } },
             Title = "Test",
             Description = "Test",
             Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
@@ -178,7 +194,7 @@ public class WorldTriggerServiceTests
 
         session.SetQuestComponent(questComp);
 
-        _playerService.RegisterSession(session);
+        // _playerService.RegisterSession(session);
         serviceMock.Setup(s => s.GetPlayersInTrigger(trigger, 1)).Returns(new[] { p1 });
 
         // Act

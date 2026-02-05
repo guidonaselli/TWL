@@ -421,6 +421,11 @@ public class LocalizationAuditor
         {
             if (!allUsedKeys.Contains(key))
             {
+                if (_config.IgnoredOrphanKeys.Contains(key))
+                {
+                    continue;
+                }
+
                 results.Findings.Add(new AuditFinding
                 {
                     Code = "WARN_ORPHAN_KEY",
@@ -504,5 +509,6 @@ public class LocalizationAuditor
         public List<string> RequiredLanguages { get; set; } = new();
         public List<string> UiScanRoots { get; set; } = new();
         public List<string> IgnoredFiles { get; set; } = new();
+        public List<string> IgnoredOrphanKeys { get; set; } = new();
     }
 }

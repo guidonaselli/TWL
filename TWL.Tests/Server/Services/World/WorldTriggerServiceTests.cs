@@ -19,7 +19,8 @@ public class WorldTriggerServiceTests
         var metrics = new ServerMetrics();
         var repo = new Mock<IPlayerRepository>();
         var playerService = new PlayerService(repo.Object, metrics);
-        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, metrics, playerService);
+        var scheduler = new Mock<TWL.Shared.Services.IWorldScheduler>();
+        _service = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, metrics, playerService, scheduler.Object);
         _handlerMock = new Mock<ITriggerHandler>();
     }
 
