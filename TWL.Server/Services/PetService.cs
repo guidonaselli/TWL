@@ -1,3 +1,4 @@
+using Microsoft.Extensions.Logging;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -13,15 +14,17 @@ public class PetService : IPetService
     private readonly MonsterManager _monsterManager;
     private readonly PlayerService _playerService;
     private readonly IRandomService _random;
+    private readonly ILogger<PetService> _logger;
 
     public PetService(PlayerService playerService, PetManager petManager, MonsterManager monsterManager,
-        CombatManager combatManager, IRandomService random)
+        CombatManager combatManager, IRandomService random, ILogger<PetService> logger)
     {
         _playerService = playerService;
         _petManager = petManager;
         _monsterManager = monsterManager;
         _combatManager = combatManager;
         _random = random;
+        _logger = logger;
 
         _combatManager.OnCombatantDeath += HandlePetDeath;
     }
@@ -55,6 +58,13 @@ public class PetService : IPetService
         var session = _playerService.GetSession(ownerId);
         if (session == null || session.Character == null)
         {
+            return null;
+        }
+
+        // Ownership Limit Check
+        if (session.Character.Pets.Count >= 5)
+        {
+            _logger.LogWarning("Capture failed: Owner {OwnerId} has full pet slots.", ownerId);
             return null;
         }
 
@@ -128,6 +138,7 @@ public class PetService : IPetService
         pet.Amity = 40; // Default wild amity
 
         session.Character.AddPet(pet);
+        _logger.LogInformation("Pet captured: {PetName} by {OwnerId}. Instance: {PetId}", pet.Name, ownerId, pet.InstanceId);
 
         // 12. Remove Enemy (Die)
         enemy.Hp = 0; // Force death
@@ -168,18 +179,21 @@ public class PetService : IPetService
         if (session.Character.RemoveItem(ItemRevive1Hp, 1))
         {
             pet.Revive(1);
+            _logger.LogInformation("Pet {PetId} revived with 1 HP by {OwnerId}", petInstanceId, ownerId);
             return true;
         }
 
         if (session.Character.RemoveItem(ItemRevive100Hp, 1))
         {
             pet.Revive(100);
+            _logger.LogInformation("Pet {PetId} revived with 100 HP by {OwnerId}", petInstanceId, ownerId);
             return true;
         }
 
         if (session.Character.RemoveItem(ItemRevive500Hp, 1))
         {
             pet.Revive(500);
+            _logger.LogInformation("Pet {PetId} revived with 500 HP by {OwnerId}", petInstanceId, ownerId);
             return true;
         }
 
@@ -202,6 +216,7 @@ public class PetService : IPetService
             session.Character.SetActivePet(null);
         }
 
+        _logger.LogInformation("Pet {PetId} dismissed (abandoned) by {OwnerId}", petInstanceId, ownerId);
         return session.Character.RemovePet(petInstanceId);
     }
 
@@ -219,6 +234,11 @@ public class PetService : IPetService
 
     public bool ModifyAmity(int ownerId, string petInstanceId, int amount)
     {
+        return AwardAmity(ownerId, petInstanceId, amount, "Manual Modification");
+    }
+
+    public bool AwardAmity(int ownerId, string petInstanceId, int amount, string reason)
+    {
         var pet = GetPet(ownerId, petInstanceId);
         if (pet == null)
         {
@@ -226,7 +246,13 @@ public class PetService : IPetService
         }
 
         pet.ChangeAmity(amount);
+        _logger.LogInformation("Pet {PetId} Amity changed by {Amount} ({Reason}). New Amity: {Amity}", petInstanceId, amount, reason, pet.Amity);
         return true;
+    }
+
+    public void ProcessCombatWin(int ownerId, string petInstanceId)
+    {
+        AwardAmity(ownerId, petInstanceId, 1, "Combat Win");
     }
 
     public bool TryRebirth(int ownerId, string petInstanceId)
@@ -237,7 +263,12 @@ public class PetService : IPetService
             return false;
         }
 
-        return pet.TryRebirth();
+        if (pet.TryRebirth())
+        {
+             _logger.LogInformation("Pet {PetId} Reborn! Owner: {OwnerId}", petInstanceId, ownerId);
+             return true;
+        }
+        return false;
     }
 
     public bool SwitchPet(int ownerId, string petInstanceId)
@@ -263,6 +294,7 @@ public class PetService : IPetService
         }
 
         var oldPet = chara.GetActivePet();
+        var inCombat = oldPet != null && oldPet.EncounterId > 0;
 
         // 1. Unregister existing pet from Combat
         if (oldPet != null)
@@ -285,6 +317,17 @@ public class PetService : IPetService
             // 3. Assign Runtime ID: -OwnerId
             // This ensures strict 1-pet-per-player mapping for easy identification
             newPet.Id = -ownerId;
+            // Inherit EncounterId if switching during combat
+            if (inCombat)
+            {
+                newPet.EncounterId = oldPet.EncounterId;
+
+                // Consumes Turn: Apply 1 turn cooldown to all skills
+                foreach(var skillId in newPet.UnlockedSkillIds)
+                {
+                    newPet.SetSkillCooldown(skillId, 1);
+                }
+            }
 
             _combatManager.RegisterCombatant(newPet);
         }
@@ -297,6 +340,8 @@ public class PetService : IPetService
         if (victim is ServerPet pet)
         {
             pet.Die();
+            // Amity loss is handled in Die(), logging here
+             _logger.LogInformation("Pet {PetId} died in combat. Amity reduced.", pet.InstanceId);
         }
     }
 
@@ -366,12 +411,42 @@ public class PetService : IPetService
                 break;
 
             case PetUtilityType.Delivery:
+                // Implement Delivery Logic (e.g. Send items to bank)
+                // For now, return false as placeholder or true if just triggering animation
+                return false;
+
             default:
-                // Not implemented or unsupported type
                 return false;
         }
 
+        _logger.LogInformation("Pet Utility {UtilityType} used by {OwnerId} with pet {PetId}", type, ownerId, petInstanceId);
         return true;
+    }
+
+    public bool UseAmityItem(int ownerId, string petInstanceId, int itemId)
+    {
+        var session = _playerService.GetSession(ownerId);
+        if (session == null || session.Character == null)
+        {
+            return false;
+        }
+
+        // Define Amity Items Map (Should be in external config or ItemManager, hardcoded for V1 Core)
+        // 810: Treat (+1), 811: Toy (+2), 812: Special Meal (+5)
+        var amityGain = 0;
+        switch(itemId)
+        {
+            case 810: amityGain = 1; break;
+            case 811: amityGain = 2; break;
+            case 812: amityGain = 5; break;
+            default: return false;
+        }
+
+        if (session.Character.RemoveItem(itemId, 1))
+        {
+            return AwardAmity(ownerId, petInstanceId, amityGain, $"Item {itemId} Used");
+        }
+        return false;
     }
 
     private ServerPet? GetPet(int ownerId, string petInstanceId)
