@@ -100,8 +100,73 @@ public class EconomyHardeningTests : IDisposable
         var res = _economy.VerifyPurchase(_character.Id, intent.OrderId, "", _character);
         Assert.False(res.Success);
 
-        // Try verify with valid receipt (mock)
-        var res2 = _economy.VerifyPurchase(_character.Id, intent.OrderId, $"mock_sig_{intent.OrderId}", _character);
+        // Try verify with valid receipt (HMAC)
+        var validSig = _economy.GenerateSignature(intent.OrderId);
+        var res2 = _economy.VerifyPurchase(_character.Id, intent.OrderId, validSig, _character);
         Assert.True(res2.Success);
+    }
+
+    [Fact]
+    public void Receipt_ShouldRejectInvalidSignature()
+    {
+        var intent = _economy.InitiatePurchase(_character.Id, "gems_100");
+        Assert.NotNull(intent);
+
+        // Try with old mock style
+        var res = _economy.VerifyPurchase(_character.Id, intent.OrderId, $"mock_sig_{intent.OrderId}", _character);
+        Assert.False(res.Success);
+        Assert.Equal("Invalid receipt signature", res.Message);
+
+        // Try with random string
+        var res2 = _economy.VerifyPurchase(_character.Id, intent.OrderId, "invalid_sig", _character);
+        Assert.False(res2.Success);
+    }
+
+    [Fact]
+    public void Ledger_ShouldDetectTampering()
+    {
+        // 1. Generate some transactions
+        var opId = "tamper_test_op";
+        _economy.BuyShopItem(_character, 1, 1, opId);
+
+        // Ensure log is written (Dispose flushes)
+        _economy.Dispose();
+
+        // 2. Tamper with the file
+        var lines = File.ReadAllLines(_tempLedger);
+        Assert.NotEmpty(lines);
+
+        // Find the ShopBuy line (should be last)
+        var lastLineIndex = lines.Length - 1;
+        var lastLine = lines[lastLineIndex];
+
+        // Modify the balance (last col) or delta.
+        // Balance should be 990
+        var modifiedLine = lastLine.Replace(",990,", ",9999,"); // safer replace with delimiters
+        if (modifiedLine == lastLine)
+        {
+             // Maybe it's at the end before hashes?
+             // Last line format: ...,-10,990,PrevHash,Hash
+             modifiedLine = lastLine.Replace(",990,", ",9999,");
+
+             // If still failing (maybe space?), try aggressive replace or just corrupt the hash
+             if (modifiedLine == lastLine)
+             {
+                 // Just corrupt the hash at the end
+                 var parts = lastLine.Split(',');
+                 if (parts.Length >= 2)
+                 {
+                     parts[parts.Length - 1] = "badhash";
+                     modifiedLine = string.Join(",", parts);
+                 }
+             }
+        }
+
+        lines[lastLineIndex] = modifiedLine;
+        File.WriteAllLines(_tempLedger, lines);
+
+        // 3. Re-open economy (simulating server restart)
+        // Since we tampered, verify it throws SecurityException (Fail Closed)
+        Assert.Throws<System.Security.SecurityException>(() => new EconomyManager(_tempLedger));
     }
 }
