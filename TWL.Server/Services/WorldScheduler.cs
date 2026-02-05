@@ -133,8 +133,16 @@ public class WorldScheduler : IWorldScheduler, IDisposable
             {
                 _logger.LogWarning("WorldScheduler skipping ticks to catch up. Accumulator: {Accumulator}ms",
                     accumulator);
+                var skipped = (int)(accumulator / TickRateMs);
+                _metrics.RecordWorldLoopSkippedTicks(skipped);
                 accumulator = 0;
             }
+
+            // Record Drift (Total elapsed real time vs. Total elapsed simulated time)
+            // Real Time = stopwatch.ElapsedMilliseconds
+            // Sim Time = CurrentTick * TickRateMs
+            var drift = stopwatch.ElapsedMilliseconds - (CurrentTick * TickRateMs);
+            _metrics.RecordWorldLoopDrift(drift);
 
             // Sleep to yield CPU
             var sleepTime = TickRateMs - (int)accumulator;
