@@ -63,9 +63,9 @@ public class PlayerQuestComponent
 
     private void HandleMapChanged(int mapId)
     {
+        var failedQuests = new List<int>();
         lock (_lock)
         {
-            var failedQuests = new List<int>();
             foreach (var kvp in QuestStates)
             {
                 if (kvp.Value != QuestState.InProgress)
