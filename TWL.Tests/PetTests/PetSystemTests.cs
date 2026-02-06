@@ -122,8 +122,7 @@ public class PetSystemTests : IDisposable
             Name = "Wild Wolf",
             Hp = 10,
             Con = 10,
-            Team = Team.Enemy,
-            MaxHp = 100
+            Team = Team.Enemy
         };
         _combatManager.RegisterCombatant(enemy);
 
@@ -161,7 +160,7 @@ public class PetSystemTests : IDisposable
         };
         _mockMonsterManager.Setup(m => m.GetDefinition(200)).Returns(enemyMonsterDef);
 
-        var enemy = new ServerCharacter { Id = 200, MonsterId = 200, Hp = 10, MaxHp=10, Team = Team.Enemy };
+        var enemy = new ServerCharacter { Id = 200, MonsterId = 200, Hp = 10, Team = Team.Enemy };
         _combatManager.RegisterCombatant(enemy);
         _mockRandom.Setup(r => r.NextFloat()).Returns(0.0f); // Always succeed
 
