@@ -47,6 +47,7 @@ public class PlayerQuestComponent
                 _character.OnItemAdded -= HandleItemAdded;
                 _character.OnPetAdded -= HandlePetAdded;
                 _character.OnTradeCommitted -= HandleTradeCommitted;
+                _character.OnMapChanged -= HandleMapChanged;
             }
 
             _character = value;
@@ -55,8 +56,49 @@ public class PlayerQuestComponent
                 _character.OnItemAdded += HandleItemAdded;
                 _character.OnPetAdded += HandlePetAdded;
                 _character.OnTradeCommitted += HandleTradeCommitted;
+                _character.OnMapChanged += HandleMapChanged;
             }
         }
+    }
+
+    private void HandleMapChanged(int mapId)
+    {
+        lock (_lock)
+        {
+            var failedQuests = new List<int>();
+            foreach (var kvp in QuestStates)
+            {
+                if (kvp.Value != QuestState.InProgress)
+                {
+                    continue;
+                }
+
+                var def = _questManager.GetDefinition(kvp.Key);
+                if (def == null) continue;
+
+                if (def.FailConditions != null)
+                {
+                    foreach (var cond in def.FailConditions)
+                    {
+                        if (string.Equals(cond.Type, "LeaveMap", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (cond.Value != mapId.ToString())
+                            {
+                                failedQuests.Add(kvp.Key);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        foreach (var qid in failedQuests)
+        {
+            FailQuest(qid);
+        }
+
+        TryProgress("Explore", mapId.ToString());
+        TryProgress("Reach", mapId.ToString());
     }
 
     private void HandlePetAdded(ServerPet pet)
@@ -187,6 +229,12 @@ public class PlayerQuestComponent
 
             if (kvp.Value == QuestState.Completed || kvp.Value == QuestState.RewardClaimed)
             {
+                // Strict Mutual Exclusion for Non-Repeatable Quests (Permanent Branching)
+                if (def.Repeatability == QuestRepeatability.None && otherDef.Repeatability == QuestRepeatability.None)
+                {
+                    return true;
+                }
+
                 if (QuestCompletionTimes.TryGetValue(kvp.Key, out var completionTime))
                 {
                     if (otherDef.Repeatability == QuestRepeatability.Daily)
