@@ -90,3 +90,16 @@ Quests generally do not fail from simple combat loss. They only fail under:
 *   **BindOnEquip (CharacterBound)**: Baseline requirement for equipment.
 *   **AccountBound**: Optional for premium items.
 *   **BindOnPickup**: Used only if explicitly required (rare drops).
+
+## 10. Element System
+*   **Element.None (Physical)**: Restricted Use.
+    *   **Allowed**: Only for `MonsterDefinition` instances that have the `QuestOnly` tag.
+    *   **Forbidden**: Players and Pets must never be assigned `Element.None`.
+    *   **Enforcement**: Validation tests must fail if this rule is violated in static data. Runtime checks must prevent assignment.
+
+## 11. Encounter System
+*   **Authority**: Server-Side Only. Clients cannot initiate encounters.
+*   **Modes**:
+    *   **Roaming**: Visible mob actors managed by server physics. Encounter triggers on collision or aggro.
+    *   **Random**: Zone-based movement accumulation. Server calculates encounter chance.
+*   **Pipeline**: `StartEncounter` must be idempotent, generate a deterministic RNG seed server-side, and handle retries/reconnects without duplicating state.
