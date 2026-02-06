@@ -1,0 +1,23 @@
+{
+  "MapId": 1010,
+  "RegionId": "PuertoRoca",
+  "Biome": "Tropical",
+  "RecommendedLevelMin": 1,
+  "RecommendedLevelMax": 5,
+  "EntryPoints": [ 1 ],
+  "Exits": [
+    {
+      "TargetMapId": 1000,
+      "SpawnId": 20,
+      "Gating": { "MinLevel": 1 }
+    }
+  ],
+  "AmbientProfile": {
+    "MusicKey": "BGM_TOWN_01",
+    "AmbienceKey": "AMB_MARKET",
+    "PaletteHintKey": "DAY_CYCLE"
+  },
+  "WorldFlagsSet": [],
+  "WorldFlagsCleared": [],
+  "Notes": "Marketplace district. Placeholder layout."
+}

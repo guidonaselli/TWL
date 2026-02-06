@@ -35,6 +35,12 @@
     - **Connections:** 1000
     - **Mobs:** Cave Bat (9101).
 
+- [x] **1010 - Barrio del Mercado**
+    - **Status:** Implemented (Skeleton)
+    - **Type:** Safe Zone / City
+    - **Connections:** 1000
+    - **Entities:** Merchants, Market Guard.
+
 ## Region 0: Isla Brisa (Starter Island)
 
 ### Phase 1: Crash Site

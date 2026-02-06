@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="15">
+<map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="20" height="20" tilewidth="32" tileheight="32" infinite="0" nextlayerid="11" nextobjectid="10">
  <tileset firstgid="1" name="placeholders" tilewidth="32" tileheight="32" tilecount="1" columns="1">
   <image source="placeholders.png" width="32" height="32"/>
  </tileset>
@@ -172,110 +172,46 @@
 </data>
  </layer>
  <objectgroup id="8" name="Collisions">
-  <object id="1" name="FountainBase" x="288" y="288" width="64" height="64">
+  <object id="1" name="Stall1" x="96" y="96" width="64" height="64">
+   <properties>
+    <property name="CollisionType" value="Solid"/>
+   </properties>
+  </object>
+  <object id="2" name="Stall2" x="480" y="96" width="64" height="64">
    <properties>
     <property name="CollisionType" value="Solid"/>
    </properties>
   </object>
  </objectgroup>
  <objectgroup id="9" name="Spawns">
-  <object id="2" name="Start" type="PlayerStart" x="320" y="384" width="32" height="32">
+  <object id="3" name="FromPlaza" type="PlayerStart" x="320" y="576" width="32" height="32">
    <properties>
     <property name="SpawnType" value="PlayerStart"/>
     <property name="Id" type="int" value="1"/>
    </properties>
   </object>
-  <object id="13" name="FromMarket" type="PlayerStart" x="320" y="576" width="32" height="32">
-   <properties>
-    <property name="SpawnType" value="PlayerStart"/>
-    <property name="Id" type="int" value="20"/>
-   </properties>
-  </object>
-  <object id="10" name="FromPort" type="PlayerStart" x="64" y="320" width="32" height="32">
-   <properties>
-    <property name="SpawnType" value="PlayerStart"/>
-    <property name="Id" type="int" value="2"/>
-   </properties>
-  </object>
-  <object id="11" name="FromNorth" type="PlayerStart" x="320" y="64" width="32" height="32">
-   <properties>
-    <property name="SpawnType" value="PlayerStart"/>
-    <property name="Id" type="int" value="3"/>
-   </properties>
-  </object>
-  <object id="12" name="FromMines" type="PlayerStart" x="576" y="320" width="32" height="32">
-   <properties>
-    <property name="SpawnType" value="PlayerStart"/>
-    <property name="Id" type="int" value="4"/>
-   </properties>
-  </object>
-  <object id="3" name="PortMaster" type="NPC" x="416" y="288" width="32" height="32">
+  <object id="4" name="MarketGuard" type="NPC" x="256" y="544" width="32" height="32">
    <properties>
     <property name="SpawnType" value="NPC"/>
-    <property name="Id" type="int" value="13"/>
+    <property name="Id" type="int" value="101"/>
     <property name="Faction" value="Neutral"/>
    </properties>
   </object>
-  <object id="4" name="CaravanLeader" type="NPC" x="256" y="288" width="32" height="32">
+  <object id="5" name="Merchant" type="NPC" x="128" y="160" width="32" height="32">
    <properties>
     <property name="SpawnType" value="NPC"/>
-    <property name="Id" type="int" value="14"/>
+    <property name="Id" type="int" value="102"/>
     <property name="Faction" value="Neutral"/>
-   </properties>
-  </object>
-  <object id="5" name="Coconut" type="ResourceNode" x="512" y="128" width="32" height="32">
-   <properties>
-    <property name="SpawnType" value="ResourceNode"/>
-    <property name="Id" type="int" value="5"/>
-    <property name="ResourceId" type="int" value="7330"/>
-   </properties>
-  </object>
-  <object id="6" name="FreshWater" type="ResourceNode" x="128" y="128" width="32" height="32">
-   <properties>
-    <property name="SpawnType" value="ResourceNode"/>
-    <property name="Id" type="int" value="6"/>
-    <property name="ResourceId" type="int" value="7414"/>
    </properties>
   </object>
  </objectgroup>
  <objectgroup id="10" name="Triggers">
-  <object id="3" name="To_North" x="288" y="0" width="64" height="32">
+  <object id="6" name="To_Plaza" x="288" y="608" width="64" height="32">
    <properties>
     <property name="TriggerType" value="MapTransition"/>
     <property name="Id" type="int" value="1"/>
-    <property name="TargetMapId" type="int" value="1002"/>
-    <property name="TargetSpawnId" type="int" value="1"/>
-   </properties>
-  </object>
-  <object id="14" name="To_Market" x="288" y="608" width="64" height="32">
-   <properties>
-    <property name="TriggerType" value="MapTransition"/>
-    <property name="Id" type="int" value="4"/>
-    <property name="TargetMapId" type="int" value="1010"/>
-    <property name="TargetSpawnId" type="int" value="1"/>
-   </properties>
-  </object>
-  <object id="4" name="To_Port" x="0" y="288" width="32" height="64">
-   <properties>
-    <property name="TriggerType" value="MapTransition"/>
-    <property name="Id" type="int" value="2"/>
-    <property name="TargetMapId" type="int" value="1001"/>
-    <property name="TargetSpawnId" type="int" value="1"/>
-   </properties>
-  </object>
-  <object id="5" name="To_Mines" x="608" y="288" width="32" height="64">
-   <properties>
-    <property name="TriggerType" value="MapTransition"/>
-    <property name="Id" type="int" value="3"/>
-    <property name="TargetMapId" type="int" value="1003"/>
-    <property name="TargetSpawnId" type="int" value="1"/>
-   </properties>
-  </object>
-  <object id="8" name="StrangeCrate" x="448" y="448" width="32" height="32">
-   <properties>
-    <property name="TriggerType" value="Interaction"/>
-    <property name="Id" type="int" value="8"/>
-    <property name="Name" value="StrangeCrate"/>
+    <property name="TargetMapId" type="int" value="1000"/>
+    <property name="TargetSpawnId" type="int" value="20"/>
    </properties>
   </object>
  </objectgroup>

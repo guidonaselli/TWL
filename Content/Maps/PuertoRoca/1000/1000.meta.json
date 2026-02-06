@@ -20,6 +20,11 @@
       "TargetMapId": 1003,
       "SpawnId": 1,
       "Gating": { "MinLevel": 1 }
+    },
+    {
+      "TargetMapId": 1010,
+      "SpawnId": 1,
+      "Gating": { "MinLevel": 1 }
     }
   ],
   "AmbientProfile": {
