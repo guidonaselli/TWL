@@ -17,15 +17,18 @@ public class EconomyManager : IEconomyService, IDisposable
     private const double EXPIRATION_MINUTES = 10.0;
 
     private static readonly Regex _ledgerRegex = new(
-        @"^([^,]+),([^,]+),([^,]+),(.+),([^,]+),([^,]+)$",
+        @"^([^,]+),([^,]+),([^,]+),(.+),([-\d]+),([-\d]+)(?:,([a-fA-F0-9]+),([a-fA-F0-9]+))?$",
         RegexOptions.Compiled);
 
     private readonly string _ledgerFile;
     private readonly string _snapshotFile;
+    private readonly string _providerSecret;
 
     private readonly object _ledgerLock = new();
     private readonly Channel<string> _logChannel;
     private readonly Task _logTask;
+
+    private string _lastHash = "0000000000000000000000000000000000000000000000000000000000000000";
 
     // Mock Data
     private readonly Dictionary<string, long> _productPrices = new()
@@ -48,8 +51,14 @@ public class EconomyManager : IEconomyService, IDisposable
     private int _cleanupCounter;
     private int _isCleaningUp;
 
-    public EconomyManager(string ledgerFile = "economy_ledger.log")
+    public EconomyManager(string ledgerFile = "economy_ledger.log", string? providerSecret = null)
     {
+        _providerSecret = providerSecret ?? Environment.GetEnvironmentVariable("ECONOMY_SECRET") ?? "TEST_SECRET_DEFAULT";
+        if (_providerSecret == "TEST_SECRET_DEFAULT")
+        {
+            Console.WriteLine("Warning: EconomyManager using TEST_SECRET_DEFAULT. Do not use in Production.");
+        }
+
         Metrics = new EconomyMetrics(this);
         _ledgerFile = ledgerFile;
         _snapshotFile = Path.ChangeExtension(_ledgerFile, ".snapshot.json");
@@ -538,6 +547,10 @@ public class EconomyManager : IEconomyService, IDisposable
             Console.WriteLine($"[EconomyManager] Loaded snapshot from {data.Timestamp:O} with {data.Transactions.Count} transactions.");
             return data.Timestamp;
         }
+        catch (System.Security.SecurityException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             Console.WriteLine($"[EconomyManager] Failed to load snapshot: {ex.Message}");
@@ -572,6 +585,18 @@ public class EconomyManager : IEconomyService, IDisposable
         var count = 0;
         try
         {
+            // Verify Integrity while replaying
+            if (!VerifyLedgerIntegrity(out var lastHash))
+            {
+                throw new System.Security.SecurityException("Ledger integrity check failed! Tampering detected.");
+            }
+
+            // Set internal state to the last known valid hash to continue chain
+            lock (_ledgerLock)
+            {
+                _lastHash = lastHash;
+            }
+
             var lines = File.ReadLines(_ledgerFile);
 
             foreach (var line in lines)
@@ -591,6 +616,7 @@ public class EconomyManager : IEconomyService, IDisposable
                 var type = match.Groups[2].Value;
                 var userIdStr = match.Groups[3].Value;
                 var details = match.Groups[4].Value;
+                // Groups[7] is PrevHash, Groups[8] is Hash (if present)
 
                 var timestamp = DateTime.TryParse(timestampStr, null, DateTimeStyles.RoundtripKind, out var ts)
                     ? ts
@@ -676,6 +702,10 @@ public class EconomyManager : IEconomyService, IDisposable
                 }
             }
         }
+        catch (System.Security.SecurityException)
+        {
+            throw;
+        }
         catch (Exception ex)
         {
             Console.WriteLine($"[EconomyManager] Error replaying ledger: {ex.Message}");
@@ -685,6 +715,66 @@ public class EconomyManager : IEconomyService, IDisposable
         Metrics.ReplayedTransactionCount = count;
         Metrics.ReplayDurationMs = sw.ElapsedMilliseconds;
         Console.WriteLine($"[EconomyManager] Replayed {count} transactions in {sw.ElapsedMilliseconds}ms.");
+    }
+
+    public bool VerifyLedgerIntegrity() => VerifyLedgerIntegrity(out _);
+
+    public bool VerifyLedgerIntegrity(out string lastHash)
+    {
+        lastHash = "0000000000000000000000000000000000000000000000000000000000000000";
+        if (!File.Exists(_ledgerFile))
+        {
+            return true;
+        }
+
+        try
+        {
+            var lines = File.ReadLines(_ledgerFile);
+            foreach (var line in lines)
+            {
+                if (string.IsNullOrWhiteSpace(line) || line.StartsWith("Timestamp"))
+                {
+                    continue;
+                }
+
+                var match = _ledgerRegex.Match(line);
+                if (!match.Success)
+                {
+                    // Malformed line
+                    return false;
+                }
+
+                // If line has hash info
+                if (match.Groups[7].Success && match.Groups[8].Success)
+                {
+                    var content = $"{match.Groups[1].Value},{match.Groups[2].Value},{match.Groups[3].Value},{match.Groups[4].Value},{match.Groups[5].Value},{match.Groups[6].Value}";
+                    var claimedPrev = match.Groups[7].Value;
+                    var claimedHash = match.Groups[8].Value;
+
+                    if (claimedPrev != lastHash)
+                    {
+                        // Broken chain
+                        return false;
+                    }
+
+                    using var sha = System.Security.Cryptography.SHA256.Create();
+                    var actualHash = Convert.ToHexString(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(content + claimedPrev)));
+
+                    if (actualHash != claimedHash)
+                    {
+                        // Tampering detected
+                        return false;
+                    }
+
+                    lastHash = actualHash;
+                }
+            }
+            return true;
+        }
+        catch
+        {
+            return false;
+        }
     }
 
     private async Task ProcessLogQueue()
@@ -715,22 +805,40 @@ public class EconomyManager : IEconomyService, IDisposable
     public EconomyOperationResultDTO BuyShopItem(ServerCharacter character, int shopItemId, int quantity) =>
         BuyShopItem(character, shopItemId, quantity, null, null);
 
+    public string GenerateSignature(string orderId)
+    {
+        using var hmac = new System.Security.Cryptography.HMACSHA256(System.Text.Encoding.UTF8.GetBytes(_providerSecret));
+        var hash = hmac.ComputeHash(System.Text.Encoding.UTF8.GetBytes(orderId));
+        return Convert.ToHexString(hash);
+    }
+
     private bool ValidateReceipt(string receiptToken, string orderId)
     {
-        // In a real app, this would verify a cryptographic signature.
-        // For this hardening task, we enforce a strict format linked to the orderId.
         // FAIL CLOSED: Strict validation
         if (string.IsNullOrWhiteSpace(receiptToken) || string.IsNullOrWhiteSpace(orderId))
         {
             return false;
         }
 
-        return receiptToken == $"mock_sig_{orderId}";
+        var expected = GenerateSignature(orderId);
+        // Constant-time comparison to prevent timing attacks
+        return System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(
+            System.Text.Encoding.UTF8.GetBytes(receiptToken),
+            System.Text.Encoding.UTF8.GetBytes(expected));
     }
 
     private void LogLedger(string type, int userId, string details, long delta, long newBalance, string? traceId = null)
     {
-        var line = $"{DateTime.UtcNow:O},{type},{userId},{details},{delta},{newBalance}\n";
+        string line;
+        lock (_ledgerLock)
+        {
+            var content = $"{DateTime.UtcNow:O},{type},{userId},{details},{delta},{newBalance}";
+            using var sha = System.Security.Cryptography.SHA256.Create();
+            var hash = Convert.ToHexString(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(content + _lastHash)));
+
+            line = $"{content},{_lastHash},{hash}\n";
+            _lastHash = hash;
+        }
 
         // Async Logging
         _logChannel.Writer.TryWrite(line);

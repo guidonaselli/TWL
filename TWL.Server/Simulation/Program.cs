@@ -47,7 +47,13 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<ISkillCatalog>(_ => SkillRegistry.Instance);
         svcs.AddSingleton<IWorldScheduler, WorldScheduler>();
         svcs.AddSingleton<IStatusEngine, StatusEngine>();
-        svcs.AddSingleton<IEconomyService, EconomyManager>(); // Use Interface
+        svcs.AddSingleton<IEconomyService>(sp =>
+        {
+            var config = sp.GetRequiredService<IConfiguration>();
+            var ledgerFile = config["Economy:LedgerFile"] ?? "economy_ledger.log";
+            var secret = config["Economy:ProviderSecret"];
+            return new EconomyManager(ledgerFile, secret);
+        });
         svcs.AddSingleton<EconomyManager>(sp =>
             (EconomyManager)sp.GetRequiredService<IEconomyService>()); // Forward implementation if needed as concrete
 
