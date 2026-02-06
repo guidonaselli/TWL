@@ -109,7 +109,8 @@ public class SpawnManagerTests
 
             // Mock Random: Step Check returns 0.0 (< 1.0)
             _random.Setup(r => r.NextDouble()).Returns(0.0);
-            _random.Setup(r => r.Next(It.IsAny<int>(), It.IsAny<int>())).Returns(0); // For list selection
+            _random.Setup(r => r.Next(1, 4)).Returns(1); // Count of mobs
+            _random.Setup(r => r.Next(0, It.IsAny<int>())).Returns(0); // Weighted selection
 
             // Act
             _spawnManager.OnPlayerMoved(session);
@@ -130,6 +131,12 @@ public class TestClientSession : ClientSession
 {
     public TestClientSession() : base()
     {
+    }
+
+    public new ServerCharacter? Character
+    {
+        get => base.Character;
+        set => base.Character = value;
     }
 
     // Override SendAsync to avoid NRE on null stream/client
