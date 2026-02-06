@@ -80,7 +80,7 @@ public class GameServer
         var statusEngine = new StatusEngine();
         CombatManager = new CombatManager(combatResolver, random, SkillRegistry.Instance, statusEngine);
 
-        PetService = new PetService(PlayerService, PetManager, MonsterManager, CombatManager, random);
+        PetService = new PetService(PlayerService, PetManager, MonsterManager, CombatManager, random, NullLogger<PetService>.Instance);
         EconomyManager = new EconomyManager();
 
         SpawnManager = new SpawnManager(MonsterManager, CombatManager, random, PlayerService);

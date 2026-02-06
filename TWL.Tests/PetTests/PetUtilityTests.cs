@@ -92,7 +92,7 @@ public class PetUtilityTests : IDisposable
 
         _combatManager = new CombatManager(_mockResolver.Object, _mockRandom.Object, _mockSkills.Object,
             _mockStatusEngine.Object);
-        _petService = new PetService(_playerService, _petManager, _mockMonsterManager.Object, _combatManager, _mockRandom.Object);
+        _petService = new PetService(_playerService, _petManager, _mockMonsterManager.Object, _combatManager, _mockRandom.Object, new Moq.Mock<Microsoft.Extensions.Logging.ILogger<PetService>>().Object);
     }
 
     public void Dispose()

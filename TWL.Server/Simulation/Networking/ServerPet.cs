@@ -282,6 +282,8 @@ public class ServerPet : ServerCombatant
             UnlockedSkillIds.Add(_definition.RebirthSkillId);
         }
 
+        CheckSkillUnlocks();
+
         return true;
     }
 
