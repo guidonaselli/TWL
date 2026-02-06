@@ -109,7 +109,9 @@ public class SpawnManagerTests
 
             // Mock Random: Step Check returns 0.0 (< 1.0)
             _random.Setup(r => r.NextDouble()).Returns(0.0);
-            _random.Setup(r => r.Next(It.IsAny<int>(), It.IsAny<int>())).Returns(0); // For list selection
+            // Fix: Next(1, 4) must return >= 1 for monster count.
+            // Also used for selection Next(0, weight).
+            _random.Setup(r => r.Next(It.IsAny<int>(), It.IsAny<int>())).Returns((int min, int max) => min);
 
             // Act
             _spawnManager.OnPlayerMoved(session);
@@ -136,5 +138,11 @@ public class TestClientSession : ClientSession
     public override Task SendAsync(TWL.Shared.Net.Network.NetMessage msg)
     {
         return Task.CompletedTask;
+    }
+
+    public new ServerCharacter? Character
+    {
+        get => base.Character;
+        set => base.Character = value;
     }
 }
