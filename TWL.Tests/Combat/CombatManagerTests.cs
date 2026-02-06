@@ -59,14 +59,14 @@ public class CombatManagerTests
         var resolver = new StandardCombatResolver(mockRandom, catalog);
         var manager = new CombatManager(resolver, mockRandom, catalog, new StatusEngine());
 
-        var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 }; // Atk=200? No, Str=100.
+        var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100, Agi = 50, Hp = 1000 }; // Atk=200? No, Str=100.
         // Skill scaling: Str * 2 = 200.
 
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0, Team = Team.Enemy };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0, Team = Team.Enemy, Agi = 10 };
         // Con 0 -> Def 0. To match previous test behavior where Defense was ignored.
 
-        manager.AddCharacter(attacker);
-        manager.AddCharacter(target);
+        // Start Encounter (Attacker Spd=0, Target Spd=0 -> Attacker first due to list order + stable sort)
+        manager.StartEncounter(1, new List<ServerCharacter> { attacker, target });
 
         // Act
         // Base Damage = 200
@@ -91,10 +91,9 @@ public class CombatManagerTests
         var resolver = new StandardCombatResolver(mockRandom, catalog);
         var manager = new CombatManager(resolver, mockRandom, catalog, new StatusEngine());
 
-        var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0, Team = Team.Enemy };
-        manager.AddCharacter(attacker);
-        manager.AddCharacter(target);
+        var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100, Agi = 50, Hp = 1000 };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0, Team = Team.Enemy, Agi = 10 };
+        manager.StartEncounter(1, new List<ServerCharacter> { attacker, target });
 
         // Act
         // Base Damage = 200
@@ -117,10 +116,9 @@ public class CombatManagerTests
         var resolver = new StandardCombatResolver(mockRandom, catalog);
         var manager = new CombatManager(resolver, mockRandom, catalog, new StatusEngine());
 
-        var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100 };
-        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0, Team = Team.Enemy };
-        manager.AddCharacter(attacker);
-        manager.AddCharacter(target);
+        var attacker = new ServerCharacter { Id = 1, Name = "Attacker", Str = 100, Agi = 50, Hp = 1000 };
+        var target = new ServerCharacter { Id = 2, Name = "Target", Hp = 1000, Con = 0, Team = Team.Enemy, Agi = 10 };
+        manager.StartEncounter(1, new List<ServerCharacter> { attacker, target });
 
         // Act
         // Base Damage = 200
@@ -131,5 +129,36 @@ public class CombatManagerTests
         // Assert
         Assert.Single(result);
         Assert.Equal(210, result[0].Damage);
+    }
+
+    [Fact]
+    public void UseSkill_EnforcesTurnOrder()
+    {
+        var mockRandom = new MockRandomService(0.5f);
+        var catalog = CreateMockCatalog();
+        var resolver = new StandardCombatResolver(mockRandom, catalog);
+        var manager = new CombatManager(resolver, mockRandom, catalog, new StatusEngine());
+
+        var attacker = new ServerCharacter { Id = 1, Agi = 10, Hp = 100 };
+        var target = new ServerCharacter { Id = 2, Agi = 20, Hp = 100, Team = Team.Enemy }; // Higher speed
+
+        manager.StartEncounter(1, new List<ServerCharacter> { attacker, target });
+
+        // Target (Id 2) should be first.
+        // Try attacker (Id 1) using skill.
+        var request = new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 999 };
+        var result = manager.UseSkill(request);
+
+        Assert.Empty(result);
+
+        // Target uses skill
+        var request2 = new UseSkillRequest { PlayerId = 2, TargetId = 1, SkillId = 999 };
+        var result2 = manager.UseSkill(request2);
+
+        Assert.Single(result2);
+
+        // Now it should be Attacker's turn
+        var result3 = manager.UseSkill(request);
+        Assert.Single(result3);
     }
 }

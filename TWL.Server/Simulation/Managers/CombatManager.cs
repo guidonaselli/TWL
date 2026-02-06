@@ -15,6 +15,7 @@ namespace TWL.Server.Simulation.Managers;
 public class CombatManager
 {
     private readonly ConcurrentDictionary<int, ServerCombatant> _combatants;
+    private readonly ConcurrentDictionary<int, ITurnEngine> _encounters = new();
     private readonly IRandomService _random;
     private readonly ICombatResolver _resolver;
     private readonly ISkillCatalog _skills;
@@ -49,7 +50,18 @@ public class CombatManager
             p.EncounterId = encounterId;
             RegisterCombatant(p);
         }
-        // Seed can be used to initialize determinstic RNG for this encounter
+
+        var turnEngine = new TurnEngine(_random);
+        turnEngine.StartEncounter(participants);
+        _encounters[encounterId] = turnEngine;
+
+        // Start first turn
+        turnEngine.NextTurn();
+    }
+
+    public virtual void EndEncounter(int encounterId)
+    {
+        _encounters.TryRemove(encounterId, out _);
     }
 
     // Legacy / Convenience
@@ -74,6 +86,15 @@ public class CombatManager
         if (skill == null)
         {
             return new List<CombatResult>();
+        }
+
+        ITurnEngine? turnEngine = null;
+        if (_encounters.TryGetValue(attacker.EncounterId, out turnEngine))
+        {
+            if (turnEngine.CurrentCombatant?.Id != attacker.Id)
+            {
+                return new List<CombatResult>();
+            }
         }
 
         if (attacker.IsSkillOnCooldown(skill.SkillId))
@@ -194,6 +215,7 @@ public class CombatManager
             // Check for death
             if (newTargetHp <= 0)
             {
+                turnEngine?.RemoveCombatant(target.Id);
                 OnCombatantDeath?.Invoke(target);
             }
 
@@ -211,6 +233,12 @@ public class CombatManager
         attacker.IncrementSkillUsage(skill.SkillId);
         attacker.SetSkillCooldown(skill.SkillId, skill.Cooldown);
         CheckSkillEvolution(attacker, skill);
+
+        if (turnEngine != null)
+        {
+            turnEngine.EndTurn();
+            turnEngine.NextTurn();
+        }
 
         return results;
     }

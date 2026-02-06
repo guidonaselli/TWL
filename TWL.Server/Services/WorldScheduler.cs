@@ -66,13 +66,20 @@ public class WorldScheduler : IWorldScheduler, IDisposable
 
     public void Schedule(Action action, TimeSpan delay, string name = "Unnamed")
     {
+        var delayTicks = (int)(delay.TotalMilliseconds / TickRateMs);
+        if (delayTicks < 1) delayTicks = 1;
+        Schedule(action, delayTicks, name);
+    }
+
+    public void Schedule(Action action, int delayTicks, string name = "Unnamed")
+    {
         lock (_lock)
         {
             _scheduledTasks.Add(new ScheduledTask
             {
                 Action = action,
-                NextRun = DateTime.UtcNow.Add(delay),
-                Interval = null,
+                TargetTick = CurrentTick + delayTicks,
+                IntervalTicks = null,
                 Name = name
             });
         }
@@ -80,13 +87,20 @@ public class WorldScheduler : IWorldScheduler, IDisposable
 
     public void ScheduleRepeating(Action action, TimeSpan interval, string name = "Unnamed")
     {
+        var intervalTicks = (int)(interval.TotalMilliseconds / TickRateMs);
+        if (intervalTicks < 1) intervalTicks = 1;
+        ScheduleRepeating(action, intervalTicks, name);
+    }
+
+    public void ScheduleRepeating(Action action, int intervalTicks, string name = "Unnamed")
+    {
         lock (_lock)
         {
             _scheduledTasks.Add(new ScheduledTask
             {
                 Action = action,
-                NextRun = DateTime.UtcNow.Add(interval),
-                Interval = interval,
+                TargetTick = CurrentTick + intervalTicks,
+                IntervalTicks = intervalTicks,
                 Name = name
             });
         }
@@ -172,9 +186,7 @@ public class WorldScheduler : IWorldScheduler, IDisposable
             _logger.LogError(ex, "Error executing OnTick listeners");
         }
 
-        // 2. Process Legacy Scheduled Tasks
-        // Note: This is still checking time, not ticks, to respect the DateTime.UtcNow semantic of the existing Schedule API.
-        // It's checked every tick now, which is consistent.
+        // 2. Process Scheduled Tasks
         var tasksCount = ProcessScheduledTasks();
 
         sw.Stop();
@@ -191,7 +203,6 @@ public class WorldScheduler : IWorldScheduler, IDisposable
 
     private int ProcessScheduledTasks()
     {
-        var now = DateTime.UtcNow;
         var tasksToRun = new List<ScheduledTask>();
         var queueDepth = 0;
 
@@ -201,16 +212,14 @@ public class WorldScheduler : IWorldScheduler, IDisposable
             for (var i = _scheduledTasks.Count - 1; i >= 0; i--)
             {
                 var task = _scheduledTasks[i];
-                if (task.NextRun <= now)
+                if (task.TargetTick <= CurrentTick)
                 {
                     tasksToRun.Add(task);
 
-                    if (task.Interval.HasValue)
+                    if (task.IntervalTicks.HasValue)
                     {
                         // Schedule next run
-                        // Prevent drift by adding interval to previous NextRun, or set to Now + Interval?
-                        // Now + Interval is safer against burst execution after lag.
-                        task.NextRun = now.Add(task.Interval.Value);
+                        task.TargetTick = CurrentTick + task.IntervalTicks.Value;
                     }
                     else
                     {
@@ -247,8 +256,8 @@ public class WorldScheduler : IWorldScheduler, IDisposable
     private class ScheduledTask
     {
         public Action Action { get; set; } = () => { };
-        public DateTime NextRun { get; set; }
-        public TimeSpan? Interval { get; set; } // If null, one-off
+        public long TargetTick { get; set; }
+        public int? IntervalTicks { get; set; } // If null, one-off
         public string Name { get; set; } = "Unnamed";
     }
 }

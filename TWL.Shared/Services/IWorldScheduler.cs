@@ -19,5 +19,7 @@ public interface IWorldScheduler
     event Action<long> OnTick;
 
     void Schedule(Action action, TimeSpan delay, string name = "Unnamed");
+    void Schedule(Action action, int delayTicks, string name = "Unnamed");
     void ScheduleRepeating(Action action, TimeSpan interval, string name = "Unnamed");
+    void ScheduleRepeating(Action action, int intervalTicks, string name = "Unnamed");
 }
