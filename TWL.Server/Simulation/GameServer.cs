@@ -88,6 +88,7 @@ public class GameServer
 
         // Init World System
         var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, Metrics);
+        scheduler.ScheduleRepeating(() => SpawnManager.Update(0.05f), 1, "SpawnManager.Update");
         scheduler.Start();
 
         var mapLoader = new MapLoader(NullLogger<MapLoader>.Instance);

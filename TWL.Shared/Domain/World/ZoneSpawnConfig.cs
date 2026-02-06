@@ -11,6 +11,10 @@ public class ZoneSpawnConfig
     public int MinMobCount { get; set; } = 5;
     public int MaxMobCount { get; set; } = 15;
     public int RespawnSeconds { get; set; } = 60;
+
+    // Environmental Conditions (Optional)
+    public List<string> TimeOfDay { get; set; } = new();
+    public List<string> Weather { get; set; } = new();
 }
 
 public class SpawnRegion
