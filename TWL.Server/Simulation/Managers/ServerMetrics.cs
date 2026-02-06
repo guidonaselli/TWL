@@ -77,6 +77,9 @@ public class HistogramSnapshot
 
 public class ServerMetrics
 {
+    public DateTime StartTime { get; } = DateTime.UtcNow;
+    public DateTime LastPersistenceFlushTime { get; private set; }
+
     private readonly PipelineLatencyHistogram _persistHistogram = new();
     private readonly PipelineLatencyHistogram _resolveHistogram = new();
 
@@ -138,6 +141,7 @@ public class ServerMetrics
 
     public void RecordPersistenceFlush(long durationMs, int errors)
     {
+        LastPersistenceFlushTime = DateTime.UtcNow;
         Interlocked.Increment(ref _persistenceFlushes);
         Interlocked.Add(ref _totalPersistenceDurationMs, durationMs);
         if (errors > 0)

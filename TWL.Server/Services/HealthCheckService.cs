@@ -6,25 +6,35 @@ using TWL.Server.Persistence.Services;
 
 namespace TWL.Server.Services;
 
+using TWL.Server.Simulation.Managers;
+
 public class HealthStatus
 {
+    public string AppVersion { get; set; }
     public string Status { get; set; } = "Unknown";
+    public TimeSpan Uptime { get; set; }
     public bool Database { get; set; }
+    public int ActivePlayers { get; set; }
+    public int DirtySessions { get; set; }
     public long LastPersistenceFlushMs { get; set; }
     public int LastPersistenceErrors { get; set; }
     public DateTime LastCheck { get; set; }
+    public long WorldLoopDriftMs { get; set; }
+    public long WorldLoopSkippedTicks { get; set; }
 }
 
 public class HealthCheckService : BackgroundService
 {
     private readonly DbService _db;
     private readonly PlayerService _playerService;
+    private readonly ServerMetrics _serverMetrics;
     private readonly ILogger<HealthCheckService> _logger;
 
-    public HealthCheckService(DbService db, PlayerService playerService, ILogger<HealthCheckService> logger)
+    public HealthCheckService(DbService db, PlayerService playerService, ServerMetrics serverMetrics, ILogger<HealthCheckService> logger)
     {
         _db = db;
         _playerService = playerService;
+        _serverMetrics = serverMetrics;
         _logger = logger;
     }
 
@@ -37,15 +47,22 @@ public class HealthCheckService : BackgroundService
             try
             {
                 var dbHealthy = await _db.CheckHealthAsync();
-                var metrics = _playerService.Metrics;
+                var pMetrics = _playerService.Metrics;
+                var sMetrics = _serverMetrics.GetSnapshot();
 
                 var status = new HealthStatus
                 {
+                    AppVersion = System.Reflection.Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "Unknown",
                     Status = dbHealthy ? "Healthy" : "Unhealthy",
+                    Uptime = DateTime.UtcNow - _serverMetrics.StartTime,
                     Database = dbHealthy,
-                    LastPersistenceFlushMs = metrics.LastFlushDurationMs,
-                    LastPersistenceErrors = metrics.TotalSaveErrors,
-                    LastCheck = DateTime.UtcNow
+                    ActivePlayers = _playerService.ActiveSessionCount,
+                    DirtySessions = _playerService.DirtySessionCount,
+                    LastPersistenceFlushMs = pMetrics.LastFlushDurationMs,
+                    LastPersistenceErrors = pMetrics.TotalSaveErrors,
+                    LastCheck = DateTime.UtcNow,
+                    WorldLoopDriftMs = sMetrics.WorldLoopDriftMs,
+                    WorldLoopSkippedTicks = sMetrics.WorldLoopSkippedTicks
                 };
 
                 if (!dbHealthy)
