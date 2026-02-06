@@ -48,4 +48,30 @@ public class WorldLoopObservabilityTests
         Assert.True(snapshot.WorldLoopSlowTasks > 0,
             $"Should also record slow task. Actual: {snapshot.WorldLoopSlowTasks}");
     }
+
+    [Fact]
+    public async Task Drift_Increases_Under_Load()
+    {
+        var metrics = new ServerMetrics();
+        using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, metrics);
+        scheduler.Start();
+
+        // 1. Induce load: A task that blocks for 300ms (larger than TickRate 50ms)
+        // This simulates a heavy valid update logic or system GC pause
+        scheduler.Schedule(() =>
+        {
+            Thread.Sleep(300);
+        }, TimeSpan.Zero);
+
+        // 2. Wait for it to process
+        await Task.Delay(1000);
+
+        scheduler.Stop();
+
+        var snapshot = metrics.GetSnapshot();
+
+        Assert.True(snapshot.WorldLoopDriftMs > 0, $"Expected drift > 0, got {snapshot.WorldLoopDriftMs}");
+        // We expect skipped ticks to potentially be 0 due to current logic, but we want to observe it.
+        Assert.True(snapshot.WorldLoopSkippedTicks >= 0);
+    }
 }

@@ -100,6 +100,8 @@ public class ServerMetrics
     private long _worldLoopSlowTasks;
 
     private long _worldLoopSlowTicks;
+    private long _worldLoopDriftMs;
+    private long _worldLoopSkippedTicks;
 
     // New Observability Metrics
     private long _worldLoopTicks;
@@ -160,6 +162,9 @@ public class ServerMetrics
 
     public void RecordSlowWorldTask(string taskName, long durationMs) => Interlocked.Increment(ref _worldLoopSlowTasks);
 
+    public void RecordWorldLoopDrift(long ms) => Interlocked.Exchange(ref _worldLoopDriftMs, ms);
+    public void RecordWorldLoopSkippedTicks(int count) => Interlocked.Add(ref _worldLoopSkippedTicks, count);
+
     public void RecordTriggerExecuted(string triggerType) => Interlocked.Increment(ref _triggersExecuted);
 
     public void RecordPipelineValidateDuration(long ticks)
@@ -210,6 +215,8 @@ public class ServerMetrics
             WorldSchedulerQueueDepth = Interlocked.Read(ref _worldSchedulerQueueDepth),
             WorldLoopSlowTicks = Interlocked.Read(ref _worldLoopSlowTicks),
             WorldLoopSlowTasks = Interlocked.Read(ref _worldLoopSlowTasks),
+            WorldLoopDriftMs = Interlocked.Read(ref _worldLoopDriftMs),
+            WorldLoopSkippedTicks = Interlocked.Read(ref _worldLoopSkippedTicks),
             TriggersExecuted = Interlocked.Read(ref _triggersExecuted),
 
             PipelineValidateDurationTicks = Interlocked.Read(ref _pipelineValidateDurationTicks),
@@ -246,6 +253,8 @@ public class ServerMetrics
         Interlocked.Exchange(ref _worldSchedulerQueueDepth, 0);
         Interlocked.Exchange(ref _worldLoopSlowTicks, 0);
         Interlocked.Exchange(ref _worldLoopSlowTasks, 0);
+        Interlocked.Exchange(ref _worldLoopDriftMs, 0);
+        Interlocked.Exchange(ref _worldLoopSkippedTicks, 0);
         Interlocked.Exchange(ref _triggersExecuted, 0);
 
         Interlocked.Exchange(ref _pipelineValidateDurationTicks, 0);
@@ -274,6 +283,8 @@ public class MetricsSnapshot
     public long WorldSchedulerQueueDepth { get; set; }
     public long WorldLoopSlowTicks { get; set; }
     public long WorldLoopSlowTasks { get; set; }
+    public long WorldLoopDriftMs { get; set; }
+    public long WorldLoopSkippedTicks { get; set; }
     public long TriggersExecuted { get; set; }
 
     public long PipelineValidateDurationTicks { get; set; }
@@ -315,6 +326,7 @@ public class MetricsSnapshot
             $"[Metrics] Net: {NetMessagesProcessed} msgs, AvgProc: {AverageMessageProcessingTimeMs:F2}ms (Val: {AverageValidateTimeMs:F2}ms, Res: {AverageResolveTimeMs:F2}ms). " +
             $"Logins: {LoginAttempts} (Fail: {LoginFailures}). " +
             $"World: {WorldLoopTicks} ticks (Avg {AverageWorldLoopDurationMs:F2}ms), Queue: {WorldSchedulerQueueDepth}, SlowTicks: {WorldLoopSlowTicks}, SlowTasks: {WorldLoopSlowTasks}. " +
+            $"Drift: {WorldLoopDriftMs}ms, Skipped: {WorldLoopSkippedTicks}. " +
             $"Triggers: {TriggersExecuted}. " +
             $"Persist: {PersistenceFlushes} flushes, {PersistenceErrors} errs. " +
             $"Histograms: [Val: {ValidateHistogram}] [Res: {ResolveHistogram}] [Persist: {PersistHistogram}]";
