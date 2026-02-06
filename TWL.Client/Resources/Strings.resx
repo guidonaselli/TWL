@@ -337,4 +337,13 @@
     <data name="ERR_LOGIN_INVALID_CREDS" xml:space="preserve">
     <value>Invalid credentials.</value>
   </data>
+    <data name="SKILL_AquaCrescent" xml:space="preserve">
+    <value>Aqua Crescent</value>
+  </data>
+    <data name="SKILL_FrostBite" xml:space="preserve">
+    <value>Frost Bite</value>
+  </data>
+    <data name="SKILL_SoothingMist" xml:space="preserve">
+    <value>Soothing Mist</value>
+  </data>
 </root>
