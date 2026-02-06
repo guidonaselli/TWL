@@ -712,6 +712,18 @@ public class ClientSession
         }
     }
 
+    private async Task SendLoginError(string errorMsg)
+    {
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.LoginResponse,
+            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
+            {
+                Success = false,
+                ErrorMessage = errorMsg
+            }, _jsonOptions)
+        });
+    }
 
     private static bool IsHex(string value)
     {
