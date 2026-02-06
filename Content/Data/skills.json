@@ -683,6 +683,140 @@
     "Stage": 3
   },
   {
+    "SkillId": 3010,
+    "Name": "Aqua Crescent",
+    "DisplayNameKey": "SKILL_AquaCrescent",
+    "Description": "A sweeping strike of water that slows enemies.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Physical",
+    "Tier": 2,
+    "TargetType": "RowEnemies",
+    "SpCost": 20,
+    "Cooldown": 1,
+    "Scaling": [
+      {
+        "Stat": "Atk",
+        "Coefficient": 1.5
+      }
+    ],
+    "Effects": [
+      {
+        "Tag": "Damage",
+        "Value": 0
+      },
+      {
+        "Tag": "DebuffStats",
+        "Param": "Spd",
+        "Value": 10,
+        "Duration": 2,
+        "Chance": 1.0,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Debuff_Spd"
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 3003,
+      "ParentSkillRank": 10
+    },
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 6
+    }
+  },
+  {
+    "SkillId": 3110,
+    "Name": "Frost Bite",
+    "DisplayNameKey": "SKILL_FrostBite",
+    "Description": "A freezing lance of ice that can seal the target.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Magical",
+    "Tier": 2,
+    "TargetType": "SingleEnemy",
+    "SpCost": 25,
+    "Cooldown": 3,
+    "Scaling": [
+      {
+        "Stat": "Mat",
+        "Coefficient": 1.6
+      }
+    ],
+    "Effects": [
+      {
+        "Tag": "Damage",
+        "Value": 0
+      },
+      {
+        "Tag": "Seal",
+        "Value": 0,
+        "Duration": 2,
+        "Chance": 0.6,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "HardControl",
+        "Outcome": "Resist",
+        "ResistanceTags": [
+          "SealResist"
+        ]
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 3103,
+      "ParentSkillRank": 10
+    },
+    "HitRules": {
+      "BaseChance": 0.6,
+      "StatDependence": "Int-Wis",
+      "MinChance": 0.1,
+      "MaxChance": 0.9
+    },
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 6
+    }
+  },
+  {
+    "SkillId": 3210,
+    "Name": "Soothing Mist",
+    "DisplayNameKey": "SKILL_SoothingMist",
+    "Description": "A gentle mist that cleanses impurities and heals wounds.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Support",
+    "Tier": 2,
+    "TargetType": "AllAllies",
+    "SpCost": 40,
+    "Cooldown": 3,
+    "Scaling": [
+      {
+        "Stat": "Wis",
+        "Coefficient": 2.0
+      }
+    ],
+    "Effects": [
+      {
+        "Tag": "Cleanse",
+        "Value": 0
+      },
+      {
+        "Tag": "Heal",
+        "Value": 0,
+        "Chance": 1.0
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 3203,
+      "ParentSkillRank": 10
+    },
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 6
+    }
+  },
+  {
     "SkillId": 2001,
     "Name": "Shrink",
     "DisplayNameKey": "SKILL_Shrink",
