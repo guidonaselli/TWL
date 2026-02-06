@@ -109,7 +109,20 @@ public class ServerCharacter : ServerCombatant
     }
 
     // World Position
-    public int MapId { get; set; }
+    private int _mapId;
+    public int MapId
+    {
+        get => _mapId;
+        set
+        {
+            if (_mapId != value)
+            {
+                _mapId = value;
+                OnMapChanged?.Invoke(_mapId);
+            }
+        }
+    }
+
     public float X { get; set; }
     public float Y { get; set; }
 
@@ -156,6 +169,7 @@ public class ServerCharacter : ServerCombatant
     public event Action<Item, int>? OnItemAdded;
     public event Action<ServerPet>? OnPetAdded;
     public event Action<ServerCharacter, int, int>? OnTradeCommitted;
+    public event Action<int>? OnMapChanged;
     public void SetLevel(int level) => Level = level; // For mobs
 
     public bool HasProcessedOrder(string orderId)

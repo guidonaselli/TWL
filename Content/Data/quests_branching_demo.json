@@ -1,0 +1,113 @@
+[
+  {
+    "QuestId": 9100,
+    "Title": "The Crossroads",
+    "Description": "You stand at the crossroads. Choose your path wisely.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Reach",
+        "TargetName": "Crossroads Map",
+        "RequiredCount": 1,
+        "Description": "Travel to the Crossroads (Map 1001).",
+        "DataId": 1001
+      }
+    ],
+    "Rewards": {
+      "Exp": 10,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 9101,
+    "Title": "Path of Fire",
+    "Description": "Defeat the Magma Crab to prove your fire affinity. Do not leave the area!",
+    "Requirements": [
+      9100
+    ],
+    "MutualExclusionGroup": "ElementalPath",
+    "FailConditions": [
+      {
+        "Type": "LeaveMap",
+        "Value": "1001",
+        "Description": "You must stay in the Crossroads."
+      }
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Magma Crab (Fire)",
+        "RequiredCount": 1,
+        "Description": "Defeat 1 Magma Crab.",
+        "DataId": 2003
+      }
+    ],
+    "FlagsSet": [
+      "PathChosen",
+      "FirePath"
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 50,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 9102,
+    "Title": "Path of Water",
+    "Description": "Defeat the Tide Crab to prove your water affinity. Do not leave the area!",
+    "Requirements": [
+      9100
+    ],
+    "MutualExclusionGroup": "ElementalPath",
+    "FailConditions": [
+      {
+        "Type": "LeaveMap",
+        "Value": "1001",
+        "Description": "You must stay in the Crossroads."
+      }
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Tide Crab (Water)",
+        "RequiredCount": 1,
+        "Description": "Defeat 1 Tide Crab.",
+        "DataId": 2002
+      }
+    ],
+    "FlagsSet": [
+      "PathChosen",
+      "WaterPath"
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 50,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 9103,
+    "Title": "Master of Elements",
+    "Description": "You have chosen your path. Proceed to the next area.",
+    "RequiredFlags": [
+      "PathChosen"
+    ],
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Reach",
+        "TargetName": "Next Area",
+        "RequiredCount": 1,
+        "Description": "Travel to Map 1002.",
+        "DataId": 1002
+      }
+    ],
+    "Rewards": {
+      "Exp": 500,
+      "Gold": 100,
+      "Items": []
+    }
+  }
+]
