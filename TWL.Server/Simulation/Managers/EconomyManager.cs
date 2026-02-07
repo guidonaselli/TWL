@@ -15,6 +15,7 @@ public class EconomyManager : IEconomyService, IDisposable
 {
     private const int CLEANUP_INTERVAL = 100;
     private const double EXPIRATION_MINUTES = 10.0;
+    private const long DAILY_GIFT_LIMIT = 5000;
 
     private static readonly Regex _ledgerRegex = new(
         @"^([^,]+),([^,]+),([^,]+),(.+),([-\d]+),([-\d]+)(?:,([a-fA-F0-9]+),([a-fA-F0-9]+))?$",
@@ -433,6 +434,12 @@ public class EconomyManager : IEconomyService, IDisposable
         var totalCost = itemDef.Price * quantity;
 
         // Debit Giver
+        // HARDENING: Check Daily Gift Limit
+        if (!giver.TryConsumeDailyGiftLimit(totalCost, DAILY_GIFT_LIMIT))
+        {
+            return new EconomyOperationResultDTO { Success = false, Message = "Daily gift limit exceeded" };
+        }
+
         if (!giver.TryConsumePremiumCurrency(totalCost))
         {
             if (tx != null)

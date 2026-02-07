@@ -28,6 +28,8 @@ public class ServerCharacterData
     public int Agi { get; set; }
     public int Gold { get; set; }
     public long PremiumCurrency { get; set; }
+    public long DailyGiftAccumulator { get; set; }
+    public DateTime LastGiftResetDate { get; set; }
     public int MapId { get; set; }
     public float X { get; set; }
     public float Y { get; set; }
