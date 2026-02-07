@@ -346,4 +346,13 @@
     <data name="SKILL_SoothingMist" xml:space="preserve">
     <value>Soothing Mist</value>
   </data>
+    <data name="SKILL_Inferno" xml:space="preserve">
+    <value>Inferno</value>
+  </data>
+    <data name="SKILL_BlazingStrike" xml:space="preserve">
+    <value>Blazing Strike</value>
+  </data>
+    <data name="SKILL_InnerFire" xml:space="preserve">
+    <value>Inner Fire</value>
+  </data>
 </root>
