@@ -144,4 +144,10 @@ public class TestClientSession : ClientSession
     {
         return Task.CompletedTask;
     }
+
+    public new ServerCharacter? Character
+    {
+        get => base.Character;
+        set => base.Character = value;
+    }
 }

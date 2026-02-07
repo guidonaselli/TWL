@@ -8,31 +8,7 @@ public class StatusEngine : IStatusEngine
 {
     public void Apply(IList<StatusEffectInstance> effects, StatusEffectInstance newEffect)
     {
-        // 1. Check Conflicts (Priority)
-        if (!string.IsNullOrEmpty(newEffect.ConflictGroup))
-        {
-            var conflicts = effects.Where(e => e.ConflictGroup == newEffect.ConflictGroup).ToList();
-            foreach (var conflict in conflicts)
-            {
-                if (newEffect.Priority > conflict.Priority)
-                {
-                    // New effect is stronger, remove old
-                    effects.Remove(conflict);
-                }
-                else if (newEffect.Priority < conflict.Priority)
-                {
-                    // Existing effect is stronger, ignore new
-                    return;
-                }
-                else
-                {
-                    // Equal priority: Overwrite logic (last wins)
-                    effects.Remove(conflict);
-                }
-            }
-        }
-
-        // 2. Check Existing for Stacking
+        // 1. Check Existing for Stacking (Before Conflicts to support Refresh/Stacking correctly)
         var existing = effects.FirstOrDefault(e =>
             e.Tag == newEffect.Tag &&
             string.Equals(e.Param, newEffect.Param, StringComparison.OrdinalIgnoreCase) &&
@@ -44,35 +20,58 @@ public class StatusEngine : IStatusEngine
             switch (newEffect.StackingPolicy)
             {
                 case StackingPolicy.NoStackOverwrite:
+                    // Fallthrough to conflict/overwrite logic?
+                    // Or just handle it here: Remove existing, then proceed to add new (checking conflicts again?)
+                    // If we remove existing here, we still need to check conflicts with OTHERS.
+                    // But usually NoStackOverwrite implies we just replace THIS one.
+                    // But if there are *other* conflicts (different Tag/Param but same Group), we need to check them.
+                    // So we remove existing, then treat newEffect as fresh.
                     effects.Remove(existing);
-                    effects.Add(newEffect);
+                    // existing is null now effectively for the logic below
                     break;
 
                 case StackingPolicy.RefreshDuration:
                     existing.TurnsRemaining = Math.Max(existing.TurnsRemaining, newEffect.TurnsRemaining);
-                    break;
+                    return; // Done
 
                 case StackingPolicy.StackUpToN:
                     if (existing.StackCount < newEffect.MaxStacks)
                     {
                         existing.StackCount++;
                         existing.Value += newEffect.Value;
-                        // Refresh duration on stack
                         existing.TurnsRemaining = Math.Max(existing.TurnsRemaining, newEffect.TurnsRemaining);
                     }
                     else
                     {
-                        // Just refresh if max stack reached
                         existing.TurnsRemaining = Math.Max(existing.TurnsRemaining, newEffect.TurnsRemaining);
                     }
-
-                    break;
+                    return; // Done
             }
         }
-        else
+
+        // 2. Check Conflicts (Priority)
+        if (!string.IsNullOrEmpty(newEffect.ConflictGroup))
         {
-            effects.Add(newEffect);
+            var conflicts = effects.Where(e => e.ConflictGroup == newEffect.ConflictGroup).ToList();
+            foreach (var conflict in conflicts)
+            {
+                if (newEffect.Priority > conflict.Priority)
+                {
+                    effects.Remove(conflict);
+                }
+                else if (newEffect.Priority < conflict.Priority)
+                {
+                    return;
+                }
+                else
+                {
+                    effects.Remove(conflict);
+                }
+            }
         }
+
+        // 3. Add New
+        effects.Add(newEffect);
     }
 
     public void RemoveAll(IList<StatusEffectInstance> effects, Predicate<StatusEffectInstance> match)
