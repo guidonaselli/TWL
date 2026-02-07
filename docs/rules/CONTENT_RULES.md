@@ -18,6 +18,9 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
 *   **Special Skills**:
     *   Must have an "Origin" defined in `UnlockRules` (QuestId or QuestFlag) OR be granted by a Quest Reward.
     *   Cannot have `StageUpgradeRules` (Stages are for Core skills).
+*   **Skill Families**:
+    *   **Core**: Acquired via character progression (Level/Stats) or Stage Upgrades. NEVER granted directly by Quests.
+    *   **Special**: Acquired via Quests, Events, or specific game logic (Goddess).
 
 ## 3. Quests Rules
 *   **Unique IDs**: QuestIds must be unique.
@@ -25,7 +28,12 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
 *   **Skill Rewards**:
     *   Quests can only grant existing SkillIds.
     *   Quests CANNOT grant Goddess Skills (2001-2004).
+    *   **Family Constraint**: Quests must ONLY grant skills of `Family: Special`.
+    *   **Duplication/Exclusivity**: If multiple quests grant the same `GrantSkillId`, they MUST be mutually exclusive alternatives (share the same `MutualExclusionGroup`).
     *   **Consistency**: Any Skill granted by a Quest MUST have `UniquePerCharacter: true` in its restrictions to ensure anti-exploit/idempotency.
+*   **Special Categories Constraints**:
+    *   **RebirthJob**: Quests granting `RebirthJob` skills must require Rebirth Class/Status (e.g. `SpecialCategory: "RebirthJob"`).
+    *   **ElementSpecial**: Quests granting `ElementSpecial` skills must have strict prerequisites (Level >= 10 OR Instance/Challenge type).
 
 ## 4. General Content Rules
 *   **Unique DisplayNameKeys**: No two skills can share the same localization key.
@@ -35,7 +43,7 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
     *   **Integrity**: `StageUpgradeRules` MUST define `NextSkillId`. Partial rules (e.g. only RankThreshold) without a target are forbidden.
 
 ## 5. Content Validation
-*   `TWL.Tests.ContentValidationTests` is the enforcement mechanism.
+*   `TWL.Tests.ContentValidationTests` and `TWL.Tests.ContentValidationExtendedTests` are the enforcement mechanisms.
 *   The build must fail if inconsistencies are detected.
 
 ## 6. Skill Categories Definition
