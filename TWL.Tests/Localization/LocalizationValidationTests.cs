@@ -41,12 +41,17 @@ public class LocalizationValidationTests
 
     private string FindSolutionRoot()
     {
-        var current = Directory.GetCurrentDirectory();
+        var current = AppDomain.CurrentDomain.BaseDirectory;
         while (current != null && !File.Exists(Path.Combine(current, "TheWonderlandSolution.sln")))
         {
             current = Directory.GetParent(current)?.FullName;
         }
 
-        return current ?? throw new DirectoryNotFoundException("Could not find solution root.");
+        if (current == null && File.Exists("/app/TheWonderlandSolution.sln"))
+        {
+            return "/app";
+        }
+
+        return current ?? throw new DirectoryNotFoundException($"Could not find solution root. BaseDirectory: {AppDomain.CurrentDomain.BaseDirectory}");
     }
 }
