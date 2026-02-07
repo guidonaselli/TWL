@@ -568,7 +568,7 @@ public class ClientSession
         });
     }
 
-    private async Task SendLoginError(string errorCode)
+    private async Task SendLoginError(string errorMessage)
     {
         await SendAsync(new NetMessage
         {
@@ -576,7 +576,7 @@ public class ClientSession
             JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
             {
                 Success = false,
-                ErrorMessage = errorCode
+                ErrorMessage = errorMessage
             }, _jsonOptions)
         });
     }

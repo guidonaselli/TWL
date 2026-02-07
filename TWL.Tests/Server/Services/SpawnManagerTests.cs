@@ -109,9 +109,8 @@ public class SpawnManagerTests
 
             // Mock Random: Step Check returns 0.0 (< 1.0)
             _random.Setup(r => r.NextDouble()).Returns(0.0);
-            // Fix: Next(1, 4) must return >= 1 for monster count.
-            // Also used for selection Next(0, weight).
-            _random.Setup(r => r.Next(It.IsAny<int>(), It.IsAny<int>())).Returns((int min, int max) => min);
+            _random.Setup(r => r.Next(1, 4)).Returns(1); // Count of mobs
+            _random.Setup(r => r.Next(0, It.IsAny<int>())).Returns(0); // Weighted selection
 
             // Act
             _spawnManager.OnPlayerMoved(session);
