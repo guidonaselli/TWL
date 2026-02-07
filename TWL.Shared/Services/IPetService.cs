@@ -13,4 +13,9 @@ public interface IPetService
     bool SwitchPet(int ownerId, string petInstanceId);
     bool RevivePet(int ownerId, string petInstanceId);
     bool DismissPet(int ownerId, string petInstanceId);
+
+    // WLO-like Utilities
+    bool UseUtility(int ownerId, string petInstanceId, TWL.Shared.Domain.Characters.PetUtilityType type, string? args = null);
+
+    void CheckPetAvailability(int ownerId);
 }

@@ -34,6 +34,7 @@ public class ServerCharacterData
     public float X { get; set; }
     public float Y { get; set; }
     public List<Item> Inventory { get; set; } = new();
+    public List<Item> Bank { get; set; } = new();
     public List<ServerPetData> Pets { get; set; } = new();
     public List<SkillMasteryData> Skills { get; set; } = new();
     public string ActivePetInstanceId { get; set; }

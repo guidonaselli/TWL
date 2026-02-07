@@ -9,5 +9,6 @@ public class CombatResult
     public int Damage { get; set; }
     public int NewTargetHp { get; set; }
     public bool TargetDied { get; set; }
+    public bool IsDisobey { get; set; }
     public List<StatusEffectInstance> AddedEffects { get; set; } = new();
 }

@@ -490,6 +490,7 @@ public class ClientSession
             if (QuestComponent.ClaimReward(questId))
             {
                 Console.WriteLine($"Player {UserId} claimed quest {questId}.");
+                _petService.CheckPetAvailability(UserId);
                 await SendQuestUpdateAsync(questId);
             }
         }
@@ -707,6 +708,7 @@ public class ClientSession
             _playerService.RegisterSession(this);
 
             GrantGoddessSkills();
+            _petService.CheckPetAvailability(UserId);
 
             // mandar una LoginResponse
             await SendAsync(new NetMessage

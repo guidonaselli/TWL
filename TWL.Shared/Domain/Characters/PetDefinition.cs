@@ -15,6 +15,7 @@ public class PetDefinition
     // New WLO-like properties
     public bool IsQuestUnique;
     public bool IsTemporary;
+    public string? RequiredFlag;
 
     public bool IsUnique;
     public string Name;
@@ -54,4 +55,5 @@ public class CaptureRules
     public int LevelLimit { get; set; }
     public float BaseChance { get; set; }
     public int? RequiredItemId { get; set; }
+    public string? RequiredFlag { get; set; }
 }
