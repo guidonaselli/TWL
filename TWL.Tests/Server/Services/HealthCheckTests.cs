@@ -63,4 +63,31 @@ public class HealthCheckTests
         // Cleanup
         File.Delete("health.json");
     }
+
+    [Fact]
+    public async Task SetStatus_ShouldUpdateStatusAndTriggerWrite()
+    {
+        // Arrange
+        _mockDb.Setup(db => db.CheckHealthAsync()).ReturnsAsync(true);
+        using var cts = new CancellationTokenSource();
+
+        // Act
+        await _service.StartAsync(cts.Token);
+        await Task.Delay(100); // Initial write
+
+        _service.SetStatus(ServerStatus.ShuttingDown);
+        await Task.Delay(100); // Triggered write
+
+        // Assert
+        Assert.Equal(ServerStatus.ShuttingDown, _service.CurrentStatus);
+
+        Assert.True(File.Exists("health.json"));
+        var content = await File.ReadAllTextAsync("health.json");
+        // Check for ServerStatus property. Default serialization is likely integer.
+        // ShuttingDown is 3.
+        Assert.Contains("\"ServerStatus\": 3", content);
+
+        await _service.StopAsync(CancellationToken.None);
+        File.Delete("health.json");
+    }
 }

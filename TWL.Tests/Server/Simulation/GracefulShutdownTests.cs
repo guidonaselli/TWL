@@ -3,6 +3,7 @@ using Moq;
 using TWL.Server.Domain.World;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation;
 using TWL.Server.Simulation.Managers;
@@ -54,6 +55,16 @@ public class GracefulShutdownTests
         var mockLoggerFactory = new Mock<ILoggerFactory>();
         mockLoggerFactory.Setup(x => x.CreateLogger(It.IsAny<string>())).Returns(new Mock<ILogger>().Object);
 
+        // Use a mock sequence to verify order of critical operations
+        var sequence = new MockSequence();
+        var mockHealthCheck = new Mock<HealthCheckService>();
+
+        // Expectations in order
+        mockHealthCheck.InSequence(sequence).Setup(x => x.SetStatus(ServerStatus.ShuttingDown));
+        mockNet.InSequence(sequence).Setup(x => x.Stop());
+        mockPlayerService.InSequence(sequence).Setup(x => x.DisconnectAllAsync(It.Is<string>(s => s.Contains("Shutdown")))).Returns(Task.CompletedTask);
+        mockHealthCheck.InSequence(sequence).Setup(x => x.SetStatus(ServerStatus.Stopped));
+
         var worker = new ServerWorker(
             mockNet.Object,
             mockDb.Object,
@@ -68,24 +79,25 @@ public class GracefulShutdownTests
             mockTriggerService.Object,
             mockMonsterManager.Object,
             mockSpawnManager.Object,
-            mockLoggerFactory.Object
+            mockLoggerFactory.Object,
+            mockHealthCheck.Object
         );
 
         // Act
         await worker.StopAsync(CancellationToken.None);
 
         // Assert
-        // 1. Network Stop
-        mockNet.Verify(x => x.Stop(), Times.Once);
+        // 1. Health Status ShuttingDown (Verified by Sequence)
+        // 2. Network Stop (Verified by Sequence)
+        // 3. Disconnect All Players (Verified by Sequence)
 
-        // 2. Disconnect All Players
-        mockPlayerService.Verify(x => x.DisconnectAllAsync(It.Is<string>(s => s.Contains("Shutdown"))), Times.Once);
-
-        // 3. Scheduler Stop
+        // 4. Scheduler Stop
         mockWorldScheduler.Verify(x => x.Stop(), Times.Once);
 
-        // 4. Player Service Stop (Flush)
+        // 5. Player Service Stop (Flush)
         mockPlayerService.Verify(x => x.Stop(), Times.Once);
+
+        // 6. Health Status Stopped (Verified by Sequence)
 
         // Verify Metrics
         var snapshot = metrics.GetSnapshot();

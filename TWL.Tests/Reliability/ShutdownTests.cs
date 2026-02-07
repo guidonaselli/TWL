@@ -5,6 +5,7 @@ using Moq;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation;
 using TWL.Shared.Services;
@@ -28,6 +29,7 @@ public class ShutdownTests
         var metrics = new ServerMetrics();
         var mockPlayerRepo = new Mock<IPlayerRepository>();
         var mockPlayerService = new Mock<PlayerService>(mockPlayerRepo.Object, metrics);
+        var mockHealthCheck = new Mock<HealthCheckService>();
 
         // Setup PlayerService mocks
         mockPlayerService.Setup(s => s.DisconnectAllAsync(It.IsAny<string>())).Returns(Task.CompletedTask).Verifiable();
@@ -47,7 +49,8 @@ public class ShutdownTests
             null!, // WorldTriggerService
             null!, // MonsterManager
             null!,  // SpawnManager
-            null!  // ILoggerFactory
+            null!,  // ILoggerFactory
+            mockHealthCheck.Object
         );
 
         // Act
