@@ -101,8 +101,8 @@ public class FireSkillPackTests
     public void InnerFire_BuffsMat_And_RespectsStacking()
     {
         // Arrange
-        var caster = new FireTestCharacter { Id = 1, Name = "Mage", Wis = 20, Sp = 100, Team = Team.Player, Con = 10, Hp = 100 };
-        var ally = new FireTestCharacter { Id = 2, Name = "Ally", Team = Team.Player, Con = 10, Hp = 100 };
+        var caster = new FireTestCharacter { Id = 1, Name = "Mage", Wis = 20, Sp = 100, Team = Team.Player, Con = 10, Hp = 100, Agi = 100 };
+        var ally = new FireTestCharacter { Id = 2, Name = "Ally", Team = Team.Player, Con = 10, Hp = 100, Agi = 10 };
 
         _combatManager.RegisterCombatant(caster);
         _combatManager.RegisterCombatant(ally);
@@ -126,6 +126,11 @@ public class FireSkillPackTests
         // Act 2: Apply Again (RefreshDuration)
         // Reduce duration artificially
         buff.TurnsRemaining = 1;
+
+        // Reset Cooldown
+        caster.TickCooldowns();
+        caster.TickCooldowns();
+
         _combatManager.UseSkill(request);
 
         // Assert 2
