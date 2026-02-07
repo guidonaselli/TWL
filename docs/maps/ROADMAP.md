@@ -73,6 +73,12 @@
     - **Connections:** 0002 (Costa de Mareas)
     - **Entities:** Ruined Lighthouse.
 
+- [x] **0006 - Cala Escondida**
+    - **Status:** Implemented
+    - **Type:** Hidden Cove
+    - **Connections:** 0002 (Costa de Mareas)
+    - **Entities:** Pearl Resource.
+
 ## Backlog
 - [ ] Starter Island (Tutorial) - Remaining maps (0003-0099)
 - [ ] South Island Jungle

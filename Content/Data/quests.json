@@ -277,46 +277,6 @@
     ]
   },
   {
-    "QuestId": 1011,
-    "Title": "Report In",
-    "Description": "The Captain needs a status report.",
-    "Requirements": [],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Captain",
-        "RequiredCount": 1,
-        "Description": "Talk to the Captain."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1013,
-    "Title": "A New Friend",
-    "Description": "A colorful bird is watching you.",
-    "Requirements": [
-      1011
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Parrot",
-        "RequiredCount": 1,
-        "Description": "Approach the Parrot."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
     "QuestId": 1018,
     "Title": "Travesia",
     "Description": "We've spotted a city across the water. Time to repair a boat and make contact.",
@@ -356,617 +316,6 @@
     "Rewards": {
       "Exp": 200,
       "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1050,
-    "Title": "Rumores en la Cala",
-    "Description": "El pescador ha escuchado ruidos extra\u00f1os cerca de los acantilados por la noche.",
-    "Requirements": [],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Pescador Viejo",
-        "RequiredCount": 1,
-        "Description": "Habla con el Pescador Viejo."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1051,
-    "Title": "La Fuente del Ruido",
-    "Description": "Investiga la entrada de las cuevas y elimina a las bestias que bloquean el camino.",
-    "Requirements": [
-      1050
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "Cave Bat",
-        "RequiredCount": 3,
-        "Description": "Matar 3 Murci\u00e9lago de Cueva."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 3001,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1052,
-    "Title": "Inscripciones Antiguas",
-    "Description": "Hay extra\u00f1os grabados en las paredes. Toma calcos para estudiarlos.",
-    "Requirements": [
-      1051
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "Grabado de Pared",
-        "RequiredCount": 3,
-        "Description": "Toma 3 Calcos de Piedra de los Grabados."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 20,
-      "Items": [
-        {
-          "ItemId": 7502,
-          "Quantity": 3
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1053,
-    "Title": "El Guardi\u00e1n de Piedra",
-    "Description": "Un g\u00f3lem bloquea el altar interior. Derr\u00f3talo.",
-    "Requirements": [
-      1052
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "Stone Golem",
-        "RequiredCount": 1,
-        "Description": "Matar 1 G\u00f3lem de Piedra."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 7501,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1054,
-    "Title": "Un Peque\u00f1o Amigo",
-    "Description": "El fragmento brilla cerca del altar. \u00dasalo para despertar al esp\u00edritu.",
-    "Requirements": [
-      1053
-    ],
-    "RequiredItems": [
-      {
-        "ItemId": 7501,
-        "Quantity": 1
-      }
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Ancient Altar",
-        "RequiredCount": 1,
-        "Description": "Hablar con Altar Antiguo."
-      }
-    ],
-    "FlagsSet": [
-      "Unlock_FairyLight"
-    ],
-    "Rewards": {
-      "Exp": 0,
-      "Gold": 0,
-      "Items": [],
-      "PetUnlockId": 1003
-    }
-  },
-  {
-    "QuestId": 1060,
-    "Title": "Suministros Perdidos",
-    "Description": "Una caja cay\u00f3 al mar y fue arrastrada a la orilla.",
-    "Requirements": [],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "Caja a la Deriva",
-        "RequiredCount": 1,
-        "Description": "Recuperar la Caja a la Deriva."
-      }
-    ],
-    "Rewards": {
-      "Exp": 0,
-      "Gold": 50,
-      "Items": [
-        {
-          "ItemId": 7503,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1100,
-    "Title": "Partida Inminente",
-    "Description": "La caravana est\u00e1 lista para partir. Habla con el L\u00edder de la Caravana.",
-    "Requirements": [
-      1004
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Caravan Leader",
-        "RequiredCount": 1,
-        "Description": "Habla con el L\u00edder de la Caravana."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 3001,
-          "Quantity": 3
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1101,
-    "Title": "El Camino del Bosque",
-    "Description": "Sigue el sendero hacia el Bosque del Norte.",
-    "Requirements": [
-      1100
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "Sendero Norte",
-        "RequiredCount": 1,
-        "Description": "Interact\u00faa con el Sendero Norte."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1102,
-    "Title": "Peligros del Camino",
-    "Description": "Bandidos acechan el camino. Despeja la ruta.",
-    "Requirements": [
-      1101
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "Bandido del Camino",
-        "RequiredCount": 2,
-        "Description": "Derrota a 2 Bandidos del Camino."
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1103,
-    "Title": "Llegada a Puerto Roca",
-    "Description": "Has llegado a las puertas de la ciudad. Entra.",
-    "Requirements": [
-      1102
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "Puerta de la Ciudad",
-        "RequiredCount": 1,
-        "Description": "Interact\u00faa con la Puerta de la Ciudad."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1104,
-    "Title": "Ciudadano Nuevo",
-    "Description": "Reg\u00edstrate en el Ayuntamiento para obtener acceso a la ciudad.",
-    "Requirements": [
-      1103
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Funcionario de Registro",
-        "RequiredCount": 1,
-        "Description": "Habla con el Funcionario de Registro."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 100,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1200,
-    "Title": "Seaworthy Vessel",
-    "Description": "Construct a Canoe to explore the nearby islands.",
-    "Requirements": [
-      1002
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "Madera",
-        "RequiredCount": 5,
-        "Description": "Collect 5 Wood.",
-        "DataId": 7316
-      },
-      {
-        "Type": "Craft",
-        "TargetName": "Canoe",
-        "RequiredCount": 1,
-        "Description": "Craft a Canoe (or Interact with Workbench)."
-      }
-    ],
-    "Rewards": {
-      "Exp": 500,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 1200,
-          "Quantity": 1
-        }
-      ]
-    },
-    "FlagsSet": [
-      "VEHICLE_CANOE_UNLOCKED"
-    ]
-  },
-  {
-    "QuestId": 1201,
-    "Title": "Into the Deep",
-    "Description": "Build a Raft to traverse the open ocean.",
-    "Requirements": [
-      1200
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "Hardwood",
-        "RequiredCount": 10,
-        "Description": "Collect 10 Hardwood."
-      },
-      {
-        "Type": "Compound",
-        "TargetName": "Raft",
-        "RequiredCount": 1,
-        "Description": "Compound a Raft structure."
-      }
-    ],
-    "Rewards": {
-      "Exp": 1000,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 1201,
-          "Quantity": 1
-        }
-      ]
-    },
-    "FlagsSet": [
-      "VEHICLE_RAFT_UNLOCKED"
-    ]
-  },
-  {
-    "QuestId": 1301,
-    "Title": "Strange Stone Debris",
-    "Description": "Investigate the strange debris near the ruins.",
-    "Requirements": [
-      1103
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "StrangeStoneDebris",
-        "RequiredCount": 1,
-        "Description": "Collect Strange Stone Debris."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1302,
-    "Title": "Ancient Tablet",
-    "Description": "Decipher the ancient tablet.",
-    "Requirements": [
-      1301
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "AncientTablet",
-        "RequiredCount": 1,
-        "Description": "Collect Ancient Rubbing."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 8103,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1303,
-    "Title": "Ruins Guardian",
-    "Description": "Defeat the guardian protecting the ruins.",
-    "Requirements": [
-      1302
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "RuinsGuardian",
-        "RequiredCount": 1,
-        "Description": "Kill Ruins Guardian."
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1304,
-    "Title": "Enter Ruins",
-    "Description": "Enter the ruins.",
-    "Requirements": [
-      1303
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "RuinsEntrance",
-        "RequiredCount": 1,
-        "Description": "Interact with Ruins Entrance."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1305,
-    "Title": "Dark Corridors",
-    "Description": "Explore the dark corridors.",
-    "Requirements": [
-      1304
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "RuinsConsole",
-        "RequiredCount": 1,
-        "Description": "Talk to Console"
-      },
-      {
-        "Type": "Kill",
-        "TargetName": "RuinsBat",
-        "RequiredCount": 3,
-        "Description": "Kill 3 Ruins Bat"
-      },
-      {
-        "Type": "Kill",
-        "TargetName": "GiantSpider",
-        "RequiredCount": 1,
-        "Description": "Kill Giant Spider"
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 100,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1306,
-    "Title": "Ancient Power",
-    "Description": "Restore power to the ruins.",
-    "Requirements": [
-      1305
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "PowerCrystalSource",
-        "RequiredCount": 1,
-        "Description": "Collect Power Crystal"
-      },
-      {
-        "Type": "Talk",
-        "TargetName": "RuinsConsole",
-        "RequiredCount": 1,
-        "Description": "Talk to Console"
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 100,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1307,
-    "Title": "The Hologram",
-    "Description": "Activate the hologram.",
-    "Requirements": [
-      1306
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HologramProjector",
-        "RequiredCount": 1,
-        "Description": "Interact with Projector"
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1401,
-    "Title": "Echoes from the Sea",
-    "Description": "Investigate the signal.",
-    "Requirements": [
-      1305
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "RepairedRadioTower",
-        "RequiredCount": 1,
-        "Description": "Check Radio Tower"
-      },
-      {
-        "Type": "Interact",
-        "TargetName": "NorthEastCliff",
-        "RequiredCount": 1,
-        "Description": "Check Cliff"
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1402,
-    "Title": "Blocked Passage",
-    "Description": "Clear the blockage.",
-    "Requirements": [
-      1401
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HeavyRocks",
-        "RequiredCount": 1,
-        "Description": "Check Rocks"
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "SulfurVent",
-        "RequiredCount": 1,
-        "Description": "Collect Sulfur"
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "BurntTree",
-        "RequiredCount": 1,
-        "Description": "Collect Charcoal"
-      },
-      {
-        "Type": "Craft",
-        "TargetName": "AlchemyTable",
-        "RequiredCount": 1,
-        "Description": "Craft Black Powder"
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1403,
-    "Title": "Clearing the Way",
-    "Description": "Blast the rocks.",
-    "Requirements": [
-      1402
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HeavyRocks",
-        "RequiredCount": 1,
-        "Description": "Blast Rocks"
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1404,
-    "Title": "Hidden Dock",
-    "Description": "Find the hidden dock.",
-    "Requirements": [
-      1403
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "HiddenDock",
-        "RequiredCount": 1,
-        "Description": "Inspect Dock"
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
       "Items": []
     }
   },
@@ -1058,6 +407,727 @@
     }
   },
   {
+    "QuestId": 3001,
+    "Title": "El Camino del Guerrero",
+    "Description": "Demuestra tu fuerza para comenzar el entrenamiento.",
+    "Requirements": [],
+    "RequiredLevel": 2,
+    "RequiredStats": {
+      "Str": 10
+    },
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Instructor de Combate",
+        "RequiredCount": 1,
+        "Description": "Habla con el Instructor."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 3002,
+    "Title": "Materiales de Entrenamiento",
+    "Description": "Trae madera para practicar cortes.",
+    "Requirements": [
+      3001
+    ],
+    "Objectives": [
+      {
+        "Type": "Deliver",
+        "TargetName": "Instructor de Combate",
+        "RequiredCount": 1,
+        "Description": "Entrega 1 Madera.",
+        "DataId": 7316
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 50,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 3003,
+    "Title": "Primera Sangre",
+    "Description": "Elimina a los lobos que acechan el campamento.",
+    "Requirements": [
+      3002
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Lobo del Bosque",
+        "RequiredCount": 3,
+        "Description": "Derrota a 3 Lobos del Bosque."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 100,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 8001,
+    "Title": "Trial of the Fire Dragon",
+    "Description": "Prove your might by defeating the Guardian of the Fire Dragon to learn the legendary Dragon Slash.",
+    "Type": "SpecialSkill",
+    "SpecialCategory": "Dragon",
+    "RequiredLevel": 10,
+    "RequiredStats": {
+      "Str": 20
+    },
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Fire Dragon Guardian",
+        "RequiredCount": 1,
+        "Description": "Defeat the Fire Dragon Guardian."
+      }
+    ],
+    "Rewards": {
+      "Exp": 5000,
+      "Gold": 1000,
+      "Items": [],
+      "GrantSkillId": 8001
+    },
+    "AntiAbuseRules": "UniquePerCharacter",
+    "Repeatability": 0
+  },
+  {
+    "QuestId": 1050,
+    "Title": "Rumores en la Cala",
+    "Description": "El pescador ha escuchado ruidos extraños cerca de los acantilados por la noche.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Pescador Viejo",
+        "RequiredCount": 1,
+        "Description": "Habla con el Pescador Viejo."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1051,
+    "Title": "La Fuente del Ruido",
+    "Description": "Investiga la entrada de las cuevas y elimina a las bestias que bloquean el camino.",
+    "Requirements": [
+      1050
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Cave Bat",
+        "RequiredCount": 3,
+        "Description": "Matar 3 Murciélago de Cueva."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 3001,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1052,
+    "Title": "Inscripciones Antiguas",
+    "Description": "Hay extraños grabados en las paredes. Toma calcos para estudiarlos.",
+    "Requirements": [
+      1051
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Grabado de Pared",
+        "RequiredCount": 3,
+        "Description": "Toma 3 Calcos de Piedra de los Grabados."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 20,
+      "Items": [
+        {
+          "ItemId": 7502,
+          "Quantity": 3
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1053,
+    "Title": "El Guardián de Piedra",
+    "Description": "Un gólem bloquea el altar interior. Derrótalo.",
+    "Requirements": [
+      1052
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Stone Golem",
+        "RequiredCount": 1,
+        "Description": "Matar 1 Gólem de Piedra."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 7501,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1054,
+    "Title": "Un Pequeño Amigo",
+    "Description": "El fragmento brilla cerca del altar. Úsalo para despertar al espíritu.",
+    "Requirements": [
+      1053
+    ],
+    "RequiredItems": [
+      {
+        "ItemId": 7501,
+        "Quantity": 1
+      }
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Ancient Altar",
+        "RequiredCount": 1,
+        "Description": "Hablar con Altar Antiguo."
+      }
+    ],
+    "FlagsSet": [
+      "Unlock_FairyLight"
+    ],
+    "Rewards": {
+      "Exp": 0,
+      "Gold": 0,
+      "Items": [],
+      "PetUnlockId": 1003
+    }
+  },
+  {
+    "QuestId": 1060,
+    "Title": "Suministros Perdidos",
+    "Description": "Una caja cayó al mar y fue arrastrada a la orilla.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Caja a la Deriva",
+        "RequiredCount": 1,
+        "Description": "Recuperar la Caja a la Deriva."
+      }
+    ],
+    "Rewards": {
+      "Exp": 0,
+      "Gold": 50,
+      "Items": [
+        {
+          "ItemId": 7503,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 8002,
+    "Title": "Trial of the Fairy Queen",
+    "Description": "Prove your purity by clearing the Fairy Woods to learn the Fairy's Blessing.",
+    "Type": "SpecialSkill",
+    "SpecialCategory": "Fairy",
+    "RequiredLevel": 10,
+    "RequiredStats": {
+      "Wis": 20
+    },
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Instance",
+        "TargetName": "Fairy Woods",
+        "RequiredCount": 1,
+        "Description": "Clear the Fairy Woods Instance."
+      }
+    ],
+    "Rewards": {
+      "Exp": 5000,
+      "Gold": 1000,
+      "Items": [],
+      "GrantSkillId": 8002
+    },
+    "AntiAbuseRules": "UniquePerCharacter",
+    "Repeatability": 0
+  },
+  {
+    "QuestId": 1100,
+    "Title": "Partida Inminente",
+    "Description": "La caravana está lista para partir. Habla con el Líder de la Caravana.",
+    "Requirements": [
+      1004
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Caravan Leader",
+        "RequiredCount": 1,
+        "Description": "Habla con el Líder de la Caravana."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 3001,
+          "Quantity": 3
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1101,
+    "Title": "El Camino del Bosque",
+    "Description": "Sigue el sendero hacia el Bosque del Norte.",
+    "Requirements": [
+      1100
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Sendero Norte",
+        "RequiredCount": 1,
+        "Description": "Interactúa con el Sendero Norte."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1102,
+    "Title": "Peligros del Camino",
+    "Description": "Bandidos acechan el camino. Despeja la ruta.",
+    "Requirements": [
+      1101
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Bandido del Camino",
+        "RequiredCount": 2,
+        "Description": "Derrota a 2 Bandidos del Camino."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1103,
+    "Title": "Llegada a Puerto Roca",
+    "Description": "Has llegado a las puertas de la ciudad. Entra.",
+    "Requirements": [
+      1102
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Puerta de la Ciudad",
+        "RequiredCount": 1,
+        "Description": "Interactúa con la Puerta de la Ciudad."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1104,
+    "Title": "Ciudadano Nuevo",
+    "Description": "Regístrate en el Ayuntamiento para obtener acceso a la ciudad.",
+    "Requirements": [
+      1103
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Funcionario de Registro",
+        "RequiredCount": 1,
+        "Description": "Habla con el Funcionario de Registro."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 100,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 9001,
+    "Title": "Housing Dreams",
+    "Description": "To own land in this world, one must prove their worth. Talk to the Estate Agent to begin.",
+    "Requirements": [],
+    "RequiredLevel": 10,
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Estate Agent",
+        "RequiredCount": 1,
+        "Description": "Talk to the Estate Agent."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 9002,
+    "Title": "Building Blocks",
+    "Description": "Gather materials to demonstrate your resourcefulness.",
+    "Requirements": [
+      9001
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Madera",
+        "RequiredCount": 10,
+        "Description": "Collect 10 Wood.",
+        "DataId": 7316
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "Iron Ore",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Iron Ore.",
+        "DataId": 7301
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 9003,
+    "Title": "The Price of Land",
+    "Description": "A fee is required to register your claim.",
+    "Requirements": [
+      9002
+    ],
+    "Objectives": [
+      {
+        "Type": "PayGold",
+        "TargetName": "Estate Agent",
+        "RequiredCount": 500,
+        "Description": "Pay 500 Gold fee."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 9004,
+    "Title": "Landowner",
+    "Description": "Finalize your registration and receive your tent.",
+    "Requirements": [
+      9003
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Estate Agent",
+        "RequiredCount": 1,
+        "Description": "Talk to the Estate Agent to finalize."
+      }
+    ],
+    "FlagsSet": [
+      "HOUSING_UNLOCKED"
+    ],
+    "Rewards": {
+      "Exp": 1000,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 800,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1200,
+    "Title": "Seaworthy Vessel",
+    "Description": "Construct a Canoe to explore the nearby islands.",
+    "Requirements": [
+      1002
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Madera",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Wood.",
+        "DataId": 7316
+      },
+      {
+        "Type": "Craft",
+        "TargetName": "Canoe",
+        "RequiredCount": 1,
+        "Description": "Craft a Canoe (or Interact with Workbench)."
+      }
+    ],
+    "Rewards": {
+      "Exp": 500,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 1200,
+          "Quantity": 1
+        }
+      ]
+    },
+    "FlagsSet": [
+      "VEHICLE_CANOE_UNLOCKED"
+    ]
+  },
+  {
+    "QuestId": 1201,
+    "Title": "Into the Deep",
+    "Description": "Build a Raft to traverse the open ocean.",
+    "Requirements": [
+      1200
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Hardwood",
+        "RequiredCount": 10,
+        "Description": "Collect 10 Hardwood."
+      },
+      {
+        "Type": "Compound",
+        "TargetName": "Raft",
+        "RequiredCount": 1,
+        "Description": "Compound a Raft structure."
+      }
+    ],
+    "Rewards": {
+      "Exp": 1000,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 1201,
+          "Quantity": 1
+        }
+      ]
+    },
+    "FlagsSet": [
+      "VEHICLE_RAFT_UNLOCKED"
+    ]
+  },
+  {
+    "QuestId": 1301,
+    "Title": "Strange Stone Debris",
+    "Description": "Investigate the strange debris near the ruins.",
+    "Requirements": [1103],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "StrangeStoneDebris",
+        "RequiredCount": 1,
+        "Description": "Collect Strange Stone Debris."
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 1302,
+    "Title": "Ancient Tablet",
+    "Description": "Decipher the ancient tablet.",
+    "Requirements": [1301],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "AncientTablet",
+        "RequiredCount": 1,
+        "Description": "Collect Ancient Rubbing."
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [{"ItemId": 8103, "Quantity": 1}] }
+  },
+  {
+    "QuestId": 1303,
+    "Title": "Ruins Guardian",
+    "Description": "Defeat the guardian protecting the ruins.",
+    "Requirements": [1302],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "RuinsGuardian",
+        "RequiredCount": 1,
+        "Description": "Kill Ruins Guardian."
+      }
+    ],
+    "Rewards": { "Exp": 200, "Gold": 50, "Items": [] }
+  },
+  {
+    "QuestId": 1304,
+    "Title": "Enter Ruins",
+    "Description": "Enter the ruins.",
+    "Requirements": [1303],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "RuinsEntrance",
+        "RequiredCount": 1,
+        "Description": "Interact with Ruins Entrance."
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 1305,
+    "Title": "Dark Corridors",
+    "Description": "Explore the dark corridors.",
+    "Requirements": [1304],
+    "Objectives": [
+      { "Type": "Talk", "TargetName": "RuinsConsole", "RequiredCount": 1, "Description": "Talk to Console" },
+      { "Type": "Kill", "TargetName": "RuinsBat", "RequiredCount": 3, "Description": "Kill 3 Ruins Bat" },
+      { "Type": "Kill", "TargetName": "GiantSpider", "RequiredCount": 1, "Description": "Kill Giant Spider" }
+    ],
+    "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
+  },
+  {
+    "QuestId": 1306,
+    "Title": "Ancient Power",
+    "Description": "Restore power to the ruins.",
+    "Requirements": [1305],
+    "Objectives": [
+      { "Type": "Collect", "TargetName": "PowerCrystalSource", "RequiredCount": 1, "Description": "Collect Power Crystal" },
+      { "Type": "Talk", "TargetName": "RuinsConsole", "RequiredCount": 1, "Description": "Talk to Console" }
+    ],
+    "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
+  },
+  {
+    "QuestId": 1307,
+    "Title": "The Hologram",
+    "Description": "Activate the hologram.",
+    "Requirements": [1306],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "HologramProjector", "RequiredCount": 1, "Description": "Interact with Projector" }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 2303,
+    "Title": "Bat Wings",
+    "Description": "Collect bat wings.",
+    "Requirements": [1305],
+    "Objectives": [
+      { "Type": "Collect", "TargetName": "BatNest", "RequiredCount": 5, "Description": "Collect 5 Bat Wings" }
+    ],
+    "Rewards": { "Exp": 150, "Gold": 50, "Items": [] }
+  },
+  {
+    "QuestId": 1401,
+    "Title": "Echoes from the Sea",
+    "Description": "Investigate the signal.",
+    "Requirements": [1305],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "RepairedRadioTower", "RequiredCount": 1, "Description": "Check Radio Tower" },
+      { "Type": "Interact", "TargetName": "NorthEastCliff", "RequiredCount": 1, "Description": "Check Cliff" }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 1402,
+    "Title": "Blocked Passage",
+    "Description": "Clear the blockage.",
+    "Requirements": [1401],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "HeavyRocks", "RequiredCount": 1, "Description": "Check Rocks" },
+      { "Type": "Collect", "TargetName": "SulfurVent", "RequiredCount": 1, "Description": "Collect Sulfur" },
+      { "Type": "Collect", "TargetName": "BurntTree", "RequiredCount": 1, "Description": "Collect Charcoal" },
+      { "Type": "Craft", "TargetName": "AlchemyTable", "RequiredCount": 1, "Description": "Craft Black Powder" }
+    ],
+    "Rewards": { "Exp": 200, "Gold": 50, "Items": [] }
+  },
+  {
+    "QuestId": 1403,
+    "Title": "Clearing the Way",
+    "Description": "Blast the rocks.",
+    "Requirements": [1402],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "HeavyRocks", "RequiredCount": 1, "Description": "Blast Rocks" }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 1404,
+    "Title": "Hidden Dock",
+    "Description": "Find the hidden dock.",
+    "Requirements": [1403],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "HiddenDock", "RequiredCount": 1, "Description": "Inspect Dock" }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 2401,
+    "Title": "Fisherman Sidequest",
+    "Description": "Help the fisherman.",
+    "Requirements": [2011, 1404],
+    "Objectives": [
+      { "Type": "Collect", "TargetName": "FishingSpot", "RequiredCount": 1, "Description": "Fish at the spot" }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 50, "Items": [] }
+  },
+  {
+    "QuestId": 2011,
+    "Title": "First Catch",
+    "Description": "Catch your first fish.",
+    "Requirements": [],
+    "Objectives": [
+      { "Type": "Interact", "TargetName": "AnyFishingSpot", "RequiredCount": 1, "Description": "Fish somewhere" }
+    ],
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
+  },
+  {
     "QuestId": 2010,
     "Title": "A Worried Wife",
     "Description": "Maria is worried about her husband who went missing in the jungle.",
@@ -1070,25 +1140,6 @@
         "TargetName": "Maria",
         "RequiredCount": 1,
         "Description": "Talk to Maria in Puerto Roca."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 2011,
-    "Title": "First Catch",
-    "Description": "Catch your first fish.",
-    "Requirements": [],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "AnyFishingSpot",
-        "RequiredCount": 1,
-        "Description": "Fish somewhere"
       }
     ],
     "Rewards": {
@@ -1284,269 +1335,5 @@
     },
     "Repeatability": "Daily",
     "MutualExclusionGroup": "DailyBounty_T1"
-  },
-  {
-    "QuestId": 2303,
-    "Title": "Bat Wings",
-    "Description": "Collect bat wings.",
-    "Requirements": [
-      1305
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "BatNest",
-        "RequiredCount": 5,
-        "Description": "Collect 5 Bat Wings"
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 2401,
-    "Title": "Fisherman Sidequest",
-    "Description": "Help the fisherman.",
-    "Requirements": [
-      2011,
-      1404
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "FishingSpot",
-        "RequiredCount": 1,
-        "Description": "Fish at the spot"
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 3001,
-    "Title": "El Camino del Guerrero",
-    "Description": "Demuestra tu fuerza para comenzar el entrenamiento.",
-    "Requirements": [],
-    "RequiredLevel": 2,
-    "RequiredStats": {
-      "Str": 10
-    },
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Instructor de Combate",
-        "RequiredCount": 1,
-        "Description": "Habla con el Instructor."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 3002,
-    "Title": "Materiales de Entrenamiento",
-    "Description": "Trae madera para practicar cortes.",
-    "Requirements": [
-      3001
-    ],
-    "Objectives": [
-      {
-        "Type": "Deliver",
-        "TargetName": "Instructor de Combate",
-        "RequiredCount": 1,
-        "Description": "Entrega 1 Madera.",
-        "DataId": 7316
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 50,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 3003,
-    "Title": "Primera Sangre",
-    "Description": "Elimina a los lobos que acechan el campamento.",
-    "Requirements": [
-      3002
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "Lobo del Bosque",
-        "RequiredCount": 3,
-        "Description": "Derrota a 3 Lobos del Bosque."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 100,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 8001,
-    "Title": "Trial of the Fire Dragon",
-    "Description": "Prove your might by defeating the Guardian of the Fire Dragon to learn the legendary Dragon Slash.",
-    "Type": "SpecialSkill",
-    "SpecialCategory": "Dragon",
-    "RequiredLevel": 10,
-    "RequiredStats": {
-      "Str": 20
-    },
-    "Requirements": [],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "Fire Dragon Guardian",
-        "RequiredCount": 1,
-        "Description": "Defeat the Fire Dragon Guardian."
-      }
-    ],
-    "Rewards": {
-      "Exp": 5000,
-      "Gold": 1000,
-      "Items": [],
-      "GrantSkillId": 8001
-    },
-    "AntiAbuseRules": "UniquePerCharacter",
-    "Repeatability": 0
-  },
-  {
-    "QuestId": 8002,
-    "Title": "Trial of the Fairy Queen",
-    "Description": "Prove your purity by clearing the Fairy Woods to learn the Fairy's Blessing.",
-    "Type": "SpecialSkill",
-    "SpecialCategory": "Fairy",
-    "RequiredLevel": 10,
-    "RequiredStats": {
-      "Wis": 20
-    },
-    "Requirements": [],
-    "Objectives": [
-      {
-        "Type": "Instance",
-        "TargetName": "Fairy Woods",
-        "RequiredCount": 1,
-        "Description": "Clear the Fairy Woods Instance."
-      }
-    ],
-    "Rewards": {
-      "Exp": 5000,
-      "Gold": 1000,
-      "Items": [],
-      "GrantSkillId": 8002
-    },
-    "AntiAbuseRules": "UniquePerCharacter",
-    "Repeatability": 0
-  },
-  {
-    "QuestId": 9001,
-    "Title": "Housing Dreams",
-    "Description": "To own land in this world, one must prove their worth. Talk to the Estate Agent to begin.",
-    "Requirements": [],
-    "RequiredLevel": 10,
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Estate Agent",
-        "RequiredCount": 1,
-        "Description": "Talk to the Estate Agent."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 9002,
-    "Title": "Building Blocks",
-    "Description": "Gather materials to demonstrate your resourcefulness.",
-    "Requirements": [
-      9001
-    ],
-    "Objectives": [
-      {
-        "Type": "Collect",
-        "TargetName": "Madera",
-        "RequiredCount": 10,
-        "Description": "Collect 10 Wood.",
-        "DataId": 7316
-      },
-      {
-        "Type": "Collect",
-        "TargetName": "Iron Ore",
-        "RequiredCount": 5,
-        "Description": "Collect 5 Iron Ore.",
-        "DataId": 7301
-      }
-    ],
-    "Rewards": {
-      "Exp": 200,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 9003,
-    "Title": "The Price of Land",
-    "Description": "A fee is required to register your claim.",
-    "Requirements": [
-      9002
-    ],
-    "Objectives": [
-      {
-        "Type": "PayGold",
-        "TargetName": "Estate Agent",
-        "RequiredCount": 500,
-        "Description": "Pay 500 Gold fee."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 9004,
-    "Title": "Landowner",
-    "Description": "Finalize your registration and receive your tent.",
-    "Requirements": [
-      9003
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Estate Agent",
-        "RequiredCount": 1,
-        "Description": "Talk to the Estate Agent to finalize."
-      }
-    ],
-    "FlagsSet": [
-      "HOUSING_UNLOCKED"
-    ],
-    "Rewards": {
-      "Exp": 1000,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 800,
-          "Quantity": 1
-        }
-      ]
-    }
   }
 ]
