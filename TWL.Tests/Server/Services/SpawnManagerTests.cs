@@ -139,21 +139,9 @@ public class TestClientSession : ClientSession
     {
     }
 
-    public new ServerCharacter? Character
-    {
-        get => base.Character;
-        set => base.Character = value;
-    }
-
     // Override SendAsync to avoid NRE on null stream/client
     public override Task SendAsync(TWL.Shared.Net.Network.NetMessage msg)
     {
         return Task.CompletedTask;
-    }
-
-    public new ServerCharacter? Character
-    {
-        get => base.Character;
-        set => base.Character = value;
     }
 }

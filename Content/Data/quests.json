@@ -163,42 +163,159 @@
     }
   },
   {
-    "QuestId": 1010,
-    "Title": "Report In",
-    "Description": "The Captain needs a status report.",
-    "Requirements": [],
+    "QuestId": 1007,
+    "Title": "El Eco en la Cueva",
+    "Description": "The old hermit says there's something in the cave that hums at night. Investigate.",
+    "Requirements": [
+      1006
+    ],
     "Objectives": [
       {
-        "Type": "Talk",
-        "TargetName": "Captain",
+        "Type": "Reach",
+        "TargetName": "4",
         "RequiredCount": 1,
-        "Description": "Talk to the Captain."
+        "Description": "Enter Cueva del Eco."
+      },
+      {
+        "Type": "Interact",
+        "TargetName": "Stone Circle",
+        "RequiredCount": 1,
+        "Description": "Examine the Stone Circle."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Stone Guardian",
+        "RequiredCount": 1,
+        "Description": "Defeat Stone Guardian.",
+        "DataId": 3001
       }
     ],
     "Rewards": {
-      "Exp": 50,
+      "Exp": 150,
+      "Gold": 30,
+      "Items": [
+        {
+          "ItemId": 8101,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1008,
+    "Title": "Ruidos Extranos",
+    "Description": "Strange noises in the jungle. Something is hurt.",
+    "Requirements": [
+      1004
+    ],
+    "Objectives": [
+      {
+        "Type": "Reach",
+        "TargetName": "poi_wounded_monkey",
+        "RequiredCount": 1,
+        "Description": "Investigate Sound Source."
+      }
+    ],
+    "Rewards": {
+      "Exp": 30,
       "Gold": 0,
       "Items": []
     }
   },
   {
-    "QuestId": 1012,
-    "Title": "A New Friend",
-    "Description": "A colorful bird is watching you.",
+    "QuestId": 1009,
+    "Title": "Un Nuevo Amigo",
+    "Description": "It's a wounded monkey. Dr. Calloway might be able to help.",
     "Requirements": [
-      1010
+      1008
     ],
     "Objectives": [
       {
+        "Type": "Collect",
+        "TargetName": "Rare Jungle Herb",
+        "RequiredCount": 3,
+        "Description": "Collect Healing Herbs.",
+        "DataId": 8002
+      },
+      {
         "Type": "Talk",
-        "TargetName": "Parrot",
+        "TargetName": "Dr. Calloway",
         "RequiredCount": 1,
-        "Description": "Approach the Parrot."
+        "Description": "Deliver to Dr. Calloway."
       }
     ],
     "Rewards": {
-      "Exp": 100,
+      "Exp": 50,
+      "Gold": 10,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1010,
+    "Title": "Companero de Viaje",
+    "Description": "The monkey has recovered and won't leave your side. It seems you've made a friend.",
+    "Requirements": [
+      1009
+    ],
+    "Objectives": [
+      {
+        "Type": "UseItem",
+        "TargetName": "Banana",
+        "RequiredCount": 1,
+        "Description": "Feed the Monkey.",
+        "DataId": 5958
+      }
+    ],
+    "Rewards": {
+      "Exp": 80,
       "Gold": 0,
+      "Items": [],
+      "PetUnlockId": 1030
+    },
+    "FlagsSet": [
+      "UniquePerCharacter"
+    ]
+  },
+  {
+    "QuestId": 1018,
+    "Title": "Travesia",
+    "Description": "We've spotted a city across the water. Time to repair a boat and make contact.",
+    "Requirements": [
+      1007
+    ],
+    "RequiredLevel": 5,
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Ordinary Wood",
+        "RequiredCount": 8,
+        "Description": "Collect Sturdy Planks.",
+        "DataId": 6165
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "Cotton Cloth",
+        "RequiredCount": 3,
+        "Description": "Collect Sail Cloth.",
+        "DataId": 5232
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "Linen Rope",
+        "RequiredCount": 5,
+        "Description": "Collect Vine Rope.",
+        "DataId": 5227
+      },
+      {
+        "Type": "Interact",
+        "TargetName": "Boat Frame",
+        "RequiredCount": 1,
+        "Description": "Build the Boat."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
       "Items": []
     }
   },

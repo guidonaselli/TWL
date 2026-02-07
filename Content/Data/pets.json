@@ -684,5 +684,43 @@
     ],
     "CaptureRules": { "IsCapturable": false },
     "IsQuestUnique": true
+  },
+  {
+    "PetTypeId": 1030,
+    "Name": "Island Monkey",
+    "Type": "Quest",
+    "Rarity": "Common",
+    "Element": "Earth",
+    "SpritePath": "Pets/pet_island_monkey_64_spritesheet.png",
+    "PortraitPath": "Portraits/pet_island_monkey_portrait_256.png",
+    "BaseHp": 85,
+    "BaseStr": 8,
+    "BaseCon": 8,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 12,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 8.0,
+      "SpGrowthPerLevel": 2.0,
+      "StrWeight": 25,
+      "ConWeight": 20,
+      "IntWeight": 10,
+      "WisWeight": 10,
+      "AgiWeight": 35
+    },
+    "SkillSet": [],
+    "Utilities": [
+      {
+        "Type": "Gathering",
+        "Value": 1.2,
+        "RequiredLevel": 5,
+        "RequiredAmity": 20
+      }
+    ],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "IsQuestUnique": true
   }
 ]
