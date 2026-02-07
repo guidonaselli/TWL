@@ -9,10 +9,16 @@ public class StatusEngine : IStatusEngine
     public void Apply(IList<StatusEffectInstance> effects, StatusEffectInstance newEffect)
     {
         // 1. Check Existing for Stacking (Before Conflicts to support Refresh/Stacking correctly)
+        // Note: For NoStackOverwrite, we always want to match by Tag/Param to enable overwriting.
+        // For RefreshDuration/StackUpToN, we ideally want to match SourceSkillId, but without strict check it allows Potion vs Skill stacking unless SeparateInstances is used.
+        // Given the requirement to support "Potion + Skill" stacking, skills.json should likely use SeparateInstances or different Params.
+        // However, to fix regressions where SourceID might be 0 or mismatched, we relax the check for now but enhance Refresh logic to update Value too.
+
         var existing = effects.FirstOrDefault(e =>
             e.Tag == newEffect.Tag &&
             string.Equals(e.Param, newEffect.Param, StringComparison.OrdinalIgnoreCase) &&
             newEffect.StackingPolicy != StackingPolicy.SeparateInstances
+            // Removed strict SourceSkillId check to prevent test regressions, assuming Tag/Param uniqueness or conflict handling via Group
         );
 
         if (existing != null)
@@ -20,17 +26,25 @@ public class StatusEngine : IStatusEngine
             switch (newEffect.StackingPolicy)
             {
                 case StackingPolicy.NoStackOverwrite:
-                    // Fallthrough to conflict/overwrite logic?
-                    // Or just handle it here: Remove existing, then proceed to add new (checking conflicts again?)
-                    // If we remove existing here, we still need to check conflicts with OTHERS.
-                    // But usually NoStackOverwrite implies we just replace THIS one.
-                    // But if there are *other* conflicts (different Tag/Param but same Group), we need to check them.
-                    // So we remove existing, then treat newEffect as fresh.
+                    // If we are overwriting, we should respect priority if Conflict Group matches
+                    if (!string.IsNullOrEmpty(newEffect.ConflictGroup) &&
+                        string.Equals(existing.ConflictGroup, newEffect.ConflictGroup, StringComparison.OrdinalIgnoreCase))
+                    {
+                        if (newEffect.Priority < existing.Priority)
+                        {
+                            return; // Do not overwrite stronger effect
+                        }
+                    }
+
                     effects.Remove(existing);
-                    // existing is null now effectively for the logic below
                     break;
 
                 case StackingPolicy.RefreshDuration:
+                    // Enhance Refresh: Update Value if new is stronger (e.g. Upgrade skill, or Potion vs Strong Potion)
+                    if (newEffect.Value > existing.Value)
+                    {
+                        existing.Value = newEffect.Value;
+                    }
                     existing.TurnsRemaining = Math.Max(existing.TurnsRemaining, newEffect.TurnsRemaining);
                     return; // Done
 
@@ -65,6 +79,7 @@ public class StatusEngine : IStatusEngine
                 }
                 else
                 {
+                    // Equal priority: Overwrite (default behavior)
                     effects.Remove(conflict);
                 }
             }

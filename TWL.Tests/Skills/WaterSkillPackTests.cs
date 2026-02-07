@@ -119,9 +119,9 @@ public class WaterSkillPackTests
     public void SoothingMist_Cleanse_And_Heal()
     {
         // Arrange
-        var attacker = new WaterTestCharacter { Id = 1, Name = "Healer", Wis = 50, Sp = 100, Team = Team.Player, Con = 10, Hp = 100 };
-        var ally1 = new WaterTestCharacter { Id = 2, Name = "Ally1", Team = Team.Player, Con = 10, Hp = 50 };
-        var ally2 = new WaterTestCharacter { Id = 3, Name = "Ally2", Team = Team.Player, Con = 10, Hp = 50 };
+        var attacker = new WaterTestCharacter { Id = 1, Name = "Healer", Wis = 50, Sp = 100, Team = Team.Player, Con = 10, Hp = 100, Agi = 100 };
+        var ally1 = new WaterTestCharacter { Id = 2, Name = "Ally1", Team = Team.Player, Con = 10, Hp = 50, Agi = 10 };
+        var ally2 = new WaterTestCharacter { Id = 3, Name = "Ally2", Team = Team.Player, Con = 10, Hp = 50, Agi = 10 };
 
         _combatManager.RegisterCombatant(attacker);
         _combatManager.RegisterCombatant(ally1);

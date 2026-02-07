@@ -153,10 +153,39 @@ public class AutoBattleManager
                 var buffEffect = skill.Effects.FirstOrDefault(e => e.Tag == SkillEffectTag.BuffStats);
                 if (buffEffect != null)
                 {
-                    var targetAlly = allies.FirstOrDefault(a => !HasConflictingBuff(a, buffEffect));
+                    // Filter allies who don't have the buff
+                    var candidates = allies.Where(a => !HasConflictingBuff(a, buffEffect)).ToList();
 
-                    if (targetAlly != null)
+                    if (candidates.Any())
                     {
+                        // Heuristic: Pick the ally who benefits most from the stat
+                        var targetAlly = candidates.First(); // Default
+
+                        if (!string.IsNullOrEmpty(buffEffect.Param))
+                        {
+                            switch (buffEffect.Param)
+                            {
+                                case "Atk":
+                                    targetAlly = candidates.OrderByDescending(c => c.Atk).First();
+                                    break;
+                                case "Mat":
+                                    targetAlly = candidates.OrderByDescending(c => c.Mat).First();
+                                    break;
+                                case "Def":
+                                    // Maybe tank? High Def or Low Def? Usually buff tank (High Def) or weakling?
+                                    // Let's go with High Def as "Tank" role heuristic
+                                    targetAlly = candidates.OrderByDescending(c => c.Def).First();
+                                    break;
+                                case "Mdf":
+                                    targetAlly = candidates.OrderByDescending(c => c.Mdf).First();
+                                    break;
+                                case "Spd":
+                                    targetAlly = candidates.OrderByDescending(c => c.Spd).First();
+                                    break;
+                                // Add more as needed
+                            }
+                        }
+
                         return new UseSkillRequest
                         {
                             PlayerId = actor.Id,

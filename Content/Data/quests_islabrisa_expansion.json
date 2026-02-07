@@ -1,6 +1,6 @@
 [
   {
-    "QuestId": 1007,
+    "QuestId": 1507,
     "Title": "Cocina de Supervivencia",
     "Description": "Debemos aprovechar los recursos. Prepara algo de comer con los cangrejos.",
     "Requirements": [
@@ -34,11 +34,11 @@
     }
   },
   {
-    "QuestId": 1008,
+    "QuestId": 1508,
     "Title": "El Huevo Misterioso",
     "Description": "He visto aves anidando cerca. Investiga el Nido Oculto.",
     "Requirements": [
-      1007
+      1507
     ],
     "Objectives": [
       {
@@ -66,11 +66,11 @@
     }
   },
   {
-    "QuestId": 1009,
+    "QuestId": 1509,
     "Title": "Un Compañero Fiel",
     "Description": "Lleva el huevo al Entrenador de Bestias. Él sabrá qué hacer.",
     "Requirements": [
-      1008
+      1508
     ],
     "RequiredItems": [
       {
