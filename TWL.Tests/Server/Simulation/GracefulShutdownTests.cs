@@ -31,7 +31,7 @@ public class GracefulShutdownTests
         // Pass null for repository as we won't access it
         var mockPlayerService = new Mock<PlayerService>(null, metrics);
         var mockWorldScheduler = new Mock<IWorldScheduler>();
-        var mockMapLoader = new Mock<MapLoader>(new Mock<ILogger<MapLoader>>().Object);
+        var mockMapRegistry = new Mock<IMapRegistry>();
         var mockTriggerService = new Mock<IWorldTriggerService>();
         var mockMonsterManager = new Mock<MonsterManager>();
 
@@ -64,7 +64,7 @@ public class GracefulShutdownTests
             mockPlayerService.Object,
             mockWorldScheduler.Object,
             metrics,
-            mockMapLoader.Object,
+            mockMapRegistry.Object,
             mockTriggerService.Object,
             mockMonsterManager.Object,
             mockSpawnManager.Object,
