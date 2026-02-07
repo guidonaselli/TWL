@@ -725,58 +725,6 @@ public class ClientSession
         }
     }
 
-    private async Task SendLoginError(string errorMsg)
-    {
-        await SendAsync(new NetMessage
-        {
-            Op = Opcode.LoginResponse,
-            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
-            {
-                Success = false,
-                ErrorMessage = errorMsg
-            }, _jsonOptions)
-        });
-    }
-
-    private async Task SendLoginError(string errorCode)
-    {
-        await SendAsync(new NetMessage
-        {
-            Op = Opcode.LoginResponse,
-            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
-            {
-                Success = false,
-                ErrorMessage = errorCode
-            }, _jsonOptions)
-        });
-    }
-
-    private async Task SendLoginError(string errorMessage)
-    {
-        await SendAsync(new NetMessage
-        {
-            Op = Opcode.LoginResponse,
-            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
-            {
-                Success = false,
-                ErrorMessage = errorMessage
-            }, _jsonOptions)
-        });
-    }
-
-    private async Task SendLoginError(string errorCode)
-    {
-        await SendAsync(new NetMessage
-        {
-            Op = Opcode.LoginResponse,
-            JsonPayload = JsonSerializer.Serialize(new LoginResponseDto
-            {
-                Success = false,
-                ErrorMessage = errorCode
-            }, _jsonOptions)
-        });
-    }
-
     private static bool IsHex(string value)
     {
         for (var i = 0; i < value.Length; i++)
