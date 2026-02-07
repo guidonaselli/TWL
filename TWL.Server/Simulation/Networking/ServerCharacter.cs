@@ -108,6 +108,10 @@ public class ServerCharacter : ServerCombatant
         init => _premiumCurrency = value;
     }
 
+    // Security / Anti-Fraud
+    public long DailyGiftAccumulator { get; private set; }
+    public DateTime LastGiftResetDate { get; private set; }
+
     // World Position
     private int _mapId;
     public int MapId
@@ -354,6 +358,31 @@ public class ServerCharacter : ServerCombatant
 
         IsDirty = true;
         return true;
+    }
+
+    public bool TryConsumeDailyGiftLimit(long amount, long limit)
+    {
+        lock (_progressLock) // Reuse progress lock for simplicity as it protects stats
+        {
+            var today = DateTime.UtcNow.Date;
+            if (LastGiftResetDate < today)
+            {
+                DailyGiftAccumulator = 0;
+                LastGiftResetDate = today;
+                IsDirty = true;
+            }
+
+            if (DailyGiftAccumulator + amount > limit)
+            {
+                SecurityLogger.LogSecurityEvent("DailyGiftLimitExceeded", Id,
+                    $"Attempt:{amount} Accumulated:{DailyGiftAccumulator} Limit:{limit}");
+                return false;
+            }
+
+            DailyGiftAccumulator += amount;
+            IsDirty = true;
+            return true;
+        }
     }
 
     // ConsumeSp is inherited from ServerCombatant
@@ -613,6 +642,8 @@ public class ServerCharacter : ServerCombatant
             Agi = Agi,
             Gold = _gold,
             PremiumCurrency = _premiumCurrency,
+            DailyGiftAccumulator = DailyGiftAccumulator,
+            LastGiftResetDate = LastGiftResetDate,
             ActivePetInstanceId = ActivePetInstanceId,
             MapId = MapId,
             X = X,
@@ -682,6 +713,8 @@ public class ServerCharacter : ServerCombatant
         Agi = data.Agi;
         _gold = data.Gold;
         _premiumCurrency = data.PremiumCurrency;
+        DailyGiftAccumulator = data.DailyGiftAccumulator;
+        LastGiftResetDate = data.LastGiftResetDate;
         ActivePetInstanceId = data.ActivePetInstanceId;
         MapId = data.MapId;
         X = data.X;

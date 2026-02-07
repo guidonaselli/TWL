@@ -92,29 +92,14 @@ public class GameServer
         scheduler.Start();
 
         var mapLoader = new MapLoader(NullLogger<MapLoader>.Instance);
-        var worldTriggerService = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, Metrics, PlayerService, scheduler);
+        var mapRegistry = new MapRegistry(NullLogger<MapRegistry>.Instance, mapLoader);
+        var worldTriggerService = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, Metrics, PlayerService, scheduler, mapRegistry);
         worldTriggerService.RegisterHandler(new MapTransitionHandler());
 
         // Load Maps
         if (Directory.Exists("Content/Maps"))
         {
-            var mapFiles = Directory.GetFiles("Content/Maps", "*.tmx", SearchOption.AllDirectories);
-            var loadedMaps = new List<ServerMap>();
-            foreach (var file in mapFiles)
-            {
-                try
-                {
-                    var map = mapLoader.LoadMap(file);
-                    loadedMaps.Add(map);
-                }
-                catch (Exception ex)
-                {
-                    Console.WriteLine($"Failed to load map {file}: {ex.Message}");
-                }
-            }
-
-            worldTriggerService.LoadMaps(loadedMaps);
-            Console.WriteLine($"Loaded {loadedMaps.Count} maps.");
+            mapRegistry.Load("Content/Maps");
         }
         else
         {

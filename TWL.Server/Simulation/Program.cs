@@ -59,6 +59,7 @@ Host.CreateDefaultBuilder(args)
 
         // World Services
         svcs.AddSingleton<MapLoader>();
+        svcs.AddSingleton<IMapRegistry, MapRegistry>();
         svcs.AddSingleton<IWorldTriggerService, WorldTriggerService>();
         // Register Handlers? Maybe manually in WorldTriggerService constructor or here?
         // For now WorldTriggerService has RegisterHandler. I'll do it in ServerWorker or WorldTriggerService ctor.

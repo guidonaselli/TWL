@@ -720,10 +720,7 @@
       "ParentSkillId": 3003,
       "ParentSkillRank": 10
     },
-    "Stage": 1,
-    "StageUpgradeRules": {
-      "RankThreshold": 6
-    }
+    "Stage": 1
   },
   {
     "SkillId": 3110,
@@ -772,10 +769,7 @@
       "MinChance": 0.1,
       "MaxChance": 0.9
     },
-    "Stage": 1,
-    "StageUpgradeRules": {
-      "RankThreshold": 6
-    }
+    "Stage": 1
   },
   {
     "SkillId": 3210,
@@ -811,10 +805,7 @@
       "ParentSkillId": 3203,
       "ParentSkillRank": 10
     },
-    "Stage": 1,
-    "StageUpgradeRules": {
-      "RankThreshold": 6
-    }
+    "Stage": 1
   },
   {
     "SkillId": 2001,
@@ -1146,6 +1137,37 @@
     "Stage": 3
   },
   {
+    "SkillId": 4010,
+    "Name": "Blazing Strike",
+    "DisplayNameKey": "SKILL_BlazingStrike",
+    "Description": "A powerful sweeping attack that hits a row of enemies.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Physical",
+    "Tier": 2,
+    "TargetType": "RowEnemies",
+    "SpCost": 20,
+    "Cooldown": 1,
+    "Scaling": [
+      {
+        "Stat": "Atk",
+        "Coefficient": 1.5
+      }
+    ],
+    "Effects": [
+      {
+        "Tag": "Damage",
+        "Value": 0
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 4003,
+      "ParentSkillRank": 10
+    },
+    "Stage": 1
+  },
+  {
     "SkillId": 4101,
     "Name": "Fireball I",
     "DisplayNameKey": "SKILL_FireballI",
@@ -1236,6 +1258,37 @@
       }
     ],
     "Stage": 3
+  },
+  {
+    "SkillId": 4110,
+    "Name": "Inferno",
+    "DisplayNameKey": "SKILL_Inferno",
+    "Description": "Engulfs the entire battlefield in flames.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Magical",
+    "Tier": 2,
+    "TargetType": "AllEnemies",
+    "SpCost": 35,
+    "Cooldown": 2,
+    "Scaling": [
+      {
+        "Stat": "Mat",
+        "Coefficient": 1.8
+      }
+    ],
+    "Effects": [
+      {
+        "Tag": "Damage",
+        "Value": 0
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 4103,
+      "ParentSkillRank": 10
+    },
+    "Stage": 1
   },
   {
     "SkillId": 4201,
@@ -1331,6 +1384,38 @@
       }
     ],
     "Stage": 3
+  },
+  {
+    "SkillId": 4210,
+    "Name": "Inner Fire",
+    "DisplayNameKey": "SKILL_InnerFire",
+    "Description": "Stokes the magical potential of an ally.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Support",
+    "Tier": 2,
+    "TargetType": "SingleAlly",
+    "SpCost": 25,
+    "Cooldown": 2,
+    "Scaling": [],
+    "Effects": [
+      {
+        "Tag": "BuffStats",
+        "Param": "Mat",
+        "Value": 25,
+        "Duration": 3,
+        "Chance": 1.0,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Mat",
+        "Priority": 1
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 4203,
+      "ParentSkillRank": 10
+    },
+    "Stage": 1
   },
   {
     "SkillId": 5001,
