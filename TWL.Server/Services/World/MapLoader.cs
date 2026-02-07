@@ -192,6 +192,17 @@ public class MapLoader
             trigger.Conditions.Add(new ItemCondition(reqItemId, reqItemCount));
         }
 
+        if (trigger.Properties.TryGetValue("ReqFlag", out var reqFlag))
+        {
+            var inverted = false;
+            if (reqFlag.StartsWith("!"))
+            {
+                inverted = true;
+                reqFlag = reqFlag.Substring(1);
+            }
+            trigger.Conditions.Add(new FlagCondition(reqFlag, inverted));
+        }
+
         return trigger;
     }
 

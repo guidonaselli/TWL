@@ -5,7 +5,6 @@ namespace TWL.Server.Services.World;
 
 public interface IWorldTriggerService
 {
-    void LoadMaps(IEnumerable<ServerMap> maps);
     void RegisterHandler(ITriggerHandler handler);
     void Start();
     void OnEnterTrigger(ServerCharacter character, int mapId, string triggerId);

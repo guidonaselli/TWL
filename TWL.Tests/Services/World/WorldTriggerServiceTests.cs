@@ -39,6 +39,7 @@ public class WorldTriggerServiceTests
     private readonly Mock<PlayerService> _playerServiceMock;
     private readonly Mock<ServerMetrics> _metricsMock;
     private readonly Mock<ILogger<WorldTriggerService>> _loggerMock;
+    private readonly Mock<IMapRegistry> _mapRegistryMock;
     private readonly WorldTriggerService _service;
 
     public WorldTriggerServiceTests()
@@ -51,8 +52,9 @@ public class WorldTriggerServiceTests
 
         _playerServiceMock = new Mock<PlayerService>(repoMock.Object, _metricsMock.Object);
         _loggerMock = new Mock<ILogger<WorldTriggerService>>();
+        _mapRegistryMock = new Mock<IMapRegistry>();
 
-        _service = new WorldTriggerService(_loggerMock.Object, _metricsMock.Object, _playerServiceMock.Object, _schedulerMock.Object);
+        _service = new WorldTriggerService(_loggerMock.Object, _metricsMock.Object, _playerServiceMock.Object, _schedulerMock.Object, _mapRegistryMock.Object);
     }
 
     [Fact]
@@ -69,7 +71,7 @@ public class WorldTriggerServiceTests
         };
         map.Triggers.Add(trigger);
 
-        _service.LoadMaps(new[] { map });
+        _mapRegistryMock.Setup(m => m.GetAllMaps()).Returns(new[] { map });
 
         // Act
         _service.Start();
@@ -92,7 +94,7 @@ public class WorldTriggerServiceTests
         };
         map.Triggers.Add(trigger);
 
-        _service.LoadMaps(new[] { map });
+        _mapRegistryMock.Setup(m => m.GetAllMaps()).Returns(new[] { map });
 
         Action? scheduledAction = null;
         _schedulerMock.Setup(s => s.ScheduleRepeating(It.IsAny<Action>(), It.IsAny<TimeSpan>(), It.IsAny<string>()))
