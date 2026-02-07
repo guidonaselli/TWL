@@ -17,7 +17,7 @@ public class ServerWorker : IHostedService
     private readonly DbService _db;
     private readonly InteractionManager _interactionManager;
     private readonly ILogger<ServerWorker> _log;
-    private readonly MapLoader _mapLoader;
+    private readonly IMapRegistry _mapRegistry;
     private readonly ServerMetrics _metrics;
     private readonly MonsterManager _monsterManager;
     private readonly INetworkServer _net;
@@ -31,7 +31,7 @@ public class ServerWorker : IHostedService
 
     public ServerWorker(INetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager,
         ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService,
-        IWorldScheduler worldScheduler, ServerMetrics metrics, MapLoader mapLoader,
+        IWorldScheduler worldScheduler, ServerMetrics metrics, IMapRegistry mapRegistry,
         IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager,
         ILoggerFactory loggerFactory)
     {
@@ -44,7 +44,7 @@ public class ServerWorker : IHostedService
         _playerService = playerService;
         _worldScheduler = worldScheduler;
         _metrics = metrics;
-        _mapLoader = mapLoader;
+        _mapRegistry = mapRegistry;
         _worldTriggerService = worldTriggerService;
         _monsterManager = monsterManager;
         _spawnManager = spawnManager;
@@ -97,23 +97,7 @@ public class ServerWorker : IHostedService
 
         if (Directory.Exists("Content/Maps"))
         {
-            var mapFiles = Directory.GetFiles("Content/Maps", "*.tmx", SearchOption.AllDirectories);
-            var loadedMaps = new List<ServerMap>();
-            foreach (var file in mapFiles)
-            {
-                try
-                {
-                    var map = _mapLoader.LoadMap(file);
-                    loadedMaps.Add(map);
-                }
-                catch (Exception ex)
-                {
-                    _log.LogWarning(ex, "Failed to load map {Path}", file);
-                }
-            }
-
-            _worldTriggerService.LoadMaps(loadedMaps);
-            _log.LogInformation("Loaded {Count} maps.", loadedMaps.Count);
+            _mapRegistry.Load("Content/Maps");
         }
         else
         {
