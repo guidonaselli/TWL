@@ -333,6 +333,38 @@ public class MapValidationTests
                 }
             }
         }
+
+        // Check 3: For every Edge in the Graph, ensure a corresponding MapTransition exists in the From Map
+        foreach (var edge in graph.Edges)
+        {
+            if (!loadedMaps.ContainsKey(edge.From))
+            {
+                // Should have been caught by Node check, but safety first
+                continue;
+            }
+
+            var fromMap = loadedMaps[edge.From];
+            var triggerGroup = fromMap.Tmx.Root.Elements("objectgroup")
+                .FirstOrDefault(e => e.Attribute("name")?.Value == "Triggers");
+
+            bool transitionFound = false;
+            if (triggerGroup != null)
+            {
+                foreach (var obj in triggerGroup.Elements("object"))
+                {
+                    var props = GetProperties(obj);
+                    if (props.GetValueOrDefault("TriggerType") == "MapTransition" &&
+                        props.GetValueOrDefault("TargetMapId") == edge.To.ToString())
+                    {
+                        transitionFound = true;
+                        break;
+                    }
+                }
+            }
+
+            Assert.True(transitionFound,
+                $"World Graph defines edge from {edge.From} to {edge.To}, but Map {edge.From} has no MapTransition trigger to Map {edge.To}.");
+        }
     }
 
     private Dictionary<string, string> GetProperties(XElement obj)
