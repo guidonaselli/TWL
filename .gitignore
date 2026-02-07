@@ -487,3 +487,9 @@ fabric.properties
 .github/copilot
 AGENTS.md
 CLAUDE.md
+
+# ============================================
+# Test output files
+# ============================================
+test_*.txt
+validation_*.txt
