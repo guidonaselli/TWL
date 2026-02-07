@@ -431,15 +431,10 @@ public class PetService : IPetService
             return false;
         }
 
-        // Define Amity Items Map (Should be in external config or ItemManager, hardcoded for V1 Core)
-        // 810: Treat (+1), 811: Toy (+2), 812: Special Meal (+5)
-        var amityGain = 0;
-        switch(itemId)
+        var amityGain = _petManager.GetAmityValue(itemId);
+        if (amityGain <= 0)
         {
-            case 810: amityGain = 1; break;
-            case 811: amityGain = 2; break;
-            case 812: amityGain = 5; break;
-            default: return false;
+            return false;
         }
 
         if (session.Character.RemoveItem(itemId, 1))

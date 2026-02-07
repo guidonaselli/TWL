@@ -62,6 +62,7 @@ public class GameServer
 
         PetManager = new PetManager();
         PetManager.Load("Content/Data/pets.json");
+        PetManager.LoadAmityItems("Content/Data/amity_items.json");
 
         MonsterManager = new MonsterManager();
         MonsterManager.Load("Content/Data/monsters.json");

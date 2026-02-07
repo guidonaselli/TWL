@@ -14,6 +14,7 @@ public class PetManager
     };
 
     private readonly Dictionary<int, PetDefinition> _definitions = new();
+    private readonly Dictionary<int, int> _amityItems = new();
 
     public void Load(string path)
     {
@@ -49,5 +50,35 @@ public class PetManager
         }
     }
 
+    public void LoadAmityItems(string path)
+    {
+        if (!File.Exists(path))
+        {
+            Console.WriteLine($"Amity items file not found at {path}");
+            return;
+        }
+
+        try
+        {
+            var json = File.ReadAllText(path);
+            var list = JsonSerializer.Deserialize<List<AmityItemDefinition>>(json, _jsonOptions);
+
+            if (list != null)
+            {
+                foreach (var item in list)
+                {
+                    _amityItems[item.ItemId] = item.AmityValue;
+                }
+                Console.WriteLine($"Loaded {_amityItems.Count} amity item definitions.");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading amity items: {ex.Message}");
+        }
+    }
+
     public virtual PetDefinition? GetDefinition(int petTypeId) => _definitions.GetValueOrDefault(petTypeId);
+
+    public virtual int GetAmityValue(int itemId) => _amityItems.GetValueOrDefault(itemId, 0);
 }

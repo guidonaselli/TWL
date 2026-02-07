@@ -491,4 +491,65 @@ public class ContentValidationTests
             }
         }
     }
+
+    [Fact]
+    public void ValidatePetSkills()
+    {
+        var pets = LoadPets();
+        var skills = LoadSkills();
+        var skillIds = skills.Select(s => s.SkillId).ToHashSet();
+
+        foreach (var pet in pets)
+        {
+            if (pet.SkillSet != null)
+            {
+                foreach (var skillSet in pet.SkillSet)
+                {
+                    Assert.True(skillIds.Contains(skillSet.SkillId),
+                        $"Pet {pet.PetTypeId} ({pet.Name}) refers to unknown SkillId {skillSet.SkillId}");
+                }
+            }
+        }
+    }
+
+    [Fact]
+    public void ValidatePetUtilities()
+    {
+        var pets = LoadPets();
+        foreach (var pet in pets)
+        {
+            if (pet.Utilities != null)
+            {
+                foreach (var util in pet.Utilities)
+                {
+                    Assert.True(util.Value > 0,
+                        $"Pet {pet.PetTypeId} ({pet.Name}) has invalid utility value {util.Value}. Must be > 0.");
+                    Assert.True(util.RequiredLevel >= 0,
+                        $"Pet {pet.PetTypeId} ({pet.Name}) has invalid required level {util.RequiredLevel}.");
+                    Assert.True(util.RequiredAmity >= 0 && util.RequiredAmity <= 100,
+                        $"Pet {pet.PetTypeId} ({pet.Name}) has invalid required amity {util.RequiredAmity}.");
+                }
+            }
+        }
+    }
+
+    [Fact]
+    public void ValidateAmityItems()
+    {
+        var root = GetContentRoot();
+        var path = Path.Combine(root, "amity_items.json");
+        Assert.True(File.Exists(path), "amity_items.json not found");
+
+        var json = File.ReadAllText(path);
+        var items = JsonSerializer.Deserialize<List<AmityItemDefinition>>(json, GetJsonOptions());
+
+        Assert.NotNull(items);
+        Assert.NotEmpty(items);
+
+        foreach (var item in items)
+        {
+            Assert.True(item.ItemId > 0, $"Invalid ItemId {item.ItemId} in amity_items.json");
+            Assert.True(item.AmityValue > 0, $"Invalid AmityValue {item.AmityValue} for ItemId {item.ItemId}");
+        }
+    }
 }
