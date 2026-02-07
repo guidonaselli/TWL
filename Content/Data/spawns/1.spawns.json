@@ -1,16 +1,16 @@
 {
-  "MapId": 1001,
+  "MapId": 1,
   "RandomEncounterEnabled": true,
   "StepChance": 0.05,
-  "MinMobCount": 3,
-  "MaxMobCount": 10,
-  "RespawnSeconds": 30,
+  "MinMobCount": 5,
+  "MaxMobCount": 15,
+  "RespawnSeconds": 60,
   "SpawnRegions": [
     {
       "X": 10,
       "Y": 10,
-      "Width": 20,
-      "Height": 20,
+      "Width": 40,
+      "Height": 40,
       "AllowedMonsterIds": [ 2001, 2002 ]
     }
   ]

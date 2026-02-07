@@ -409,4 +409,46 @@ public class SpawnManagerTests
 
         Directory.Delete(tempDir, true);
     }
+
+    [Fact]
+    public void OnPlayerMoved_With100PercentChance_Triggers()
+    {
+        // Arrange
+        var mockMonsters = new Mock<MonsterManager>();
+        mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
+            { MonsterId = 1, Name = "TestMob", BaseHp = 10 });
+
+        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockRepo = new Mock<IPlayerRepository>();
+        var metrics = new ServerMetrics();
+        var playerService = new PlayerService(mockRepo.Object, metrics);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+
+        var config = new ZoneSpawnConfig
+        {
+            MapId = 1001,
+            RandomEncounterEnabled = true,
+            StepChance = 1.0f, // 100%
+            SpawnRegions = new List<SpawnRegion>
+            {
+                new() { X = 0, Y = 0, Width = 100, Height = 100, AllowedMonsterIds = new List<int> { 1 } }
+            }
+        };
+
+        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_100_" + Guid.NewGuid());
+        Directory.CreateDirectory(tempDir);
+        File.WriteAllText(Path.Combine(tempDir, "1001.spawns.json"), JsonSerializer.Serialize(config));
+        manager.Load(tempDir);
+
+        var player = new ServerCharacter { Id = 1, MapId = 1001, X = 10, Y = 10, CharacterElement = Element.Earth };
+        var session = new TestClientSession(player);
+
+        // Act
+        manager.OnPlayerMoved(session);
+
+        // Assert
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Once);
+
+        Directory.Delete(tempDir, true);
+    }
 }
