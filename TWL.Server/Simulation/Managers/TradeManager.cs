@@ -94,6 +94,18 @@ public class TradeManager
             return false;
         }
 
+        // 3. Pre-Validation: Can Target Accept? (Optimistic)
+        // Hardening: Check if target has space for AT LEAST the first batch to avoid unnecessary rollbacks
+        // This is heuristic because fragmentation might vary, but for single item type transfer it is reasonably accurate.
+        // We assume we transfer 'quantity' of 'itemId'.
+        // Since we might be transferring multiple stacks (some bound, some unbound), this is complex.
+        // We do a simple check: Can target accept 1 unit?
+        if (!target.CanAddItem(itemId, 1, tradableItems[0].Policy, tradableItems[0].BoundToId))
+        {
+            SecurityLogger.LogSecurityEvent("TradeTargetFull", source.Id, "Target inventory full (pre-check).");
+            return false;
+        }
+
         // 3. Execute Transfer (Atomic-ish)
         var remaining = quantity;
         var movedItems = new List<(int ItemId, int Qty, BindPolicy Policy, int? BoundToId)>();
@@ -107,8 +119,9 @@ public class TradeManager
 
             var toTake = Math.Min(item.Quantity, remaining);
 
-            // Attempt to remove specifically this policy type
-            if (source.RemoveItem(itemId, toTake, item.Policy))
+            // HARDENING: Use RemoveItemExact to prevent laundering bound items
+            // We use the properties from the validated 'item' object (Policy and BoundToId)
+            if (source.RemoveItemExact(itemId, toTake, item.Policy, item.BoundToId))
             {
                 movedItems.Add((itemId, toTake, item.Policy, item.BoundToId));
                 remaining -= toTake;
@@ -144,9 +157,10 @@ public class TradeManager
         if (!success)
         {
             // ROLLBACK Target (Remove what was just added)
+            // Use RemoveItemExact for rollback too to be safe
             foreach (var m in addedToTarget)
             {
-                target.RemoveItem(m.ItemId, m.Qty, m.Policy);
+                target.RemoveItemExact(m.ItemId, m.Qty, m.Policy, m.BoundToId);
             }
 
             // ROLLBACK Source (Add back what was taken)
