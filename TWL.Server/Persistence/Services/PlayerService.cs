@@ -30,6 +30,9 @@ public class PlayerService
 
     public PersistenceMetrics Metrics { get; } = new();
 
+    public virtual int ActiveSessionCount => _sessions.Count;
+    public virtual int DirtySessionCount => _sessions.Values.Count(s => (s.Character != null && s.Character.IsDirty) || (s.QuestComponent != null && s.QuestComponent.IsDirty));
+
     public virtual void Start()
     {
         _cts = new CancellationTokenSource();
