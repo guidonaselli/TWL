@@ -11,7 +11,7 @@ public static class QuestValidator
         "Collect", "CollectItem",
         "Deliver", "DeliverItem",
         "Talk", "Interact",
-        "Explore", "Visit",
+        "Explore", "Visit", "Reach",
         "Craft", "Compound", "Forge",
         "Party", "Guild",
         "Instance",
@@ -21,7 +21,8 @@ public static class QuestValidator
         "Puzzle", "Sequence",
         "Capture",
         "PetAcquired", "Trade",
-        "PayGold"
+        "PayGold",
+        "UseItem"
     };
 
     public static List<string> Validate(IEnumerable<QuestDefinition> quests,
