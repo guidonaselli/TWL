@@ -37,6 +37,7 @@ public class WorldTriggerServiceTests
         {
             Id = "T1",
             Type = "TestType",
+            ActivationType = TriggerActivationType.Enter,
             X = 100,
             Y = 100,
             Width = 50,
@@ -44,10 +45,12 @@ public class WorldTriggerServiceTests
         };
         map.Triggers.Add(trigger);
 
+        _mapRegistryMock.Setup(m => m.GetAllMaps()).Returns(new[] { map });
         _mapRegistryMock.Setup(m => m.GetMap(1)).Returns(map);
 
         _handlerMock.Setup(h => h.CanHandle("TestType")).Returns(true);
         _service.RegisterHandler(_handlerMock.Object);
+        _service.Start();
 
         var character = new ServerCharacter { MapId = 1, X = 110, Y = 110 }; // Inside
 
@@ -64,6 +67,7 @@ public class WorldTriggerServiceTests
         {
             Id = "T1",
             Type = "TestType",
+            ActivationType = TriggerActivationType.Enter,
             X = 100,
             Y = 100,
             Width = 50,
@@ -71,10 +75,12 @@ public class WorldTriggerServiceTests
         };
         map.Triggers.Add(trigger);
 
+        _mapRegistryMock.Setup(m => m.GetAllMaps()).Returns(new[] { map });
         _mapRegistryMock.Setup(m => m.GetMap(1)).Returns(map);
 
         _handlerMock.Setup(h => h.CanHandle("TestType")).Returns(true);
         _service.RegisterHandler(_handlerMock.Object);
+        _service.Start();
 
         var character = new ServerCharacter { MapId = 1, X = 90, Y = 90 }; // Outside
 
@@ -136,9 +142,10 @@ public class WorldTriggerServiceTests
         trigger.Properties["ReqFlag"] = "MyFlag";
         map.Triggers.Add(trigger);
 
-        _mapRegistryMock.Setup(m => m.GetMap(1)).Returns(map);
+        _mapRegistryMock.Setup(m => m.GetAllMaps()).Returns(new[] { map });
         _handlerMock.Setup(h => h.CanHandle("TestType")).Returns(true);
         _service.RegisterHandler(_handlerMock.Object);
+        _service.Start();
 
         var character = new ServerCharacter { MapId = 1 };
 
@@ -162,9 +169,10 @@ public class WorldTriggerServiceTests
         trigger.Properties["ReqFlag"] = "MyFlag";
         map.Triggers.Add(trigger);
 
-        _mapRegistryMock.Setup(m => m.GetMap(1)).Returns(map);
+        _mapRegistryMock.Setup(m => m.GetAllMaps()).Returns(new[] { map });
         _handlerMock.Setup(h => h.CanHandle("TestType")).Returns(true);
         _service.RegisterHandler(_handlerMock.Object);
+        _service.Start();
 
         var character = new ServerCharacter { MapId = 1 };
 

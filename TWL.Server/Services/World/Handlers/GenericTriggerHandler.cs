@@ -12,13 +12,11 @@ public class GenericTriggerHandler : ITriggerHandler
 {
     private readonly PlayerService _playerService;
     private readonly SpawnManager _spawnManager;
-    private readonly MonsterManager _monsterManager;
 
-    public GenericTriggerHandler(PlayerService playerService, SpawnManager spawnManager, MonsterManager monsterManager)
+    public GenericTriggerHandler(PlayerService playerService, SpawnManager spawnManager)
     {
         _playerService = playerService;
         _spawnManager = spawnManager;
-        _monsterManager = monsterManager;
     }
 
     public bool CanHandle(string triggerType)
@@ -143,42 +141,10 @@ public class GenericTriggerHandler : ITriggerHandler
                 count = c;
             }
 
-            var def = _monsterManager.GetDefinition(mid);
-            if (def != null)
+            var session = _playerService.GetSession(character.Id);
+            if (session != null)
             {
-                var session = _playerService.GetSession(character.Id);
-                if (session != null)
-                {
-                    var mobs = new List<ServerCharacter>();
-                    for (int i = 0; i < count; i++)
-                    {
-                        var mob = new ServerCharacter
-                        {
-                            // ID will be assigned by SpawnManager (actually SpawnManager.StartEncounter doesn't assign ID if passed directly? No, it does Interlocked on encounterId)
-                            // SpawnManager.CreateMobInstance logic is private.
-                            // We need to construct ServerCharacter manually here.
-                            // Using negative ID for temporary mob.
-                            Id = -DateTime.UtcNow.Ticks.GetHashCode() - i, // Hacky unique ID
-                            Name = def.Name,
-                            Hp = def.BaseHp,
-                            Sp = def.BaseSp,
-                            Str = def.BaseStr,
-                            Con = def.BaseCon,
-                            Int = def.BaseInt,
-                            Wis = def.BaseWis,
-                            Agi = def.BaseAgi,
-                            CharacterElement = def.Element,
-                            Team = Team.Enemy,
-                            MapId = character.MapId,
-                            MonsterId = def.MonsterId,
-                            SpritePath = def.SpritePath
-                        };
-                        mob.SetLevel(def.Level);
-                        mobs.Add(mob);
-                    }
-
-                    _spawnManager.StartEncounter(session, mobs, EncounterSource.Scripted);
-                }
+                _spawnManager.StartScriptedEncounter(session, mid, count);
             }
         }
     }

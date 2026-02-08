@@ -119,7 +119,7 @@ public class SpawnManager
     }
 
     // Unified Encounter Starter
-    public int StartEncounter(ClientSession session, List<ServerCharacter> enemies, EncounterSource source, int? seed = null)
+    public virtual int StartEncounter(ClientSession session, List<ServerCharacter> enemies, EncounterSource source, int? seed = null)
     {
         if (session.Character == null)
         {
@@ -264,6 +264,29 @@ public class SpawnManager
     {
         var serverMobs = new List<ServerCharacter> { roamingMob };
         return StartEncounter(session, serverMobs, EncounterSource.Roaming);
+    }
+
+    public virtual int StartScriptedEncounter(ClientSession session, int monsterId, int count)
+    {
+        var def = _monsterManager.GetDefinition(monsterId);
+        if (def == null)
+        {
+            return 0;
+        }
+
+        var mobs = new List<ServerCharacter>();
+        for (int i = 0; i < count; i++)
+        {
+            // Use player position/map for the mob context
+            var x = session.Character?.X ?? 0;
+            var y = session.Character?.Y ?? 0;
+            var mapId = session.Character?.MapId ?? 0;
+
+            var mob = CreateMobInstance(def, mapId, x, y);
+            mobs.Add(mob);
+        }
+
+        return StartEncounter(session, mobs, EncounterSource.Scripted);
     }
 
     private List<MonsterDefinition> SelectMonsters(ZoneSpawnConfig config, ServerCharacter player)
