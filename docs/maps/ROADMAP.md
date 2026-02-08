@@ -68,10 +68,10 @@
     - **Entities:** El Viejo Coral (Planned).
 
 - [x] **0005 - Mirador del Faro**
-    - **Status:** Implemented (Skeleton)
+    - **Status:** Implemented
     - **Type:** Landmark
     - **Connections:** 0002 (Costa de Mareas)
-    - **Entities:** Ruined Lighthouse.
+    - **Entities:** Ruined Lighthouse (Placeholder).
 
 - [x] **0006 - Cala Escondida**
     - **Status:** Implemented
