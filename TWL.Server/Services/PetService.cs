@@ -113,7 +113,16 @@ public class PetService : IPetService
             return null;
         }
 
-        // 6. Check Item Requirement & Consume (On Attempt)
+        // 6. Check Required Flag
+        if (!string.IsNullOrEmpty(petDef.CaptureRules.RequiredFlag))
+        {
+            if (!session.QuestComponent.Flags.Contains(petDef.CaptureRules.RequiredFlag))
+            {
+                return null;
+            }
+        }
+
+        // 7. Check Item Requirement & Consume (On Attempt)
         if (petDef.CaptureRules.RequiredItemId.HasValue)
         {
             if (!session.Character.RemoveItem(petDef.CaptureRules.RequiredItemId.Value, 1))
@@ -122,7 +131,7 @@ public class PetService : IPetService
             }
         }
 
-        // 7. Calculate Chance
+        // 8. Calculate Chance
         var baseChance = petDef.CaptureRules.BaseChance;
         var hpBonus = (1.0f - hpPercent) * 0.5f; // Up to +50% capture rate if 0 HP
         var totalChance = baseChance + hpBonus;
@@ -345,7 +354,7 @@ public class PetService : IPetService
         }
     }
 
-    public bool UseUtility(int ownerId, string petInstanceId, PetUtilityType type)
+    public bool UseUtility(int ownerId, string petInstanceId, PetUtilityType type, string? args = null)
     {
         var session = _playerService.GetSession(ownerId);
         if (session == null || session.Character == null)
@@ -411,9 +420,39 @@ public class PetService : IPetService
                 break;
 
             case PetUtilityType.Delivery:
-                // Implement Delivery Logic (e.g. Send items to bank)
-                // For now, return false as placeholder or true if just triggering animation
-                return false;
+                // Delivery: Send Item to Bank
+                // args: slotIndex (int)
+                if (string.IsNullOrEmpty(args) || !int.TryParse(args, out var slotIndex))
+                {
+                    return false;
+                }
+
+                // Get Item from Inventory (Snapshot)
+                // Since we rely on index, we need to be careful with concurrency, but UseUtility is likely sequential per user request.
+                // However, Character.Inventory is thread-safe snapshot.
+                var inventory = chara.Inventory;
+                if (slotIndex < 0 || slotIndex >= inventory.Count)
+                {
+                    return false;
+                }
+
+                var item = inventory[slotIndex];
+
+                // Attempt to remove EXACTLY this item (using policy filter if needed, but here we assume unbound/bound specific)
+                // RemoveItem takes quantity. We move the whole stack.
+                if (chara.RemoveItem(item.ItemId, item.Quantity, item.Policy))
+                {
+                    // Success removed -> Add to Bank
+                    chara.AddToBank(item);
+                    _logger.LogInformation("Pet {PetId} delivered Item {ItemId} x{Qty} to Bank for Owner {OwnerId}",
+                        petInstanceId, item.ItemId, item.Quantity, ownerId);
+                }
+                else
+                {
+                    return false;
+                }
+
+                break;
 
             default:
                 return false;
@@ -442,6 +481,41 @@ public class PetService : IPetService
             return AwardAmity(ownerId, petInstanceId, amityGain, $"Item {itemId} Used");
         }
         return false;
+    }
+
+    public void CheckPetAvailability(int ownerId)
+    {
+        var session = _playerService.GetSession(ownerId);
+        if (session == null || session.Character == null)
+        {
+            return;
+        }
+
+        var flags = session.QuestComponent.Flags;
+        var petsToRemove = new List<ServerPet>();
+
+        lock (session.Character.Pets) // Ensure thread safety if iterating
+        {
+            foreach (var pet in session.Character.Pets)
+            {
+                // Check Definition Flag (for Quest Pets/Permanence)
+                // Note: We need access to definition. ServerPet has DefinitionId.
+                var def = _petManager.GetDefinition(pet.DefinitionId);
+                if (def != null && !string.IsNullOrEmpty(def.RequiredFlag))
+                {
+                    if (!flags.Contains(def.RequiredFlag))
+                    {
+                        petsToRemove.Add(pet);
+                    }
+                }
+            }
+        }
+
+        foreach (var pet in petsToRemove)
+        {
+            DismissPet(ownerId, pet.InstanceId);
+            _logger.LogInformation("Pet {PetId} removed due to missing flag.", pet.InstanceId);
+        }
     }
 
     private ServerPet? GetPet(int ownerId, string petInstanceId)

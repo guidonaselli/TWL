@@ -10,6 +10,7 @@ namespace TWL.Server.Simulation.Networking;
 public class ServerCharacter : ServerCombatant
 {
     private readonly List<Item> _inventory = new();
+    private readonly List<Item> _bank = new();
 
     private readonly Dictionary<int, long> _itemTotalQuantities = new();
 
@@ -64,6 +65,44 @@ public class ServerCharacter : ServerCombatant
                     }
                 }
             }
+        }
+    }
+
+    public IReadOnlyList<Item> Bank
+    {
+        get
+        {
+            lock (_bank)
+            {
+                return _bank.Select(i => new Item
+                {
+                    ItemId = i.ItemId,
+                    Name = i.Name,
+                    Type = i.Type,
+                    MaxStack = i.MaxStack,
+                    Quantity = i.Quantity,
+                    ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
+                    Policy = i.Policy,
+                    BoundToId = i.BoundToId
+                }).ToArray();
+            }
+        }
+    }
+
+    public void AddToBank(Item item)
+    {
+        lock (_bank)
+        {
+            var existing = _bank.FirstOrDefault(i => i.ItemId == item.ItemId && i.Policy == item.Policy && i.BoundToId == item.BoundToId);
+            if (existing != null)
+            {
+                existing.Quantity += item.Quantity;
+            }
+            else
+            {
+                _bank.Add(item);
+            }
+            IsDirty = true;
         }
     }
 
@@ -754,6 +793,21 @@ public class ServerCharacter : ServerCombatant
             }).ToList();
         }
 
+        lock (_bank)
+        {
+            data.Bank = _bank.Select(i => new Item
+            {
+                ItemId = i.ItemId,
+                Name = i.Name,
+                Type = i.Type,
+                MaxStack = i.MaxStack,
+                Quantity = i.Quantity,
+                ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
+                Policy = i.Policy,
+                BoundToId = i.BoundToId
+            }).ToList();
+        }
+
         lock (_pets)
         {
             data.Pets = _pets.Select(p => p.GetSaveData()).ToList();
@@ -831,6 +885,15 @@ public class ServerCharacter : ServerCombatant
 
                     _itemTotalQuantities[item.ItemId] += item.Quantity;
                 }
+            }
+        }
+
+        lock (_bank)
+        {
+            _bank.Clear();
+            if (data.Bank != null)
+            {
+                _bank.AddRange(data.Bank);
             }
         }
 

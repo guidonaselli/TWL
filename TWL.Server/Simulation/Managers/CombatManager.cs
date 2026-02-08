@@ -97,6 +97,25 @@ public class CombatManager
             }
         }
 
+        if (attacker is ServerPet pet && !pet.CheckObedience(_random.NextFloat()))
+        {
+            if (turnEngine != null)
+            {
+                turnEngine.EndTurn();
+                turnEngine.NextTurn();
+            }
+
+            return new List<CombatResult>
+            {
+                new CombatResult
+                {
+                    AttackerId = attacker.Id,
+                    TargetId = primaryTarget.Id,
+                    IsDisobey = true
+                }
+            };
+        }
+
         if (attacker.IsSkillOnCooldown(skill.SkillId))
         {
             return new List<CombatResult>();
