@@ -107,8 +107,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<SpawnManager>()
             );
         });
-        svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer
         svcs.AddHostedService<HealthCheckService>();
+        svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer
     })
     .Build()
     .Run();

@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using TWL.Server.Domain.World;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Services.World.Handlers;
 using TWL.Server.Simulation.Managers;
@@ -28,12 +29,13 @@ public class ServerWorker : IHostedService
     private readonly SpawnManager _spawnManager;
     private readonly IWorldScheduler _worldScheduler;
     private readonly IWorldTriggerService _worldTriggerService;
+    private readonly HealthCheckService _healthCheck;
 
     public ServerWorker(INetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager,
         ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService,
         IWorldScheduler worldScheduler, ServerMetrics metrics, IMapRegistry mapRegistry,
         IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager,
-        ILoggerFactory loggerFactory)
+        ILoggerFactory loggerFactory, HealthCheckService healthCheck)
     {
         _net = net;
         _db = db;
@@ -49,10 +51,12 @@ public class ServerWorker : IHostedService
         _monsterManager = monsterManager;
         _spawnManager = spawnManager;
         _loggerFactory = loggerFactory;
+        _healthCheck = healthCheck;
     }
 
     public Task StartAsync(CancellationToken ct)
     {
+        _healthCheck.SetStatus(ServerStatus.Starting);
         _log.LogInformation("Init DB...");
         _db.InitDatabase();
 
@@ -108,6 +112,7 @@ public class ServerWorker : IHostedService
 
         _log.LogInformation("Starting server...");
         _net.Start();
+        _healthCheck.SetStatus(ServerStatus.Healthy);
         return Task.CompletedTask;
     }
 
@@ -115,6 +120,15 @@ public class ServerWorker : IHostedService
     {
         var sw = System.Diagnostics.Stopwatch.StartNew();
         _log.LogInformation("Stopping server...");
+        _healthCheck.SetStatus(ServerStatus.ShuttingDown);
+
+        // Simulate drain time to allow LBs to notice the health change (configurable in future)
+        _log.LogInformation("Waiting for load balancer drain (5s)...");
+        try
+        {
+            await Task.Delay(5000, ct);
+        }
+        catch (TaskCanceledException) { /* ignore */ }
 
         _net.Stop();
 
@@ -131,5 +145,6 @@ public class ServerWorker : IHostedService
         _metrics.RecordShutdown(sw.ElapsedMilliseconds, _playerService.Metrics.SessionsSavedInLastFlush);
 
         _log.LogInformation("Server stopped in {Elapsed}ms.", sw.ElapsedMilliseconds);
+        _healthCheck.SetStatus(ServerStatus.Stopped);
     }
 }
