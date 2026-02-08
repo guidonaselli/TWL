@@ -1,3 +1,4 @@
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Models;
 using TWL.Shared.Domain.Requests;
 
@@ -26,6 +27,7 @@ public class ServerCharacterData
     public int Int { get; set; }
     public int Wis { get; set; }
     public int Agi { get; set; }
+    public Element Element { get; set; }
     public int Gold { get; set; }
     public long PremiumCurrency { get; set; }
     public long DailyGiftAccumulator { get; set; }
