@@ -178,19 +178,29 @@ public class SpawnManager
             return 0;
         }
 
-        // Validate Participants (Check for Element.None)
-        if (session.Character.CharacterElement == Element.None)
+        // Build Participants List (including active Pet)
+        var participants = new List<ServerCombatant> { session.Character };
+
+        var pet = session.Character.GetActivePet();
+        if (pet != null && !pet.IsDead && !pet.IsExpired)
         {
-             Console.WriteLine($"Error: Player {session.Character.Name} has Element.None. Encounter aborted.");
-             return 0;
+            participants.Add(pet);
+        }
+
+        participants.AddRange(enemies);
+
+        // Strict Validation (All participants must not be Element.None)
+        foreach (var p in participants)
+        {
+             if (p.CharacterElement == Element.None)
+             {
+                 Console.WriteLine($"Error: Participant {p.Name} (ID: {p.Id}) has Element.None. Encounter aborted.");
+                 return 0;
+             }
         }
 
         var encounterId = Interlocked.Increment(ref _nextEncounterId);
         var actualSeed = seed ?? _random.Next();
-
-        // Register Combat
-        var participants = new List<ServerCharacter> { session.Character };
-        participants.AddRange(enemies);
 
         _combatManager.StartEncounter(encounterId, participants, actualSeed);
 
@@ -281,6 +291,20 @@ public class SpawnManager
                     {
                         candidates.Add(def);
                         totalWeight += def.EncounterWeight > 0 ? def.EncounterWeight : 1;
+                    }
+                }
+
+                if (region.AllowedFamilyIds.Count > 0)
+                {
+                    var familyMobs = _monsterManager.GetAllDefinitions()
+                        .Where(m => region.AllowedFamilyIds.Contains(m.FamilyId));
+                    foreach (var def in familyMobs)
+                    {
+                        if (def != null)
+                        {
+                            candidates.Add(def);
+                            totalWeight += def.EncounterWeight > 0 ? def.EncounterWeight : 1;
+                        }
                     }
                 }
             }

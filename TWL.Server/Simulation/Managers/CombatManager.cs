@@ -43,7 +43,7 @@ public class CombatManager
         return combatant;
     }
 
-    public virtual void StartEncounter(int encounterId, List<ServerCharacter> participants, int seed = 0)
+    public virtual void StartEncounter(int encounterId, IEnumerable<ServerCombatant> participants, int seed = 0)
     {
         foreach (var p in participants)
         {

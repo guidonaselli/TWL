@@ -1,17 +1,23 @@
 {
   "MapId": 1001,
-  "RandomEncounterEnabled": true,
-  "StepChance": 0.05,
-  "MinMobCount": 3,
-  "MaxMobCount": 10,
-  "RespawnSeconds": 30,
   "SpawnRegions": [
     {
-      "X": 10,
-      "Y": 10,
+      "X": 0,
+      "Y": 0,
       "Width": 20,
       "Height": 20,
-      "AllowedMonsterIds": [ 2001, 2002 ]
+      "AllowedFamilyIds": [],
+      "AllowedMonsterIds": [
+        2001,
+        2002
+      ]
     }
-  ]
+  ],
+  "RandomEncounterEnabled": true,
+  "StepChance": 0.05,
+  "MinMobCount": 5,
+  "MaxMobCount": 10,
+  "RespawnSeconds": 30,
+  "TimeOfDay": [],
+  "Weather": []
 }

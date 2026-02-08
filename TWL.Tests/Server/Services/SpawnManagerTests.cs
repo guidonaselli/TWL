@@ -45,7 +45,7 @@ public class SpawnManagerTests
         var player = new ServerCharacter { Id = 1, Name = "TestPlayer", CharacterElement = Element.Fire };
         var session = new TestClientSession { Character = player };
 
-        var mob = new ServerCharacter { Id = -1, Name = "Mob", MonsterId = 100 };
+        var mob = new ServerCharacter { Id = -1, Name = "Mob", MonsterId = 100, CharacterElement = Element.Water };
         var participants = new List<ServerCharacter> { mob };
 
         // First Call
@@ -69,7 +69,48 @@ public class SpawnManagerTests
         // Assert
         Assert.Equal(encounterId1, encounterId2);
         // Verify StartEncounter on CombatManager was called ONLY ONCE
-        _combatManager.Verify(cm => cm.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Once);
+        _combatManager.Verify(cm => cm.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Once);
+    }
+
+    [Fact]
+    public void StartEncounter_IncludesActivePet()
+    {
+        // Arrange
+        var player = new ServerCharacter { Id = 1, Name = "Player", CharacterElement = Element.Fire };
+        var pet = new ServerPet { Id = -1, InstanceId = "pet1", Name = "Pet", CharacterElement = Element.Water };
+        player.AddPet(pet);
+        player.SetActivePet(pet.InstanceId);
+
+        var session = new TestClientSession { Character = player };
+        var mob = new ServerCharacter { Id = -2, Name = "Mob", MonsterId = 100, CharacterElement = Element.Earth };
+        var participants = new List<ServerCharacter> { mob };
+
+        _random.Setup(r => r.Next()).Returns(123);
+
+        // Act
+        _spawnManager.StartEncounter(session, participants, EncounterSource.Scripted);
+
+        // Assert
+        _combatManager.Verify(cm => cm.StartEncounter(
+            It.IsAny<int>(),
+            It.Is<IEnumerable<ServerCombatant>>(list => list.Contains(player) && list.Contains(pet) && list.Contains(mob)),
+            It.IsAny<int>()), Times.Once);
+    }
+
+    [Fact]
+    public void StartEncounter_AbortsIfElementNone()
+    {
+        // Arrange
+        var player = new ServerCharacter { Id = 1, Name = "Player", CharacterElement = Element.None }; // Invalid
+        var session = new TestClientSession { Character = player };
+        var mob = new ServerCharacter { Id = -2, Name = "Mob", MonsterId = 100, CharacterElement = Element.Earth };
+
+        // Act
+        var result = _spawnManager.StartEncounter(session, new List<ServerCharacter> { mob }, EncounterSource.Scripted);
+
+        // Assert
+        Assert.Equal(0, result);
+        _combatManager.Verify(cm => cm.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -117,7 +158,7 @@ public class SpawnManagerTests
 
             // Assert
             // Verify CombatManager.StartEncounter called
-            _combatManager.Verify(cm => cm.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Once);
+            _combatManager.Verify(cm => cm.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Once);
         }
         finally
         {

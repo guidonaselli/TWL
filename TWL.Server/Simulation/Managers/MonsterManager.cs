@@ -55,4 +55,6 @@ public class MonsterManager
     }
 
     public virtual MonsterDefinition? GetDefinition(int monsterId) => _definitions.GetValueOrDefault(monsterId);
+
+    public virtual IEnumerable<MonsterDefinition> GetAllDefinitions() => _definitions.Values;
 }

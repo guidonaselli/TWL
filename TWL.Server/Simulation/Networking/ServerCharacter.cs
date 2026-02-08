@@ -1,5 +1,7 @@
+using System.IO;
 using TWL.Server.Persistence;
 using TWL.Server.Security;
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Models;
 
 namespace TWL.Server.Simulation.Networking;
@@ -647,7 +649,8 @@ public class ServerCharacter : ServerCombatant
             ActivePetInstanceId = ActivePetInstanceId,
             MapId = MapId,
             X = X,
-            Y = Y
+            Y = Y,
+            Element = CharacterElement
         };
 
         lock (_progressLock)
@@ -719,6 +722,7 @@ public class ServerCharacter : ServerCombatant
         MapId = data.MapId;
         X = data.X;
         Y = data.Y;
+        CharacterElement = data.Element;
 
         lock (_progressLock)
         {
@@ -775,5 +779,18 @@ public class ServerCharacter : ServerCombatant
         }
 
         IsDirty = false;
+
+        // Legacy Support & Validation
+        if (MonsterId == 0 && CharacterElement == Element.None)
+        {
+            // If loading legacy data without Element, assign default (Earth)
+            // In a real scenario, we might want to prompt user or use random.
+            // For now, fail-safe to Earth to prevent lockout.
+            CharacterElement = Element.Earth;
+            Console.WriteLine($"Warning: Player {Name ?? "Unknown"} loaded with Element.None (Legacy). Defaulted to Earth.");
+
+            // Mark dirty to save the fix
+            IsDirty = true;
+        }
     }
 }

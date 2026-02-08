@@ -74,10 +74,10 @@ public class SpawnManagerTests
         // Arrange
         var mockMonsters = new Mock<MonsterManager>();
         mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
-            { MonsterId = 1, Name = "TestMob", BaseHp = 10 });
+            { MonsterId = 1, Name = "TestMob", BaseHp = 10, Element = Element.Earth });
 
         var mockCombat = new Mock<CombatManager>(null, null, null, null);
-        mockCombat.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()))
+        mockCombat.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()))
             .Verifiable();
 
         var mockRepo = new Mock<IPlayerRepository>();
@@ -110,7 +110,7 @@ public class SpawnManagerTests
         manager.OnPlayerMoved(session);
 
         // Assert
-        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()),
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()),
             Times.Once);
         Assert.NotNull(session.LastMessage);
         Assert.Equal(Opcode.EncounterStarted, session.LastMessage.Op);
@@ -124,7 +124,7 @@ public class SpawnManagerTests
         // Arrange
         var mockMonsters = new Mock<MonsterManager>();
         mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
-            { MonsterId = 1, Name = "TestMob", BaseHp = 10 });
+            { MonsterId = 1, Name = "TestMob", BaseHp = 10, Element = Element.Earth });
 
         var mockCombat = new Mock<CombatManager>(null, null, null, null);
 
@@ -157,7 +157,7 @@ public class SpawnManagerTests
         manager.OnPlayerMoved(session);
 
         // Assert
-        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()),
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()),
             Times.Never);
         Assert.Null(session.LastMessage);
 
@@ -170,7 +170,7 @@ public class SpawnManagerTests
         // Arrange
         var mockMonsters = new Mock<MonsterManager>();
         mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
-            { MonsterId = 1, Name = "TestMob", BaseHp = 10 });
+            { MonsterId = 1, Name = "TestMob", BaseHp = 10, Element = Element.Earth });
 
         var mockCombat = new Mock<CombatManager>(null, null, null, null);
         mockCombat.Setup(c => c.GetCombatant(It.IsAny<int>()))
@@ -206,7 +206,7 @@ public class SpawnManagerTests
         manager.OnPlayerMoved(session);
 
         // Assert
-        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Never);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Never);
         Assert.Null(session.LastMessage);
 
         Directory.Delete(tempDir, true);
@@ -218,29 +218,29 @@ public class SpawnManagerTests
         // Arrange
         var mockMonsters = new Mock<MonsterManager>();
         // Return different definitions to verify selection logic
-        mockMonsters.Setup(m => m.GetDefinition(1)).Returns(new MonsterDefinition { MonsterId = 1, Name = "Mob1", BaseHp = 10, EncounterWeight = 10 });
-        mockMonsters.Setup(m => m.GetDefinition(2)).Returns(new MonsterDefinition { MonsterId = 2, Name = "Mob2", BaseHp = 20, EncounterWeight = 10 });
+        mockMonsters.Setup(m => m.GetDefinition(1)).Returns(new MonsterDefinition { MonsterId = 1, Name = "Mob1", BaseHp = 10, EncounterWeight = 10, Element = Element.Earth });
+        mockMonsters.Setup(m => m.GetDefinition(2)).Returns(new MonsterDefinition { MonsterId = 2, Name = "Mob2", BaseHp = 20, EncounterWeight = 10, Element = Element.Water });
 
         // Capture results
         int encounterSeed1 = -1;
         int encounterSeed2 = -1;
-        List<ServerCharacter> participants1 = null;
-        List<ServerCharacter> participants2 = null;
+        List<ServerCombatant> participants1 = null;
+        List<ServerCombatant> participants2 = null;
 
         var mockCombat1 = new Mock<CombatManager>(null, null, null, null);
-        mockCombat1.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()))
-            .Callback<int, List<ServerCharacter>, int>((id, parts, seed) =>
+        mockCombat1.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()))
+            .Callback<int, IEnumerable<ServerCombatant>, int>((id, parts, seed) =>
             {
                 encounterSeed1 = seed;
-                participants1 = parts;
+                participants1 = parts.ToList();
             });
 
         var mockCombat2 = new Mock<CombatManager>(null, null, null, null);
-        mockCombat2.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()))
-             .Callback<int, List<ServerCharacter>, int>((id, parts, seed) =>
+        mockCombat2.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()))
+             .Callback<int, IEnumerable<ServerCombatant>, int>((id, parts, seed) =>
              {
                  encounterSeed2 = seed;
-                 participants2 = parts;
+                 participants2 = parts.ToList();
              });
 
         // Seed
@@ -310,7 +310,7 @@ public class SpawnManagerTests
 
         mockCombat.Setup(c => c.GetAllCombatants()).Returns(new List<ServerCombatant>
         {
-            new ServerCharacter { Id = 101, EncounterId = existingId, Team = Team.Enemy, MonsterId = 2 }
+            new ServerCharacter { Id = 101, EncounterId = existingId, Team = Team.Enemy, MonsterId = 2, CharacterElement = Element.Water }
         });
 
         var mockRepo = new Mock<IPlayerRepository>();
@@ -320,7 +320,7 @@ public class SpawnManagerTests
 
         var player = new ServerCharacter { Id = 1, Name = "TestPlayer", CharacterElement = Element.Earth };
         var session = new TestClientSession(player);
-        var enemies = new List<ServerCharacter> { new ServerCharacter { MonsterId = 1 } };
+        var enemies = new List<ServerCharacter> { new ServerCharacter { MonsterId = 1, CharacterElement = Element.Fire } };
 
         // Act
         var resultId = manager.StartEncounter(session, enemies, EncounterSource.Scripted);
@@ -345,14 +345,14 @@ public class SpawnManagerTests
 
         var player = new ServerCharacter { Id = 1, CharacterElement = Element.None };
         var session = new TestClientSession(player);
-        var enemies = new List<ServerCharacter> { new ServerCharacter { MonsterId = 1 } };
+        var enemies = new List<ServerCharacter> { new ServerCharacter { MonsterId = 1, CharacterElement = Element.Fire } };
 
         // Act
         var resultId = manager.StartEncounter(session, enemies, EncounterSource.Scripted);
 
         // Assert
         Assert.Equal(0, resultId);
-        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Never);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Never);
     }
 
     [Fact]
@@ -365,6 +365,7 @@ public class SpawnManagerTests
             MonsterId = 1,
             Name = "Mob",
             BaseHp = 10,
+            Element = Element.Earth,
             Behavior = new BehaviorProfile { PatrolSpeed = 0 } // Static mob
         });
 
@@ -405,7 +406,54 @@ public class SpawnManagerTests
         manager.Update(0.1f);
 
         // Assert
-        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<List<ServerCharacter>>(), It.IsAny<int>()), Times.Once);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Once);
+
+        Directory.Delete(tempDir, true);
+    }
+
+    [Fact]
+    public void SelectMonsters_ShouldIncludeAllowedFamilyIds()
+    {
+        // Arrange
+        var mockMonsters = new Mock<MonsterManager>();
+        mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns((MonsterDefinition?)null);
+        mockMonsters.Setup(m => m.GetAllDefinitions()).Returns(new List<MonsterDefinition>
+        {
+            new() { MonsterId = 1, FamilyId = 10, EncounterWeight = 10, Name = "FamMob1", BaseHp = 10, Element = Element.Earth },
+            new() { MonsterId = 2, FamilyId = 20, EncounterWeight = 10, Name = "FamMob2", BaseHp = 10, Element = Element.Earth }
+        });
+
+        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockRepo = new Mock<IPlayerRepository>();
+        var metrics = new ServerMetrics();
+        var playerService = new PlayerService(mockRepo.Object, metrics);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+
+        var config = new ZoneSpawnConfig
+        {
+            MapId = 1001,
+            RandomEncounterEnabled = true,
+            StepChance = 2.0f,
+            SpawnRegions = new List<SpawnRegion>
+            {
+                new() { X = 0, Y = 0, Width = 100, Height = 100, AllowedFamilyIds = new List<int> { 10 } }
+            }
+        };
+
+        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_fam_" + Guid.NewGuid());
+        Directory.CreateDirectory(tempDir);
+        File.WriteAllText(Path.Combine(tempDir, "1001.spawns.json"), JsonSerializer.Serialize(config));
+        manager.Load(tempDir);
+
+        var player = new ServerCharacter { Id = 1, MapId = 1001, X = 10, Y = 10, CharacterElement = Element.Earth };
+        var session = new TestClientSession(player);
+
+        // Act
+        manager.OnPlayerMoved(session);
+
+        // Assert
+        // Verify StartEncounter called with list containing FamMob1 (ID 1)
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.Is<IEnumerable<ServerCombatant>>(l => l.Any(x => x.Name == "FamMob1")), It.IsAny<int>()), Times.Once);
 
         Directory.Delete(tempDir, true);
     }
