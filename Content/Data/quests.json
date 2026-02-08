@@ -1335,5 +1335,68 @@
     },
     "Repeatability": "Daily",
     "MutualExclusionGroup": "DailyBounty_T1"
+  },
+  {
+    "QuestId": 3100,
+    "Title": "Duel Practice",
+    "Description": "Test your strength against another player.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "PvPKill",
+        "TargetName": "Player",
+        "RequiredCount": 1,
+        "Description": "Defeat a player in a duel."
+      }
+    ],
+    "Rewards": {
+      "Exp": 500,
+      "Gold": 100,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 3101,
+    "Title": "Teamwork",
+    "Description": "Join a party and hunt together.",
+    "Requirements": [
+      3100
+    ],
+    "PartyRules": "MustBeInParty",
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Wolf",
+        "RequiredCount": 3,
+        "Description": "Defeat 3 Wolves while in a party."
+      }
+    ],
+    "Rewards": {
+      "Exp": 600,
+      "Gold": 150,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 3102,
+    "Title": "Guild Service",
+    "Description": "Prove your loyalty to your guild.",
+    "Requirements": [
+      3101
+    ],
+    "GuildRules": "MustBeInGuild",
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Bandit",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Bandits while in a guild."
+      }
+    ],
+    "Rewards": {
+      "Exp": 1000,
+      "Gold": 200,
+      "Items": []
+    }
   }
 ]

@@ -127,6 +127,14 @@ public class ClientSession
             }
 
             var updated = QuestComponent.TryProgress("Kill", victim.Name, 1, monsterId);
+
+            // PvP Check
+            if (victim is ServerCharacter player && player.MonsterId == 0)
+            {
+                var pvpUpdates = QuestComponent.TryProgress("PvPKill", "Player", 1);
+                updated.AddRange(pvpUpdates);
+            }
+
             foreach (var qid in updated)
             {
                 _ = SendQuestUpdateAsync(qid);

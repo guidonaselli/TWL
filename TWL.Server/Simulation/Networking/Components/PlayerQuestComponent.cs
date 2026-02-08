@@ -491,23 +491,24 @@ public class PlayerQuestComponent
             // Party Rules
             if (!string.IsNullOrEmpty(def.PartyRules))
             {
-                // Infrastructure for Party Gating
-                // As Party system is not fully integrated yet, we assume character is Solo.
                 if (def.PartyRules.Contains("MustBeInParty"))
                 {
-                    return false;
+                    if (Character == null || !Character.PartyId.HasValue)
+                    {
+                        return false;
+                    }
                 }
-                // If rule is "SoloOnly", we pass.
             }
 
             // Guild Rules
             if (!string.IsNullOrEmpty(def.GuildRules))
             {
-                // Infrastructure for Guild Gating
-                // As Guild system is not fully integrated yet, we assume character is Guildless.
                 if (def.GuildRules.Contains("MustBeInGuild"))
                 {
-                    return false;
+                    if (Character == null || !Character.GuildId.HasValue)
+                    {
+                        return false;
+                    }
                 }
             }
 

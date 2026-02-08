@@ -5,6 +5,7 @@ using TWL.Server.Persistence.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Services.World.Handlers;
 using TWL.Server.Simulation.Managers;
+using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Services;
 
@@ -67,7 +68,7 @@ public class GenericTriggerHandlerTests
     [Fact]
     public void ExecuteEnter_Heal_UpdatesCharacterHp()
     {
-        var character = new ServerCharacter { Hp = 50, MaxHp = 100 };
+        var character = new ServerCharacter { Hp = 50, Con = 10 };
         var trigger = new ServerTrigger();
         trigger.Actions.Add(new TriggerAction("Heal", new Dictionary<string, string>
         {
@@ -82,7 +83,7 @@ public class GenericTriggerHandlerTests
     [Fact]
     public void ExecuteEnter_Damage_UpdatesCharacterHp()
     {
-        var character = new ServerCharacter { Hp = 50, MaxHp = 100 };
+        var character = new ServerCharacter { Hp = 50, Con = 10 };
         var trigger = new ServerTrigger();
         trigger.Actions.Add(new TriggerAction("Damage", new Dictionary<string, string>
         {
