@@ -169,4 +169,26 @@ public class EconomyHardeningTests : IDisposable
         // Since we tampered, verify it throws SecurityException (Fail Closed)
         Assert.Throws<System.Security.SecurityException>(() => new EconomyManager(_tempLedger));
     }
+
+    [Fact]
+    public void Ledger_ShouldLog_BindPolicy_And_Ownership()
+    {
+        // Item 3 is BindOnPickup (Cost 100)
+        _character.PremiumCurrency = 200;
+        var opId = "bind_log_test";
+        var res = _economy.BuyShopItem(_character, 3, 1, opId);
+
+        Assert.True(res.Success);
+        Assert.Equal(100, _character.PremiumCurrency);
+
+        // Flush
+        _economy.Dispose();
+
+        // Read Log
+        var log = File.ReadAllText(_tempLedger);
+
+        // Verify Content
+        Assert.Contains("Policy:BindOnPickup", log);
+        Assert.Contains($"BoundTo:{_character.Id}", log);
+    }
 }
