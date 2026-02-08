@@ -249,6 +249,80 @@ public class ServerCharacter : ServerCombatant
         }
     }
 
+    public bool RemoveItemExact(int itemId, int quantity, BindPolicy policy, int? boundToId)
+    {
+        lock (_inventory)
+        {
+            // Strict match on Policy and BoundToId
+            long total = 0;
+            var candidates = new List<Item>();
+            foreach (var item in _inventory)
+            {
+                if (item.ItemId == itemId && item.Policy == policy && item.BoundToId == boundToId)
+                {
+                    total += item.Quantity;
+                    candidates.Add(item);
+                }
+            }
+
+            if (total < quantity)
+            {
+                return false;
+            }
+
+            var remainingToRemove = quantity;
+            long totalRemoved = 0;
+            foreach (var item in candidates)
+            {
+                if (remainingToRemove <= 0) break;
+
+                var toTake = Math.Min(item.Quantity, remainingToRemove);
+                item.Quantity -= toTake;
+                remainingToRemove -= toTake;
+                totalRemoved += toTake;
+
+                if (item.Quantity <= 0)
+                {
+                    _inventory.Remove(item);
+                }
+            }
+
+            if (_itemTotalQuantities.TryGetValue(itemId, out var currentTotal))
+            {
+                var newTotal = currentTotal - totalRemoved;
+                if (newTotal <= 0)
+                {
+                    _itemTotalQuantities.Remove(itemId);
+                }
+                else
+                {
+                    _itemTotalQuantities[itemId] = newTotal;
+                }
+            }
+
+            IsDirty = true;
+            return true;
+        }
+    }
+
+    public bool CanAddItem(int itemId, int quantity, BindPolicy policy = BindPolicy.Unbound, int? boundToId = null)
+    {
+        lock (_inventory)
+        {
+            // 1. Check if stackable
+            var existing = _inventory.Find(i => i.ItemId == itemId && i.Policy == policy && i.BoundToId == boundToId);
+            if (existing != null)
+            {
+                // Assuming unlimited stack size for simplicity or check MaxStack if needed
+                // ServerCharacter.AddItem check ignores MaxStack, so we do too.
+                return true;
+            }
+
+            // 2. Check for free slots
+            return _inventory.Count < MaxInventorySlots;
+        }
+    }
+
     public bool SetActivePet(string instanceId)
     {
         lock (_pets)
