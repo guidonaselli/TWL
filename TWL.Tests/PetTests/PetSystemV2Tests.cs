@@ -4,6 +4,7 @@ using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Domain.Skills;

@@ -122,6 +122,10 @@ public class ServerCharacter : ServerCombatant
     public float GatheringBonus { get; set; }
     public float CraftingAssistBonus { get; set; }
 
+    // Social
+    public int? PartyId { get; set; }
+    public int? GuildId { get; set; }
+
     // Legacy/Alias support if needed, but preferable to use MaxHp from base
     public int MaxHealth => MaxHp;
 
