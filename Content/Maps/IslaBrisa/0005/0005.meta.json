@@ -19,5 +19,5 @@
   },
   "WorldFlagsSet": [],
   "WorldFlagsCleared": [],
-  "Notes": "TODO: Add Lighthouse structure (Props_High). Add view of Puerto Roca (background or details). Connect properly to Map 0002 logic."
+  "Notes": "Lighthouse structure added as placeholder (Props_High). Transition to Map 0002 operational."
 }
