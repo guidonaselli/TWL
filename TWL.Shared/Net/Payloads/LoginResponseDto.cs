@@ -8,5 +8,6 @@ public class LoginResponseDto
     public float PosY { get; set; }
     public int Hp { get; set; }
     public int MaxHp { get; set; }
+    public int MapId { get; set; }
     public string ErrorMessage { get; set; }
 }

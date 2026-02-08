@@ -70,6 +70,7 @@ public class ClientSession
         _worldTriggerService = worldTriggerService;
         _spawnManager = spawnManager;
         QuestComponent = new PlayerQuestComponent(questManager, petManager);
+        QuestComponent.OnFlagAdded += OnQuestFlagAdded;
         _rateLimiter = new RateLimiter();
 
         if (_combatManager != null)
@@ -79,6 +80,32 @@ public class ClientSession
     }
 
     public PlayerQuestComponent QuestComponent { get; protected set; }
+
+    private void OnQuestFlagAdded(string flag)
+    {
+        if (Character != null)
+        {
+            _worldTriggerService.OnFlagChanged(Character, flag);
+        }
+    }
+
+    private void OnMapChanged(int mapId)
+    {
+        if (Character != null)
+        {
+            _ = SendAsync(new NetMessage
+            {
+                Op = Opcode.MapChange,
+                JsonPayload = JsonSerializer.Serialize(new MapChangeDto
+                {
+                    MapId = mapId,
+                    X = Character.X,
+                    Y = Character.Y
+                }, _jsonOptions)
+            });
+        }
+    }
+
     public ServerCharacter? Character { get; protected set; }
 
     private void OnCombatantDeath(ServerCombatant victim)
@@ -158,6 +185,16 @@ public class ClientSession
             if (_combatManager != null)
             {
                 _combatManager.OnCombatantDeath -= OnCombatantDeath;
+            }
+
+            if (Character != null)
+            {
+                Character.OnMapChanged -= OnMapChanged;
+            }
+
+            if (QuestComponent != null)
+            {
+                QuestComponent.OnFlagAdded -= OnQuestFlagAdded;
             }
 
             if (UserId > 0)
@@ -537,15 +574,13 @@ public class ClientSession
             // If already known, just set flag
             if (Character.KnownSkills.Contains(skillId))
             {
-                QuestComponent.Flags.Add(gsFlag);
-                QuestComponent.IsDirty = true;
+                QuestComponent.AddFlag(gsFlag);
                 return;
             }
 
             if (Character.LearnSkill(skillId))
             {
-                QuestComponent.Flags.Add(gsFlag);
-                QuestComponent.IsDirty = true;
+                QuestComponent.AddFlag(gsFlag);
                 Console.WriteLine($"[GS] Granted {skillName} ({skillId}) to {Character.Name} ({Character.Id}).");
             }
         }
@@ -681,6 +716,7 @@ public class ClientSession
 
                 QuestComponent.LoadSaveData(data.Quests);
                 QuestComponent.Character = Character;
+                Character.OnMapChanged += OnMapChanged;
                 Console.WriteLine($"Restored session for {loginDto.Username} ({UserId})");
             }
             else
@@ -694,6 +730,7 @@ public class ClientSession
                     CharacterElement = Element.Earth // Default to Earth to prevent Element.None
                 };
                 QuestComponent.Character = Character;
+                Character.OnMapChanged += OnMapChanged;
             }
 
             // Migration: Ensure Element is not None
@@ -719,7 +756,8 @@ public class ClientSession
                     PosX = Character?.X ?? 0f,
                     PosY = Character?.Y ?? 0f,
                     Hp = Character?.Hp ?? 0,
-                    MaxHp = Character?.MaxHp ?? 0
+                    MaxHp = Character?.MaxHp ?? 0,
+                    MapId = Character?.MapId ?? 0
                 }, _jsonOptions)
             });
         }

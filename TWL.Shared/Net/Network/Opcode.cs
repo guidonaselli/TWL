@@ -9,6 +9,7 @@ public enum Opcode
     // Movimiento
     MoveRequest,
     MoveBroadcast,
+    MapChange,
 
     // Combate
     AttackRequest,
