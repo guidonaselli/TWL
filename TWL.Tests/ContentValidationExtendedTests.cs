@@ -21,60 +21,16 @@ public class ContentValidationExtendedTests
     private ContentIndex LoadContent()
     {
         var index = new ContentIndex();
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            IncludeFields = true
-        };
-        options.Converters.Add(new JsonStringEnumConverter());
 
-        var root = GetContentRoot();
+        index.Skills = ContentTestHelper.LoadSkills();
+        index.SkillMap = index.Skills.ToDictionary(s => s.SkillId);
 
-        // Load Skills
-        var skillsPath = Path.Combine(root, "skills.json");
-        if (File.Exists(skillsPath))
-        {
-            var json = File.ReadAllText(skillsPath);
-            index.Skills = JsonSerializer.Deserialize<List<Skill>>(json, options) ?? new List<Skill>();
-            index.SkillMap = index.Skills.ToDictionary(s => s.SkillId);
-        }
-
-        // Load Quests (Multiple files)
-        var questFiles = Directory.GetFiles(root, "quests*.json");
-        foreach (var file in questFiles)
-        {
-            var json = File.ReadAllText(file);
-            var quests = JsonSerializer.Deserialize<List<QuestDefinition>>(json, options) ?? new List<QuestDefinition>();
-            index.Quests.AddRange(quests);
-        }
+        index.Quests = ContentTestHelper.LoadQuests();
         index.QuestMap = index.Quests.ToDictionary(q => q.QuestId);
 
-        // Load Pets
-        var petsPath = Path.Combine(root, "pets.json");
-        if (File.Exists(petsPath))
-        {
-            var json = File.ReadAllText(petsPath);
-            index.Pets = JsonSerializer.Deserialize<List<PetDefinition>>(json, options) ?? new List<PetDefinition>();
-        }
+        index.Pets = ContentTestHelper.LoadPets();
 
         return index;
-    }
-
-    private string GetContentRoot()
-    {
-        var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-        var current = new DirectoryInfo(baseDir);
-        for (int i = 0; i < 6; i++)
-        {
-            if (current == null) break;
-            var candidate = Path.Combine(current.FullName, "Content/Data");
-            if (Directory.Exists(candidate))
-            {
-                return candidate;
-            }
-            current = current.Parent;
-        }
-        throw new DirectoryNotFoundException($"Could not find Content/Data directory starting from {baseDir}");
     }
 
     [Fact]
