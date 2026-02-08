@@ -61,6 +61,41 @@ public class WorldTriggerService : IWorldTriggerService
 
     public void RegisterHandler(ITriggerHandler handler) => _handlers.Add(handler);
 
+    public void OnFlagChanged(ServerCharacter character, string flag)
+    {
+        var map = _mapRegistry.GetMap(character.MapId);
+        if (map == null)
+        {
+            return;
+        }
+
+        foreach (var trigger in map.Triggers)
+        {
+            if (trigger.ActivationType == TriggerActivationType.Flag)
+            {
+                // Check if this trigger is activated by the specific flag
+                if (trigger.Properties.TryGetValue("ReqFlag", out var reqFlag))
+                {
+                    if (reqFlag == flag)
+                    {
+                        if (IsOnCooldown(map.Id, trigger.Id)) continue;
+
+                        if (!CheckConditions(character, trigger)) continue;
+
+                        var handler = _handlers.FirstOrDefault(h => h.CanHandle(trigger.Type));
+                        if (handler != null)
+                        {
+                            ApplyCooldown(map.Id, trigger);
+                            _logger.LogDebug("Character {CharId} activated flag trigger {TriggerId} ({Type})",
+                                character.Id, trigger.Id, trigger.Type);
+                            handler.ExecuteEnter(character, trigger, this);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void OnEnterTrigger(ServerCharacter character, int mapId, string triggerId)
     {
         var map = _mapRegistry.GetMap(mapId);

@@ -4,5 +4,6 @@ public enum TriggerActivationType
 {
     Enter = 0,
     Interact = 1,
-    Timer = 2
+    Timer = 2,
+    Flag = 3
 }

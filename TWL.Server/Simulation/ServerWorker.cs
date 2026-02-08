@@ -98,6 +98,7 @@ public class ServerWorker : IHostedService
         _worldTriggerService.RegisterHandler(new QuestTriggerHandler(_playerService));
         // Manual resolution for now until DI registration for handlers is improved
         _worldTriggerService.RegisterHandler(new DamageTriggerHandler(_loggerFactory.CreateLogger<DamageTriggerHandler>(), _playerService));
+        _worldTriggerService.RegisterHandler(new GenericTriggerHandler(_playerService, _spawnManager, _monsterManager));
 
         if (Directory.Exists("Content/Maps"))
         {

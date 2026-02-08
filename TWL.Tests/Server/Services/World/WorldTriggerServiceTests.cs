@@ -122,4 +122,57 @@ public class WorldTriggerServiceTests
         _service.OnEnterTrigger(character, 1, "T1");
         _handlerMock.Verify(h => h.ExecuteEnter(character, trigger, _service), Times.Exactly(2));
     }
+
+    [Fact]
+    public void OnFlagChanged_ActivatesFlagTrigger()
+    {
+        var map = new ServerMap { Id = 1 };
+        var trigger = new ServerTrigger
+        {
+            Id = "FlagT1",
+            Type = "TestType",
+            ActivationType = TriggerActivationType.Flag
+        };
+        trigger.Properties["ReqFlag"] = "MyFlag";
+        map.Triggers.Add(trigger);
+
+        _mapRegistryMock.Setup(m => m.GetMap(1)).Returns(map);
+        _handlerMock.Setup(h => h.CanHandle("TestType")).Returns(true);
+        _service.RegisterHandler(_handlerMock.Object);
+
+        var character = new ServerCharacter { MapId = 1 };
+
+        // Act
+        _service.OnFlagChanged(character, "MyFlag");
+
+        // Assert
+        _handlerMock.Verify(h => h.ExecuteEnter(character, trigger, _service), Times.Once);
+    }
+
+    [Fact]
+    public void OnFlagChanged_IgnoresDifferentFlag()
+    {
+        var map = new ServerMap { Id = 1 };
+        var trigger = new ServerTrigger
+        {
+            Id = "FlagT1",
+            Type = "TestType",
+            ActivationType = TriggerActivationType.Flag
+        };
+        trigger.Properties["ReqFlag"] = "MyFlag";
+        map.Triggers.Add(trigger);
+
+        _mapRegistryMock.Setup(m => m.GetMap(1)).Returns(map);
+        _handlerMock.Setup(h => h.CanHandle("TestType")).Returns(true);
+        _service.RegisterHandler(_handlerMock.Object);
+
+        var character = new ServerCharacter { MapId = 1 };
+
+        // Act
+        _service.OnFlagChanged(character, "OtherFlag");
+
+        // Assert
+        _handlerMock.Verify(h => h.ExecuteEnter(It.IsAny<ServerCharacter>(), It.IsAny<ServerTrigger>(), _service),
+            Times.Never);
+    }
 }

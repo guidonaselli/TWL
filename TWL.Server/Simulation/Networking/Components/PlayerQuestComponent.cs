@@ -34,6 +34,33 @@ public class PlayerQuestComponent
     // Player Flags
     public HashSet<string> Flags { get; } = new();
 
+    public event Action<string>? OnFlagAdded;
+    public event Action<string>? OnFlagRemoved;
+
+    public void AddFlag(string flag)
+    {
+        lock (_lock)
+        {
+            if (Flags.Add(flag))
+            {
+                OnFlagAdded?.Invoke(flag);
+                IsDirty = true;
+            }
+        }
+    }
+
+    public void RemoveFlag(string flag)
+    {
+        lock (_lock)
+        {
+            if (Flags.Remove(flag))
+            {
+                OnFlagRemoved?.Invoke(flag);
+                IsDirty = true;
+            }
+        }
+    }
+
     public Dictionary<int, DateTime> QuestCompletionTimes { get; } = new();
     public Dictionary<int, DateTime> QuestStartTimes { get; } = new();
 
@@ -723,12 +750,12 @@ public class PlayerQuestComponent
             {
                 foreach (var f in def.FlagsSet)
                 {
-                    Flags.Add(f);
+                    AddFlag(f);
                 }
 
                 foreach (var f in def.FlagsClear)
                 {
-                    Flags.Remove(f);
+                    RemoveFlag(f);
                 }
 
                 if (Character != null)

@@ -203,6 +203,54 @@ public class MapLoader
             trigger.Conditions.Add(new FlagCondition(reqFlag, inverted));
         }
 
+        // Parse Actions
+        if (trigger.Properties.TryGetValue("TeleportToMapId", out var tpMapId))
+        {
+            var action = new TriggerAction("Teleport", new Dictionary<string, string> { { "MapId", tpMapId } });
+            if (trigger.Properties.TryGetValue("TeleportToX", out var tpX)) action.Parameters["X"] = tpX;
+            if (trigger.Properties.TryGetValue("TeleportToY", out var tpY)) action.Parameters["Y"] = tpY;
+            trigger.Actions.Add(action);
+        }
+
+        if (trigger.Properties.TryGetValue("SpawnMonsterId", out var spawnMobId))
+        {
+            var action = new TriggerAction("Spawn", new Dictionary<string, string> { { "MonsterId", spawnMobId } });
+            if (trigger.Properties.TryGetValue("SpawnCount", out var spawnCount)) action.Parameters["Count"] = spawnCount;
+            trigger.Actions.Add(action);
+        }
+
+        if (trigger.Properties.TryGetValue("SetFlag", out var setFlag))
+        {
+            trigger.Actions.Add(new TriggerAction("SetFlag", new Dictionary<string, string> { { "Flag", setFlag } }));
+        }
+
+        if (trigger.Properties.TryGetValue("RemoveFlag", out var removeFlag))
+        {
+            trigger.Actions.Add(new TriggerAction("RemoveFlag", new Dictionary<string, string> { { "Flag", removeFlag } }));
+        }
+
+        if (trigger.Properties.TryGetValue("GiveItemId", out var giveItemId))
+        {
+            var action = new TriggerAction("GiveItem", new Dictionary<string, string> { { "ItemId", giveItemId } });
+            if (trigger.Properties.TryGetValue("GiveItemCount", out var giveItemCount)) action.Parameters["Count"] = giveItemCount;
+            trigger.Actions.Add(action);
+        }
+
+        if (trigger.Properties.TryGetValue("HealAmount", out var healAmount))
+        {
+            trigger.Actions.Add(new TriggerAction("Heal", new Dictionary<string, string> { { "Amount", healAmount } }));
+        }
+
+        if (trigger.Properties.TryGetValue("DamageAmount", out var damageAmount))
+        {
+            trigger.Actions.Add(new TriggerAction("Damage", new Dictionary<string, string> { { "Amount", damageAmount } }));
+        }
+
+        if (trigger.Properties.TryGetValue("Message", out var msg))
+        {
+            trigger.Actions.Add(new TriggerAction("Message", new Dictionary<string, string> { { "Text", msg } }));
+        }
+
         return trigger;
     }
 
