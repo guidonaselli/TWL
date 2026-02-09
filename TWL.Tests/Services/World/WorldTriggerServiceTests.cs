@@ -98,7 +98,13 @@ public class WorldTriggerServiceTests
 
         Action? scheduledAction = null;
         _schedulerMock.Setup(s => s.ScheduleRepeating(It.IsAny<Action>(), It.IsAny<TimeSpan>(), It.IsAny<string>()))
-            .Callback<Action, TimeSpan, string>((act, _, _) => scheduledAction = act);
+            .Callback<Action, TimeSpan, string>((act, _, name) =>
+            {
+                if (name.StartsWith("Trigger-"))
+                {
+                    scheduledAction = act;
+                }
+            });
 
         var handlerMock = new Mock<ITriggerHandler>();
         handlerMock.Setup(h => h.CanHandle("TestTimer")).Returns(true);

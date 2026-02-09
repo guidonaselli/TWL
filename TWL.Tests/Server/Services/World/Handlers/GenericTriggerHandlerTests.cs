@@ -35,7 +35,7 @@ public class GenericTriggerHandlerTests
 
         _spawnManagerMock = new Mock<SpawnManager>(_monsterManagerMock.Object, _combatManagerMock.Object, random.Object, _playerServiceMock.Object);
 
-        _handler = new GenericTriggerHandler(_playerServiceMock.Object, _spawnManagerMock.Object, _monsterManagerMock.Object);
+        _handler = new GenericTriggerHandler(_playerServiceMock.Object, _spawnManagerMock.Object);
     }
 
     [Fact]
@@ -109,5 +109,24 @@ public class GenericTriggerHandlerTests
         _handler.ExecuteEnter(character, trigger, Mock.Of<IWorldTriggerService>());
 
         Assert.Contains(character.Inventory, i => i.ItemId == 101 && i.Quantity == 5);
+    }
+
+    [Fact]
+    public void ExecuteEnter_Spawn_CallsStartScriptedEncounter()
+    {
+        var character = new ServerCharacter { Id = 123 };
+        var trigger = new ServerTrigger();
+        trigger.Actions.Add(new TriggerAction("Spawn", new Dictionary<string, string>
+        {
+            { "MonsterId", "999" },
+            { "Count", "2" }
+        }));
+
+        var sessionMock = new Mock<ClientSession>();
+        _playerServiceMock.Setup(s => s.GetSession(123)).Returns(sessionMock.Object);
+
+        _handler.ExecuteEnter(character, trigger, Mock.Of<IWorldTriggerService>());
+
+        _spawnManagerMock.Verify(s => s.StartScriptedEncounter(sessionMock.Object, 999, 2), Times.Once);
     }
 }

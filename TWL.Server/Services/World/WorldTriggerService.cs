@@ -16,6 +16,8 @@ public class WorldTriggerService : IWorldTriggerService
     private readonly PlayerService _playerService;
     private readonly IWorldScheduler _scheduler;
     private readonly Dictionary<(int, string), long> _triggerCooldowns = new();
+    private readonly Dictionary<string, List<(int MapId, ServerTrigger Trigger)>> _triggersByFlag = new();
+    private readonly Dictionary<int, List<ServerTrigger>> _triggersByMap = new();
     private bool _started;
 
     public WorldTriggerService(ILogger<WorldTriggerService> logger, ServerMetrics metrics, PlayerService playerService,
@@ -33,10 +35,28 @@ public class WorldTriggerService : IWorldTriggerService
         if (_started) return;
         _started = true;
 
+        _logger.LogInformation("Indexing triggers...");
         foreach (var map in _mapRegistry.GetAllMaps())
         {
+            _triggersByMap[map.Id] = map.Triggers;
+
             foreach (var trigger in map.Triggers)
             {
+                // Index Flag Triggers
+                if (trigger.ActivationType == TriggerActivationType.Flag)
+                {
+                    if (trigger.Properties.TryGetValue("ReqFlag", out var reqFlag) && !string.IsNullOrEmpty(reqFlag))
+                    {
+                        if (!_triggersByFlag.TryGetValue(reqFlag, out var list))
+                        {
+                            list = new List<(int, ServerTrigger)>();
+                            _triggersByFlag[reqFlag] = list;
+                        }
+                        list.Add((map.Id, trigger));
+                    }
+                }
+
+                // Schedule Timer Triggers
                 if (trigger.ActivationType == TriggerActivationType.Timer && trigger.IntervalMs > 0)
                 {
                     _scheduler.ScheduleRepeating(() =>
@@ -57,40 +77,51 @@ public class WorldTriggerService : IWorldTriggerService
                 }
             }
         }
+
+        // Schedule cleanup task
+        _scheduler.ScheduleRepeating(() => Update(), TimeSpan.FromSeconds(60), "WorldTriggerService.Update");
     }
 
     public void RegisterHandler(ITriggerHandler handler) => _handlers.Add(handler);
 
-    public void OnFlagChanged(ServerCharacter character, string flag)
+    // Periodically cleanup expired cooldowns
+    private void Update()
     {
-        var map = _mapRegistry.GetMap(character.MapId);
-        if (map == null)
+        var now = _scheduler.CurrentTick;
+        var toRemove = new List<(int, string)>();
+        foreach (var kvp in _triggerCooldowns)
         {
-            return;
+            if (kvp.Value < now)
+            {
+                toRemove.Add(kvp.Key);
+            }
         }
 
-        foreach (var trigger in map.Triggers)
+        foreach (var key in toRemove)
         {
-            if (trigger.ActivationType == TriggerActivationType.Flag)
+            _triggerCooldowns.Remove(key);
+        }
+    }
+
+    public void OnFlagChanged(ServerCharacter character, string flag)
+    {
+        if (_triggersByFlag.TryGetValue(flag, out var triggers))
+        {
+            foreach (var (mapId, trigger) in triggers)
             {
-                // Check if this trigger is activated by the specific flag
-                if (trigger.Properties.TryGetValue("ReqFlag", out var reqFlag))
+                if (mapId != character.MapId) continue;
+
+                if (IsOnCooldown(mapId, trigger.Id)) continue;
+
+                if (!CheckConditions(character, trigger)) continue;
+
+                var handler = _handlers.FirstOrDefault(h => h.CanHandle(trigger.Type));
+                if (handler != null)
                 {
-                    if (reqFlag == flag)
-                    {
-                        if (IsOnCooldown(map.Id, trigger.Id)) continue;
-
-                        if (!CheckConditions(character, trigger)) continue;
-
-                        var handler = _handlers.FirstOrDefault(h => h.CanHandle(trigger.Type));
-                        if (handler != null)
-                        {
-                            ApplyCooldown(map.Id, trigger);
-                            _logger.LogDebug("Character {CharId} activated flag trigger {TriggerId} ({Type})",
-                                character.Id, trigger.Id, trigger.Type);
-                            handler.ExecuteEnter(character, trigger, this);
-                        }
-                    }
+                    ApplyCooldown(mapId, trigger);
+                    _logger.LogDebug("Character {CharId} activated flag trigger {TriggerId} ({Type})",
+                        character.Id, trigger.Id, trigger.Type);
+                    handler.ExecuteEnter(character, trigger, this);
                 }
             }
         }
@@ -206,14 +237,18 @@ public class WorldTriggerService : IWorldTriggerService
 
     public void CheckTriggers(ServerCharacter character)
     {
-        var map = _mapRegistry.GetMap(character.MapId);
-        if (map == null)
+        if (!_triggersByMap.TryGetValue(character.MapId, out var triggers))
         {
             return;
         }
 
-        foreach (var trigger in map.Triggers)
+        foreach (var trigger in triggers)
         {
+            if (trigger.ActivationType != TriggerActivationType.Enter)
+            {
+                continue;
+            }
+
             // Simple AABB check
             if (character.X >= trigger.X && character.X < trigger.X + trigger.Width &&
                 character.Y >= trigger.Y && character.Y < trigger.Y + trigger.Height)
