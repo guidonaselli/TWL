@@ -174,7 +174,16 @@ public class EconomyHardeningTests : IDisposable
     public void Ledger_ShouldLog_BindPolicy_And_Ownership()
     {
         // Item 3 is BindOnPickup (Cost 100)
-        _character.PremiumCurrency = 200;
+        // Reset to 200 (Default is 1000)
+        if (_character.PremiumCurrency > 200)
+        {
+            _character.TryConsumePremiumCurrency(_character.PremiumCurrency - 200);
+        }
+        else if (_character.PremiumCurrency < 200)
+        {
+            _character.AddPremiumCurrency(200 - _character.PremiumCurrency);
+        }
+
         var opId = "bind_log_test";
         var res = _economy.BuyShopItem(_character, 3, 1, opId);
 

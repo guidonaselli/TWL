@@ -216,9 +216,11 @@ public class AutoBattleManagerTests
     {
         var actor = CreateActor(1, Team.Player);
         var weakAlly = CreateActor(2, Team.Player);
-        weakAlly.Atk = 10;
+        // Atk = Str * 2. We want Atk ~ 10, so Str = 5.
+        weakAlly.Str = 5;
         var strongAlly = CreateActor(3, Team.Player);
-        strongAlly.Atk = 50; // Highest ATK
+        // We want Atk ~ 50, so Str = 25.
+        strongAlly.Str = 25; // Highest ATK
         var enemy = CreateActor(4, Team.Enemy);
 
         // Buff Atk Skill
