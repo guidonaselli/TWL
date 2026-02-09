@@ -51,9 +51,10 @@
     - **Entities:** Capitana Maren, Dr. Calloway.
 
 - [x] **0002 - Costa de Mareas**
-    - **Status:** Implemented (Skeleton)
+    - **Status:** Implemented
     - **Type:** Adventure Field
     - **Connections:** 0001 (Playa del Naufragio), 0003 (Sendero de la Selva)
+    - **Mobs:** Coast Crab (2001), Tide Crab (2002), Root Vine (2009).
 
 - [x] **0003 - Sendero de la Selva**
     - **Status:** Implemented
