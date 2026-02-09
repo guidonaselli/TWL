@@ -139,20 +139,9 @@ public class CombatManager
             {
                 var chance = effect.Chance;
 
-                if (skill.HitRules != null && effect.Tag == SkillEffectTag.Seal)
+                if (skill.HitRules != null && (effect.Tag == SkillEffectTag.Seal || effect.Tag == SkillEffectTag.DebuffStats))
                 {
-                    // Basic formula: Base + (Int - Wis)*0.01 (clamped)
-                    var statDiff = (attacker.Int - target.Wis) * 0.01f;
-                    chance = skill.HitRules.BaseChance + statDiff;
-                    if (chance < skill.HitRules.MinChance)
-                    {
-                        chance = skill.HitRules.MinChance;
-                    }
-
-                    if (chance > skill.HitRules.MaxChance)
-                    {
-                        chance = skill.HitRules.MaxChance;
-                    }
+                    chance = CalculateHitChance(attacker, target, skill.HitRules);
                 }
 
                 var resist = false;
@@ -279,6 +268,53 @@ public class CombatManager
                 }
             }
         }
+    }
+
+    private float CalculateHitChance(ServerCombatant attacker, ServerCombatant target, SkillHitRules rules)
+    {
+        var chance = rules.BaseChance;
+
+        if (!string.IsNullOrEmpty(rules.StatDependence))
+        {
+            var parts = rules.StatDependence.Split('-');
+            if (parts.Length > 0)
+            {
+                var stat1 = GetStatValue(attacker, parts[0]);
+                var stat2 = parts.Length > 1 ? GetStatValue(target, parts[1]) : 0;
+
+                chance += (stat1 - stat2) * 0.01f;
+            }
+        }
+
+        if (chance < rules.MinChance)
+        {
+            chance = rules.MinChance;
+        }
+
+        if (chance > rules.MaxChance)
+        {
+            chance = rules.MaxChance;
+        }
+
+        return chance;
+    }
+
+    private int GetStatValue(ServerCombatant combatant, string statName)
+    {
+        return statName.ToLowerInvariant() switch
+        {
+            "str" => combatant.Str,
+            "con" => combatant.Con,
+            "int" => combatant.Int,
+            "wis" => combatant.Wis,
+            "agi" => combatant.Agi,
+            "atk" => combatant.Atk,
+            "def" => combatant.Def,
+            "mat" => combatant.Mat,
+            "mdf" => combatant.Mdf,
+            "spd" => combatant.Spd,
+            _ => 0
+        };
     }
 
     public virtual List<ServerCombatant> GetAllCombatants() => _combatants.Values.ToList();

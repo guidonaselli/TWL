@@ -142,23 +142,27 @@ public abstract class ServerCombatant
         }
     }
 
-    public void CleanseDebuffs(IStatusEngine engine)
+    public void CleanseDebuffs(IStatusEngine engine, Predicate<StatusEffectInstance>? match = null)
     {
+        match ??= e => e.Tag == SkillEffectTag.DebuffStats ||
+                       e.Tag == SkillEffectTag.Burn ||
+                       e.Tag == SkillEffectTag.Seal;
+
         lock (_statusLock)
         {
-            engine.RemoveAll(_statusEffects, e => e.Tag == SkillEffectTag.DebuffStats ||
-                                                  e.Tag == SkillEffectTag.Burn ||
-                                                  e.Tag == SkillEffectTag.Seal);
+            engine.RemoveAll(_statusEffects, match);
             IsDirty = true;
         }
     }
 
-    public void DispelBuffs(IStatusEngine engine)
+    public void DispelBuffs(IStatusEngine engine, Predicate<StatusEffectInstance>? match = null)
     {
+        match ??= e => e.Tag == SkillEffectTag.BuffStats ||
+                       e.Tag == SkillEffectTag.Shield;
+
         lock (_statusLock)
         {
-            engine.RemoveAll(_statusEffects, e => e.Tag == SkillEffectTag.BuffStats ||
-                                                  e.Tag == SkillEffectTag.Shield);
+            engine.RemoveAll(_statusEffects, match);
             IsDirty = true;
         }
     }
