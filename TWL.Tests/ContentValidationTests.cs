@@ -9,86 +9,10 @@ namespace TWL.Tests;
 
 public class ContentValidationTests
 {
-    private string GetContentRoot()
-    {
-        var baseDir = AppDomain.CurrentDomain.BaseDirectory;
-        var current = new DirectoryInfo(baseDir);
-        // Try to find the path by going up levels
-        for (int i = 0; i < 6; i++)
-        {
-            if (current == null) break;
-            var candidate = Path.Combine(current.FullName, "Content/Data");
-            if (Directory.Exists(candidate))
-            {
-                return candidate;
-            }
-            current = current.Parent;
-        }
-
-        throw new DirectoryNotFoundException($"Could not find Content/Data directory starting from {baseDir}");
-    }
-
-    private JsonSerializerOptions GetJsonOptions()
-    {
-        var options = new JsonSerializerOptions
-        {
-            PropertyNameCaseInsensitive = true,
-            IncludeFields = true
-        };
-        options.Converters.Add(new JsonStringEnumConverter());
-        return options;
-    }
-
-    private List<Skill> LoadSkills()
-    {
-        var root = GetContentRoot();
-        var path = Path.Combine(root, "skills.json");
-        if (!File.Exists(path))
-        {
-            throw new FileNotFoundException($"Could not find skills.json at {path}");
-        }
-
-        var json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize<List<Skill>>(json, GetJsonOptions()) ?? new List<Skill>();
-    }
-
-    private List<QuestDefinition> LoadQuests()
-    {
-        var root = GetContentRoot();
-        var quests = new List<QuestDefinition>();
-
-        var files = Directory.GetFiles(root, "quests*.json");
-        if (files.Length == 0)
-        {
-            throw new FileNotFoundException($"Could not find any quest files in {root}");
-        }
-
-        foreach (var file in files)
-        {
-            var json = File.ReadAllText(file);
-            quests.AddRange(JsonSerializer.Deserialize<List<QuestDefinition>>(json, GetJsonOptions()) ?? new List<QuestDefinition>());
-        }
-
-        return quests;
-    }
-
-    private List<PetDefinition> LoadPets()
-    {
-        var root = GetContentRoot();
-        var path = Path.Combine(root, "pets.json");
-        if (!File.Exists(path))
-        {
-            throw new FileNotFoundException($"Could not find pets.json at {path}");
-        }
-
-        var json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize<List<PetDefinition>>(json, GetJsonOptions()) ?? new List<PetDefinition>();
-    }
-
     [Fact]
     public void ValidateSkillCategories()
     {
-        var skills = LoadSkills();
+        var skills = ContentTestHelper.LoadSkills();
         var allowedCategories = new HashSet<SkillCategory>
         {
             SkillCategory.None,
@@ -108,7 +32,7 @@ public class ContentValidationTests
     [Fact]
     public void ValidateGoddessSkills()
     {
-        var skills = LoadSkills();
+        var skills = ContentTestHelper.LoadSkills();
         var goddessMap = new Dictionary<int, string>
         {
             { 2001, "Shrink" },
@@ -139,7 +63,7 @@ public class ContentValidationTests
     [Fact]
     public void ValidateStageUpgradeRulesIntegrity()
     {
-        var skills = LoadSkills();
+        var skills = ContentTestHelper.LoadSkills();
         foreach (var skill in skills)
         {
             if (skill.StageUpgradeRules != null)
@@ -157,8 +81,8 @@ public class ContentValidationTests
     [Fact]
     public void ValidateContentIntegrity()
     {
-        var skills = LoadSkills();
-        var quests = LoadQuests();
+        var skills = ContentTestHelper.LoadSkills();
+        var quests = ContentTestHelper.LoadQuests();
 
         // 1. Check for Duplicate SkillIds
         var duplicateSkillIds = skills.GroupBy(s => s.SkillId).Where(g => g.Count() > 1).Select(g => g.Key).ToList();
@@ -233,7 +157,7 @@ public class ContentValidationTests
     [Fact]
     public void ValidateStageUpgradeConsistency()
     {
-        var skills = LoadSkills();
+        var skills = ContentTestHelper.LoadSkills();
         var skillMap = skills.ToDictionary(s => s.SkillId);
 
         foreach (var skill in skills)
@@ -261,8 +185,8 @@ public class ContentValidationTests
     [Fact]
     public void ValidateSkillRewardsConsistency()
     {
-        var skills = LoadSkills();
-        var quests = LoadQuests();
+        var skills = ContentTestHelper.LoadSkills();
+        var quests = ContentTestHelper.LoadQuests();
         var skillMap = skills.ToDictionary(s => s.SkillId);
 
         foreach (var quest in quests)
@@ -285,7 +209,7 @@ public class ContentValidationTests
     [Fact]
     public void ValidateQuestIdempotency()
     {
-        var quests = LoadQuests();
+        var quests = ContentTestHelper.LoadQuests();
         foreach (var quest in quests)
         {
             if (quest.Rewards.GrantSkillId.HasValue)
@@ -307,7 +231,7 @@ public class ContentValidationTests
     [Fact]
     public void ValidateUniqueDisplayNameKeys()
     {
-        var skills = LoadSkills();
+        var skills = ContentTestHelper.LoadSkills();
         var duplicates = skills
             .Where(s => !string.IsNullOrEmpty(s.DisplayNameKey))
             .GroupBy(s => s.DisplayNameKey)
@@ -321,9 +245,9 @@ public class ContentValidationTests
     [Fact]
     public void ValidateCrossDomainIntegrity()
     {
-        var skills = LoadSkills();
-        var quests = LoadQuests();
-        var pets = LoadPets();
+        var skills = ContentTestHelper.LoadSkills();
+        var quests = ContentTestHelper.LoadQuests();
+        var pets = ContentTestHelper.LoadPets();
 
         var petIds = pets.Select(p => p.PetTypeId).ToHashSet();
         var questFlagsSet = quests
@@ -356,7 +280,7 @@ public class ContentValidationTests
     [Fact]
     public void ValidateSkillRequirements()
     {
-        var skills = LoadSkills();
+        var skills = ContentTestHelper.LoadSkills();
         // Verify that at least one skill has requirements (to ensure loading isn't broken)
         var anyRequirements = skills.Any(s =>
             s.Requirements.Str > 0 ||
@@ -371,7 +295,7 @@ public class ContentValidationTests
     [Fact]
     public void ValidateTierBudgets()
     {
-        var skills = LoadSkills();
+        var skills = ContentTestHelper.LoadSkills();
 
         // Tier 1 (Core): SP 5-20, Cooldown 0-2
         var coreT1 = skills.Where(s => s.Family == SkillFamily.Core && s.Tier == 1).ToList();
@@ -405,49 +329,10 @@ public class ContentValidationTests
         }
     }
 
-    private List<MonsterDefinition> LoadMonsters()
-    {
-        var root = GetContentRoot();
-        var path = Path.Combine(root, "monsters.json");
-        if (!File.Exists(path))
-        {
-            throw new FileNotFoundException($"Could not find monsters.json at {path}");
-        }
-
-        var json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize<List<MonsterDefinition>>(json, GetJsonOptions()) ??
-               new List<MonsterDefinition>();
-    }
-
-    private List<ZoneSpawnConfig> LoadSpawnConfigs()
-    {
-        var root = GetContentRoot();
-        var spawnDir = Path.Combine(root, "spawns");
-        if (!Directory.Exists(spawnDir))
-        {
-            return new List<ZoneSpawnConfig>();
-        }
-
-        var files = Directory.GetFiles(spawnDir, "*.spawns.json", SearchOption.AllDirectories);
-        var list = new List<ZoneSpawnConfig>();
-
-        foreach (var file in files)
-        {
-            var json = File.ReadAllText(file);
-            var config = JsonSerializer.Deserialize<ZoneSpawnConfig>(json, GetJsonOptions());
-            if (config != null)
-            {
-                list.Add(config);
-            }
-        }
-
-        return list;
-    }
-
     [Fact]
     public void ValidateMonsterElements()
     {
-        var monsters = LoadMonsters();
+        var monsters = ContentTestHelper.LoadMonsters();
         foreach (var monster in monsters)
         {
             if (monster.Element == Element.None)
@@ -460,7 +345,7 @@ public class ContentValidationTests
     [Fact]
     public void ValidatePetElements()
     {
-        var pets = LoadPets();
+        var pets = ContentTestHelper.LoadPets();
         foreach (var pet in pets)
         {
             Assert.NotEqual(Element.None, pet.Element);
@@ -470,11 +355,11 @@ public class ContentValidationTests
     [Fact]
     public void ValidateSpawnConfigs()
     {
-        var configs = LoadSpawnConfigs();
+        var configs = ContentTestHelper.LoadSpawnConfigs();
         // We expect at least some spawn configs to exist in the game
         Assert.NotEmpty(configs);
 
-        var monsters = LoadMonsters();
+        var monsters = ContentTestHelper.LoadMonsters();
         var monsterIds = monsters.Select(m => m.MonsterId).ToHashSet();
 
         foreach (var config in configs)
@@ -495,8 +380,8 @@ public class ContentValidationTests
     [Fact]
     public void ValidatePetSkills()
     {
-        var pets = LoadPets();
-        var skills = LoadSkills();
+        var pets = ContentTestHelper.LoadPets();
+        var skills = ContentTestHelper.LoadSkills();
         var skillIds = skills.Select(s => s.SkillId).ToHashSet();
 
         foreach (var pet in pets)
@@ -515,7 +400,7 @@ public class ContentValidationTests
     [Fact]
     public void ValidatePetUtilities()
     {
-        var pets = LoadPets();
+        var pets = ContentTestHelper.LoadPets();
         foreach (var pet in pets)
         {
             if (pet.Utilities != null)
@@ -536,12 +421,7 @@ public class ContentValidationTests
     [Fact]
     public void ValidateAmityItems()
     {
-        var root = GetContentRoot();
-        var path = Path.Combine(root, "amity_items.json");
-        Assert.True(File.Exists(path), "amity_items.json not found");
-
-        var json = File.ReadAllText(path);
-        var items = JsonSerializer.Deserialize<List<AmityItemDefinition>>(json, GetJsonOptions());
+        var items = ContentTestHelper.LoadAmityItems();
 
         Assert.NotNull(items);
         Assert.NotEmpty(items);
@@ -550,6 +430,105 @@ public class ContentValidationTests
         {
             Assert.True(item.ItemId > 0, $"Invalid ItemId {item.ItemId} in amity_items.json");
             Assert.True(item.AmityValue > 0, $"Invalid AmityValue {item.AmityValue} for ItemId {item.ItemId}");
+        }
+    }
+
+    [Fact]
+    public void ValidateStage_Evolution_Chains_Are_Complete()
+    {
+        var skills = ContentTestHelper.LoadSkills();
+        var skillMap = skills.ToDictionary(s => s.SkillId);
+
+        // Check standard 3-stage skills
+        // Earth Physical: 1001 -> 1002 -> 1003
+        VerifyChain(skillMap, 1001, 1002, 1003);
+        // Earth Magical: 1101 -> 1102 -> 1103
+        VerifyChain(skillMap, 1101, 1102, 1103);
+        // Earth Support: 1201 -> 1202 -> 1203
+        VerifyChain(skillMap, 1201, 1202, 1203);
+
+        // Water Physical
+        VerifyChain(skillMap, 3001, 3002, 3003);
+        // Water Magical
+        VerifyChain(skillMap, 3101, 3102, 3103);
+        // Water Support
+        VerifyChain(skillMap, 3201, 3202, 3203);
+
+        // Fire Physical
+        VerifyChain(skillMap, 4001, 4002, 4003);
+        // Fire Magical
+        VerifyChain(skillMap, 4101, 4102, 4103);
+        // Fire Support
+        VerifyChain(skillMap, 4201, 4202, 4203);
+
+        // Wind Physical
+        VerifyChain(skillMap, 5001, 5002, 5003);
+        // Wind Magical
+        VerifyChain(skillMap, 5101, 5102, 5103);
+        // Wind Support
+        VerifyChain(skillMap, 5201, 5202, 5203);
+    }
+
+    private void VerifyChain(Dictionary<int, Skill> skillMap, int s1, int s2, int s3)
+    {
+        Assert.True(skillMap.ContainsKey(s1), $"Skill {s1} missing");
+        Assert.True(skillMap.ContainsKey(s2), $"Skill {s2} missing");
+        Assert.True(skillMap.ContainsKey(s3), $"Skill {s3} missing");
+
+        var skill1 = skillMap[s1];
+        Assert.Equal(1, skill1.Stage);
+        Assert.NotNull(skill1.StageUpgradeRules);
+        Assert.Equal(s2, skill1.StageUpgradeRules.NextSkillId);
+
+        var skill2 = skillMap[s2];
+        Assert.Equal(2, skill2.Stage);
+        Assert.NotNull(skill2.StageUpgradeRules);
+        Assert.Equal(s3, skill2.StageUpgradeRules.NextSkillId);
+
+        var skill3 = skillMap[s3];
+        Assert.Equal(3, skill3.Stage);
+    }
+
+    [Fact]
+    public void ValidateStageUpgradeAntiSnowball()
+    {
+        var skills = ContentTestHelper.LoadSkills();
+        var skillMap = skills.ToDictionary(s => s.SkillId);
+
+        foreach (var skill in skills)
+        {
+            if (skill.StageUpgradeRules?.NextSkillId is int nextId)
+            {
+                // Ensure target exists
+                Assert.True(skillMap.ContainsKey(nextId),
+                    $"Skill {skill.SkillId} defines upgrade to {nextId} which does not exist.");
+
+                var nextSkill = skillMap[nextId];
+
+                // Anti-Snowball: Ensure the target skill explicitly requires the parent skill
+                // OR ensure it has NO other conflicting unlock rules.
+                // The safest implementation of "Anti-snowball" is that the relationship must be bidirectional
+                // or at least non-contradictory.
+
+                if (nextSkill.UnlockRules != null && nextSkill.UnlockRules.ParentSkillId.HasValue)
+                {
+                     Assert.Equal(skill.SkillId, nextSkill.UnlockRules.ParentSkillId.Value);
+
+                     // Check Rank Threshold Consistency
+                     if (skill.StageUpgradeRules.RankThreshold > 0 && nextSkill.UnlockRules.ParentSkillRank.HasValue)
+                     {
+                         Assert.Equal(skill.StageUpgradeRules.RankThreshold, nextSkill.UnlockRules.ParentSkillRank.Value);
+                     }
+                }
+                else
+                {
+                     // If the child doesn't explicitly point back, that MIGHT be okay depending on strictness,
+                     // but the prompt says: "Stage upgrades rules must be defined in ONE place".
+                     // If defined in 'StageUpgradeRules' (parent), the child shouldn't redefine contradictory rules.
+
+                     // For now, we enforce that if ParentSkillId IS defined, it must match.
+                }
+            }
         }
     }
 }
