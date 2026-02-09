@@ -23,6 +23,18 @@
         "Tag": "Damage",
         "Value": 0,
         "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "Seal",
+        "Value": 0,
+        "Duration": 1,
+        "Chance": 0.15,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "HardControl",
+        "Outcome": "Resist",
+        "ResistanceTags": [
+          "SealResist"
+        ]
       }
     ],
     "Requirements": {
@@ -58,6 +70,18 @@
         "Tag": "Damage",
         "Value": 0,
         "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "Seal",
+        "Value": 0,
+        "Duration": 1,
+        "Chance": 0.15,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "HardControl",
+        "Outcome": "Resist",
+        "ResistanceTags": [
+          "SealResist"
+        ]
       }
     ],
     "Stage": 2,
@@ -90,6 +114,18 @@
         "Tag": "Damage",
         "Value": 0,
         "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "Seal",
+        "Value": 0,
+        "Duration": 1,
+        "Chance": 0.15,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "HardControl",
+        "Outcome": "Resist",
+        "ResistanceTags": [
+          "SealResist"
+        ]
       }
     ],
     "Stage": 3
@@ -282,6 +318,15 @@
         "StackingPolicy": "RefreshDuration",
         "ConflictGroup": "Buff_Def",
         "Priority": 1
+      },
+      {
+        "Tag": "BuffStats",
+        "Param": "SealResist",
+        "Value": 0.2,
+        "Duration": 3,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Resist",
+        "Priority": 1
       }
     ],
     "Requirements": {
@@ -322,6 +367,15 @@
         "StackingPolicy": "RefreshDuration",
         "ConflictGroup": "Buff_Def",
         "Priority": 1
+      },
+      {
+        "Tag": "BuffStats",
+        "Param": "SealResist",
+        "Value": 0.25,
+        "Duration": 3,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Resist",
+        "Priority": 1
       }
     ],
     "Stage": 2,
@@ -358,6 +412,15 @@
         "Chance": 1.0,
         "StackingPolicy": "RefreshDuration",
         "ConflictGroup": "Buff_Def",
+        "Priority": 1
+      },
+      {
+        "Tag": "BuffStats",
+        "Param": "SealResist",
+        "Value": 0.3,
+        "Duration": 4,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Resist",
         "Priority": 1
       }
     ],
