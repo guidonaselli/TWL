@@ -440,7 +440,7 @@ public class ClientSession
             return;
         }
 
-        var result = _economyManager.BuyShopItem(Character, request.ShopItemId, request.Quantity, null, traceId);
+        var result = _economyManager.BuyShopItem(Character, request.ShopItemId, request.Quantity, request.OperationId, traceId);
 
         await SendAsync(new NetMessage
             { Op = Opcode.BuyShopItemRequest, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });

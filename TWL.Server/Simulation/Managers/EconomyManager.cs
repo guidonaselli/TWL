@@ -308,7 +308,12 @@ public class EconomyManager : IEconomyService, IDisposable
             return new EconomyOperationResultDTO { Success = false, Message = "Insufficient funds" };
         }
 
-        var details = $"ShopItem:{shopItemId}, Item:{itemDef.ItemId} x{quantity}";
+        var details = $"ShopItem:{shopItemId}, Item:{itemDef.ItemId} x{quantity}, Policy:{itemDef.Policy}";
+        if (itemDef.Policy == BindPolicy.BindOnPickup || itemDef.Policy == BindPolicy.CharacterBound)
+        {
+            details += $", BoundTo:{character.Id}";
+        }
+
         if (!string.IsNullOrEmpty(operationId))
         {
             details += $", OrderId:{operationId}";
@@ -453,18 +458,19 @@ public class EconomyManager : IEconomyService, IDisposable
             return new EconomyOperationResultDTO { Success = false, Message = "Insufficient funds" };
         }
 
-        var details = $"GiftShopItem:{shopItemId}, Item:{itemDef.ItemId} x{quantity}, To:{receiver.Id}";
-        if (!string.IsNullOrEmpty(operationId))
-        {
-            details += $", OrderId:{operationId}";
-        }
-
+        var details = $"GiftShopItem:{shopItemId}, Item:{itemDef.ItemId} x{quantity}, To:{receiver.Id}, Policy:{itemDef.Policy}";
         // Add Item to Receiver (BindPolicy applies to Receiver)
         // Note: BindOnPickup becomes bound to Receiver.
         int? boundToId = null;
         if (itemDef.Policy == BindPolicy.BindOnPickup || itemDef.Policy == BindPolicy.CharacterBound)
         {
             boundToId = receiver.Id;
+            details += $", BoundTo:{receiver.Id}";
+        }
+
+        if (!string.IsNullOrEmpty(operationId))
+        {
+            details += $", OrderId:{operationId}";
         }
 
         var added = receiver.AddItem(itemDef.ItemId, quantity, itemDef.Policy, boundToId);
