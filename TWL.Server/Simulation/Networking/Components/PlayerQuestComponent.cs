@@ -312,6 +312,12 @@ public class PlayerQuestComponent
             return false;
         }
 
+        // Rebirth Level Check
+        if (Character.RebirthLevel < def.RequiredRebirthLevel)
+        {
+            return false;
+        }
+
         // Stat Checks
         if (def.RequiredStats != null)
         {
@@ -340,6 +346,18 @@ public class PlayerQuestComponent
             foreach (var itemReq in def.RequiredItems)
             {
                 if (!Character.HasItem(itemReq.ItemId, itemReq.Quantity))
+                {
+                    return false;
+                }
+            }
+        }
+
+        // Equipment Checks
+        if (def.RequiredEquipment != null)
+        {
+            foreach (var itemId in def.RequiredEquipment)
+            {
+                if (!Character.HasEquippedItem(itemId))
                 {
                     return false;
                 }

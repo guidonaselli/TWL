@@ -12,6 +12,7 @@ namespace TWL.Server.Simulation.Networking;
 public class ServerCharacter : ServerCombatant
 {
     private readonly List<Item> _inventory = new();
+    private readonly List<Item> _equipment = new();
     private readonly List<Item> _bank = new();
 
     private readonly Dictionary<int, long> _itemTotalQuantities = new();
@@ -110,6 +111,7 @@ public class ServerCharacter : ServerCombatant
 
     public ICollection<int> KnownSkills => SkillMastery.Keys;
     public int Level { get; private set; } = 1;
+    public int RebirthLevel { get; private set; }
     public int ExpToNextLevel { get; private set; } = 100;
     public int StatPoints { get; private set; }
 
@@ -203,6 +205,27 @@ public class ServerCharacter : ServerCombatant
             {
                 // Return deep copies to prevent external modification without lock
                 return _inventory.Select(i => new Item
+                {
+                    ItemId = i.ItemId,
+                    Name = i.Name,
+                    Type = i.Type,
+                    MaxStack = i.MaxStack,
+                    Quantity = i.Quantity,
+                    ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
+                    Policy = i.Policy,
+                    BoundToId = i.BoundToId
+                }).ToArray();
+            }
+        }
+    }
+
+    public IReadOnlyList<Item> Equipment
+    {
+        get
+        {
+            lock (_equipment)
+            {
+                return _equipment.Select(i => new Item
                 {
                     ItemId = i.ItemId,
                     Name = i.Name,
@@ -751,6 +774,87 @@ public class ServerCharacter : ServerCombatant
         }
     }
 
+    public bool Equip(int inventorySlotIndex)
+    {
+        lock (_inventory)
+        {
+            if (inventorySlotIndex < 0 || inventorySlotIndex >= _inventory.Count)
+            {
+                return false;
+            }
+
+            var item = _inventory[inventorySlotIndex];
+            _inventory.RemoveAt(inventorySlotIndex);
+
+            // Update cache for inventory
+            if (_itemTotalQuantities.TryGetValue(item.ItemId, out var currentTotal))
+            {
+                var newTotal = currentTotal - item.Quantity;
+                if (newTotal <= 0)
+                {
+                    _itemTotalQuantities.Remove(item.ItemId);
+                }
+                else
+                {
+                    _itemTotalQuantities[item.ItemId] = newTotal;
+                }
+            }
+
+            lock (_equipment)
+            {
+                _equipment.Add(item);
+            }
+
+            IsDirty = true;
+            return true;
+        }
+    }
+
+    public bool Unequip(int equipmentSlotIndex)
+    {
+        // Fix potential deadlock: Always acquire locks in consistent order (_inventory -> _equipment)
+        lock (_inventory)
+        {
+            lock (_equipment)
+            {
+                if (equipmentSlotIndex < 0 || equipmentSlotIndex >= _equipment.Count)
+                {
+                    return false;
+                }
+
+                // Check inventory capacity
+                if (_inventory.Count >= MaxInventorySlots)
+                {
+                    return false;
+                }
+
+                var item = _equipment[equipmentSlotIndex];
+                _equipment.RemoveAt(equipmentSlotIndex);
+
+                _inventory.Add(item);
+
+                // Update cache
+                if (!_itemTotalQuantities.ContainsKey(item.ItemId))
+                {
+                    _itemTotalQuantities[item.ItemId] = 0;
+                }
+
+                _itemTotalQuantities[item.ItemId] += item.Quantity;
+
+                IsDirty = true;
+                return true;
+            }
+        }
+    }
+
+    public bool HasEquippedItem(int itemId)
+    {
+        lock (_equipment)
+        {
+            return _equipment.Any(i => i.ItemId == itemId);
+        }
+    }
+
     // ApplyDamage, Heal are inherited
 
     public ServerCharacterData GetSaveData()
@@ -788,6 +892,7 @@ public class ServerCharacter : ServerCombatant
         {
             data.Exp = _exp;
             data.Level = Level;
+            data.RebirthLevel = RebirthLevel;
             data.ExpToNextLevel = ExpToNextLevel;
             data.StatPoints = StatPoints;
         }
@@ -802,6 +907,21 @@ public class ServerCharacter : ServerCombatant
         lock (_inventory)
         {
             data.Inventory = _inventory.Select(i => new Item
+            {
+                ItemId = i.ItemId,
+                Name = i.Name,
+                Type = i.Type,
+                MaxStack = i.MaxStack,
+                Quantity = i.Quantity,
+                ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
+                Policy = i.Policy,
+                BoundToId = i.BoundToId
+            }).ToList();
+        }
+
+        lock (_equipment)
+        {
+            data.Equipment = _equipment.Select(i => new Item
             {
                 ItemId = i.ItemId,
                 Name = i.Name,
@@ -874,6 +994,7 @@ public class ServerCharacter : ServerCombatant
         {
             _exp = data.Exp;
             Level = data.Level;
+            RebirthLevel = data.RebirthLevel;
             ExpToNextLevel = data.ExpToNextLevel;
             StatPoints = data.StatPoints;
         }
@@ -907,6 +1028,15 @@ public class ServerCharacter : ServerCombatant
 
                     _itemTotalQuantities[item.ItemId] += item.Quantity;
                 }
+            }
+        }
+
+        lock (_equipment)
+        {
+            _equipment.Clear();
+            if (data.Equipment != null)
+            {
+                _equipment.AddRange(data.Equipment);
             }
         }
 
