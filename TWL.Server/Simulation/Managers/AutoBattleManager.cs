@@ -301,14 +301,55 @@ public class AutoBattleManager
 
     private bool HasConflictingBuff(ServerCombatant combatant, SkillEffect newEffect)
     {
+        // 1. Check Conflict Groups
         if (!string.IsNullOrEmpty(newEffect.ConflictGroup))
         {
-            return combatant.StatusEffects.Any(e => e.ConflictGroup == newEffect.ConflictGroup);
+            var conflict = combatant.StatusEffects.FirstOrDefault(e => e.ConflictGroup == newEffect.ConflictGroup);
+            if (conflict != null)
+            {
+                // Check if it's the same effect (candidate for Stacking/Refresh)
+                bool isSameEffect = conflict.Tag == newEffect.Tag &&
+                                    string.Equals(conflict.Param, newEffect.Param, StringComparison.OrdinalIgnoreCase);
+
+                if (isSameEffect && (newEffect.StackingPolicy == StackingPolicy.StackUpToN ||
+                                     newEffect.StackingPolicy == StackingPolicy.RefreshDuration))
+                {
+                    return false; // Allow stacking or refreshing
+                }
+
+                // If priority allows overwriting (Greater or Equal usually overwrites in StatusEngine)
+                if (newEffect.Priority >= conflict.Priority)
+                {
+                    return false;
+                }
+                return true; // Conflict prevents casting
+            }
         }
 
+        // 2. Check Tag/Param (Implicit conflict if same type)
         if (newEffect.Tag == SkillEffectTag.BuffStats && !string.IsNullOrEmpty(newEffect.Param))
         {
-            return combatant.StatusEffects.Any(e => e.Tag == SkillEffectTag.BuffStats && e.Param == newEffect.Param);
+            var existing = combatant.StatusEffects.FirstOrDefault(e => e.Tag == SkillEffectTag.BuffStats && e.Param == newEffect.Param);
+            if (existing != null)
+            {
+                // RefreshDuration or StackUpToN means we CAN cast (to refresh/stack)
+                if (newEffect.StackingPolicy == StackingPolicy.RefreshDuration || newEffect.StackingPolicy == StackingPolicy.StackUpToN)
+                {
+                    return false;
+                }
+
+                // NoStackOverwrite: Check priority if ConflictGroup logic didn't catch it (or if no group defined)
+                if (newEffect.StackingPolicy == StackingPolicy.NoStackOverwrite)
+                {
+                    // If no conflict group, we assume implicit overwrite allowed? Or blocked?
+                    // Usually we don't want to spam "Atk Buff" if they already have it, unless it's stronger.
+                    // But without priority, we can't tell.
+                    // Let's assume equal priority blocks to prevent spamming.
+                    return true;
+                }
+
+                return true;
+            }
         }
 
         return false;

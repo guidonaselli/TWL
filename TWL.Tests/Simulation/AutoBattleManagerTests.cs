@@ -1,5 +1,6 @@
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
 using TWL.Tests.Mocks;
@@ -11,17 +12,19 @@ public class AutoBattleManagerTests
     private MockSkillCatalog _catalog;
     private MockRandomService _random;
     private AutoBattleManager _manager;
+    private StatusEngine _statusEngine;
 
     public AutoBattleManagerTests()
     {
         _catalog = new MockSkillCatalog();
         _random = new MockRandomService(0.5f);
         _manager = new AutoBattleManager(_catalog);
+        _statusEngine = new StatusEngine();
     }
 
     private ServerCharacter CreateActor(int id, Team team)
     {
-        return new ServerCharacter { Id = id, Team = team, Hp = 100, Con = 10, Sp = 100, Int = 10 };
+        return new ServerCharacter { Id = id, Team = team, Hp = 100, Con = 10, Sp = 100, Int = 10, Wis = 10, Str = 10 };
     }
 
     [Fact]
@@ -81,5 +84,160 @@ public class AutoBattleManagerTests
         Assert.NotNull(result);
         Assert.Equal(102, result.SkillId);
         Assert.Equal(enemy.Id, result.TargetId);
+    }
+
+    [Fact]
+    public void GetBestAction_Constraints_RespectsMinSp()
+    {
+        var actor = CreateActor(1, Team.Player);
+        actor.Sp = 15;
+        _manager.MinSpThreshold = 10;
+        var enemy = CreateActor(2, Team.Enemy);
+
+        // Strong skill: Cost 10. Remaining: 5 (Below 10). Should NOT use.
+        var strongSkill = new Skill
+        {
+            SkillId = 200, SpCost = 10, TargetType = SkillTargetType.SingleEnemy,
+            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }
+        };
+
+        // Basic attack (Cost 0) - should fallback to this
+        var basicAttack = new Skill
+        {
+            SkillId = 1, SpCost = 0, TargetType = SkillTargetType.SingleEnemy,
+            Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } }
+        };
+
+        _catalog.AddSkill(strongSkill);
+        _catalog.AddSkill(basicAttack);
+
+        actor.SkillMastery.TryAdd(200, new SkillMastery());
+        actor.SkillMastery.TryAdd(1, new SkillMastery());
+
+        var result = _manager.GetBestAction(actor, new[] { actor, enemy });
+
+        Assert.NotNull(result);
+        Assert.Equal(1, result.SkillId); // Basic attack
+    }
+
+    [Fact]
+    public void GetBestAction_Buffs_OverwritesIfHigherPriority()
+    {
+        var actor = CreateActor(1, Team.Player);
+        var ally = CreateActor(2, Team.Player);
+        var enemy = CreateActor(3, Team.Enemy);
+
+        // Ally has Weak Atk Buff
+        ally.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 10, 3, "Atk")
+        {
+            ConflictGroup = "Buff_Atk",
+            Priority = 1,
+            StackingPolicy = StackingPolicy.NoStackOverwrite
+        }, _statusEngine);
+
+        // Actor has Strong Atk Buff Skill
+        var strongBuff = new Skill
+        {
+            SkillId = 300, SpCost = 10, TargetType = SkillTargetType.SingleAlly,
+            Effects = new List<SkillEffect>
+            {
+                new SkillEffect
+                {
+                    Tag = SkillEffectTag.BuffStats, Param = "Atk", Value = 20,
+                    ConflictGroup = "Buff_Atk", Priority = 2, StackingPolicy = StackingPolicy.NoStackOverwrite
+                }
+            }
+        };
+
+        _catalog.AddSkill(strongBuff);
+        actor.SkillMastery.TryAdd(300, new SkillMastery());
+
+        var result = _manager.GetBestAction(actor, new[] { actor, ally, enemy }, AutoBattlePolicy.Supportive);
+
+        Assert.NotNull(result);
+        Assert.Equal(300, result.SkillId);
+        Assert.Equal(ally.Id, result.TargetId);
+    }
+
+    [Fact]
+    public void GetBestAction_Buffs_SkipsIfLowerPriority()
+    {
+        var actor = CreateActor(1, Team.Player);
+        var ally = CreateActor(2, Team.Player);
+        var enemy = CreateActor(3, Team.Enemy);
+
+        // Ally has Strong Atk Buff
+        ally.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 20, 3, "Atk")
+        {
+            ConflictGroup = "Buff_Atk",
+            Priority = 2,
+            StackingPolicy = StackingPolicy.NoStackOverwrite
+        }, _statusEngine);
+
+        // Actor also has Strong Atk Buff (to ensure no candidates)
+        actor.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 20, 3, "Atk")
+        {
+            ConflictGroup = "Buff_Atk",
+            Priority = 2,
+            StackingPolicy = StackingPolicy.NoStackOverwrite
+        }, _statusEngine);
+
+        // Actor has Weak Atk Buff Skill
+        var weakBuff = new Skill
+        {
+            SkillId = 301, SpCost = 10, TargetType = SkillTargetType.SingleAlly,
+            Effects = new List<SkillEffect>
+            {
+                new SkillEffect
+                {
+                    Tag = SkillEffectTag.BuffStats, Param = "Atk", Value = 10,
+                    ConflictGroup = "Buff_Atk", Priority = 1, StackingPolicy = StackingPolicy.NoStackOverwrite
+                }
+            }
+        };
+
+        _catalog.AddSkill(weakBuff);
+        actor.SkillMastery.TryAdd(301, new SkillMastery());
+
+        // Fallback
+        var basicAttack = new Skill { SkillId = 1, SpCost = 0, TargetType = SkillTargetType.SingleEnemy, Effects = new List<SkillEffect> { new SkillEffect { Tag = SkillEffectTag.Damage } } };
+        _catalog.AddSkill(basicAttack);
+        actor.SkillMastery.TryAdd(1, new SkillMastery());
+
+        var result = _manager.GetBestAction(actor, new[] { actor, ally, enemy }, AutoBattlePolicy.Supportive);
+
+        Assert.NotNull(result);
+        Assert.NotEqual(301, result.SkillId); // Should not be the buff
+        Assert.Equal(1, result.SkillId); // Basic attack
+    }
+
+    [Fact]
+    public void GetBestAction_Targeting_SelectsBestCandidate()
+    {
+        var actor = CreateActor(1, Team.Player);
+        var weakAlly = CreateActor(2, Team.Player);
+        weakAlly.Atk = 10;
+        var strongAlly = CreateActor(3, Team.Player);
+        strongAlly.Atk = 50; // Highest ATK
+        var enemy = CreateActor(4, Team.Enemy);
+
+        // Buff Atk Skill
+        var buffSkill = new Skill
+        {
+            SkillId = 400, SpCost = 10, TargetType = SkillTargetType.SingleAlly,
+            Effects = new List<SkillEffect>
+            {
+                new SkillEffect { Tag = SkillEffectTag.BuffStats, Param = "Atk", Value = 10 }
+            }
+        };
+
+        _catalog.AddSkill(buffSkill);
+        actor.SkillMastery.TryAdd(400, new SkillMastery());
+
+        var result = _manager.GetBestAction(actor, new[] { actor, weakAlly, strongAlly, enemy }, AutoBattlePolicy.Supportive);
+
+        Assert.NotNull(result);
+        Assert.Equal(400, result.SkillId);
+        Assert.Equal(strongAlly.Id, result.TargetId); // Should target strongest ally
     }
 }
