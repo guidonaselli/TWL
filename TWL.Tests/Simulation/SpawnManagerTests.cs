@@ -69,6 +69,30 @@ public class SpawnManagerTests
     }
 
     [Fact]
+    public void StartEncounter_ShouldSucceed_WhenMobHasElementNone()
+    {
+        // Arrange
+        var mockMonsters = new Mock<MonsterManager>();
+        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockRepo = new Mock<IPlayerRepository>();
+        var metrics = new ServerMetrics();
+        var playerService = new PlayerService(mockRepo.Object, metrics);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+
+        var player = new ServerCharacter { Id = 1, CharacterElement = Element.Earth };
+        var session = new TestClientSession(player);
+        // Valid Mob with Element.None (MonsterId > 0)
+        var enemies = new List<ServerCharacter> { new ServerCharacter { MonsterId = 9999, CharacterElement = Element.None } };
+
+        // Act
+        var resultId = manager.StartEncounter(session, enemies, EncounterSource.Scripted);
+
+        // Assert
+        Assert.NotEqual(0, resultId);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Once);
+    }
+
+    [Fact]
     public void OnPlayerMoved_ShouldTriggerEncounter_WhenChanceIsHigh_AndPositionValid()
     {
         // Arrange

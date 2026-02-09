@@ -189,13 +189,27 @@ public class SpawnManager
 
         participants.AddRange(enemies);
 
-        // Strict Validation (All participants must not be Element.None)
+        // Strict Validation (Element.None allowed ONLY for QuestOnly Monsters)
         foreach (var p in participants)
         {
              if (p.CharacterElement == Element.None)
              {
-                 Console.WriteLine($"Error: Participant {p.Name} (ID: {p.Id}) has Element.None. Encounter aborted.");
-                 return 0;
+                 // Check if it is a Monster (ServerCharacter with MonsterId > 0)
+                 var isMob = p is ServerCharacter sc && sc.MonsterId > 0;
+
+                 if (!isMob)
+                 {
+                     Console.WriteLine($"Error: Participant {p.Name} (ID: {p.Id}) has Element.None but is not a Monster. Encounter aborted.");
+                     return 0;
+                 }
+
+                 // Defense in Depth: Verify QuestOnly tag
+                 var mobDef = _monsterManager.GetDefinition(((ServerCharacter)p).MonsterId);
+                 if (mobDef != null && !mobDef.Tags.Contains("QuestOnly"))
+                 {
+                     Console.WriteLine($"Error: Monster {p.Name} has Element.None but missing QuestOnly tag.");
+                     return 0;
+                 }
              }
         }
 
@@ -498,8 +512,6 @@ public class SpawnManager
         {
             Id = mobId,
             Name = def.Name,
-            Hp = def.BaseHp,
-            Sp = def.BaseSp,
             Str = def.BaseStr,
             Con = def.BaseCon,
             Int = def.BaseInt,
@@ -514,6 +526,7 @@ public class SpawnManager
             Y = y
         };
         mob.SetLevel(def.Level);
+        mob.SetOverrideStats(def.BaseHp, def.BaseSp);
         return mob;
     }
 }

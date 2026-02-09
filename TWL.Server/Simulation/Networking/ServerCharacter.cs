@@ -129,6 +129,20 @@ public class ServerCharacter : ServerCombatant
     // Legacy/Alias support if needed, but preferable to use MaxHp from base
     public int MaxHealth => MaxHp;
 
+    private int? _overrideMaxHp;
+    private int? _overrideMaxSp;
+
+    public override int MaxHp => _overrideMaxHp ?? base.MaxHp;
+    public override int MaxSp => _overrideMaxSp ?? base.MaxSp;
+
+    public void SetOverrideStats(int maxHp, int maxSp)
+    {
+        _overrideMaxHp = maxHp;
+        _overrideMaxSp = maxSp;
+        Hp = maxHp;
+        Sp = maxSp;
+    }
+
     public int Exp
     {
         get
