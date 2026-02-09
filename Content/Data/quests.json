@@ -1398,5 +1398,55 @@
       "Gold": 200,
       "Items": []
     }
+  },
+  {
+    "QuestId": 1020,
+    "Title": "The Blacksmith's Test",
+    "Description": "Prove you are worthy of a blade. Reach Level 5.",
+    "RequiredLevel": 5,
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Blacksmith",
+        "RequiredCount": 1,
+        "Description": "Talk to the Blacksmith."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 10001,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1021,
+    "Title": "Prove Your Grip",
+    "Description": "Equip the Training Sword and defeat slimes.",
+    "Requirements": [
+      1020
+    ],
+    "RequiredEquipment": [
+      10001
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Slime",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Slimes with the sword equipped.",
+        "DataId": 2001
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": []
+    }
   }
 ]

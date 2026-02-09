@@ -45,8 +45,10 @@ public sealed record QuestDefinition
     public IReadOnlyList<string> BlockedByFlags { get; init; } = [];
 
     public int RequiredLevel { get; init; }
+    public int RequiredRebirthLevel { get; init; }
     public IReadOnlyDictionary<string, int> RequiredStats { get; init; } = new Dictionary<string, int>();
     public IReadOnlyList<ItemRequirement> RequiredItems { get; init; } = [];
+    public IReadOnlyList<int> RequiredEquipment { get; init; } = [];
 
     public QuestRepeatability Repeatability { get; init; } = QuestRepeatability.None;
     public TimeSpan? RepeatCooldown { get; init; }

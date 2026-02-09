@@ -45,6 +45,24 @@ public class QuestGatingTests
                 RequiredItems = new List<ItemRequirement> { new(100, 1) },
                 Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
                 Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
+            },
+            new()
+            {
+                QuestId = 9004,
+                Title = "Rebirth Gate",
+                Description = "Req Rebirth 1",
+                RequiredRebirthLevel = 1,
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
+                Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
+            },
+            new()
+            {
+                QuestId = 9005,
+                Title = "Equipment Gate",
+                Description = "Req Equip 100",
+                RequiredEquipment = new List<int> { 100 },
+                Objectives = new List<ObjectiveDefinition> { new("Talk", "T", 1, "D") },
+                Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
             }
         };
 
@@ -94,5 +112,40 @@ public class QuestGatingTests
         // Add Item
         _character.AddItem(100, 1);
         Assert.True(_playerQuests.CanStartQuest(9003));
+    }
+
+    [Fact]
+    public void Should_Fail_If_RebirthLevel_Too_Low()
+    {
+        // Rebirth 0 vs Req 1
+        Assert.Equal(0, _character.RebirthLevel);
+        Assert.False(_playerQuests.CanStartQuest(9004));
+
+        // Set Rebirth Level via LoadSaveData
+        var data = _character.GetSaveData();
+        data.RebirthLevel = 1;
+        _character.LoadSaveData(data);
+
+        Assert.True(_playerQuests.CanStartQuest(9004));
+    }
+
+    [Fact]
+    public void Should_Fail_If_Equipment_Missing()
+    {
+        // No equipment
+        Assert.False(_playerQuests.CanStartQuest(9005));
+
+        // Add Item to Inventory (Index 0)
+        _character.AddItem(100, 1);
+
+        // Still false because it is in inventory, not equipped
+        Assert.False(_playerQuests.CanStartQuest(9005));
+
+        // Equip it (Index 0)
+        var success = _character.Equip(0);
+        Assert.True(success);
+        Assert.True(_character.HasEquippedItem(100));
+
+        Assert.True(_playerQuests.CanStartQuest(9005));
     }
 }

@@ -15,13 +15,14 @@ public static class QuestValidator
         "Craft", "Compound", "Forge",
         "Party", "Guild",
         "Instance",
-        "PvP",
+        "PvP", "PvPKill",
         "EventParticipation",
         "Escort", "Protect",
         "Puzzle", "Sequence",
         "Capture",
         "PetAcquired", "Trade",
-        "PayGold"
+        "PayGold",
+        "Reach", "UseItem"
     };
 
     public static List<string> Validate(IEnumerable<QuestDefinition> quests,

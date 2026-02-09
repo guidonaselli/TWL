@@ -19,6 +19,7 @@ public class ServerCharacterData
     public int Hp { get; set; }
     public int Sp { get; set; }
     public int Level { get; set; }
+    public int RebirthLevel { get; set; }
     public int Exp { get; set; }
     public int ExpToNextLevel { get; set; }
     public int StatPoints { get; set; }
@@ -36,6 +37,7 @@ public class ServerCharacterData
     public float X { get; set; }
     public float Y { get; set; }
     public List<Item> Inventory { get; set; } = new();
+    public List<Item> Equipment { get; set; } = new();
     public List<Item> Bank { get; set; } = new();
     public List<ServerPetData> Pets { get; set; } = new();
     public List<SkillMasteryData> Skills { get; set; } = new();
