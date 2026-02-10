@@ -21,10 +21,11 @@ public class SpawnManager
     private readonly CombatManager _combatManager;
     private readonly Dictionary<int, ZoneSpawnConfig> _configs = new();
     private readonly MonsterManager _monsterManager;
-    private readonly ConcurrentDictionary<int, float> _playerSteps = new(); // PlayerId -> Steps
+    private readonly ConcurrentDictionary<int, float> _playerSteps = new(); // PlayerId -> Accumulated Distance (Pixels)
     private readonly IRandomService _random;
     private readonly PlayerService _playerService;
 
+    private const float TileSize = 32.0f;
     private int _nextEncounterId = 1;
     private static int _nextMobId = -1;
     private readonly List<ServerCharacter> _roamingMobs = new();
@@ -77,7 +78,7 @@ public class SpawnManager
         Console.WriteLine($"Loaded {_configs.Count} spawn configs.");
     }
 
-    public void OnPlayerMoved(ClientSession session)
+    public void OnPlayerMoved(ClientSession session, float distancePixels)
     {
         if (session.Character == null)
         {
@@ -102,20 +103,27 @@ public class SpawnManager
         }
 
         var pid = session.Character.Id;
-        var steps = _playerSteps.GetOrAdd(pid, 0f);
+        var accumulated = _playerSteps.GetOrAdd(pid, 0f);
 
-        // Treating 1 MoveRequest as 1 Distance Unit (Tile)
-        steps += 1.0f;
-        _playerSteps[pid] = steps;
+        accumulated += distancePixels;
 
-        // Check chance (simple step check)
-        // If config.StepChance is 0.05, it means 5% per step.
-        if (_random.NextDouble("EncounterCheck") < config.StepChance)
+        // Process full steps (tiles)
+        while (accumulated >= TileSize)
         {
-            // Reset steps
-            _playerSteps[pid] = 0;
-            StartEncounter(session, config, EncounterSource.Random);
+            accumulated -= TileSize;
+
+            // Check chance (per full step/tile)
+            if (_random.NextDouble() < config.StepChance)
+            {
+                // Reset accumulation on encounter
+                accumulated = 0;
+                _playerSteps[pid] = 0;
+                StartEncounter(session, config, EncounterSource.Random);
+                return;
+            }
         }
+
+        _playerSteps[pid] = accumulated;
     }
 
     // Unified Encounter Starter

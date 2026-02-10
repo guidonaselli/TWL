@@ -131,7 +131,7 @@ public class SpawnManagerTests
         var session = new TestClientSession(player);
 
         // Act
-        manager.OnPlayerMoved(session);
+        manager.OnPlayerMoved(session, 32.0f);
 
         // Assert
         mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()),
@@ -178,7 +178,7 @@ public class SpawnManagerTests
         var session = new TestClientSession(player);
 
         // Act
-        manager.OnPlayerMoved(session);
+        manager.OnPlayerMoved(session, 32.0f);
 
         // Assert
         mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()),
@@ -227,7 +227,7 @@ public class SpawnManagerTests
         var session = new TestClientSession(player);
 
         // Act
-        manager.OnPlayerMoved(session);
+        manager.OnPlayerMoved(session, 32.0f);
 
         // Assert
         mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Never);
@@ -304,8 +304,8 @@ public class SpawnManagerTests
         var session2 = new TestClientSession(player2);
 
         // Act
-        manager1.OnPlayerMoved(session1);
-        manager2.OnPlayerMoved(session2);
+        manager1.OnPlayerMoved(session1, 32.0f);
+        manager2.OnPlayerMoved(session2, 32.0f);
 
         // Assert
         Assert.Equal(encounterSeed1, encounterSeed2);
@@ -473,11 +473,60 @@ public class SpawnManagerTests
         var session = new TestClientSession(player);
 
         // Act
-        manager.OnPlayerMoved(session);
+        manager.OnPlayerMoved(session, 32.0f);
 
         // Assert
         // Verify StartEncounter called with list containing FamMob1 (ID 1)
         mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.Is<IEnumerable<ServerCombatant>>(l => l.Any(x => x.Name == "FamMob1")), It.IsAny<int>()), Times.Once);
+
+        Directory.Delete(tempDir, true);
+    }
+
+    [Fact]
+    public void OnPlayerMoved_ShouldAccumulateDistance_AndTriggerOnlyOnFullStep()
+    {
+        // Arrange
+        var mockMonsters = new Mock<MonsterManager>();
+        mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
+            { MonsterId = 1, Name = "TestMob", BaseHp = 10, Element = Element.Earth });
+
+        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+
+        var mockRepo = new Mock<IPlayerRepository>();
+        var metrics = new ServerMetrics();
+        var playerService = new PlayerService(mockRepo.Object, metrics);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+
+        var config = new ZoneSpawnConfig
+        {
+            MapId = 1001,
+            RandomEncounterEnabled = true,
+            StepChance = 2.0f, // Always trigger if check happens
+            SpawnRegions = new List<SpawnRegion>
+            {
+                new() { X = 0, Y = 0, Width = 100, Height = 100, AllowedMonsterIds = new List<int> { 1 } }
+            }
+        };
+
+        var tempDir = Path.Combine(Path.GetTempPath(), "twl_spawns_accum_" + Guid.NewGuid());
+        Directory.CreateDirectory(tempDir);
+        File.WriteAllText(Path.Combine(tempDir, "1001.spawns.json"), JsonSerializer.Serialize(config));
+        manager.Load(tempDir);
+
+        var player = new ServerCharacter { Id = 1, MapId = 1001, X = 10, Y = 10, CharacterElement = Element.Earth };
+        var session = new TestClientSession(player);
+
+        // Act 1: Move 16px (Half step)
+        manager.OnPlayerMoved(session, 16.0f);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Never);
+
+        // Act 2: Move 15px (Total 31px)
+        manager.OnPlayerMoved(session, 15.0f);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Never);
+
+        // Act 3: Move 2px (Total 33px) -> Trigger
+        manager.OnPlayerMoved(session, 2.0f);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Once);
 
         Directory.Delete(tempDir, true);
     }
