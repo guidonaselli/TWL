@@ -137,7 +137,7 @@ public class PetService : IPetService
         var totalChance = baseChance + hpBonus;
 
         // 8. Roll
-        if (_random.NextFloat() > totalChance)
+        if (_random.NextFloat("CapturePetRoll") > totalChance)
         {
             return null; // Failed capture
         }

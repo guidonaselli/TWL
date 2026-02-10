@@ -97,7 +97,7 @@ public class CombatManager
             }
         }
 
-        if (attacker is ServerPet pet && !pet.CheckObedience(_random.NextFloat()))
+        if (attacker is ServerPet pet && !pet.CheckObedience(_random.NextFloat("PetObedience")))
         {
             if (turnEngine != null)
             {
@@ -162,7 +162,7 @@ public class CombatManager
                         }
 
                         // Resistance Roll
-                        if (_random.NextFloat() < resistance)
+                        if (_random.NextFloat("ResistanceRoll") < resistance)
                         {
                             if (effect.Outcome == OutcomeModel.Partial)
                             {
@@ -179,7 +179,7 @@ public class CombatManager
                     }
                 }
 
-                if (!resist && _random.NextFloat() <= chance)
+                if (!resist && _random.NextFloat("EffectChance") <= chance)
                 {
                     switch (effect.Tag)
                     {

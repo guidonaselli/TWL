@@ -48,13 +48,11 @@ public class MockDbService : DbService
 public class MockRandomService : IRandomService
 {
     private readonly Random _random = new Random(12345);
-    public int Next() => _random.Next();
-    public int Next(int maxValue) => _random.Next(maxValue);
-    public int Next(int minValue, int maxValue) => _random.Next(minValue, maxValue);
-    public double NextDouble() => _random.NextDouble();
-    public float NextSingle() => _random.NextSingle();
-    public float NextFloat() => _random.NextSingle();
-    public float NextFloat(float min, float max) => min + (float)_random.NextDouble() * (max - min);
+    public int Next(string? context = null) => _random.Next();
+    public int Next(int minValue, int maxValue, string? context = null) => _random.Next(minValue, maxValue);
+    public double NextDouble(string? context = null) => _random.NextDouble();
+    public float NextFloat(string? context = null) => _random.NextSingle();
+    public float NextFloat(float min, float max, string? context = null) => min + (float)_random.NextDouble() * (max - min);
 }
 
 public class LoadTest

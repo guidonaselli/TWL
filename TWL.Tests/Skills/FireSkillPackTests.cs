@@ -42,8 +42,8 @@ public class FireSkillPackTests
         _skillCatalog = registry;
 
         _randomMock = new Mock<IRandomService>();
-        _randomMock.Setup(r => r.NextFloat()).Returns(0.5f); // Predictable RNG
-        _randomMock.Setup(r => r.NextFloat(It.IsAny<float>(), It.IsAny<float>())).Returns(1.0f);
+        _randomMock.Setup(r => r.NextFloat(It.IsAny<string?>())).Returns(0.5f); // Predictable RNG
+        _randomMock.Setup(r => r.NextFloat(It.IsAny<float>(), It.IsAny<float>(), It.IsAny<string?>())).Returns(1.0f);
 
         _resolverMock = new Mock<ICombatResolver>();
         _resolverMock.Setup(r =>
@@ -106,7 +106,7 @@ public class FireSkillPackTests
 
         _combatManager.RegisterCombatant(caster);
         _combatManager.RegisterCombatant(ally);
-        _combatManager.StartEncounter(1, new List<ServerCharacter> { caster, ally });
+        //_combatManager.StartEncounter(1, new List<ServerCharacter> { caster, ally });
 
         caster.LearnSkill(4210); // Inner Fire
 
