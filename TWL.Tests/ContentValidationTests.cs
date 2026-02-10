@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TWL.Shared.Domain;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Skills;
@@ -13,19 +14,10 @@ public class ContentValidationTests
     public void ValidateSkillCategories()
     {
         var skills = ContentTestHelper.LoadSkills();
-        var allowedCategories = new HashSet<SkillCategory>
-        {
-            SkillCategory.None,
-            SkillCategory.RebirthJob,
-            SkillCategory.ElementSpecial,
-            SkillCategory.Fairy,
-            SkillCategory.Dragon,
-            SkillCategory.Goddess
-        };
 
         foreach (var skill in skills)
         {
-            Assert.Contains(skill.Category, allowedCategories);
+            Assert.Contains(skill.Category, ContentRules.ValidCategories);
         }
     }
 
@@ -33,15 +25,8 @@ public class ContentValidationTests
     public void ValidateGoddessSkills()
     {
         var skills = ContentTestHelper.LoadSkills();
-        var goddessMap = new Dictionary<int, string>
-        {
-            { 2001, "Shrink" },
-            { 2002, "Blockage" },
-            { 2003, "Hotfire" },
-            { 2004, "Vanish" }
-        };
 
-        foreach (var kvp in goddessMap)
+        foreach (var kvp in ContentRules.GoddessSkills)
         {
             var skill = skills.FirstOrDefault(s => s.SkillId == kvp.Key);
             Assert.NotNull(skill); // Must exist
@@ -104,7 +89,7 @@ public class ContentValidationTests
         }
 
         // 4. Integrity Skill -> Quest (Special Skills must have origin)
-        var goddessSkillIds = new HashSet<int> { 2001, 2002, 2003, 2004 }; // Exception GS
+        var goddessSkillIds = ContentRules.GoddessSkills.Keys.ToHashSet(); // Exception GS
         var specialSkills = skills.Where(s => s.Family == SkillFamily.Special).ToList();
 
         var skillsGrantedByQuests = quests
@@ -297,35 +282,16 @@ public class ContentValidationTests
     {
         var skills = ContentTestHelper.LoadSkills();
 
-        // Tier 1 (Core): SP 5-20, Cooldown 0-2
-        var coreT1 = skills.Where(s => s.Family == SkillFamily.Core && s.Tier == 1).ToList();
-        foreach (var skill in coreT1)
+        foreach (var skill in skills)
         {
-            Assert.True(skill.SpCost >= 5 && skill.SpCost <= 20,
-                $"Skill {skill.SkillId} ({skill.Name}) Tier 1 Core violated SP Budget [5-20]. Value: {skill.SpCost}");
-            Assert.True(skill.Cooldown >= 0 && skill.Cooldown <= 2,
-                $"Skill {skill.SkillId} ({skill.Name}) Tier 1 Core violated CD Budget [0-2]. Value: {skill.Cooldown}");
-        }
-
-        // Tier 2 (Core): SP 15-40, Cooldown 1-3
-        var coreT2 = skills.Where(s => s.Family == SkillFamily.Core && s.Tier == 2).ToList();
-        foreach (var skill in coreT2)
-        {
-            Assert.True(skill.SpCost >= 15 && skill.SpCost <= 40,
-                $"Skill {skill.SkillId} ({skill.Name}) Tier 2 Core violated SP Budget [15-40]. Value: {skill.SpCost}");
-            Assert.True(skill.Cooldown >= 1 && skill.Cooldown <= 3,
-                $"Skill {skill.SkillId} ({skill.Name}) Tier 2 Core violated CD Budget [1-3]. Value: {skill.Cooldown}");
-        }
-
-        // Tier 3 (Core / Special): SP 30-100, Cooldown 3-6
-        var tier3 = skills.Where(s => s.Tier == 3 &&
-                                      (s.Family == SkillFamily.Core || s.Family == SkillFamily.Special)).ToList();
-        foreach (var skill in tier3)
-        {
-            Assert.True(skill.SpCost >= 30 && skill.SpCost <= 100,
-                $"Skill {skill.SkillId} ({skill.Name}) Tier 3 violated SP Budget [30-100]. Value: {skill.SpCost}");
-            Assert.True(skill.Cooldown >= 3 && skill.Cooldown <= 6,
-                $"Skill {skill.SkillId} ({skill.Name}) Tier 3 violated CD Budget [3-6]. Value: {skill.Cooldown}");
+            // Only validate if a budget rule is defined for this Family/Tier combination
+            if (ContentRules.TierBudgets.TryGetValue((skill.Family, skill.Tier), out var budget))
+            {
+                Assert.True(skill.SpCost >= budget.MinSp && skill.SpCost <= budget.MaxSp,
+                    $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated SP Budget [{budget.MinSp}-{budget.MaxSp}]. Value: {skill.SpCost}");
+                Assert.True(skill.Cooldown >= budget.MinCd && skill.Cooldown <= budget.MaxCd,
+                    $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated CD Budget [{budget.MinCd}-{budget.MaxCd}]. Value: {skill.Cooldown}");
+            }
         }
     }
 
@@ -579,7 +545,7 @@ public class ContentValidationTests
                 // 1. RebirthJob Consistency
                 if (skill.Category == SkillCategory.RebirthJob)
                 {
-                    Assert.Equal("RebirthJob", quest.SpecialCategory);
+                    Assert.Equal(ContentRules.RebirthJobCategoryName, quest.SpecialCategory);
                     // Optionally check for RebirthClass requirement if available in QuestDefinition
                 }
 
@@ -587,12 +553,12 @@ public class ContentValidationTests
                 if (skill.Category == SkillCategory.ElementSpecial)
                 {
                     // Must have high level requirement OR be an Instance/Challenge
-                    var isHighLevel = quest.RequiredLevel >= 10;
+                    var isHighLevel = quest.RequiredLevel >= ContentRules.MinLevelForElementSpecial;
                     var isInstance = quest.Objectives.Any(o => o.Type == "Instance" || o.Type == "Challenge");
                     var isSpecialType = quest.Type == "SpecialSkill";
 
                     Assert.True(isHighLevel || isInstance || isSpecialType,
-                        $"Quest {quest.QuestId} grants ElementSpecial skill {skillId} but lacks strict prerequisites (Level >= 10 or Instance/Challenge).");
+                        $"Quest {quest.QuestId} grants ElementSpecial skill {skillId} but lacks strict prerequisites (Level >= {ContentRules.MinLevelForElementSpecial} or Instance/Challenge).");
                 }
 
                 // 3. Category Alignment (General)

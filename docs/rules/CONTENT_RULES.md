@@ -4,6 +4,7 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
 
 ## 1. Single Source of Truth
 *   All content definitions must exist in JSON files (`skills.json`, `quests.json`).
+*   **Code SSOT**: The definitive rules (Budgets, Categories, Special IDs) are defined in `TWL.Shared.Domain.ContentRules.cs`.
 *   No hardcoded skills or quests in C# code (except for ID constants referencing JSON data).
 *   **Server-Authoritative**: Clients do not decide progress or unlocks.
 
@@ -55,7 +56,8 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
 *   **ElementSpecial**: High-tier elemental skills requiring specific quests.
 
 ## 7. Tier Budgets (SP & Cooldowns)
-These budgets are enforced to maintain game balance.
+These budgets are enforced by `ContentValidationTests` using values from `ContentRules.TierBudgets`.
+*Refer to `TWL.Shared.Domain.ContentRules.cs` for the exact values.*
 
 ### Tier 1 (Core)
 *   **SP Cost**: 5 - 20 SP.

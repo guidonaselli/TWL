@@ -1,5 +1,6 @@
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using TWL.Shared.Domain;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Skills;
@@ -117,7 +118,7 @@ public class ContentValidationExtendedTests
                 // Implementation: Check if SpecialCategory matches or if there's a specific flag/requirement.
                 // Since "RebirthClass" isn't a standard property, we check if the quest is categorized correctly.
 
-                Assert.Equal("RebirthJob", grantingQuest.SpecialCategory);
+                Assert.Equal(ContentRules.RebirthJobCategoryName, grantingQuest.SpecialCategory);
 
                 // Also check for some requirement logic if possible.
                 // Assuming "RebirthClass" is enforced via flags or explicit mechanics not fully visible in JSON schema yet,
@@ -139,11 +140,11 @@ public class ContentValidationExtendedTests
             if (grantingQuest != null)
             {
                 // Rule: "si la skill es ElementSpecial, la quest exige prereqs fuertes (mínimo level o challenge/instance)"
-                bool hasLevelReq = grantingQuest.RequiredLevel >= 10; // Arbitrary threshold based on context?
+                bool hasLevelReq = grantingQuest.RequiredLevel >= ContentRules.MinLevelForElementSpecial;
                 bool isInstance = grantingQuest.InstanceRules != null || grantingQuest.Type == "Instance" || grantingQuest.Objectives.Any(o => o.Type == "Instance");
 
                 Assert.True(hasLevelReq || isInstance,
-                    $"Quest {grantingQuest.QuestId} granting ElementSpecial skill {skill.SkillId} must have Level >= 10 or be an Instance/Challenge.");
+                    $"Quest {grantingQuest.QuestId} granting ElementSpecial skill {skill.SkillId} must have Level >= {ContentRules.MinLevelForElementSpecial} or be an Instance/Challenge.");
             }
         }
     }
