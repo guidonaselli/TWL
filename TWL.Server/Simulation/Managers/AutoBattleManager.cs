@@ -105,7 +105,7 @@ public class AutoBattleManager
             policy == AutoBattlePolicy.Aggressive)
         {
             var targetEnemy = enemies
-                .Where(e => !e.StatusEffects.Any(s => s.Tag == SkillEffectTag.Seal))
+                .Where(e => !e.StatusEffects.Any(s => s.Tag == SkillEffectTag.Seal) && e.GetResistance("SealResist") < 1.0f)
                 .OrderByDescending(e => e.Atk + e.Mat) // Target strongest
                 .ThenBy(e => e.Id)
                 .FirstOrDefault();
