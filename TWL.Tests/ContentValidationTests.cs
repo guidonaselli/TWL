@@ -531,4 +531,84 @@ public class ContentValidationTests
             }
         }
     }
+
+    [Fact]
+    public void ValidateSkillGrantExclusivity()
+    {
+        var quests = ContentTestHelper.LoadQuests();
+
+        // Group quests by the skill they grant
+        var questsBySkill = quests
+            .Where(q => q.Rewards.GrantSkillId.HasValue)
+            .GroupBy(q => q.Rewards.GrantSkillId.Value);
+
+        foreach (var group in questsBySkill)
+        {
+            var skillId = group.Key;
+            var questsList = group.ToList();
+
+            if (questsList.Count > 1)
+            {
+                // If multiple quests grant the same skill, they must ALL share the same MutualExclusionGroup
+                var firstGroup = questsList.First().MutualExclusionGroup;
+
+                Assert.False(string.IsNullOrEmpty(firstGroup),
+                    $"Multiple quests grant SkillId {skillId}, but they lack a MutualExclusionGroup.");
+
+                foreach (var quest in questsList)
+                {
+                    Assert.Equal(firstGroup, quest.MutualExclusionGroup);
+                }
+            }
+        }
+    }
+
+    [Fact]
+    public void ValidateSpecialSkillQuestPrerequisites()
+    {
+        var skills = ContentTestHelper.LoadSkills().ToDictionary(s => s.SkillId);
+        var quests = ContentTestHelper.LoadQuests();
+
+        foreach (var quest in quests)
+        {
+            if (quest.Rewards.GrantSkillId.HasValue)
+            {
+                var skillId = quest.Rewards.GrantSkillId.Value;
+                if (!skills.TryGetValue(skillId, out var skill)) continue; // Already checked elsewhere
+
+                // 1. RebirthJob Consistency
+                if (skill.Category == SkillCategory.RebirthJob)
+                {
+                    Assert.Equal("RebirthJob", quest.SpecialCategory);
+                    // Optionally check for RebirthClass requirement if available in QuestDefinition
+                }
+
+                // 2. ElementSpecial Consistency
+                if (skill.Category == SkillCategory.ElementSpecial)
+                {
+                    // Must have high level requirement OR be an Instance/Challenge
+                    var isHighLevel = quest.RequiredLevel >= 10;
+                    var isInstance = quest.Objectives.Any(o => o.Type == "Instance" || o.Type == "Challenge");
+                    var isSpecialType = quest.Type == "SpecialSkill";
+
+                    Assert.True(isHighLevel || isInstance || isSpecialType,
+                        $"Quest {quest.QuestId} grants ElementSpecial skill {skillId} but lacks strict prerequisites (Level >= 10 or Instance/Challenge).");
+                }
+
+                // 3. Category Alignment (General)
+                if (!string.IsNullOrEmpty(quest.SpecialCategory))
+                {
+                    // If quest explicitly says "Dragon", skill should be Dragon, etc.
+                    // Note: Enum.TryParse is case-insensitive usually, but let's be strict if needed.
+                    if (Enum.TryParse<SkillCategory>(quest.SpecialCategory, true, out var category))
+                    {
+                        if (category != SkillCategory.None)
+                        {
+                             Assert.Equal(category, skill.Category);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
