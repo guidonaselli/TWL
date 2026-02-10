@@ -179,7 +179,7 @@ public class EncounterTests
         _randomMock.Setup(r => r.Next(It.IsAny<int>(), It.IsAny<int>())).Returns((int min, int max) => min); // Return min value (e.g., 1 for count)
 
         // Act - Move
-        _spawnManager.OnPlayerMoved(session);
+        _spawnManager.OnPlayerMoved(session, 32.0f);
 
         // Assert
         Assert.Single(session.SentMessages);

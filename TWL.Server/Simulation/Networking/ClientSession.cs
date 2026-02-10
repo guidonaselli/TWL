@@ -812,6 +812,9 @@ public class ClientSession
         }
 
         // Actualizar la pos en el server side:
+        var oldX = Character.X;
+        var oldY = Character.Y;
+
         Character.X += moveDto.dx;
         Character.Y += moveDto.dy;
 
@@ -819,7 +822,8 @@ public class ClientSession
         _worldTriggerService.CheckTriggers(Character);
 
         // Check for encounters
-        _spawnManager?.OnPlayerMoved(this);
+        var dist = (float)Math.Sqrt(Math.Pow(Character.X - oldX, 2) + Math.Pow(Character.Y - oldY, 2));
+        _spawnManager?.OnPlayerMoved(this, dist);
 
         // Broadcast a otros en la misma zona
         await Task.CompletedTask; // Placeholder for async broadcast

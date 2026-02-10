@@ -154,7 +154,7 @@ public class SpawnManagerTests
             _random.Setup(r => r.Next(0, It.IsAny<int>())).Returns(0); // For list selection
 
             // Act
-            _spawnManager.OnPlayerMoved(session);
+            _spawnManager.OnPlayerMoved(session, 32.0f);
 
             // Assert
             // Verify CombatManager.StartEncounter called
