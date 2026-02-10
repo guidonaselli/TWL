@@ -1,0 +1,70 @@
+[
+  {
+    "QuestId": 4001,
+    "Title": "Gone Fishing",
+    "Description": "Catch a fish from the pier.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Fish",
+        "TargetName": "PierFishingSpot",
+        "RequiredCount": 1,
+        "Description": "Catch a fish."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 10,
+      "Items": [
+        {
+          "ItemId": 6001,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 4002,
+    "Title": "Healthy Snack",
+    "Description": "Eat the fish you caught (or a cooked one).",
+    "Requirements": [
+      4001
+    ],
+    "Objectives": [
+      {
+        "Type": "UseItem",
+        "TargetName": "CookedFish",
+        "RequiredCount": 1,
+        "Description": "Eat a Cooked Fish.",
+        "DataId": 6002
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 4003,
+    "Title": "Rare Find",
+    "Description": "Show the Golden Scale to the Collector.",
+    "Requirements": [
+      4002
+    ],
+    "Objectives": [
+      {
+        "Type": "ShowItem",
+        "TargetName": "Collector",
+        "RequiredCount": 1,
+        "Description": "Show Golden Scale.",
+        "DataId": 6003
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 1000,
+      "Items": []
+    }
+  }
+]
