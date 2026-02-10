@@ -50,7 +50,7 @@ public class SpawnManagerTests
 
         // First Call
         _combatManager.Setup(cm => cm.GetCombatant(player.Id)).Returns((ServerCombatant?)null);
-        _random.Setup(r => r.Next()).Returns(12345);
+        _random.Setup(r => r.Next(It.IsAny<string?>())).Returns(12345);
 
         // Capture encounter ID
         int encounterId1 = _spawnManager.StartEncounter(session, participants, EncounterSource.Scripted);
@@ -85,7 +85,7 @@ public class SpawnManagerTests
         var mob = new ServerCharacter { Id = -2, Name = "Mob", MonsterId = 100, CharacterElement = Element.Earth };
         var participants = new List<ServerCharacter> { mob };
 
-        _random.Setup(r => r.Next()).Returns(123);
+        _random.Setup(r => r.Next(It.IsAny<string?>())).Returns(123);
 
         // Act
         _spawnManager.StartEncounter(session, participants, EncounterSource.Scripted);
@@ -149,9 +149,9 @@ public class SpawnManagerTests
             _monsterManager.Setup(m => m.GetDefinition(2001)).Returns(new MonsterDefinition { MonsterId = 2001, Name = "Slime", Element = Element.Water });
 
             // Mock Random: Step Check returns 0.0 (< 1.0)
-            _random.Setup(r => r.NextDouble()).Returns(0.0);
-            _random.Setup(r => r.Next(1, 4)).Returns(1); // Count
-            _random.Setup(r => r.Next(0, It.IsAny<int>())).Returns(0); // For list selection
+            _random.Setup(r => r.NextDouble(It.IsAny<string?>())).Returns(0.0);
+            _random.Setup(r => r.Next(1, 4, It.IsAny<string?>())).Returns(1); // Count
+            _random.Setup(r => r.Next(0, It.IsAny<int>(), It.IsAny<string?>())).Returns(0); // For list selection
 
             // Act
             _spawnManager.OnPlayerMoved(session, 32.0f);

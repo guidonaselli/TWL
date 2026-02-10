@@ -222,7 +222,7 @@ public class SpawnManager
         }
 
         var encounterId = Interlocked.Increment(ref _nextEncounterId);
-        var actualSeed = seed ?? _random.Next();
+        var actualSeed = seed ?? _random.Next("EncounterSeed");
 
         _combatManager.StartEncounter(encounterId, participants, actualSeed);
 
@@ -361,7 +361,7 @@ public class SpawnManager
         }
 
         // Pick 1-3 based on weight
-        var count = _random.Next(1, 4);
+        var count = _random.Next(1, 4, "MobCount");
         for (var i = 0; i < count; i++)
         {
             var pick = SelectWeighted(candidates, totalWeight);
@@ -376,7 +376,7 @@ public class SpawnManager
 
     private MonsterDefinition? SelectWeighted(List<MonsterDefinition> candidates, int totalWeight)
     {
-        var roll = _random.Next(0, totalWeight);
+        var roll = _random.Next(0, totalWeight, "MobSelection");
         var current = 0;
         foreach (var def in candidates)
         {
@@ -422,9 +422,9 @@ public class SpawnManager
                 // 5% chance per frame to change direction is too high for 60fps.
                 // Assuming Update is called frequently. Let's make it 2% chance.
 
-                if (_random.NextDouble() < 0.02)
+                if (_random.NextDouble("RoamingDirectionCheck") < 0.02)
                 {
-                    var angle = _random.NextDouble() * Math.PI * 2;
+                    var angle = _random.NextDouble("RoamingAngle") * Math.PI * 2;
                     // Move for 1 sec worth of distance in this direction (simulated impulse)
                     var dx = Math.Cos(angle) * distanceToMove * 30; // 30 frames worth
                     var dy = Math.Sin(angle) * distanceToMove * 30;
@@ -491,17 +491,17 @@ public class SpawnManager
     private void SpawnMob(int mapId, ZoneSpawnConfig config)
     {
         if (config.SpawnRegions.Count == 0) return;
-        var region = config.SpawnRegions[_random.Next(0, config.SpawnRegions.Count)];
+        var region = config.SpawnRegions[_random.Next(0, config.SpawnRegions.Count, "SpawnRegionSelect")];
 
         if (region.AllowedMonsterIds.Count == 0) return;
-        var monsterId = region.AllowedMonsterIds[_random.Next(0, region.AllowedMonsterIds.Count)];
+        var monsterId = region.AllowedMonsterIds[_random.Next(0, region.AllowedMonsterIds.Count, "SpawnMobSelect")];
 
         var def = _monsterManager.GetDefinition(monsterId);
         if (def == null) return;
 
         // Position
-        var tileX = region.X + _random.NextDouble() * region.Width;
-        var tileY = region.Y + _random.NextDouble() * region.Height;
+        var tileX = region.X + _random.NextDouble("SpawnPositionX") * region.Width;
+        var tileY = region.Y + _random.NextDouble("SpawnPositionY") * region.Height;
 
         var mob = CreateMobInstance(def, mapId, (float)tileX * 32f, (float)tileY * 32f);
 

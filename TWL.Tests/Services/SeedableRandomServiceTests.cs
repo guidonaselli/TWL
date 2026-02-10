@@ -90,4 +90,27 @@ public class SeedableRandomServiceTests
         // Assert
         Assert.Equal(1000, results.Count);
     }
+
+    [Fact]
+    public void Next_WithContext_LogsContext()
+    {
+        // Arrange
+        var seed = 123;
+        var context = "TestContext";
+        _mockLogger.Setup(l => l.IsEnabled(LogLevel.Trace)).Returns(true);
+        var service = new SeedableRandomService(_mockLogger.Object, seed);
+
+        // Act
+        service.NextFloat(context);
+
+        // Assert
+        _mockLogger.Verify(
+            x => x.Log(
+                LogLevel.Trace,
+                It.IsAny<EventId>(),
+                It.Is<It.IsAnyType>((v, t) => v.ToString().Contains(context)),
+                It.IsAny<Exception>(),
+                It.IsAny<Func<It.IsAnyType, Exception, string>>()),
+            Times.Once);
+    }
 }

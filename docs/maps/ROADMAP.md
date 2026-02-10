@@ -80,6 +80,12 @@
     - **Connections:** 0002 (Costa de Mareas)
     - **Entities:** Pearl Resource.
 
+- [x] **0007 - Santuario Olvidado**
+    - **Status:** Implemented
+    - **Type:** Safe Zone / Landmark
+    - **Connections:** 0003 (Sendero de la Selva)
+    - **Entities:** Ancient Altar.
+
 ## Backlog
 - [ ] Starter Island (Tutorial) - Remaining maps (0003-0099)
 - [ ] South Island Jungle
