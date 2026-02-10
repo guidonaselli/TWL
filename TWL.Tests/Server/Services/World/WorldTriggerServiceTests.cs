@@ -91,14 +91,15 @@ public class WorldTriggerServiceTests
     }
 
     [Fact]
-    public void OnEnterTrigger_EnforcesCooldown()
+    public void OnEnterTrigger_PerCharacterCooldown_DoesNotBlockOtherPlayers()
     {
         var map = new ServerMap { Id = 1 };
         var trigger = new ServerTrigger
         {
             Id = "T1",
             Type = "TestType",
-            CooldownMs = 1000 // 20 ticks
+            CooldownMs = 1000, // 20 ticks
+            Scope = TriggerScope.Character
         };
         map.Triggers.Add(trigger);
 
@@ -108,25 +109,51 @@ public class WorldTriggerServiceTests
         _handlerMock.Setup(h => h.CanHandle("TestType")).Returns(true);
         _service.RegisterHandler(_handlerMock.Object);
 
-        var character = new ServerCharacter { MapId = 1 };
+        var c1 = new ServerCharacter { Id = 1, MapId = 1 };
+        var c2 = new ServerCharacter { Id = 2, MapId = 1 };
 
-        // First execution - Success
-        _service.OnEnterTrigger(character, 1, "T1");
-        _handlerMock.Verify(h => h.ExecuteEnter(character, trigger, _service), Times.Once);
+        // C1 Activates - Success
+        _service.OnEnterTrigger(c1, 1, "T1");
+        _handlerMock.Verify(h => h.ExecuteEnter(c1, trigger, _service), Times.Once);
 
-        // Second execution (same tick) - Blocked
-        _service.OnEnterTrigger(character, 1, "T1");
-        _handlerMock.Verify(h => h.ExecuteEnter(character, trigger, _service), Times.Once); // Still once
+        // C1 Activates again (blocked)
+        _service.OnEnterTrigger(c1, 1, "T1");
+        _handlerMock.Verify(h => h.ExecuteEnter(c1, trigger, _service), Times.Once); // Still once
 
-        // Third execution (next tick, but still within cooldown) - Blocked
-        _schedulerMock.Setup(s => s.CurrentTick).Returns(110);
-        _service.OnEnterTrigger(character, 1, "T1");
-        _handlerMock.Verify(h => h.ExecuteEnter(character, trigger, _service), Times.Once); // Still once
+        // C2 Activates - Success (Should not be blocked by C1)
+        _service.OnEnterTrigger(c2, 1, "T1");
+        _handlerMock.Verify(h => h.ExecuteEnter(c2, trigger, _service), Times.Once);
+    }
 
-        // Fourth execution (after cooldown) - Success
-        _schedulerMock.Setup(s => s.CurrentTick).Returns(125); // 100 + 20 + 5
-        _service.OnEnterTrigger(character, 1, "T1");
-        _handlerMock.Verify(h => h.ExecuteEnter(character, trigger, _service), Times.Exactly(2));
+    [Fact]
+    public void OnEnterTrigger_GlobalCooldown_BlocksAllPlayers()
+    {
+        var map = new ServerMap { Id = 1 };
+        var trigger = new ServerTrigger
+        {
+            Id = "T1",
+            Type = "TestType",
+            CooldownMs = 1000, // 20 ticks
+            Scope = TriggerScope.Global
+        };
+        map.Triggers.Add(trigger);
+
+        _mapRegistryMock.Setup(m => m.GetMap(1)).Returns(map);
+        _schedulerMock.Setup(s => s.CurrentTick).Returns(100);
+
+        _handlerMock.Setup(h => h.CanHandle("TestType")).Returns(true);
+        _service.RegisterHandler(_handlerMock.Object);
+
+        var c1 = new ServerCharacter { Id = 1, MapId = 1 };
+        var c2 = new ServerCharacter { Id = 2, MapId = 1 };
+
+        // C1 Activates - Success
+        _service.OnEnterTrigger(c1, 1, "T1");
+        _handlerMock.Verify(h => h.ExecuteEnter(c1, trigger, _service), Times.Once);
+
+        // C2 Activates - Blocked (Global cooldown)
+        _service.OnEnterTrigger(c2, 1, "T1");
+        _handlerMock.Verify(h => h.ExecuteEnter(c2, trigger, _service), Times.Never);
     }
 
     [Fact]

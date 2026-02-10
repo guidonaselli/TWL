@@ -156,6 +156,12 @@ public class MapLoader
             trigger.ActivationType = activation;
         }
 
+        if (trigger.Properties.TryGetValue("Scope", out var scopeStr) &&
+            Enum.TryParse<TriggerScope>(scopeStr, true, out var scope))
+        {
+            trigger.Scope = scope;
+        }
+
         if (trigger.Properties.TryGetValue("Interval", out var intervalStr) &&
             int.TryParse(intervalStr, out var interval))
         {
