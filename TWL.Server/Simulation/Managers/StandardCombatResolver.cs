@@ -25,7 +25,7 @@ public class StandardCombatResolver : ICombatResolver
         if (skill == null)
         {
             var baseDamage = attacker.Str * 2;
-            var variance = _random.NextFloat(0.95f, 1.05f);
+            var variance = _random.NextFloat(0.95f, 1.05f, "DamageVariance");
             return (int)Math.Round(baseDamage * variance);
         }
 
@@ -48,7 +48,7 @@ public class StandardCombatResolver : ICombatResolver
         totalValue *= elemMult;
 
         // Variance +/- 5%
-        var rnd = _random.NextFloat(0.95f, 1.05f);
+        var rnd = _random.NextFloat(0.95f, 1.05f, "DamageVariance");
         totalValue *= rnd;
 
         // Defense subtraction
@@ -78,7 +78,7 @@ public class StandardCombatResolver : ICombatResolver
         }
 
         // Variance +/- 5%
-        var rnd = _random.NextFloat(0.95f, 1.05f);
+        var rnd = _random.NextFloat(0.95f, 1.05f, "HealVariance");
         totalValue *= rnd;
 
         return Math.Max(0, (int)Math.Round(totalValue));

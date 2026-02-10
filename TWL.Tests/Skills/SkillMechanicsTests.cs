@@ -62,9 +62,9 @@ public class SkillMechanicsTests
 
         _skillCatalogMock.Setup(x => x.GetSkillById(100)).Returns(skill);
         // NextFloat() call for resistance check returns 0.0 (fail roll, < 0.5 resistance)
-        _randomMock.Setup(x => x.NextFloat()).Returns(0.0f);
+        _randomMock.Setup(x => x.NextFloat(It.IsAny<string?>())).Returns(0.0f);
         // Other random calls
-        _randomMock.Setup(x => x.NextFloat(It.IsAny<float>(), It.IsAny<float>())).Returns(1.0f);
+        _randomMock.Setup(x => x.NextFloat(It.IsAny<float>(), It.IsAny<float>(), It.IsAny<string?>())).Returns(1.0f);
 
         _combatManager.RegisterCombatant(attacker);
         _combatManager.RegisterCombatant(target);
@@ -195,7 +195,8 @@ public class SkillMechanicsTests
             {
                 BaseChance = 0.4f,
                 MinChance = 0.1f,
-                MaxChance = 1.0f
+                MaxChance = 1.0f,
+                StatDependence = "Int-Wis"
             },
             Effects = new List<SkillEffect>
             {
@@ -209,7 +210,7 @@ public class SkillMechanicsTests
 
         // Calculated Chance: 0.4 + (60 - 10)*0.01 = 0.4 + 0.5 = 0.9.
         // If Random returns 0.85, it should hit.
-        _randomMock.Setup(x => x.NextFloat()).Returns(0.85f);
+        _randomMock.Setup(x => x.NextFloat("EffectChance")).Returns(0.85f);
 
         // Act
         var result = _combatManager.UseSkill(new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 500 });
@@ -234,7 +235,8 @@ public class SkillMechanicsTests
             {
                 BaseChance = 0.5f,
                 MinChance = 0.1f, // Should clamp here
-                MaxChance = 1.0f
+                MaxChance = 1.0f,
+                StatDependence = "Int-Wis"
             },
             Effects = new List<SkillEffect>
             {
@@ -248,7 +250,7 @@ public class SkillMechanicsTests
 
         // Calculated: 0.5 - 0.9 = -0.4 -> Clamped to 0.1.
         // If Random returns 0.15, it should MISS (0.15 > 0.1).
-        _randomMock.Setup(x => x.NextFloat()).Returns(0.15f);
+        _randomMock.Setup(x => x.NextFloat("EffectChance")).Returns(0.15f);
 
         // Act
         var result = _combatManager.UseSkill(new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 501 });

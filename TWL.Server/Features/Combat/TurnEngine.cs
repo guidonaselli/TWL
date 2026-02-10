@@ -81,7 +81,7 @@ public class TurnEngine : ITurnEngine
         for (int i = 0; i < n - 1; i++)
         {
             // Next(min, max) excludes max, so we want range [i, n)
-            int r = _random.Next(i, n);
+            int r = _random.Next(i, n, "TurnShuffle");
             (alive[r], alive[i]) = (alive[i], alive[r]);
         }
 

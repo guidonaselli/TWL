@@ -175,8 +175,8 @@ public class EncounterTests
         var session = new EncounterTestClientSession(player);
 
         // Mock Random to return success for encounter check
-        _randomMock.Setup(r => r.NextDouble()).Returns(0.0); // 0.0 < 1.0
-        _randomMock.Setup(r => r.Next(It.IsAny<int>(), It.IsAny<int>())).Returns((int min, int max) => min); // Return min value (e.g., 1 for count)
+        _randomMock.Setup(r => r.NextDouble(It.IsAny<string?>())).Returns(0.0); // 0.0 < 1.0
+        _randomMock.Setup(r => r.Next(It.IsAny<int>(), It.IsAny<int>(), It.IsAny<string?>())).Returns((int min, int max, string? c) => min); // Return min value (e.g., 1 for count)
 
         // Act - Move
         _spawnManager.OnPlayerMoved(session);

@@ -28,70 +28,70 @@ public class SeedableRandomService : IRandomService
         }
     }
 
-    public float NextFloat()
+    public float NextFloat(string? context = null)
     {
         lock (_lock)
         {
             var val = _random.NextSingle();
             if (_logger.IsEnabled(LogLevel.Trace))
             {
-                _logger.LogTrace("RNG NextFloat: {Value}", val);
+                _logger.LogTrace("RNG [{Context}] NextFloat: {Value}", context ?? "Global", val);
             }
 
             return val;
         }
     }
 
-    public float NextFloat(float min, float max)
+    public float NextFloat(float min, float max, string? context = null)
     {
         lock (_lock)
         {
             var val = min + (max - min) * _random.NextSingle();
             if (_logger.IsEnabled(LogLevel.Trace))
             {
-                _logger.LogTrace("RNG NextFloat({Min}, {Max}): {Value}", min, max, val);
+                _logger.LogTrace("RNG [{Context}] NextFloat({Min}, {Max}): {Value}", context ?? "Global", min, max, val);
             }
 
             return val;
         }
     }
 
-    public int Next(int min, int max)
-    {
-        lock (_lock)
-        {
-            var val = _random.Next(min, max);
-            if (_logger.IsEnabled(LogLevel.Trace))
-            {
-                _logger.LogTrace("RNG Next({Min}, {Max}): {Value}", min, max, val);
-            }
-
-            return val;
-        }
-    }
-
-    public double NextDouble()
-    {
-        lock (_lock)
-        {
-            var val = _random.NextDouble();
-            if (_logger.IsEnabled(LogLevel.Trace))
-            {
-                _logger.LogTrace("RNG NextDouble: {Value}", val);
-            }
-
-            return val;
-        }
-    }
-
-    public int Next()
+    public int Next(string? context = null)
     {
         lock (_lock)
         {
             var val = _random.Next();
             if (_logger.IsEnabled(LogLevel.Trace))
             {
-                _logger.LogTrace("RNG Next: {Value}", val);
+                _logger.LogTrace("RNG [{Context}] Next: {Value}", context ?? "Global", val);
+            }
+
+            return val;
+        }
+    }
+
+    public int Next(int min, int max, string? context = null)
+    {
+        lock (_lock)
+        {
+            var val = _random.Next(min, max);
+            if (_logger.IsEnabled(LogLevel.Trace))
+            {
+                _logger.LogTrace("RNG [{Context}] Next({Min}, {Max}): {Value}", context ?? "Global", min, max, val);
+            }
+
+            return val;
+        }
+    }
+
+    public double NextDouble(string? context = null)
+    {
+        lock (_lock)
+        {
+            var val = _random.NextDouble();
+            if (_logger.IsEnabled(LogLevel.Trace))
+            {
+                _logger.LogTrace("RNG [{Context}] NextDouble: {Value}", context ?? "Global", val);
             }
 
             return val;
