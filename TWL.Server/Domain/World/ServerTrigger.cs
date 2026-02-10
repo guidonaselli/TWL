@@ -4,6 +4,7 @@ public class ServerTrigger
 {
     public string Id { get; set; } = string.Empty;
     public string Type { get; set; } = string.Empty;
+    public TriggerScope Scope { get; set; } = TriggerScope.Character;
     public TriggerActivationType ActivationType { get; set; } = TriggerActivationType.Enter;
     public int IntervalMs { get; set; }
     public int CooldownMs { get; set; }

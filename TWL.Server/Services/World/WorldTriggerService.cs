@@ -15,7 +15,7 @@ public class WorldTriggerService : IWorldTriggerService
     private readonly ServerMetrics _metrics;
     private readonly PlayerService _playerService;
     private readonly IWorldScheduler _scheduler;
-    private readonly Dictionary<(int, string), long> _triggerCooldowns = new();
+    private readonly Dictionary<(int MapId, string TriggerId, int CharacterId), long> _triggerCooldowns = new();
     private readonly Dictionary<string, List<(int MapId, ServerTrigger Trigger)>> _triggersByFlag = new();
     private readonly Dictionary<int, List<ServerTrigger>> _triggersByMap = new();
     private bool _started;
@@ -88,7 +88,7 @@ public class WorldTriggerService : IWorldTriggerService
     private void Update()
     {
         var now = _scheduler.CurrentTick;
-        var toRemove = new List<(int, string)>();
+        var toRemove = new List<(int, string, int)>();
         foreach (var kvp in _triggerCooldowns)
         {
             if (kvp.Value < now)
@@ -111,14 +111,14 @@ public class WorldTriggerService : IWorldTriggerService
             {
                 if (mapId != character.MapId) continue;
 
-                if (IsOnCooldown(mapId, trigger.Id)) continue;
+                if (IsOnCooldown(character, mapId, trigger)) continue;
 
                 if (!CheckConditions(character, trigger)) continue;
 
                 var handler = _handlers.FirstOrDefault(h => h.CanHandle(trigger.Type));
                 if (handler != null)
                 {
-                    ApplyCooldown(mapId, trigger);
+                    ApplyCooldown(character, mapId, trigger);
                     _logger.LogDebug("Character {CharId} activated flag trigger {TriggerId} ({Type})",
                         character.Id, trigger.Id, trigger.Type);
                     handler.ExecuteEnter(character, trigger, this);
@@ -141,7 +141,7 @@ public class WorldTriggerService : IWorldTriggerService
             return;
         }
 
-        if (IsOnCooldown(mapId, triggerId))
+        if (IsOnCooldown(character, mapId, trigger))
         {
             return;
         }
@@ -154,7 +154,7 @@ public class WorldTriggerService : IWorldTriggerService
                 return;
             }
 
-            ApplyCooldown(mapId, trigger);
+            ApplyCooldown(character, mapId, trigger);
 
             _logger.LogDebug("Character {CharId} entered trigger {TriggerId} ({Type})", character.Id, triggerId,
                 trigger.Type);
@@ -177,7 +177,7 @@ public class WorldTriggerService : IWorldTriggerService
             return;
         }
 
-        if (IsOnCooldown(mapId, triggerId))
+        if (IsOnCooldown(character, mapId, trigger))
         {
             return;
         }
@@ -190,7 +190,7 @@ public class WorldTriggerService : IWorldTriggerService
                 return;
             }
 
-            ApplyCooldown(mapId, trigger);
+            ApplyCooldown(character, mapId, trigger);
 
             _logger.LogDebug("Character {CharId} interacted with trigger {TriggerId} ({Type})", character.Id, triggerId,
                 trigger.Type);
@@ -199,26 +199,27 @@ public class WorldTriggerService : IWorldTriggerService
         }
     }
 
-    private bool IsOnCooldown(int mapId, string triggerId)
+    private bool IsOnCooldown(ServerCharacter character, int mapId, ServerTrigger trigger)
     {
-        if (_triggerCooldowns.TryGetValue((mapId, triggerId), out var nextTick))
+        var characterId = trigger.Scope == TriggerScope.Global ? 0 : character.Id;
+        if (_triggerCooldowns.TryGetValue((mapId, trigger.Id, characterId), out var nextTick))
         {
             if (_scheduler.CurrentTick < nextTick)
             {
                 return true;
             }
-            // Expired, can cleanup if we want, but overwriting is cheaper
         }
         return false;
     }
 
-    private void ApplyCooldown(int mapId, ServerTrigger trigger)
+    private void ApplyCooldown(ServerCharacter character, int mapId, ServerTrigger trigger)
     {
         if (trigger.CooldownMs > 0)
         {
             var ticks = trigger.CooldownMs / 50; // 50ms per tick
             if (ticks < 1) ticks = 1;
-            _triggerCooldowns[(mapId, trigger.Id)] = _scheduler.CurrentTick + ticks;
+            var characterId = trigger.Scope == TriggerScope.Global ? 0 : character.Id;
+            _triggerCooldowns[(mapId, trigger.Id, characterId)] = _scheduler.CurrentTick + ticks;
         }
     }
 
