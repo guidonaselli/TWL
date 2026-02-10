@@ -950,6 +950,29 @@ public class PlayerQuestComponent
                         }
                     }
 
+                    // Special Case: ShowItem triggered by "Talk" or "Interact"
+                    if (!typeMatch && string.Equals(obj.Type, "ShowItem", StringComparison.OrdinalIgnoreCase))
+                    {
+                        for (var t = 0; t < types.Length; t++)
+                        {
+                            if (string.Equals(types[t], "Talk", StringComparison.OrdinalIgnoreCase) ||
+                                string.Equals(types[t], "Interact", StringComparison.OrdinalIgnoreCase))
+                            {
+                                typeMatch = true;
+                                break;
+                            }
+                        }
+
+                        if (typeMatch && obj.DataId.HasValue && Character != null)
+                        {
+                            // Must verify item possession
+                            if (!Character.HasItem(obj.DataId.Value, 1))
+                            {
+                                typeMatch = false;
+                            }
+                        }
+                    }
+
                     if (!typeMatch) continue;
 
                     // 2. DataId Match (Primary) or TargetName Match (Fallback/Secondary)
@@ -1343,4 +1366,6 @@ public class PlayerQuestComponent
     public List<int> HandlePartyAction(string action) => TryProgress("Party", action);
 
     public List<int> HandleGuildAction(string action) => TryProgress("Guild", action);
+
+    public List<int> HandleUseItem(int itemId, string itemName) => TryProgress("UseItem", itemName, 1, itemId);
 }

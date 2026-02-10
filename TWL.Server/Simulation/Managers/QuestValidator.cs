@@ -22,7 +22,8 @@ public static class QuestValidator
         "Capture",
         "PetAcquired", "Trade",
         "PayGold",
-        "Reach", "UseItem"
+        "Reach", "UseItem",
+        "ShowItem", "Fish"
     };
 
     public static List<string> Validate(IEnumerable<QuestDefinition> quests,

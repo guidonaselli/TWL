@@ -306,6 +306,15 @@ public class ClientSession
 
         if (Character.UseItem(request.SlotIndex, out var modifiedItem))
         {
+            if (modifiedItem != null)
+            {
+                var updatedQuests = QuestComponent.HandleUseItem(modifiedItem.ItemId, modifiedItem.Name);
+                foreach (var qid in updatedQuests)
+                {
+                    _ = SendQuestUpdateAsync(qid);
+                }
+            }
+
             var update = new InventoryUpdate
             {
                 PlayerId = UserId,
