@@ -1,0 +1,22 @@
+{
+  "MapId": 7,
+  "RegionId": "IslaBrisa",
+  "Biome": "Ruins",
+  "RecommendedLevelMin": 5,
+  "RecommendedLevelMax": 8,
+  "EntryPoints": [ 1 ],
+  "Exits": [
+    {
+      "TargetMapId": 3,
+      "SpawnId": 5
+    }
+  ],
+  "AmbientProfile": {
+    "MusicKey": "BGM_MYSTERY_01",
+    "AmbienceKey": "AMB_CAVE",
+    "PaletteHintKey": "DUNGEON"
+  },
+  "WorldFlagsSet": [],
+  "WorldFlagsCleared": [],
+  "Notes": "Santuario Olvidado - Connected to Sendero de la Selva."
+}

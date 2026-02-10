@@ -315,7 +315,12 @@
     <property name="CollisionType" value="Solid"/>
    </properties>
   </object>
-  <object id="302" x="0" y="1248" width="1280" height="32">
+  <object id="302" x="0" y="1248" width="600" height="32">
+   <properties>
+    <property name="CollisionType" value="Solid"/>
+   </properties>
+  </object>
+  <object id="307" x="680" y="1248" width="600" height="32">
    <properties>
     <property name="CollisionType" value="Solid"/>
    </properties>
@@ -375,6 +380,13 @@
    </properties>
    <point/>
   </object>
+  <object id="105" x="640" y="1200">
+   <properties>
+    <property name="Id" value="5"/>
+    <property name="SpawnType" value="PlayerStart"/>
+   </properties>
+   <point/>
+  </object>
  </objectgroup>
  <objectgroup id="10" name="Triggers">
   <object id="201" x="0" y="608" width="32" height="96">
@@ -394,6 +406,18 @@
     <property name="TriggerType" value="MapTransition"/>
     <property name="Id" value="101"/>
     <property name="TargetMapId" value="4"/>
+    <property name="TargetSpawnId" value="1"/>
+    <property name="Cooldown" value="0"/>
+    <property name="OncePerCharacter" value="false"/>
+    <property name="RequiredLevel" value="0"/>
+    <property name="RequiredFlags" value=""/>
+   </properties>
+  </object>
+  <object id="203" x="600" y="1248" width="80" height="32">
+   <properties>
+    <property name="TriggerType" value="MapTransition"/>
+    <property name="Id" value="102"/>
+    <property name="TargetMapId" value="7"/>
     <property name="TargetSpawnId" value="1"/>
     <property name="Cooldown" value="0"/>
     <property name="OncePerCharacter" value="false"/>
