@@ -217,24 +217,33 @@ public class WorldScheduler : IWorldScheduler, IDisposable
         lock (_lock)
         {
             queueDepth = _scheduledTasks.Count;
-            for (var i = _scheduledTasks.Count - 1; i >= 0; i--)
+
+            // 1. Identify tasks to run (FIFO)
+            for (var i = 0; i < _scheduledTasks.Count; i++)
             {
                 var task = _scheduledTasks[i];
                 if (task.TargetTick <= CurrentTick)
                 {
                     tasksToRun.Add(task);
-
-                    if (task.IntervalTicks.HasValue)
-                    {
-                        // Schedule next run
-                        task.TargetTick = CurrentTick + task.IntervalTicks.Value;
-                    }
-                    else
-                    {
-                        _scheduledTasks.RemoveAt(i);
-                    }
                 }
             }
+
+            // 2. Update or Remove tasks
+            // RemoveAll efficiently compacts the list. We use the predicate to also update repeating tasks.
+            _scheduledTasks.RemoveAll(t =>
+            {
+                if (t.TargetTick <= CurrentTick)
+                {
+                    if (t.IntervalTicks.HasValue)
+                    {
+                        // Schedule next run
+                        t.TargetTick = CurrentTick + t.IntervalTicks.Value;
+                        return false; // Keep it
+                    }
+                    return true; // Remove it
+                }
+                return false; // Keep pending
+            });
         }
 
         foreach (var task in tasksToRun)

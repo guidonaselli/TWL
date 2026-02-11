@@ -17,6 +17,7 @@ public class GenericTriggerHandlerTests
     private readonly Mock<SpawnManager> _spawnManagerMock;
     private readonly Mock<MonsterManager> _monsterManagerMock;
     private readonly Mock<CombatManager> _combatManagerMock;
+    private readonly Mock<InstanceService> _instanceServiceMock;
     private readonly GenericTriggerHandler _handler;
 
     public GenericTriggerHandlerTests()
@@ -35,7 +36,9 @@ public class GenericTriggerHandlerTests
 
         _spawnManagerMock = new Mock<SpawnManager>(_monsterManagerMock.Object, _combatManagerMock.Object, random.Object, _playerServiceMock.Object);
 
-        _handler = new GenericTriggerHandler(_playerServiceMock.Object, _spawnManagerMock.Object);
+        _instanceServiceMock = new Mock<InstanceService>(metrics);
+
+        _handler = new GenericTriggerHandler(_playerServiceMock.Object, _spawnManagerMock.Object, _instanceServiceMock.Object);
     }
 
     [Fact]
@@ -50,6 +53,9 @@ public class GenericTriggerHandlerTests
     public void ExecuteEnter_Teleport_UpdatesCharacterPosition()
     {
         var character = new ServerCharacter { MapId = 1, X = 0, Y = 0 };
+        var mapChangedCalled = false;
+        character.OnMapChanged += (id) => mapChangedCalled = true;
+
         var trigger = new ServerTrigger();
         trigger.Actions.Add(new TriggerAction("Teleport", new Dictionary<string, string>
         {
@@ -63,6 +69,30 @@ public class GenericTriggerHandlerTests
         Assert.Equal(2, character.MapId);
         Assert.Equal(100, character.X);
         Assert.Equal(200, character.Y);
+        Assert.True(mapChangedCalled);
+    }
+
+    [Fact]
+    public void ExecuteEnter_Teleport_SameMap_InvokesMapChanged()
+    {
+        var character = new ServerCharacter { MapId = 1, X = 0, Y = 0 };
+        var mapChangedCalled = false;
+        character.OnMapChanged += (id) => mapChangedCalled = true;
+
+        var trigger = new ServerTrigger();
+        trigger.Actions.Add(new TriggerAction("Teleport", new Dictionary<string, string>
+        {
+            { "MapId", "1" }, // Same map
+            { "X", "50" },
+            { "Y", "50" }
+        }));
+
+        _handler.ExecuteEnter(character, trigger, Mock.Of<IWorldTriggerService>());
+
+        Assert.Equal(1, character.MapId);
+        Assert.Equal(50, character.X);
+        Assert.Equal(50, character.Y);
+        Assert.True(mapChangedCalled, "Should invoke OnMapChanged even for same map ID");
     }
 
     [Fact]

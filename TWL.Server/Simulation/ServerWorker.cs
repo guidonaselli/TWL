@@ -30,12 +30,13 @@ public class ServerWorker : IHostedService
     private readonly IWorldScheduler _worldScheduler;
     private readonly IWorldTriggerService _worldTriggerService;
     private readonly HealthCheckService _healthCheck;
+    private readonly InstanceService _instanceService;
 
     public ServerWorker(INetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager,
         ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService,
         IWorldScheduler worldScheduler, ServerMetrics metrics, IMapRegistry mapRegistry,
         IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager,
-        ILoggerFactory loggerFactory, HealthCheckService healthCheck)
+        ILoggerFactory loggerFactory, HealthCheckService healthCheck, InstanceService instanceService)
     {
         _net = net;
         _db = db;
@@ -52,6 +53,7 @@ public class ServerWorker : IHostedService
         _spawnManager = spawnManager;
         _loggerFactory = loggerFactory;
         _healthCheck = healthCheck;
+        _instanceService = instanceService;
     }
 
     public Task StartAsync(CancellationToken ct)
@@ -98,7 +100,7 @@ public class ServerWorker : IHostedService
         _worldTriggerService.RegisterHandler(new QuestTriggerHandler(_playerService));
         // Manual resolution for now until DI registration for handlers is improved
         _worldTriggerService.RegisterHandler(new DamageTriggerHandler(_loggerFactory.CreateLogger<DamageTriggerHandler>(), _playerService));
-        _worldTriggerService.RegisterHandler(new GenericTriggerHandler(_playerService, _spawnManager));
+        _worldTriggerService.RegisterHandler(new GenericTriggerHandler(_playerService, _spawnManager, _instanceService));
 
         if (Directory.Exists("Content/Maps"))
         {
