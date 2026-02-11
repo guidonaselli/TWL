@@ -184,10 +184,11 @@ public class CombatManager
                     switch (effect.Tag)
                     {
                         case SkillEffectTag.Cleanse:
-                            target.CleanseDebuffs(_statusEngine);
+                            // Value acts as Max Priority (0 = Unlimited/Default). ResistanceTags act as Allowed Tags.
+                            target.CleanseDebuffs(_statusEngine, null, effect.ResistanceTags, effect.Value > 0 ? (int)effect.Value : int.MaxValue);
                             break;
                         case SkillEffectTag.Dispel:
-                            target.DispelBuffs(_statusEngine);
+                            target.DispelBuffs(_statusEngine, null, effect.ResistanceTags, effect.Value > 0 ? (int)effect.Value : int.MaxValue);
                             break;
                         case SkillEffectTag.Damage:
                             break;
