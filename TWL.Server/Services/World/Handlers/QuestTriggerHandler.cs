@@ -26,7 +26,8 @@ public class QuestTriggerHandler : ITriggerHandler
         if (session != null)
         {
             var targetName = trigger.Properties.TryGetValue("TargetName", out var val) ? val : trigger.Id;
-            var updated = session.QuestComponent.TryProgress("Explore", targetName);
+            var uniqueUpdates = new HashSet<int>();
+            session.QuestComponent.TryProgress(uniqueUpdates, targetName, "Explore", "Reach", "Visit");
         }
     }
 

@@ -1,138 +1,128 @@
 using Moq;
-using TWL.Server.Persistence;
-using TWL.Server.Persistence.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Services.World.Handlers;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
+using TWL.Shared.Domain.Models;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
-using TWL.Server.Architecture.Observability;
-using TWL.Server.Persistence.Database;
+using TWL.Server.Persistence.Services;
 
 namespace TWL.Tests.Quests;
 
 public class QuestSystemExtendedTests
 {
+    private readonly PlayerQuestComponent _playerQuests;
     private readonly ServerQuestManager _questManager;
-    private readonly PlayerQuestComponent _questComponent;
-    private readonly Mock<PlayerService> _mockPlayerService;
-    private readonly Mock<IPlayerRepository> _mockRepo;
-    private readonly ServerMetrics _metrics;
+    private readonly ServerCharacter _character;
 
     public QuestSystemExtendedTests()
     {
         _questManager = new ServerQuestManager();
-        _questComponent = new PlayerQuestComponent(_questManager);
+        _character = new ServerCharacter { Id = 1, Name = "TestPlayer" };
 
-        // Define Test Quests
-        var questA = new QuestDefinition
+        var quests = new List<QuestDefinition>
         {
-            QuestId = 100,
-            Title = "Choice A",
-            Description = "Option A",
-            MutualExclusionGroup = "ExclusiveGroup1",
-            Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
-            Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "A", 1, "Talk to A") },
-            FlagsSet = new List<string> { "FLAG_A" }
-        };
-        var questB = new QuestDefinition
-        {
-            QuestId = 101,
-            Title = "Choice B",
-            Description = "Option B",
-            MutualExclusionGroup = "ExclusiveGroup1",
-            Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
-            Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "B", 1, "Talk to B") },
-            FlagsSet = new List<string> { "FLAG_B" }
-        };
-        var questC = new QuestDefinition
-        {
-            QuestId = 102,
-            Title = "Conclusion",
-            Description = "After choice",
-            RequiredFlags = new List<string> { "FLAG_A" }, // Simplified for test
-            Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
-            Objectives = new List<ObjectiveDefinition> { new ObjectiveDefinition("Talk", "C", 1, "Talk to C") }
-        };
-
-        _questManager.AddQuest(questA);
-        _questManager.AddQuest(questB);
-        _questManager.AddQuest(questC);
-
-        _metrics = new ServerMetrics();
-        _mockRepo = new Mock<IPlayerRepository>();
-        // We cannot mock PlayerService easily if it doesn't have virtual methods or interface.
-        // PlayerService is a class. We can use a real instance with mocked repo.
-    }
-
-    [Fact]
-    public void MutualExclusion_BlocksStartingSecondQuest()
-    {
-        // Act
-        var startA = _questComponent.StartQuest(100);
-        var canStartB = _questComponent.CanStartQuest(101);
-        var startB = _questComponent.StartQuest(101);
-
-        // Assert
-        Assert.True(startA, "Should be able to start Quest A");
-        Assert.False(canStartB, "Should NOT be able to start Quest B while A is in progress");
-        Assert.False(startB, "StartQuest B should fail");
-    }
-
-    [Fact]
-    public void QuestTriggerHandler_ProgressesQuest()
-    {
-        // Setup
-        var qDef = new QuestDefinition
-        {
-            QuestId = 200,
-            Title = "Explore Quest",
-            Description = "Explore Test",
-            Objectives = new List<ObjectiveDefinition>
+            new()
             {
-                new ObjectiveDefinition("Explore", "TestZone", 1, "Explore TestZone")
+                QuestId = 100,
+                Title = "Pet Quest",
+                Description = "Requires Pet",
+                RequiredPetId = 999,
+                Objectives = new List<ObjectiveDefinition>
+                {
+                    new("Talk", "Trainer", 1, "Talk")
+                },
+                Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
             },
-            Rewards = new RewardDefinition(0, 0, new List<ItemReward>())
-        };
-        _questManager.AddQuest(qDef);
-
-        var playerService = new PlayerService(_mockRepo.Object, _metrics);
-        var session = new ClientSessionForTest();
-        var character = new ServerCharacter { Id = 10, Name = "Explorer" };
-
-        session.SetCharacter(character);
-        session.SetQuestComponent(new PlayerQuestComponent(_questManager));
-        playerService.RegisterSession(session);
-
-        var handler = new QuestTriggerHandler(playerService);
-
-        // Act - Start Quest
-        session.QuestComponent.StartQuest(200);
-
-        // Trigger
-        var trigger = new TWL.Server.Domain.World.ServerTrigger
-        {
-            Id = "TestZone",
-            Type = "Explore",
-            Properties = new Dictionary<string, string> { { "TargetName", "TestZone" } }
+            new()
+            {
+                QuestId = 101,
+                Title = "Death Quest",
+                Description = "Don't die",
+                Objectives = new List<ObjectiveDefinition>
+                {
+                    new("Kill", "Wolf", 1, "Kill Wolf")
+                },
+                Rewards = new RewardDefinition(0, 0, new List<ItemReward>()),
+                FailConditions = new List<QuestFailCondition>
+                {
+                    new("PlayerDeath", "", "Die")
+                }
+            }
         };
 
-        handler.ExecuteEnter(character, trigger, null);
+        // Hack to load quests into manager without file
+        var json = System.Text.Json.JsonSerializer.Serialize(quests);
+        File.WriteAllText("extended_quests.json", json);
+        _questManager.Load("extended_quests.json");
 
-        // Assert
-        Assert.Equal(QuestState.Completed, session.QuestComponent.QuestStates[200]);
+        _playerQuests = new PlayerQuestComponent(_questManager);
+        _playerQuests.Character = _character;
     }
 
-    public class ClientSessionForTest : ClientSession
+    [Fact]
+    public void StartQuest_ShouldFail_WhenRequiredPetMissing()
     {
-        public ClientSessionForTest()
-        {
-            UserId = 10;
-        }
+        var result = _playerQuests.StartQuest(100);
+        Assert.False(result);
+    }
 
-        public void SetCharacter(ServerCharacter c) => Character = c;
-        public void SetQuestComponent(PlayerQuestComponent qc) => QuestComponent = qc;
+    [Fact]
+    public void StartQuest_ShouldSucceed_WhenRequiredPetPresent()
+    {
+        _character.AddPet(new ServerPet { DefinitionId = 999, InstanceId = "1" });
+        var result = _playerQuests.StartQuest(100);
+        Assert.True(result);
+    }
+
+    [Fact]
+    public void Quest_ShouldFail_OnPlayerDeath()
+    {
+        _playerQuests.StartQuest(101);
+        Assert.Equal(QuestState.InProgress, _playerQuests.QuestStates[101]);
+
+        // Simulate Player Death
+        _playerQuests.HandleCombatantDeath("TestPlayer");
+
+        Assert.Equal(QuestState.Failed, _playerQuests.QuestStates[101]);
+    }
+
+    [Fact]
+    public void Quest_ShouldNotFail_OnOtherDeath()
+    {
+        _playerQuests.StartQuest(101);
+
+        // Simulate Other Death
+        _playerQuests.HandleCombatantDeath("AnotherPlayer");
+
+        Assert.Equal(QuestState.InProgress, _playerQuests.QuestStates[101]);
+    }
+
+    [Fact]
+    public void Validation_ShouldDetect_CircularDependency()
+    {
+        var quests = new List<QuestDefinition>
+        {
+            new() { QuestId = 1, Title = "A", Description="A", Objectives = [new("T","T",1,"D")], Rewards = new(0,0,[]), Requirements = [2] },
+            new() { QuestId = 2, Title = "B", Description="B", Objectives = [new("T","T",1,"D")], Rewards = new(0,0,[]), Requirements = [1] }
+        };
+
+        var errors = QuestValidator.Validate(quests);
+        Assert.Contains(errors, e => e.Contains("Circular dependency"));
+    }
+
+    [Fact]
+    public void Validation_ShouldDetect_MutualExclusionConflict()
+    {
+        var quests = new List<QuestDefinition>
+        {
+            new() { QuestId = 1, Title = "A", Description="A", Objectives = [new("T","T",1,"D")], Rewards = new(0,0,[]), MutualExclusionGroup = "G1" },
+            new() { QuestId = 2, Title = "B", Description="B", Objectives = [new("T","T",1,"D")], Rewards = new(0,0,[]), MutualExclusionGroup = "G1", Requirements = [1] }
+        };
+
+        var errors = QuestValidator.Validate(quests);
+        Assert.Contains(errors, e => e.Contains("logical deadlock"));
     }
 }

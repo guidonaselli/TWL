@@ -49,6 +49,7 @@ public sealed record QuestDefinition
     public IReadOnlyDictionary<string, int> RequiredStats { get; init; } = new Dictionary<string, int>();
     public IReadOnlyList<ItemRequirement> RequiredItems { get; init; } = [];
     public IReadOnlyList<int> RequiredEquipment { get; init; } = [];
+    public int? RequiredPetId { get; init; }
 
     public QuestRepeatability Repeatability { get; init; } = QuestRepeatability.None;
     public TimeSpan? RepeatCooldown { get; init; }
