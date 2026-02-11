@@ -89,6 +89,42 @@ public class SkillRegistry : ISkillCatalog
 
             _skills[skill.SkillId] = skill;
         }
+
+        // Post-Load: Enforce Stage Upgrade Consistency (Anti-Snowball)
+        // We auto-populate this to ensure runtime integrity without redundant JSON data.
+        ApplyStageUpgradeConsistency(_skills.Values);
+    }
+
+    /// <summary>
+    /// Applies consistency rules for stage upgrades, making the Parent Skill the SSOT.
+    /// Ensures that if A upgrades to B, B's UnlockRules require A.
+    /// </summary>
+    public static void ApplyStageUpgradeConsistency(IEnumerable<Skill> skills)
+    {
+        var skillMap = skills.ToDictionary(s => s.SkillId);
+
+        foreach (var skill in skills)
+        {
+            if (skill.StageUpgradeRules?.NextSkillId is int nextId)
+            {
+                if (skillMap.TryGetValue(nextId, out var nextSkill))
+                {
+                    if (nextSkill.UnlockRules == null)
+                    {
+                        nextSkill.UnlockRules = new SkillUnlockRules();
+                    }
+
+                    // If the child doesn't already have an explicit parent rule (or even if it does),
+                    // we enforce the link from the parent's definition which is the SSOT for upgrades.
+                    nextSkill.UnlockRules.ParentSkillId = skill.SkillId;
+
+                    if (skill.StageUpgradeRules.RankThreshold > 0)
+                    {
+                        nextSkill.UnlockRules.ParentSkillRank = skill.StageUpgradeRules.RankThreshold;
+                    }
+                }
+            }
+        }
     }
 
     private SkillType MapBranchToType(SkillBranch branch, List<SkillEffect>? effects)

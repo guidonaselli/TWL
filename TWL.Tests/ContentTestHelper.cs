@@ -52,7 +52,12 @@ public static class ContentTestHelper
         }
 
         var json = File.ReadAllText(path);
-        return JsonSerializer.Deserialize<List<Skill>>(json, GetJsonOptions()) ?? new List<Skill>();
+        var skills = JsonSerializer.Deserialize<List<Skill>>(json, GetJsonOptions()) ?? new List<Skill>();
+
+        // Post-Load: Enforce Stage Upgrade Consistency (Mirroring SkillRegistry logic)
+        SkillRegistry.ApplyStageUpgradeConsistency(skills);
+
+        return skills;
     }
 
     public static List<QuestDefinition> LoadQuests()

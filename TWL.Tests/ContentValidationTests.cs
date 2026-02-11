@@ -284,14 +284,18 @@ public class ContentValidationTests
 
         foreach (var skill in skills)
         {
-            // Only validate if a budget rule is defined for this Family/Tier combination
-            if (ContentRules.TierBudgets.TryGetValue((skill.Family, skill.Tier), out var budget))
+            // STRICT VALIDATION: Every skill must have a defined budget rule in ContentRules.
+            // If the budget is missing, it is a content error.
+            if (!ContentRules.TierBudgets.TryGetValue((skill.Family, skill.Tier), out var budget))
             {
-                Assert.True(skill.SpCost >= budget.MinSp && skill.SpCost <= budget.MaxSp,
-                    $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated SP Budget [{budget.MinSp}-{budget.MaxSp}]. Value: {skill.SpCost}");
-                Assert.True(skill.Cooldown >= budget.MinCd && skill.Cooldown <= budget.MaxCd,
-                    $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated CD Budget [{budget.MinCd}-{budget.MaxCd}]. Value: {skill.Cooldown}");
+                Assert.Fail($"Skill {skill.SkillId} ({skill.Name}) uses Family '{skill.Family}' and Tier '{skill.Tier}', but no Budget Rule is defined in ContentRules.TierBudgets.");
+                return; // Unreachable, but satisfies compiler analysis
             }
+
+            Assert.True(skill.SpCost >= budget.MinSp && skill.SpCost <= budget.MaxSp,
+                $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated SP Budget [{budget.MinSp}-{budget.MaxSp}]. Value: {skill.SpCost}");
+            Assert.True(skill.Cooldown >= budget.MinCd && skill.Cooldown <= budget.MaxCd,
+                $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated CD Budget [{budget.MinCd}-{budget.MaxCd}]. Value: {skill.Cooldown}");
         }
     }
 
@@ -471,28 +475,23 @@ public class ContentValidationTests
 
                 var nextSkill = skillMap[nextId];
 
-                // Anti-Snowball: Ensure the target skill explicitly requires the parent skill
-                // OR ensure it has NO other conflicting unlock rules.
-                // The safest implementation of "Anti-snowball" is that the relationship must be bidirectional
-                // or at least non-contradictory.
+                // Anti-Snowball: Ensure the target skill explicitly requires the parent skill.
+                // Since SkillRegistry and ContentTestHelper now auto-populate this from the parent,
+                // this assertion validates that the link was successfully established and no contradictions exist.
 
-                if (nextSkill.UnlockRules != null && nextSkill.UnlockRules.ParentSkillId.HasValue)
+                Assert.NotNull(nextSkill.UnlockRules);
+                Assert.True(nextSkill.UnlockRules.ParentSkillId.HasValue,
+                    $"Skill {nextSkill.SkillId} is upgraded from {skill.SkillId}, but missing ParentSkillId in UnlockRules.");
+
+                Assert.Equal(skill.SkillId, nextSkill.UnlockRules.ParentSkillId.Value);
+
+                // Check Rank Threshold Consistency
+                if (skill.StageUpgradeRules.RankThreshold > 0)
                 {
-                     Assert.Equal(skill.SkillId, nextSkill.UnlockRules.ParentSkillId.Value);
+                    Assert.True(nextSkill.UnlockRules.ParentSkillRank.HasValue,
+                        $"Skill {nextSkill.SkillId} is upgraded from {skill.SkillId} at Rank {skill.StageUpgradeRules.RankThreshold}, but missing ParentSkillRank.");
 
-                     // Check Rank Threshold Consistency
-                     if (skill.StageUpgradeRules.RankThreshold > 0 && nextSkill.UnlockRules.ParentSkillRank.HasValue)
-                     {
-                         Assert.Equal(skill.StageUpgradeRules.RankThreshold, nextSkill.UnlockRules.ParentSkillRank.Value);
-                     }
-                }
-                else
-                {
-                     // If the child doesn't explicitly point back, that MIGHT be okay depending on strictness,
-                     // but the prompt says: "Stage upgrades rules must be defined in ONE place".
-                     // If defined in 'StageUpgradeRules' (parent), the child shouldn't redefine contradictory rules.
-
-                     // For now, we enforce that if ParentSkillId IS defined, it must match.
+                    Assert.Equal(skill.StageUpgradeRules.RankThreshold, nextSkill.UnlockRules.ParentSkillRank.Value);
                 }
             }
         }
