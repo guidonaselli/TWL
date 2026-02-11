@@ -126,6 +126,71 @@ public static class QuestValidator
         {
             ValidateRewards(quest.QuestId, quest.Rewards, errors);
         }
+
+        // 6. Fail Conditions
+        if (quest.FailConditions != null)
+        {
+            foreach (var cond in quest.FailConditions)
+            {
+                if (string.IsNullOrWhiteSpace(cond.Type))
+                {
+                    errors.Add($"Quest {quest.QuestId}: FailCondition type is missing.");
+                    continue;
+                }
+
+                if (!string.Equals(cond.Type, "TimeLimit", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(cond.Type, "LeaveMap", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(cond.Type, "NpcDeath", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(cond.Type, "TargetDeath", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(cond.Type, "PlayerDeath", StringComparison.OrdinalIgnoreCase))
+                {
+                    errors.Add($"Quest {quest.QuestId}: Unknown FailCondition type '{cond.Type}'.");
+                }
+            }
+        }
+
+        // 7. Circular Dependency & Mutual Exclusion Logic
+        if (quest.Requirements != null)
+        {
+            foreach (var reqId in quest.Requirements)
+            {
+                if (CheckCircularDependency(quest.QuestId, reqId, lookup, new HashSet<int>()))
+                {
+                    errors.Add($"Quest {quest.QuestId}: Circular dependency detected with Quest {reqId}.");
+                }
+
+                // Mutual Exclusion Conflict: Cannot require a quest that is mutually exclusive
+                if (lookup.TryGetValue(reqId, out var reqDef))
+                {
+                    if (!string.IsNullOrEmpty(quest.MutualExclusionGroup) &&
+                        string.Equals(quest.MutualExclusionGroup, reqDef.MutualExclusionGroup, StringComparison.OrdinalIgnoreCase))
+                    {
+                        errors.Add($"Quest {quest.QuestId}: Requires Quest {reqId} but they share MutualExclusionGroup '{quest.MutualExclusionGroup}'. This is a logical deadlock.");
+                    }
+                }
+            }
+        }
+    }
+
+    private static bool CheckCircularDependency(int startId, int currentId, Dictionary<int, QuestDefinition> lookup, HashSet<int> visited)
+    {
+        if (currentId == startId) return true;
+        if (!visited.Add(currentId)) return false; // Already visited in this path, no cycle back to startId found yet
+
+        if (lookup.TryGetValue(currentId, out var def))
+        {
+            if (def.Requirements != null)
+            {
+                foreach (var nextId in def.Requirements)
+                {
+                    if (CheckCircularDependency(startId, nextId, lookup, visited))
+                    {
+                        return true;
+                    }
+                }
+            }
+        }
+        return false;
     }
 
     private static void ValidateObjective(int questId, int index, ObjectiveDefinition obj, List<string> errors)

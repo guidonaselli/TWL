@@ -364,6 +364,15 @@ public class PlayerQuestComponent
             }
         }
 
+        // Pet Check
+        if (def.RequiredPetId.HasValue)
+        {
+            if (Character.Pets == null || Character.Pets.All(p => p.DefinitionId != def.RequiredPetId.Value))
+            {
+                return false;
+            }
+        }
+
         return true;
     }
 
@@ -1324,6 +1333,13 @@ public class PlayerQuestComponent
                             string.Equals(cond.Type, "TargetDeath", StringComparison.OrdinalIgnoreCase))
                         {
                             if (string.Equals(cond.Value, victimName, StringComparison.OrdinalIgnoreCase))
+                            {
+                                failedQuests.Add(kvp.Key);
+                            }
+                        }
+                        else if (string.Equals(cond.Type, "PlayerDeath", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (Character != null && string.Equals(Character.Name, victimName, StringComparison.OrdinalIgnoreCase))
                             {
                                 failedQuests.Add(kvp.Key);
                             }
