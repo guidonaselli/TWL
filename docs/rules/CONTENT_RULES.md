@@ -39,8 +39,9 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
 ## 4. General Content Rules
 *   **Unique DisplayNameKeys**: No two skills can share the same localization key.
 *   **Anti-Snowball (Stage Upgrades)**:
-    *   If Skill A upgrades to Skill B at Rank X (via `StageUpgradeRules`), then Skill B MUST strictly require Skill A at Rank X (via `UnlockRules`), OR have no parent requirements.
-    *   Inconsistent requirements (e.g. A says Rank 10, B says Rank 20) are forbidden.
+    *   **Single Source of Truth**: The parent skill's `StageUpgradeRules` is the authoritative definition of the upgrade path.
+    *   **Runtime Consistency**: The system (and tests) automatically populates the child skill's `UnlockRules` (ParentSkillId/ParentSkillRank) based on the parent's `StageUpgradeRules`.
+    *   **Strictness**: If Skill A upgrades to Skill B, Skill B CANNOT be unlocked independently; it strictly requires Skill A.
     *   **Integrity**: `StageUpgradeRules` MUST define `NextSkillId`. Partial rules (e.g. only RankThreshold) without a target are forbidden.
 
 ## 5. Content Validation
