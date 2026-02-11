@@ -19,5 +19,5 @@
   },
   "WorldFlagsSet": [],
   "WorldFlagsCleared": [],
-  "Notes": "Initial skeleton for Old Mines Entrance. Tiles are placeholders."
+  "Notes": "Refined Skeleton. Layout is now 30x30 with proper walls. Monster ID 9101 is used as a placeholder (Cave Bat) as per Roadmap, but definition is missing in monsters.json. Tileset is placeholder."
 }

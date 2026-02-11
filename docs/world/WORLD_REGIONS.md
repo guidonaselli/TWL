@@ -75,7 +75,7 @@ largest settlement in the archipelago and the central hub for trade, guilds, and
 | 1000 | Plaza Mayor | Safe Zone | Central plaza. Guild Hall, vendors, bulletin board, fountain. |
 | 1001 | El Muelle | Safe Zone | Docks. Ship departures to other islands. Fisher NPCs. |
 | 1002 | Sendero Norte | Adventure Field | Forest path north of city. Bandits, wolves. Connects to jungle. |
-| 1003 | Minas Antiguas | Dungeon Entrance | Abandoned mines. Bats, golems. Mining resources. |
+| 1003 | Minas Antiguas | Dungeon Entrance | Abandoned mines entrance. Bats. Locked gate to deeper levels. |
 | 1010 | Barrio del Mercado | Safe Zone | Marketplace district. Player stalls, auction house NPC. |
 | 1011 | La Taberna del Ancla | Interior | Tavern. Party formation, rumors/sidequests, lore hints. |
 | 1012 | Cuartel de la Guardia | Interior | Guard HQ. Combat training quests, bounty board. |
