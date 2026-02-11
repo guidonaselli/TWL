@@ -191,6 +191,19 @@ public class ServerCharacter : ServerCombatant
     public float X { get; set; }
     public float Y { get; set; }
 
+    /// <summary>
+    /// Updates the character's position and map, notifying listeners even if the map ID hasn't changed.
+    /// This ensures clients receive a MapChange packet to sync position for long-distance teleports.
+    /// </summary>
+    public void Teleport(int mapId, float x, float y)
+    {
+        _mapId = mapId;
+        X = x;
+        Y = y;
+        // Always invoke to force client sync
+        OnMapChanged?.Invoke(_mapId);
+    }
+
     // Mob Info
     public int MonsterId { get; set; }
     public string? SpritePath { get; set; }

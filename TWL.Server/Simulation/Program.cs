@@ -66,6 +66,7 @@ Host.CreateDefaultBuilder(args)
         // Actually WorldTriggerService ctor could check for handlers in DI, but easier to do manual registration for now.
 
         // Domain Managers
+        svcs.AddSingleton<InstanceService>();
         svcs.AddSingleton<PetManager>();
         svcs.AddSingleton<MonsterManager>();
         svcs.AddSingleton<SpawnManager>();

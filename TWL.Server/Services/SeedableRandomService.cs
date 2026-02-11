@@ -33,11 +33,7 @@ public class SeedableRandomService : IRandomService
         lock (_lock)
         {
             var val = _random.NextSingle();
-            if (_logger.IsEnabled(LogLevel.Trace))
-            {
-                _logger.LogTrace("RNG [{Context}] NextFloat: {Value}", context ?? "Global", val);
-            }
-
+            AuditIfContext(context, val, "NextFloat");
             return val;
         }
     }
@@ -47,11 +43,7 @@ public class SeedableRandomService : IRandomService
         lock (_lock)
         {
             var val = min + (max - min) * _random.NextSingle();
-            if (_logger.IsEnabled(LogLevel.Trace))
-            {
-                _logger.LogTrace("RNG [{Context}] NextFloat({Min}, {Max}): {Value}", context ?? "Global", min, max, val);
-            }
-
+            AuditIfContext(context, val, $"NextFloat({min}, {max})");
             return val;
         }
     }
@@ -61,11 +53,7 @@ public class SeedableRandomService : IRandomService
         lock (_lock)
         {
             var val = _random.Next();
-            if (_logger.IsEnabled(LogLevel.Trace))
-            {
-                _logger.LogTrace("RNG [{Context}] Next: {Value}", context ?? "Global", val);
-            }
-
+            AuditIfContext(context, val, "Next");
             return val;
         }
     }
@@ -75,11 +63,7 @@ public class SeedableRandomService : IRandomService
         lock (_lock)
         {
             var val = _random.Next(min, max);
-            if (_logger.IsEnabled(LogLevel.Trace))
-            {
-                _logger.LogTrace("RNG [{Context}] Next({Min}, {Max}): {Value}", context ?? "Global", min, max, val);
-            }
-
+            AuditIfContext(context, val, $"Next({min}, {max})");
             return val;
         }
     }
@@ -89,12 +73,20 @@ public class SeedableRandomService : IRandomService
         lock (_lock)
         {
             var val = _random.NextDouble();
-            if (_logger.IsEnabled(LogLevel.Trace))
-            {
-                _logger.LogTrace("RNG [{Context}] NextDouble: {Value}", context ?? "Global", val);
-            }
-
+            AuditIfContext(context, val, "NextDouble");
             return val;
+        }
+    }
+
+    private void AuditIfContext(string? context, object value, string operation)
+    {
+        if (context != null)
+        {
+            _logger.LogInformation("AUDIT: RNG [{Context}] {Operation}: {Value}", context, operation, value);
+        }
+        else if (_logger.IsEnabled(LogLevel.Trace))
+        {
+            _logger.LogTrace("RNG [Global] {Operation}: {Value}", operation, value);
         }
     }
 }

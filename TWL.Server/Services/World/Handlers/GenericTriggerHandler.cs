@@ -1,8 +1,10 @@
 using TWL.Server.Domain.World;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.Models;
 using TWL.Shared.Net.Network;
 using System.Text.Json;
 
@@ -12,11 +14,13 @@ public class GenericTriggerHandler : ITriggerHandler
 {
     private readonly PlayerService _playerService;
     private readonly SpawnManager _spawnManager;
+    private readonly InstanceService _instanceService;
 
-    public GenericTriggerHandler(PlayerService playerService, SpawnManager spawnManager)
+    public GenericTriggerHandler(PlayerService playerService, SpawnManager spawnManager, InstanceService instanceService)
     {
         _playerService = playerService;
         _spawnManager = spawnManager;
+        _instanceService = instanceService;
     }
 
     public bool CanHandle(string triggerType)
@@ -82,6 +86,9 @@ public class GenericTriggerHandler : ITriggerHandler
                     case "Message":
                         HandleMessage(character, action);
                         break;
+                    case "EnterInstance":
+                        HandleEnterInstance(character, action);
+                        break;
                 }
             }
             catch (Exception ex)
@@ -93,42 +100,25 @@ public class GenericTriggerHandler : ITriggerHandler
 
     private void HandleTeleport(ServerCharacter character, TriggerAction action)
     {
-        if (action.Parameters.TryGetValue("MapId", out var mapIdStr) && int.TryParse(mapIdStr, out var mapId))
+        var mapId = character.MapId;
+        if (action.Parameters.TryGetValue("MapId", out var mapIdStr) && int.TryParse(mapIdStr, out var mId))
         {
-            character.MapId = mapId;
+            mapId = mId;
         }
 
-        if (action.Parameters.TryGetValue("X", out var xStr) && float.TryParse(xStr, out var x))
+        var x = character.X;
+        if (action.Parameters.TryGetValue("X", out var xStr) && float.TryParse(xStr, out var xVal))
         {
-            character.X = x;
+            x = xVal;
         }
 
-        if (action.Parameters.TryGetValue("Y", out var yStr) && float.TryParse(yStr, out var y))
+        var y = character.Y;
+        if (action.Parameters.TryGetValue("Y", out var yStr) && float.TryParse(yStr, out var yVal))
         {
-            character.Y = y;
+            y = yVal;
         }
 
-        // Notify client about teleport via MoveRequest response or specific Teleport packet?
-        // Usually modifying character.X/Y is enough if the loop broadcasts it,
-        // but for Map change we definitely need to notify.
-        // ClientSession usually handles map change detection or we send a packet.
-        // In this codebase, strict map change handling might be needed.
-        // ClientSession logic:
-        // Force sync position.
-        var session = _playerService.GetSession(character.Id);
-        if (session != null)
-        {
-             // Send LoginResponse or MapChange packet
-             // Re-using LoginResponse for full sync is common in simple servers, or a specific packet.
-             // Let's assume sending a LoginResponse-like update or similar.
-             // Actually, ClientSession.HandleMoveAsync updates X/Y.
-             // If we change MapId, the client needs to know.
-             // Let's send a Teleport packet if available, or just rely on state update.
-             // Codebase doesn't show explicit Teleport packet in ClientSession extract.
-             // Maybe sending Opcode.LoginResponse again?
-             // Or Opcode.MapChange?
-             // Let's stick to updating state. The client might poll or get update.
-        }
+        character.Teleport(mapId, x, y);
     }
 
     private void HandleSpawn(ServerCharacter character, TriggerAction action)
@@ -177,7 +167,39 @@ public class GenericTriggerHandler : ITriggerHandler
                 count = c;
             }
 
-            character.AddItem(iid, count);
+            var policy = BindPolicy.Unbound;
+            if (action.Parameters.TryGetValue("Policy", out var polStr) && Enum.TryParse<BindPolicy>(polStr, out var pol))
+            {
+                policy = pol;
+            }
+
+            int? boundTo = null;
+            if (action.Parameters.TryGetValue("BoundTo", out var boundStr) && int.TryParse(boundStr, out var boundId))
+            {
+                boundTo = boundId;
+            }
+
+            if (character.CanAddItem(iid, count, policy, boundTo))
+            {
+                character.AddItem(iid, count, policy, boundTo);
+            }
+            else
+            {
+                Console.WriteLine($"[Trigger] Failed to give item {iid} x{count} to {character.Name} (Inventory Full)");
+                // Potentially send message to player
+            }
+        }
+    }
+
+    private void HandleEnterInstance(ServerCharacter character, TriggerAction action)
+    {
+        if (action.Parameters.TryGetValue("InstanceId", out var instanceId))
+        {
+            var session = _playerService.GetSession(character.Id);
+            if (session != null)
+            {
+                _instanceService.StartInstance(session, instanceId);
+            }
         }
     }
 
