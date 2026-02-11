@@ -31,6 +31,7 @@
         "Chance": 0.15,
         "StackingPolicy": "RefreshDuration",
         "ConflictGroup": "HardControl",
+        "Priority": 1,
         "Outcome": "Resist",
         "ResistanceTags": [
           "SealResist"
@@ -78,6 +79,7 @@
         "Chance": 0.15,
         "StackingPolicy": "RefreshDuration",
         "ConflictGroup": "HardControl",
+        "Priority": 1,
         "Outcome": "Resist",
         "ResistanceTags": [
           "SealResist"
@@ -122,6 +124,7 @@
         "Chance": 0.15,
         "StackingPolicy": "RefreshDuration",
         "ConflictGroup": "HardControl",
+        "Priority": 1,
         "Outcome": "Resist",
         "ResistanceTags": [
           "SealResist"
@@ -448,6 +451,7 @@
         "Chance": 0.7,
         "StackingPolicy": "RefreshDuration",
         "ConflictGroup": "HardControl",
+        "Priority": 2,
         "Outcome": "Resist",
         "ResistanceTags": [
           "SealResist"

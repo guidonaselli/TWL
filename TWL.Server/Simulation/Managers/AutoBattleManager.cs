@@ -65,7 +65,14 @@ public class AutoBattleManager
 
             if (debuffedAlly != null)
             {
-                var cleanseSkillId = FindBestSkill(actor, SkillEffectTag.Cleanse, SkillTargetType.SingleAlly, true);
+                var cleanseSkillId = FindBestSkill(actor, SkillEffectTag.Cleanse, SkillTargetType.SingleAlly, true, skill =>
+                {
+                    var effect = skill.Effects.First(e => e.Tag == SkillEffectTag.Cleanse);
+                    if (effect.ResistanceTags == null || effect.ResistanceTags.Count == 0) return true;
+                    // Check if ally has ANY debuff that matches the allowed tags
+                    return debuffedAlly.StatusEffects.Any(s => effect.ResistanceTags.Contains(s.ConflictGroup) || effect.ResistanceTags.Contains(s.Tag.ToString()));
+                });
+
                 if (cleanseSkillId.HasValue)
                 {
                     return new UseSkillRequest
@@ -87,7 +94,14 @@ public class AutoBattleManager
 
             if (buffedEnemy != null)
             {
-                var dispelSkillId = FindBestSkill(actor, SkillEffectTag.Dispel, SkillTargetType.SingleEnemy, false);
+                var dispelSkillId = FindBestSkill(actor, SkillEffectTag.Dispel, SkillTargetType.SingleEnemy, false, skill =>
+                {
+                    var effect = skill.Effects.First(e => e.Tag == SkillEffectTag.Dispel);
+                    if (effect.ResistanceTags == null || effect.ResistanceTags.Count == 0) return true;
+                    // Check if enemy has ANY buff that matches the allowed tags
+                    return buffedEnemy.StatusEffects.Any(s => effect.ResistanceTags.Contains(s.ConflictGroup) || effect.ResistanceTags.Contains(s.Tag.ToString()));
+                });
+
                 if (dispelSkillId.HasValue)
                 {
                     return new UseSkillRequest
@@ -235,7 +249,8 @@ public class AutoBattleManager
         ServerCombatant actor,
         SkillEffectTag effectTag,
         SkillTargetType targetType,
-        bool ignoreThreshold)
+        bool ignoreThreshold,
+        Predicate<Skill>? extraFilter = null)
     {
         int? bestSkillId = null;
         var maxCost = -1;
@@ -286,6 +301,11 @@ public class AutoBattleManager
             {
                 if (skill.Effects.Any(e => e.Tag == effectTag))
                 {
+                    if (extraFilter != null && !extraFilter(skill))
+                    {
+                        continue;
+                    }
+
                     // Pick the most expensive one (heuristic for power)
                     if (skill.SpCost > maxCost)
                     {
@@ -317,11 +337,17 @@ public class AutoBattleManager
                     return false; // Allow stacking or refreshing
                 }
 
-                // If priority allows overwriting (Greater or Equal usually overwrites in StatusEngine)
-                if (newEffect.Priority >= conflict.Priority)
+                // If priority allows overwriting
+                // Only overwrite if STRICTLY stronger to avoid wasting turns on same-priority recasts
+                // unless the policy allows refresh (handled above).
+                if (newEffect.Priority > conflict.Priority)
                 {
                     return false;
                 }
+
+                // If priority is equal, and policy is NoStackOverwrite, we usually block to avoid spam.
+                // StatusEngine allows overwrite on equal, but AutoBattle should be conservative.
+
                 return true; // Conflict prevents casting
             }
         }
@@ -338,14 +364,15 @@ public class AutoBattleManager
                     return false;
                 }
 
-                // NoStackOverwrite: Check priority if ConflictGroup logic didn't catch it (or if no group defined)
+                // NoStackOverwrite
                 if (newEffect.StackingPolicy == StackingPolicy.NoStackOverwrite)
                 {
-                    // If no conflict group, we assume implicit overwrite allowed? Or blocked?
-                    // Usually we don't want to spam "Atk Buff" if they already have it, unless it's stronger.
-                    // But without priority, we can't tell.
-                    // Let's assume equal priority blocks to prevent spamming.
-                    return true;
+                     // Check Priority
+                     if (newEffect.Priority > existing.Priority)
+                     {
+                         return false;
+                     }
+                     return true;
                 }
 
                 return true;

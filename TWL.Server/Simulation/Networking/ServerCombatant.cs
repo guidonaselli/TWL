@@ -142,27 +142,51 @@ public abstract class ServerCombatant
         }
     }
 
-    public void CleanseDebuffs(IStatusEngine engine, Predicate<StatusEffectInstance>? match = null)
+    public void CleanseDebuffs(IStatusEngine engine, Predicate<StatusEffectInstance>? match = null, IEnumerable<string>? allowedTags = null, int maxPriority = int.MaxValue)
     {
         match ??= e => e.Tag == SkillEffectTag.DebuffStats ||
                        e.Tag == SkillEffectTag.Burn ||
                        e.Tag == SkillEffectTag.Seal;
 
+        Predicate<StatusEffectInstance> finalMatch = e =>
+        {
+            if (e.Priority > maxPriority) return false;
+            if (allowedTags != null && allowedTags.Any())
+            {
+                bool tagMatch = allowedTags.Contains(e.Tag.ToString()) ||
+                                (!string.IsNullOrEmpty(e.ConflictGroup) && allowedTags.Contains(e.ConflictGroup));
+                if (!tagMatch) return false;
+            }
+            return match(e);
+        };
+
         lock (_statusLock)
         {
-            engine.RemoveAll(_statusEffects, match);
+            engine.RemoveAll(_statusEffects, finalMatch);
             IsDirty = true;
         }
     }
 
-    public void DispelBuffs(IStatusEngine engine, Predicate<StatusEffectInstance>? match = null)
+    public void DispelBuffs(IStatusEngine engine, Predicate<StatusEffectInstance>? match = null, IEnumerable<string>? allowedTags = null, int maxPriority = int.MaxValue)
     {
         match ??= e => e.Tag == SkillEffectTag.BuffStats ||
                        e.Tag == SkillEffectTag.Shield;
 
+        Predicate<StatusEffectInstance> finalMatch = e =>
+        {
+            if (e.Priority > maxPriority) return false;
+            if (allowedTags != null && allowedTags.Any())
+            {
+                bool tagMatch = allowedTags.Contains(e.Tag.ToString()) ||
+                                (!string.IsNullOrEmpty(e.ConflictGroup) && allowedTags.Contains(e.ConflictGroup));
+                if (!tagMatch) return false;
+            }
+            return match(e);
+        };
+
         lock (_statusLock)
         {
-            engine.RemoveAll(_statusEffects, match);
+            engine.RemoveAll(_statusEffects, finalMatch);
             IsDirty = true;
         }
     }

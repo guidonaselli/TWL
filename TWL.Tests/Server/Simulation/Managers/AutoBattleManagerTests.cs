@@ -99,4 +99,28 @@ public class AutoBattleManagerTests
         // Should pick Damage skill. Aqua Crescent is damage.
         Assert.Equal(3010, action.SkillId);
     }
+
+    [Fact]
+    public void GetBestAction_AvoidsSeal_IfTargetIsImmune()
+    {
+        // Arrange
+        var actor = new WaterTestCharacter { Id = 1, Name = "Mage", Team = Team.Player, Sp = 100, Con = 10, Hp = 100 };
+        var enemy = new WaterTestCharacter { Id = 3, Name = "Boss", Team = Team.Enemy, Con = 100, Hp = 1000, Str = 100 };
+
+        // Use Entangle (1210) - Pure Seal (No Damage) to ensure it's not picked as a fallback damage skill
+        actor.LearnSkill(1210);
+        actor.LearnSkill(3001); // Aqua Impact (Damage)
+
+        // Give enemy 100% Seal Resistance
+        enemy.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.BuffStats, 1.0f, 10, "SealResist"), _statusEngine);
+
+        var combatants = new List<ServerCombatant> { actor, enemy };
+
+        // Act
+        var action = _autoBattleManager.GetBestAction(actor, combatants, AutoBattlePolicy.Balanced);
+
+        // Assert
+        Assert.NotNull(action);
+        Assert.Equal(3001, action.SkillId); // Should pick Aqua Impact (Damage), skipping Entangle
+    }
 }
