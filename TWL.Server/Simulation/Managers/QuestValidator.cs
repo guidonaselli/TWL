@@ -14,8 +14,9 @@ public static class QuestValidator
         "Explore", "Visit",
         "Craft", "Compound", "Forge",
         "Party", "Guild",
-        "Instance",
+        "Instance", "InstanceCompleted", "InstanceFailed",
         "PvP", "PvPKill",
+        "KillCount",
         "EventParticipation",
         "Escort", "Protect",
         "Puzzle", "Sequence",
@@ -142,14 +143,25 @@ public static class QuestValidator
                     !string.Equals(cond.Type, "LeaveMap", StringComparison.OrdinalIgnoreCase) &&
                     !string.Equals(cond.Type, "NpcDeath", StringComparison.OrdinalIgnoreCase) &&
                     !string.Equals(cond.Type, "TargetDeath", StringComparison.OrdinalIgnoreCase) &&
-                    !string.Equals(cond.Type, "PlayerDeath", StringComparison.OrdinalIgnoreCase))
+                    !string.Equals(cond.Type, "PlayerDeath", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(cond.Type, "InstanceFail", StringComparison.OrdinalIgnoreCase) &&
+                    !string.Equals(cond.Type, "EscortFail", StringComparison.OrdinalIgnoreCase))
                 {
                     errors.Add($"Quest {quest.QuestId}: Unknown FailCondition type '{cond.Type}'.");
                 }
             }
         }
 
-        // 7. Circular Dependency & Mutual Exclusion Logic
+        // 7. Instance Rules Validation
+        if (quest.InstanceRules != null)
+        {
+            if (string.IsNullOrWhiteSpace(quest.InstanceRules.InstanceId))
+            {
+                errors.Add($"Quest {quest.QuestId}: InstanceRules.InstanceId is missing.");
+            }
+        }
+
+        // 8. Circular Dependency & Mutual Exclusion Logic
         if (quest.Requirements != null)
         {
             foreach (var reqId in quest.Requirements)

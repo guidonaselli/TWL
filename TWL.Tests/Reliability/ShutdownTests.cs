@@ -50,7 +50,8 @@ public class ShutdownTests
             null!, // MonsterManager
             null!,  // SpawnManager
             null!,  // ILoggerFactory
-            mockHealthCheck.Object
+            mockHealthCheck.Object,
+            null!   // InstanceService
         );
 
         // Act
