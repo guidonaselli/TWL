@@ -296,6 +296,41 @@ public class ContentValidationTests
                 $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated SP Budget [{budget.MinSp}-{budget.MaxSp}]. Value: {skill.SpCost}");
             Assert.True(skill.Cooldown >= budget.MinCd && skill.Cooldown <= budget.MaxCd,
                 $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated CD Budget [{budget.MinCd}-{budget.MaxCd}]. Value: {skill.Cooldown}");
+
+            // --- NEW VALIDATION: Scaling Coefficients ---
+            float totalScaling = 0f;
+            foreach (var scaling in skill.Scaling)
+            {
+                totalScaling += scaling.Coefficient;
+            }
+
+            bool isHeal = skill.Effects.Any(e => e.Tag == SkillEffectTag.Heal);
+            float maxCoeff = isHeal ? budget.MaxHealCoeff : budget.MaxDamageCoeff;
+
+            Assert.True(totalScaling <= maxCoeff,
+                $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated Scaling Budget. Total: {totalScaling}, Max: {maxCoeff} (IsHeal: {isHeal})");
+
+            // --- NEW VALIDATION: Hard Control Limits ---
+            foreach (var effect in skill.Effects)
+            {
+                // Identify Hard Control
+                bool isHardControl = effect.ConflictGroup == "HardControl" ||
+                                     effect.Tag == SkillEffectTag.Seal ||
+                                     effect.Tag.ToString().Contains("Stun") ||
+                                     effect.Tag.ToString().Contains("Sleep");
+
+                if (isHardControl)
+                {
+                    Assert.True(effect.Duration <= budget.MaxHardControlDuration,
+                        $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated Control Duration Limit. Value: {effect.Duration}, Max: {budget.MaxHardControlDuration}");
+
+                    // Check Chance (prioritize HitRules base chance if exists)
+                    float chance = skill.HitRules != null ? skill.HitRules.BaseChance : effect.Chance;
+
+                    Assert.True(chance <= budget.MaxHardControlChance,
+                        $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated Control Chance Limit. Value: {chance}, Max: {budget.MaxHardControlChance}");
+                }
+            }
         }
     }
 
