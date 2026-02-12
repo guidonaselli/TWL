@@ -212,8 +212,12 @@ public class AutoBattleManager
         }
 
         // 6. Attack
-        // Target selection: Weakest HP to secure kill
-        var target = enemies.OrderBy(e => e.Hp).ThenBy(e => e.Id).First();
+        // Target selection: Elemental Advantage > Weakest HP
+        var target = enemies
+            .OrderByDescending(e => GetElementAdvantage(actor.CharacterElement, e.CharacterElement)) // Prefer 1.5x targets
+            .ThenBy(e => e.Hp) // Then pick the weakest among them
+            .ThenBy(e => e.Id) // Deterministic tie-break
+            .First();
 
         // Try to find a damage skill if SP permits
         if (actor.Sp > MinSpThreshold)
@@ -243,6 +247,21 @@ public class AutoBattleManager
         }
 
         return null;
+    }
+
+    private float GetElementAdvantage(Element attacker, Element defender)
+    {
+        if (attacker == Element.Earth && defender == Element.Water) return 1.5f;
+        if (attacker == Element.Water && defender == Element.Fire) return 1.5f;
+        if (attacker == Element.Fire && defender == Element.Wind) return 1.5f;
+        if (attacker == Element.Wind && defender == Element.Earth) return 1.5f;
+
+        if (attacker == Element.Water && defender == Element.Earth) return 0.5f;
+        if (attacker == Element.Fire && defender == Element.Water) return 0.5f;
+        if (attacker == Element.Wind && defender == Element.Fire) return 0.5f;
+        if (attacker == Element.Earth && defender == Element.Wind) return 0.5f;
+
+        return 1.0f;
     }
 
     private int? FindBestSkill(

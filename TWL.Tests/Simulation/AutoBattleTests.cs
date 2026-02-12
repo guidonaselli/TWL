@@ -168,6 +168,50 @@ public class AutoBattleTests
         Assert.NotNull(result);
         Assert.Equal(106, result.SkillId); // Should pick cheap skill
     }
+
+    [Fact]
+    public void GetBestAction_Attack_PrioritizesElementalAdvantage()
+    {
+        // Arrange
+        // Attacker is Water
+        var actor = new AutoBattleTestCharacter { Id = 1, Team = Team.Player, Sp = 100 };
+        actor.CharacterElement = Element.Water;
+
+        // Enemies: Fire (Weak to Water), Wind (Neutral), Earth (Strong against Water -> Water does 0.5x)
+        // Water > Fire (1.5x)
+        // Water vs Wind (1.0x)
+        // Water vs Earth (0.5x)
+
+        var fireEnemy = new AutoBattleTestCharacter { Id = 2, Team = Team.Enemy, Hp = 100 };
+        fireEnemy.CharacterElement = Element.Fire;
+
+        var windEnemy = new AutoBattleTestCharacter { Id = 3, Team = Team.Enemy, Hp = 100 };
+        windEnemy.CharacterElement = Element.Wind;
+
+        var earthEnemy = new AutoBattleTestCharacter { Id = 4, Team = Team.Enemy, Hp = 100 };
+        earthEnemy.CharacterElement = Element.Earth;
+
+        // Setup simple damage skill
+        var skillId = 200;
+        var skill = new Skill
+        {
+            SkillId = skillId,
+            Name = "WaterAttack",
+            TargetType = SkillTargetType.SingleEnemy,
+            SpCost = 5,
+            Effects = new List<SkillEffect> { new() { Tag = SkillEffectTag.Damage } }
+        };
+        _skillCatalogMock.Setup(x => x.GetSkillById(skillId)).Returns(skill);
+        actor.SkillMastery[skillId] = new SkillMastery();
+
+        // Act
+        // Pass all enemies
+        var result = _autoBattleManager.GetBestAction(actor, new[] { actor, fireEnemy, windEnemy, earthEnemy }, AutoBattlePolicy.Aggressive);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(fireEnemy.Id, result.TargetId); // Should pick Fire (1.5x) over others
+    }
 }
 
 // Helper class for accessing protected members/logic if needed, but mostly standard
