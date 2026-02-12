@@ -106,7 +106,7 @@ public class SeedableRandomServiceTests
         // Assert
         _mockLogger.Verify(
             x => x.Log(
-                LogLevel.Trace,
+                LogLevel.Information,
                 It.IsAny<EventId>(),
                 It.Is<It.IsAnyType>((v, t) => v.ToString().Contains(context)),
                 It.IsAny<Exception>(),

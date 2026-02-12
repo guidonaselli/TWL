@@ -66,7 +66,7 @@ Objetivo: contenido continuo, tooling, operaciones, monetización segura (item m
 - [ ] **CORE-002**: Sesiones + `sequence/nonce` por cliente para protección anti-replay (mínimo viable).
 - [ ] **CORE-003**: Rate limiting por opcode (move/cast/chat/trade) + métricas de rechazos.
 - [ ] **CORE-004**: Correlation ID end-to-end (client intent → server resolve → persist).
-- [ ] **CORE-005**: Servicio RNG server-side seedable (`IRandomService`) + auditoría de outcomes.
+- [x] **CORE-005**: Servicio RNG server-side seedable (`IRandomService`) + auditoría de outcomes.
 - [ ] **CORE-006**: Pipeline de comandos: `Validate -> Authorize -> Resolve -> Persist -> EmitEvents`.
 - [ ] **CORE-007**: Autorización por dominio (ownership checks) para inventario, pets, party, guild, mail, marketplace.
 - [ ] **CORE-008**: Idempotency keys estandarizadas para operaciones valiosas (reward/trade/compound/purchase).

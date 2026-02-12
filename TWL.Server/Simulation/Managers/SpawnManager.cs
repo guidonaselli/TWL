@@ -113,7 +113,7 @@ public class SpawnManager
             accumulated -= TileSize;
 
             // Check chance (per full step/tile)
-            if (_random.NextDouble() < config.StepChance)
+            if (_random.NextDouble("StepEncounterCheck") < config.StepChance)
             {
                 // Reset accumulation on encounter
                 accumulated = 0;
