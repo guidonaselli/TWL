@@ -1,5 +1,6 @@
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
+using TWL.Shared.Services;
 
 namespace TWL.Shared.Domain.Battle;
 
@@ -17,14 +18,16 @@ public class BattleInstance
 
     // Dependency on Skill Catalog
     private readonly ISkillCatalog _skillCatalog;
+    private readonly IRandomService _random;
 
     public BattleInstance(IEnumerable<Character> allies, IEnumerable<Character> enemies,
-        ISkillCatalog? skillCatalog = null)
+        ISkillCatalog? skillCatalog = null, IRandomService? random = null)
     {
         var idCounter = 1;
         Allies = allies.Select(c => new Combatant(c) { BattleId = idCounter++ }).ToList();
         Enemies = enemies.Select(c => new Combatant(c) { BattleId = idCounter++ }).ToList();
         _skillCatalog = skillCatalog ?? SkillRegistry.Instance;
+        _random = random ?? new DefaultRandomService();
     }
 
     public List<Combatant> Allies { get; }
@@ -292,8 +295,7 @@ public class BattleInstance
                 }
                 else if (effect.Tag == SkillEffectTag.BuffStats)
                 {
-                    var rng = new Random();
-                    if (rng.NextDouble() <= effect.Chance)
+                    if (_random.NextDouble("SkillEffect_BuffStats") <= effect.Chance)
                     {
                         var value = effect.Value;
                         // If value is 0 but we have scaling, use the calculated totalValue (for dynamic buffs)
@@ -310,8 +312,7 @@ public class BattleInstance
                 {
                     var hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance,
                         skill.HitRules);
-                    var rng = new Random();
-                    if (rng.NextDouble() <= hitChance)
+                    if (_random.NextDouble("SkillEffect_DebuffStats") <= hitChance)
                     {
                         currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value,
                             effect.Duration, effect.Param));
@@ -347,8 +348,7 @@ public class BattleInstance
                 {
                     var hitChance = GetControlHitChance(actor.Character, currentTarget.Character, effect.Chance,
                         skill.HitRules);
-                    var rng = new Random();
-                    if (rng.NextDouble() <= hitChance)
+                    if (_random.NextDouble("SkillEffect_Seal") <= hitChance)
                     {
                         currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value,
                             effect.Duration, effect.Param));
@@ -357,8 +357,7 @@ public class BattleInstance
                 }
                 else if (effect.Tag == SkillEffectTag.Burn)
                 {
-                    var rng = new Random();
-                    if (rng.NextDouble() <= effect.Chance)
+                    if (_random.NextDouble("SkillEffect_Burn") <= effect.Chance)
                     {
                         currentTarget.AddStatusEffect(new StatusEffectInstance(effect.Tag, effect.Value,
                             effect.Duration, effect.Param));

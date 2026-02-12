@@ -149,7 +149,7 @@ public class SpawnManagerTests
             _monsterManager.Setup(m => m.GetDefinition(2001)).Returns(new MonsterDefinition { MonsterId = 2001, Name = "Slime", Element = Element.Water });
 
             // Mock Random: Step Check returns 0.0 (< 1.0)
-            _random.Setup(r => r.NextDouble(It.IsAny<string?>())).Returns(0.0);
+            _random.Setup(r => r.NextDouble("StepEncounterCheck")).Returns(0.0);
             _random.Setup(r => r.Next(1, 4, It.IsAny<string?>())).Returns(1); // Count
             _random.Setup(r => r.Next(0, It.IsAny<int>(), It.IsAny<string?>())).Returns(0); // For list selection
 
