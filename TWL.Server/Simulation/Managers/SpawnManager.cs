@@ -186,6 +186,16 @@ public class SpawnManager
             return 0;
         }
 
+        // Validation: Ensure Player is on same map as Enemies (if Enemies have valid MapId)
+        // Roaming/Random mobs usually have MapId set. Scripted might not if created ad-hoc.
+        // We check the first enemy as a representative.
+        var firstEnemy = enemies[0];
+        if (firstEnemy.MapId > 0 && firstEnemy.MapId != session.Character.MapId)
+        {
+            Console.WriteLine($"Error: Encounter mismatch. Player Map {session.Character.MapId} != Enemy Map {firstEnemy.MapId}");
+            return 0;
+        }
+
         // Build Participants List (including active Pet)
         var participants = new List<ServerCombatant> { session.Character };
 
