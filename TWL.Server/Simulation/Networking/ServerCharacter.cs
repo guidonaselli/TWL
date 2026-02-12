@@ -118,6 +118,9 @@ public class ServerCharacter : ServerCombatant
     public string ActivePetInstanceId { get; private set; }
     public DateTime LastPetSwitchTime { get; set; } = DateTime.MinValue;
 
+    // InstanceId -> ReleaseTime
+    public Dictionary<string, DateTime> InstanceLockouts { get; } = new();
+
     // Utility Modifiers
     public bool IsMounted { get; set; }
     public float MoveSpeedModifier { get; set; } = 1.0f;
@@ -895,6 +898,7 @@ public class ServerCharacter : ServerCombatant
             DailyGiftAccumulator = DailyGiftAccumulator,
             LastGiftResetDate = LastGiftResetDate,
             ActivePetInstanceId = ActivePetInstanceId,
+            InstanceLockouts = new Dictionary<string, DateTime>(InstanceLockouts),
             MapId = MapId,
             X = X,
             Y = Y,
@@ -998,6 +1002,14 @@ public class ServerCharacter : ServerCombatant
         DailyGiftAccumulator = data.DailyGiftAccumulator;
         LastGiftResetDate = data.LastGiftResetDate;
         ActivePetInstanceId = data.ActivePetInstanceId;
+        InstanceLockouts.Clear();
+        if (data.InstanceLockouts != null)
+        {
+            foreach (var kvp in data.InstanceLockouts)
+            {
+                InstanceLockouts[kvp.Key] = kvp.Value;
+            }
+        }
         MapId = data.MapId;
         X = data.X;
         Y = data.Y;

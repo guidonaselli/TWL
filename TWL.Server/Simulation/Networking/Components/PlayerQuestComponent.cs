@@ -373,6 +373,18 @@ public class PlayerQuestComponent
             }
         }
 
+        // Instance Lockout Check
+        if (def.InstanceRules != null && !string.IsNullOrEmpty(def.InstanceRules.InstanceId))
+        {
+            if (Character.InstanceLockouts.TryGetValue(def.InstanceRules.InstanceId, out var lockoutTime))
+            {
+                if (DateTime.UtcNow < lockoutTime)
+                {
+                    return false;
+                }
+            }
+        }
+
         return true;
     }
 
@@ -957,6 +969,26 @@ public class PlayerQuestComponent
                             typeMatch = true;
                             break;
                         }
+
+                        // Aliases
+                        if (string.Equals(obj.Type, "KillCount", StringComparison.OrdinalIgnoreCase) &&
+                            string.Equals(types[t], "Kill", StringComparison.OrdinalIgnoreCase))
+                        {
+                            typeMatch = true;
+                            break;
+                        }
+                        if (string.Equals(obj.Type, "Kill", StringComparison.OrdinalIgnoreCase) &&
+                            string.Equals(types[t], "KillCount", StringComparison.OrdinalIgnoreCase))
+                        {
+                            typeMatch = true;
+                            break;
+                        }
+                        if (string.Equals(obj.Type, "PvPKill", StringComparison.OrdinalIgnoreCase) &&
+                            string.Equals(types[t], "PvP", StringComparison.OrdinalIgnoreCase))
+                        {
+                            typeMatch = true;
+                            break;
+                        }
                     }
 
                     // Special Case: ShowItem triggered by "Talk" or "Interact"
@@ -1272,8 +1304,19 @@ public class PlayerQuestComponent
         }
     }
 
+    public List<int> HandleInstanceCompletion(string instanceId)
+    {
+        // Progress "Instance" and "InstanceCompleted" objectives
+        var updated = TryProgress("InstanceCompleted", instanceId);
+        TryProgress(updated, instanceId, "Instance");
+        return updated;
+    }
+
     public List<int> HandleInstanceFailure(string instanceId)
     {
+        // Progress "InstanceFailed" objectives (rare, but maybe "Survive untill fail"?)
+        TryProgress("InstanceFailed", instanceId);
+
         var failedQuests = new List<int>();
         lock (_lock)
         {
@@ -1290,16 +1333,41 @@ public class PlayerQuestComponent
                     continue;
                 }
 
-                // Check if quest is bound to this instance
+                var shouldFail = false;
+
+                // Check if quest is bound to this instance via InstanceRules
                 if (def.InstanceRules != null &&
                     string.Equals(def.InstanceRules.InstanceId, instanceId, StringComparison.OrdinalIgnoreCase))
                 {
-                    // Fail the quest
-                    // FailQuest returns true if state changed
-                    QuestStates[kvp.Key] = QuestState.Failed;
-                    IsDirty = true;
+                    shouldFail = true;
+                }
+
+                // Check explicit FailConditions
+                if (!shouldFail && def.FailConditions != null)
+                {
+                    foreach (var cond in def.FailConditions)
+                    {
+                        if (string.Equals(cond.Type, "InstanceFail", StringComparison.OrdinalIgnoreCase))
+                        {
+                            if (string.Equals(cond.Value, instanceId, StringComparison.OrdinalIgnoreCase))
+                            {
+                                shouldFail = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (shouldFail)
+                {
                     failedQuests.Add(kvp.Key);
                 }
+            }
+
+            foreach (var qid in failedQuests)
+            {
+                QuestStates[qid] = QuestState.Failed;
+                IsDirty = true;
             }
         }
 
@@ -1330,7 +1398,8 @@ public class PlayerQuestComponent
                     foreach (var cond in def.FailConditions)
                     {
                         if (string.Equals(cond.Type, "NpcDeath", StringComparison.OrdinalIgnoreCase) ||
-                            string.Equals(cond.Type, "TargetDeath", StringComparison.OrdinalIgnoreCase))
+                            string.Equals(cond.Type, "TargetDeath", StringComparison.OrdinalIgnoreCase) ||
+                            string.Equals(cond.Type, "EscortFail", StringComparison.OrdinalIgnoreCase))
                         {
                             if (string.Equals(cond.Value, victimName, StringComparison.OrdinalIgnoreCase))
                             {
@@ -1384,4 +1453,16 @@ public class PlayerQuestComponent
     public List<int> HandleGuildAction(string action) => TryProgress("Guild", action);
 
     public List<int> HandleUseItem(int itemId, string itemName) => TryProgress("UseItem", itemName, 1, itemId);
+
+    public List<int> HandlePvP(string targetName)
+    {
+        // Aliased to PvPKill
+        return TryProgress("PvP", targetName);
+    }
+
+    public List<int> HandleKillCount(string mobName)
+    {
+        // Aliased to KillCount
+        return TryProgress("Kill", mobName);
+    }
 }
