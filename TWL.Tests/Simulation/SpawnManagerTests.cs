@@ -530,4 +530,32 @@ public class SpawnManagerTests
 
         Directory.Delete(tempDir, true);
     }
+
+    [Fact]
+    public void StartEncounter_ShouldFail_WhenMapIdMismatch()
+    {
+        // Arrange
+        var mockMonsters = new Mock<MonsterManager>();
+        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockRepo = new Mock<IPlayerRepository>();
+        var metrics = new ServerMetrics();
+        var playerService = new PlayerService(mockRepo.Object, metrics);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+
+        var player = new ServerCharacter { Id = 1, MapId = 1001, CharacterElement = Element.Earth };
+        var session = new TestClientSession(player);
+
+        // Enemy on DIFFERENT map (1002)
+        var enemies = new List<ServerCharacter>
+        {
+            new ServerCharacter { MonsterId = 1, MapId = 1002, CharacterElement = Element.Fire }
+        };
+
+        // Act
+        var resultId = manager.StartEncounter(session, enemies, EncounterSource.Scripted);
+
+        // Assert
+        Assert.Equal(0, resultId);
+        mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Never);
+    }
 }

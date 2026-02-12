@@ -99,12 +99,17 @@ public class ContentIntegrationTests
             Assert.True(mob.FamilyId > 0, $"Monster {mob.MonsterId} invalid FamilyId");
             Assert.NotNull(mob.Tags);
             Assert.NotNull(mob.Behavior);
-            Assert.True(mob.EncounterWeight > 0, $"Monster {mob.MonsterId} invalid EncounterWeight");
 
             // Validate Element.None rule
             if (mob.Element == Element.None)
             {
                 Assert.Contains("QuestOnly", mob.Tags);
+            }
+
+            // EncounterWeight > 0 required unless QuestOnly (not spawning randomly)
+            if (!mob.Tags.Contains("QuestOnly"))
+            {
+                Assert.True(mob.EncounterWeight > 0, $"Monster {mob.MonsterId} invalid EncounterWeight");
             }
         }
 

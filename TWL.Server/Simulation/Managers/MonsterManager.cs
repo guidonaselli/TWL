@@ -23,34 +23,27 @@ public class MonsterManager
             return;
         }
 
-        try
+        var json = File.ReadAllText(path);
+        var list = JsonSerializer.Deserialize<List<MonsterDefinition>>(json, _jsonOptions);
+
+        if (list != null)
         {
-            var json = File.ReadAllText(path);
-            var list = JsonSerializer.Deserialize<List<MonsterDefinition>>(json, _jsonOptions);
-
-            if (list != null)
+            foreach (var def in list)
             {
-                foreach (var def in list)
+                if (def.Element == Element.None && !def.Tags.Contains("QuestOnly"))
                 {
-                    if (def.Element == Element.None && !def.Tags.Contains("QuestOnly"))
-                    {
-                        throw new InvalidDataException($"Monster {def.MonsterId} ({def.Name}) has Element.None but is missing 'QuestOnly' tag.");
-                    }
-
-                    if (_definitions.ContainsKey(def.MonsterId))
-                    {
-                        Console.WriteLine($"Warning: Duplicate monster ID {def.MonsterId}");
-                    }
-
-                    _definitions[def.MonsterId] = def;
+                    throw new InvalidDataException($"Monster {def.MonsterId} ({def.Name}) has Element.None but is missing 'QuestOnly' tag.");
                 }
 
-                Console.WriteLine($"Loaded {_definitions.Count} monster definitions.");
+                if (_definitions.ContainsKey(def.MonsterId))
+                {
+                    Console.WriteLine($"Warning: Duplicate monster ID {def.MonsterId}");
+                }
+
+                _definitions[def.MonsterId] = def;
             }
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"Error loading monsters: {ex.Message}");
+
+            Console.WriteLine($"Loaded {_definitions.Count} monster definitions.");
         }
     }
 
