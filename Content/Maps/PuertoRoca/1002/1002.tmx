@@ -193,7 +193,8 @@
   <object id="4" name="Bandido1" type="Monster" x="128" y="128" width="32" height="32">
    <properties>
     <property name="SpawnType" value="Monster"/>
-    <property name="Id" type="int" value="9200"/>
+    <property name="Id" type="int" value="2"/>
+    <property name="MonsterId" type="int" value="9200"/>
     <property name="LevelRange" value="2-4"/>
     <property name="RespawnSeconds" type="int" value="60"/>
     <property name="Radius" type="int" value="5"/>
@@ -202,7 +203,8 @@
   <object id="5" name="Lobo1" type="Monster" x="480" y="128" width="32" height="32">
    <properties>
     <property name="SpawnType" value="Monster"/>
-    <property name="Id" type="int" value="9202"/>
+    <property name="Id" type="int" value="3"/>
+    <property name="MonsterId" type="int" value="9202"/>
     <property name="LevelRange" value="2-3"/>
     <property name="RespawnSeconds" type="int" value="45"/>
     <property name="Radius" type="int" value="5"/>
@@ -211,7 +213,8 @@
   <object id="6" name="RockCrab" type="Monster" x="480" y="480" width="32" height="32">
    <properties>
     <property name="SpawnType" value="Monster"/>
-    <property name="Id" type="int" value="9300"/>
+    <property name="Id" type="int" value="4"/>
+    <property name="MonsterId" type="int" value="9300"/>
     <property name="LevelRange" value="3-5"/>
     <property name="RespawnSeconds" type="int" value="30"/>
     <property name="Radius" type="int" value="5"/>
