@@ -1,6 +1,6 @@
 [
   {
-    "QuestId": 8000,
+    "QuestId": 99800,
     "Title": "Slime Hunter",
     "Description": "Kill 5 Slimes.",
     "Objectives": [
@@ -18,7 +18,7 @@
     }
   },
   {
-    "QuestId": 8001,
+    "QuestId": 99801,
     "Title": "Herb Collector",
     "Description": "Collect 3 Herbs.",
     "Objectives": [
@@ -39,10 +39,10 @@
     }
   },
   {
-    "QuestId": 8002,
+    "QuestId": 99802,
     "Title": "Herb Delivery",
     "Description": "Deliver the herbs to the Alchemist.",
-    "Requirements": [ 8001 ],
+    "Requirements": [ 99801 ],
     "Objectives": [
       {
         "Type": "Deliver",
@@ -59,7 +59,7 @@
     }
   },
   {
-    "QuestId": 8003,
+    "QuestId": 99803,
     "Title": "Join Faction A",
     "Description": "Talk to Leader A to join.",
     "MutualExclusionGroup": "FactionChoice",
@@ -78,7 +78,7 @@
     }
   },
   {
-    "QuestId": 8004,
+    "QuestId": 99804,
     "Title": "Join Faction B",
     "Description": "Talk to Leader B to join.",
     "MutualExclusionGroup": "FactionChoice",
@@ -97,7 +97,7 @@
     }
   },
   {
-    "QuestId": 8005,
+    "QuestId": 99805,
     "Title": "Cave of Trials",
     "Description": "Complete the Cave of Trials instance.",
     "InstanceRules": {
@@ -121,7 +121,7 @@
     }
   },
   {
-    "QuestId": 8006,
+    "QuestId": 99806,
     "Title": "Escort VIP",
     "Description": "Escort the VIP safely.",
     "FailConditions": [
