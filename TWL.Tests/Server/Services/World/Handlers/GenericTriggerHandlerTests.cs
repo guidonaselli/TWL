@@ -4,6 +4,8 @@ using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
 using TWL.Server.Services.World;
+using TWL.Server.Services.World.Actions;
+using TWL.Server.Services.World.Actions.Handlers;
 using TWL.Server.Services.World.Handlers;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -39,7 +41,14 @@ public class GenericTriggerHandlerTests
 
         _instanceServiceMock = new Mock<InstanceService>(metrics);
 
-        _handler = new GenericTriggerHandler(_playerServiceMock.Object, _spawnManagerMock.Object, _instanceServiceMock.Object);
+        var registry = new TriggerActionRegistry();
+        registry.Register(new TeleportActionHandler());
+        registry.Register(new SpawnActionHandler(_playerServiceMock.Object, _spawnManagerMock.Object));
+        registry.Register(new GiveItemActionHandler());
+        registry.Register(new HealActionHandler());
+        registry.Register(new DamageActionHandler());
+
+        _handler = new GenericTriggerHandler(registry);
     }
 
     [Fact]
@@ -58,12 +67,16 @@ public class GenericTriggerHandlerTests
         character.OnMapChanged += (id) => mapChangedCalled = true;
 
         var trigger = new ServerTrigger();
-        trigger.Actions.Add(new TriggerAction("Teleport", new Dictionary<string, string>
+        trigger.Actions.Add(new TriggerAction
         {
-            { "MapId", "2" },
-            { "X", "100" },
-            { "Y", "200" }
-        }));
+            Type = "Teleport",
+            Parameters = new Dictionary<string, string>
+            {
+                { "MapId", "2" },
+                { "X", "100" },
+                { "Y", "200" }
+            }
+        });
 
         _handler.ExecuteEnter(character, trigger, Mock.Of<IWorldTriggerService>());
 
@@ -81,12 +94,16 @@ public class GenericTriggerHandlerTests
         character.OnMapChanged += (id) => mapChangedCalled = true;
 
         var trigger = new ServerTrigger();
-        trigger.Actions.Add(new TriggerAction("Teleport", new Dictionary<string, string>
+        trigger.Actions.Add(new TriggerAction
         {
-            { "MapId", "1" }, // Same map
-            { "X", "50" },
-            { "Y", "50" }
-        }));
+            Type = "Teleport",
+            Parameters = new Dictionary<string, string>
+            {
+                { "MapId", "1" }, // Same map
+                { "X", "50" },
+                { "Y", "50" }
+            }
+        });
 
         _handler.ExecuteEnter(character, trigger, Mock.Of<IWorldTriggerService>());
 
@@ -101,10 +118,14 @@ public class GenericTriggerHandlerTests
     {
         var character = new ServerCharacter { Hp = 50, Con = 10 };
         var trigger = new ServerTrigger();
-        trigger.Actions.Add(new TriggerAction("Heal", new Dictionary<string, string>
+        trigger.Actions.Add(new TriggerAction
         {
-            { "Amount", "20" }
-        }));
+            Type = "Heal",
+            Parameters = new Dictionary<string, string>
+            {
+                { "Amount", "20" }
+            }
+        });
 
         _handler.ExecuteEnter(character, trigger, Mock.Of<IWorldTriggerService>());
 
@@ -116,10 +137,14 @@ public class GenericTriggerHandlerTests
     {
         var character = new ServerCharacter { Hp = 50, Con = 10 };
         var trigger = new ServerTrigger();
-        trigger.Actions.Add(new TriggerAction("Damage", new Dictionary<string, string>
+        trigger.Actions.Add(new TriggerAction
         {
-            { "Amount", "20" }
-        }));
+            Type = "Damage",
+            Parameters = new Dictionary<string, string>
+            {
+                { "Amount", "20" }
+            }
+        });
 
         _handler.ExecuteEnter(character, trigger, Mock.Of<IWorldTriggerService>());
 
@@ -131,11 +156,15 @@ public class GenericTriggerHandlerTests
     {
         var character = new ServerCharacter(); // Assuming simple inventory
         var trigger = new ServerTrigger();
-        trigger.Actions.Add(new TriggerAction("GiveItem", new Dictionary<string, string>
+        trigger.Actions.Add(new TriggerAction
         {
-            { "ItemId", "101" },
-            { "Count", "5" }
-        }));
+            Type = "GiveItem",
+            Parameters = new Dictionary<string, string>
+            {
+                { "ItemId", "101" },
+                { "Count", "5" }
+            }
+        });
 
         _handler.ExecuteEnter(character, trigger, Mock.Of<IWorldTriggerService>());
 
@@ -147,11 +176,15 @@ public class GenericTriggerHandlerTests
     {
         var character = new ServerCharacter { Id = 123 };
         var trigger = new ServerTrigger();
-        trigger.Actions.Add(new TriggerAction("Spawn", new Dictionary<string, string>
+        trigger.Actions.Add(new TriggerAction
         {
-            { "MonsterId", "999" },
-            { "Count", "2" }
-        }));
+            Type = "Spawn",
+            Parameters = new Dictionary<string, string>
+            {
+                { "MonsterId", "999" },
+                { "Count", "2" }
+            }
+        });
 
         var sessionMock = new Mock<ClientSession>();
         _playerServiceMock.Setup(s => s.GetSession(123)).Returns(sessionMock.Object);
