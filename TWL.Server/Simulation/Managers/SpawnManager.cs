@@ -1,5 +1,6 @@
 using System.Collections.Concurrent;
 using System.Text.Json;
+using Microsoft.Xna.Framework;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
@@ -29,6 +30,7 @@ public class SpawnManager
     private int _nextEncounterId = 1;
     private static int _nextMobId = -1;
     private readonly List<ServerCharacter> _roamingMobs = new();
+    private readonly ConcurrentDictionary<int, MobState> _mobStates = new();
     private readonly List<ClientSession> _sessionBuffer = new();
     private float _respawnTimer;
     private const float RespawnCheckInterval = 5.0f;
@@ -210,10 +212,16 @@ public class SpawnManager
         // Strict Validation (Element.None allowed ONLY for QuestOnly Monsters)
         foreach (var p in participants)
         {
+             if (p is ServerCharacter sc)
+             {
+                 // Cleanup roaming state if present
+                 _mobStates.TryRemove(sc.Id, out _);
+             }
+
              if (p.CharacterElement == Element.None)
              {
                  // Check if it is a Monster (ServerCharacter with MonsterId > 0)
-                 var isMob = p is ServerCharacter sc && sc.MonsterId > 0;
+                 var isMob = p is ServerCharacter mob && mob.MonsterId > 0;
 
                  if (!isMob)
                  {
@@ -422,54 +430,156 @@ public class SpawnManager
             for (var i = _roamingMobs.Count - 1; i >= 0; i--)
             {
                 var mob = _roamingMobs[i];
-
-                // Patrol Logic
-                var def = _monsterManager.GetDefinition(mob.MonsterId);
-                var speed = def?.Behavior?.PatrolSpeed ?? 1.0f; // Tiles per second
-                var distanceToMove = speed * 32f * dt;
-
-                // Simple Brownian motion
-                // 5% chance per frame to change direction is too high for 60fps.
-                // Assuming Update is called frequently. Let's make it 2% chance.
-
-                if (_random.NextDouble("RoamingDirectionCheck") < 0.02)
+                if (!_mobStates.TryGetValue(mob.Id, out var state))
                 {
-                    var angle = _random.NextDouble("RoamingAngle") * Math.PI * 2;
-                    // Move for 1 sec worth of distance in this direction (simulated impulse)
-                    var dx = Math.Cos(angle) * distanceToMove * 30; // 30 frames worth
-                    var dy = Math.Sin(angle) * distanceToMove * 30;
-
-                    // Apply immediately (simplified)
-                    mob.X += (float)dx;
-                    mob.Y += (float)dy;
+                    // If no state, initialize it
+                    state = new MobState
+                    {
+                        SpawnOrigin = new Vector2(mob.X, mob.Y),
+                        State = RoamingState.Idle,
+                        StateTimer = (float)_random.NextDouble("IdleTimer") * 2.0f
+                    };
+                    _mobStates[mob.Id] = state;
                 }
 
-                // Keep within map bounds?
-                // We don't have map bounds easily accessible here without loading map data.
-                // For now, let them roam freely.
+                var def = _monsterManager.GetDefinition(mob.MonsterId);
+                var behavior = def?.Behavior;
 
-                // Collision Check
-                foreach (var session in _sessionBuffer)
+                // State Machine Update
+                state.StateTimer -= dt;
+
+                // Find nearest player (or aggregated logic)
+                ServerCharacter? targetPlayer = null;
+                float distToTarget = float.MaxValue;
+
+                // Simple aggressive check
+                if (behavior != null && (def.IsAggressive || !behavior.IsPassive))
                 {
-                    if (session.Character.MapId == mob.MapId)
+                    foreach (var session in _sessionBuffer)
                     {
-                        var distSq = Microsoft.Xna.Framework.Vector2.DistanceSquared(
-                            new Microsoft.Xna.Framework.Vector2(session.Character.X, session.Character.Y),
-                            new Microsoft.Xna.Framework.Vector2(mob.X, mob.Y)
-                        );
-
-                        // 32px threshold -> 1024 sq
-                        if (distSq < 1024)
+                        if (session.Character.MapId == mob.MapId)
                         {
-                            StartEncounter(session, mob);
-                            _roamingMobs.RemoveAt(i);
-                            break;
+                             var dSq = Vector2.DistanceSquared(new Vector2(session.Character.X, session.Character.Y), new Vector2(mob.X, mob.Y));
+                             if (dSq < behavior.AggroRadius * 32f * behavior.AggroRadius * 32f) // AggroRadius in Tiles -> Pixels
+                             {
+                                 if (dSq < distToTarget)
+                                 {
+                                     distToTarget = dSq;
+                                     targetPlayer = session.Character;
+                                 }
+                             }
                         }
                     }
+                }
+
+                switch (state.State)
+                {
+                    case RoamingState.Idle:
+                        if (targetPlayer != null)
+                        {
+                            state.State = RoamingState.Chase;
+                            // Sound or emote could happen here
+                        }
+                        else if (state.StateTimer <= 0)
+                        {
+                            state.State = RoamingState.Patrol;
+                            // Pick random point nearby
+                            var angle = _random.NextDouble("PatrolAngle") * Math.PI * 2;
+                            var dist = _random.NextDouble("PatrolDist") * 5.0f * 32f; // up to 5 tiles
+                            state.TargetPos = state.SpawnOrigin + new Vector2((float)(Math.Cos(angle) * dist), (float)(Math.Sin(angle) * dist));
+                        }
+                        break;
+
+                    case RoamingState.Patrol:
+                        if (targetPlayer != null)
+                        {
+                            state.State = RoamingState.Chase;
+                        }
+                        else if (state.TargetPos.HasValue)
+                        {
+                            if (MoveTowards(mob, state.TargetPos.Value, behavior?.PatrolSpeed ?? 1.0f, dt))
+                            {
+                                state.State = RoamingState.Idle;
+                                state.StateTimer = 2.0f + (float)_random.NextDouble("IdleVar");
+                            }
+                        }
+                        else
+                        {
+                            state.State = RoamingState.Idle;
+                        }
+                        break;
+
+                    case RoamingState.Chase:
+                        if (targetPlayer == null)
+                        {
+                            state.State = RoamingState.Return;
+                        }
+                        else
+                        {
+                            // Check leash
+                            var distFromOriginSq = Vector2.DistanceSquared(new Vector2(mob.X, mob.Y), state.SpawnOrigin);
+                            var leashSq = (behavior?.LeashRadius ?? 15f) * 32f * (behavior?.LeashRadius ?? 15f) * 32f;
+
+                            if (distFromOriginSq > leashSq)
+                            {
+                                state.State = RoamingState.Return;
+                            }
+                            else
+                            {
+                                // Move to player
+                                var playerPos = new Vector2(targetPlayer.X, targetPlayer.Y);
+                                MoveTowards(mob, playerPos, (behavior?.PatrolSpeed ?? 1.0f) * 1.5f, dt); // Chase faster
+
+                                // Check collision
+                                var distSq = Vector2.DistanceSquared(new Vector2(mob.X, mob.Y), playerPos);
+                                if (distSq < 32f * 32f)
+                                {
+                                    // Trigger Encounter
+                                    // Find session for this character
+                                    var sess = _sessionBuffer.FirstOrDefault(s => s.Character == targetPlayer);
+                                    if (sess != null)
+                                    {
+                                        StartEncounter(sess, mob);
+                                        _roamingMobs.RemoveAt(i);
+                                        _mobStates.TryRemove(mob.Id, out _);
+                                    }
+                                }
+                            }
+                        }
+                        break;
+
+                    case RoamingState.Return:
+                        if (MoveTowards(mob, state.SpawnOrigin, (behavior?.PatrolSpeed ?? 1.0f) * 2.0f, dt)) // Return fast
+                        {
+                            state.State = RoamingState.Idle;
+                            state.StateTimer = 1.0f;
+                        }
+                        break;
                 }
             }
         }
         _sessionBuffer.Clear();
+    }
+
+    private bool MoveTowards(ServerCharacter mob, Vector2 target, float speedTilesPerSec, float dt)
+    {
+        var current = new Vector2(mob.X, mob.Y);
+        var dir = target - current;
+        var len = dir.Length();
+        var moveDist = speedTilesPerSec * 32f * dt;
+
+        if (len <= moveDist)
+        {
+            mob.X = target.X;
+            mob.Y = target.Y;
+            return true; // Arrived
+        }
+
+        dir.Normalize();
+        var move = dir * moveDist;
+        mob.X += move.X;
+        mob.Y += move.Y;
+        return false;
     }
 
     private void CheckRespawns()
@@ -545,6 +655,31 @@ public class SpawnManager
         };
         mob.SetLevel(def.Level);
         mob.SetOverrideStats(def.BaseHp, def.BaseSp);
+
+        // Init State
+        _mobStates[mobId] = new MobState
+        {
+            SpawnOrigin = new Vector2(x, y),
+            State = RoamingState.Idle,
+            StateTimer = 2.0f
+        };
+
         return mob;
+    }
+
+    private class MobState
+    {
+        public Vector2 SpawnOrigin { get; set; }
+        public RoamingState State { get; set; }
+        public float StateTimer { get; set; }
+        public Vector2? TargetPos { get; set; }
+    }
+
+    private enum RoamingState
+    {
+        Idle,
+        Patrol,
+        Chase,
+        Return
     }
 }

@@ -427,6 +427,9 @@ public class SpawnManagerTests
 
         // Act
         // Update small dt to trigger collision check
+        // First update transitions Idle -> Chase
+        manager.Update(0.1f);
+        // Second update processes Chase -> Collision
         manager.Update(0.1f);
 
         // Assert

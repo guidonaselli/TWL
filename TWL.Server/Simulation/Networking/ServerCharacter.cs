@@ -38,6 +38,7 @@ public class ServerCharacter : ServerCombatant
         Int = 8;
         Wis = 8;
         Agi = 8;
+        CharacterElement = Element.Earth; // Default to Earth to avoid Element.None
     }
 
     public new bool IsDirty

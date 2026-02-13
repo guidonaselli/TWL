@@ -33,6 +33,11 @@ public class PetManager
             {
                 foreach (var def in list)
                 {
+                    if (def.Element == Element.None)
+                    {
+                        throw new InvalidDataException($"Pet {def.PetTypeId} ({def.Name}) has invalid Element.None. Pets cannot be None.");
+                    }
+
                     if (_definitions.ContainsKey(def.PetTypeId))
                     {
                         Console.WriteLine($"Warning: Duplicate pet ID {def.PetTypeId}");
