@@ -5,6 +5,8 @@ using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
 using TWL.Server.Services.World;
+using TWL.Server.Services.World.Actions;
+using TWL.Server.Services.World.Actions.Handlers;
 using TWL.Server.Services.World.Handlers;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -100,7 +102,20 @@ public class ServerWorker : IHostedService
         _worldTriggerService.RegisterHandler(new QuestTriggerHandler(_playerService));
         // Manual resolution for now until DI registration for handlers is improved
         _worldTriggerService.RegisterHandler(new DamageTriggerHandler(_loggerFactory.CreateLogger<DamageTriggerHandler>(), _playerService));
-        _worldTriggerService.RegisterHandler(new GenericTriggerHandler(_playerService, _spawnManager, _instanceService));
+
+        // Setup Trigger Action Registry
+        var actionRegistry = new TriggerActionRegistry();
+        actionRegistry.Register(new TeleportActionHandler());
+        actionRegistry.Register(new SpawnActionHandler(_playerService, _spawnManager));
+        actionRegistry.Register(new SetFlagActionHandler(_playerService));
+        actionRegistry.Register(new RemoveFlagActionHandler(_playerService));
+        actionRegistry.Register(new GiveItemActionHandler());
+        actionRegistry.Register(new EnterInstanceActionHandler(_playerService, _instanceService));
+        actionRegistry.Register(new HealActionHandler());
+        actionRegistry.Register(new DamageActionHandler());
+        actionRegistry.Register(new MessageActionHandler(_playerService));
+
+        _worldTriggerService.RegisterHandler(new GenericTriggerHandler(actionRegistry));
 
         if (Directory.Exists("Content/Maps"))
         {
