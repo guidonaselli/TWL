@@ -41,6 +41,7 @@ public class ServerPet : ServerCombatant
 
     public string InstanceId { get; set; } = Guid.NewGuid().ToString();
     public int DefinitionId { get; set; }
+    public int OwnerId { get; set; }
 
     // ServerCombatant has Name, Id, Hp, Sp, Stats, StatusEffects
 

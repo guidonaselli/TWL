@@ -273,6 +273,14 @@ public class ServerCharacter : ServerCombatant
     public event Action<ServerPet>? OnPetAdded;
     public event Action<ServerCharacter, int, int>? OnTradeCommitted;
     public event Action<int>? OnMapChanged;
+
+    // New Quest-related Events
+    public event Action<string, int?>? OnKill; // targetName, monsterId (dataId)
+    public event Action<string, int>? OnCraft; // itemName, quantity
+    public event Action<string, int>? OnCompound; // resultName, quantity
+    public event Action<string, int>? OnForge; // resultName, quantity
+    public event Action<string>? OnEventParticipation; // eventName
+
     public void SetLevel(int level) => Level = level; // For mobs
 
     public bool HasProcessedOrder(string orderId)
@@ -317,6 +325,7 @@ public class ServerCharacter : ServerCombatant
     {
         lock (_pets)
         {
+            pet.OwnerId = Id;
             _pets.Add(pet);
             IsDirty = true;
             OnPetAdded?.Invoke(pet);
@@ -325,6 +334,12 @@ public class ServerCharacter : ServerCombatant
 
     public void NotifyTradeCommitted(ServerCharacter target, int itemId, int quantity) =>
         OnTradeCommitted?.Invoke(target, itemId, quantity);
+
+    public void NotifyKill(string targetName, int? monsterId) => OnKill?.Invoke(targetName, monsterId);
+    public void NotifyCraft(string itemName, int quantity) => OnCraft?.Invoke(itemName, quantity);
+    public void NotifyCompound(string resultName, int quantity) => OnCompound?.Invoke(resultName, quantity);
+    public void NotifyForge(string resultName, int quantity) => OnForge?.Invoke(resultName, quantity);
+    public void NotifyEventParticipation(string eventName) => OnEventParticipation?.Invoke(eventName);
 
     public bool RemovePet(string instanceId)
     {
@@ -1084,6 +1099,7 @@ public class ServerCharacter : ServerCombatant
                 {
                     var pet = new ServerPet();
                     pet.LoadSaveData(petData);
+                    pet.OwnerId = Id;
                     _pets.Add(pet);
                 }
             }
