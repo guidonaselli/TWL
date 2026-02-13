@@ -2037,7 +2037,7 @@
     "Tier": 3,
     "TargetType": "SingleEnemy",
     "SpCost": 30,
-    "Cooldown": 2,
+    "Cooldown": 3,
     "Scaling": [],
     "Effects": [
       {
@@ -2086,7 +2086,7 @@
     "Tier": 3,
     "TargetType": "SingleEnemy",
     "SpCost": 35,
-    "Cooldown": 2,
+    "Cooldown": 3,
     "Scaling": [],
     "Effects": [
       {
@@ -2125,7 +2125,7 @@
     "Tier": 3,
     "TargetType": "SingleEnemy",
     "SpCost": 40,
-    "Cooldown": 2,
+    "Cooldown": 3,
     "Scaling": [],
     "Effects": [
       {
