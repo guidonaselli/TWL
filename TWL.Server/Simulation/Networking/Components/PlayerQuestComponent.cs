@@ -75,6 +75,11 @@ public class PlayerQuestComponent
                 _character.OnPetAdded -= HandlePetAdded;
                 _character.OnTradeCommitted -= HandleTradeCommitted;
                 _character.OnMapChanged -= HandleMapChanged;
+                _character.OnKill -= HandleKill;
+                _character.OnCraft -= HandleCraftInternal;
+                _character.OnCompound -= HandleCompoundInternal;
+                _character.OnForge -= HandleForgeInternal;
+                _character.OnEventParticipation -= HandleEventParticipationInternal;
             }
 
             _character = value;
@@ -84,9 +89,24 @@ public class PlayerQuestComponent
                 _character.OnPetAdded += HandlePetAdded;
                 _character.OnTradeCommitted += HandleTradeCommitted;
                 _character.OnMapChanged += HandleMapChanged;
+                _character.OnKill += HandleKill;
+                _character.OnCraft += HandleCraftInternal;
+                _character.OnCompound += HandleCompoundInternal;
+                _character.OnForge += HandleForgeInternal;
+                _character.OnEventParticipation += HandleEventParticipationInternal;
             }
         }
     }
+
+    private void HandleKill(string targetName, int? monsterId)
+    {
+        TryProgress("Kill", targetName, 1, monsterId);
+    }
+
+    private void HandleCraftInternal(string itemName, int quantity) => TryProgress("Craft", itemName, quantity);
+    private void HandleCompoundInternal(string resultName, int quantity) => TryProgress("Compound", resultName, quantity);
+    private void HandleForgeInternal(string resultName, int quantity) => TryProgress("Forge", resultName, quantity);
+    private void HandleEventParticipationInternal(string eventName) => TryProgress("EventParticipation", eventName);
 
     private void HandleMapChanged(int mapId)
     {

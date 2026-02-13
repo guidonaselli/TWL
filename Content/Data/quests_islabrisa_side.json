@@ -1,0 +1,65 @@
+[
+  {
+    "QuestId": 1013,
+    "Title": "Bonding with Pet",
+    "Description": "Your new friend needs exercise. Defeat 5 Coast Crabs together.",
+    "Requirements": [1010],
+    "RequiredPetId": 1030,
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Coast Crab (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Coast Crabs with your pet.",
+        "DataId": 2001
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 20, "Items": [] }
+  },
+  {
+    "QuestId": 1014,
+    "Title": "Advanced Bonding",
+    "Description": "Face stronger foes. Defeat 5 Rock Monkeys.",
+    "Requirements": [1013],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Rock Monkey (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Rock Monkeys.",
+        "DataId": 2005
+      }
+    ],
+    "Rewards": { "Exp": 200, "Gold": 50, "Items": [] }
+  },
+  {
+    "QuestId": 1015,
+    "Title": "Beach Festival",
+    "Description": "Join the annual Beach Festival!",
+    "Requirements": [1006],
+    "Objectives": [
+      {
+        "Type": "EventParticipation",
+        "TargetName": "BeachFestival",
+        "RequiredCount": 1,
+        "Description": "Participate in the Beach Festival."
+      }
+    ],
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [{"ItemId": 8005, "Quantity": 1}] }
+  },
+  {
+    "QuestId": 1016,
+    "Title": "Ancient Tablet",
+    "Description": "Solve the riddle of the tablet found in the cave.",
+    "Requirements": [1007],
+    "Objectives": [
+      {
+        "Type": "Puzzle",
+        "TargetName": "TabletPuzzle",
+        "RequiredCount": 1,
+        "Description": "Solve the Tablet Puzzle."
+      }
+    ],
+    "Rewards": { "Exp": 150, "Gold": 0, "Items": [] }
+  }
+]

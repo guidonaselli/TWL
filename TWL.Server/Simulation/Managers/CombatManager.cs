@@ -226,6 +226,33 @@ public class CombatManager
             {
                 turnEngine?.RemoveCombatant(target.Id);
                 OnCombatantDeath?.Invoke(target);
+
+                // Quest Propagation
+                if (target.LastAttackerId.HasValue)
+                {
+                    if (_combatants.TryGetValue(target.LastAttackerId.Value, out var killer))
+                    {
+                        int? monsterId = null;
+                        if (target is ServerCharacter mob && mob.MonsterId > 0)
+                        {
+                            monsterId = mob.MonsterId;
+                        }
+
+                        if (killer is ServerCharacter playerKiller)
+                        {
+                            playerKiller.NotifyKill(target.Name, monsterId);
+                        }
+                        else if (killer is ServerPet petKiller)
+                        {
+                            // Find owner
+                            if (petKiller.OwnerId > 0 && _combatants.TryGetValue(petKiller.OwnerId, out var owner) &&
+                                owner is ServerCharacter ownerChar)
+                            {
+                                ownerChar.NotifyKill(target.Name, monsterId);
+                            }
+                        }
+                    }
+                }
             }
 
             results.Add(new CombatResult
