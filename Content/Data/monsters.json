@@ -398,5 +398,33 @@
       "IsPassive": true
     },
     "EncounterWeight": 0
+  },
+  {
+    "MonsterId": 9101,
+    "Name": "Cave Bat (Wind)",
+    "Code": "MOB_CAVE_BAT",
+    "FamilyId": 1,
+    "Element": "Wind",
+    "Level": 4,
+    "BaseHp": 40,
+    "BaseSp": 10,
+    "BaseStr": 12,
+    "BaseCon": 8,
+    "BaseInt": 5,
+    "BaseWis": 5,
+    "BaseAgi": 15,
+    "SpritePath": "Monsters/mob_bat_wind_64_spritesheet.png",
+    "PortraitPath": "Portraits/mob_bat_wind_portrait_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 40,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10
   }
 ]

@@ -19,5 +19,5 @@
   },
   "WorldFlagsSet": [],
   "WorldFlagsCleared": [],
-  "Notes": "TODO: Add proper Cave Bat mob (9101 missing). Add El Viejo Coral NPC (ID missing)."
+  "Notes": "El Viejo Coral (1005) and Cave Bat (9101) added. Stone Circle interaction added."
 }
