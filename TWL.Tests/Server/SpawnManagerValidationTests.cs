@@ -22,7 +22,7 @@ public class SpawnManagerValidationTests
     private readonly Mock<PlayerService> _mockPlayerService;
     private readonly SpawnManager _spawnManager;
 
-    public SpawnManagerTests()
+    public SpawnManagerValidationTests()
     {
         _mockMonsterManager = new Mock<MonsterManager>();
 

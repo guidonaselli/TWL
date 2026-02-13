@@ -3,6 +3,7 @@ using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Quests;
+using TWL.Shared.Domain.Requests;
 
 namespace TWL.Tests.Quests;
 
