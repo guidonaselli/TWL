@@ -75,9 +75,18 @@
    <properties>
     <property name="Id" value="2"/>
     <property name="SpawnType" value="Monster"/>
-    <property name="MonsterId" value="2005"/>
+    <property name="MonsterId" value="9101"/>
     <property name="RespawnSeconds" value="60"/>
     <property name="LevelRange" value="3-5"/>
+   </properties>
+   <point/>
+  </object>
+  <object id="103" x="800" y="400">
+   <properties>
+    <property name="Id" value="3"/>
+    <property name="SpawnType" value="NPC"/>
+    <property name="NpcId" value="1005"/>
+    <property name="Faction" value="Neutral"/>
    </properties>
    <point/>
   </object>
@@ -93,6 +102,14 @@
     <property name="OncePerCharacter" value="false"/>
     <property name="RequiredLevel" value="0"/>
     <property name="RequiredFlags" value=""/>
+   </properties>
+  </object>
+  <object id="202" x="400" y="200" width="64" height="64">
+   <properties>
+    <property name="TriggerType" value="Interaction"/>
+    <property name="Id" value="200"/>
+    <property name="Message" value="The stones hum with faint energy."/>
+    <property name="Cooldown" value="5"/>
    </properties>
   </object>
  </objectgroup>

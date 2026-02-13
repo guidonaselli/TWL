@@ -16,10 +16,10 @@ A shallow cave with glowing crystals and a Stone Circle puzzle. This is the firs
 - **El Viejo Coral:** A hermit NPC who provides lore about Los Ancestrales (Not yet implemented).
 
 ## Monsters
-- **Rock Monkey (2005):** Placeholder for Cave Bats (9101 not implemented yet).
+- **Cave Bat (9101):** Wind element.
 
 ## TODOs
-- [ ] Implement Cave Bat (9101) in `monsters.json`.
-- [ ] Implement El Viejo Coral in `npcs.json`.
-- [ ] Add Stone Circle puzzle logic/triggers.
+- [x] Implement Cave Bat (9101) in `monsters.json`.
+- [x] Implement El Viejo Coral in `npcs.json`.
+- [x] Add Stone Circle puzzle logic/triggers (Basic interaction added).
 - [ ] Update tileset reference if specific cave tiles are added.
