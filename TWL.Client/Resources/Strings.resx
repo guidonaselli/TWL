@@ -355,4 +355,31 @@
     <data name="SKILL_InnerFire" xml:space="preserve">
     <value>Inner Fire</value>
   </data>
+    <data name="SKILL_HurricaneSlashI" xml:space="preserve">
+    <value>Hurricane Slash I</value>
+  </data>
+    <data name="SKILL_HurricaneSlashII" xml:space="preserve">
+    <value>Hurricane Slash II</value>
+  </data>
+    <data name="SKILL_HurricaneSlashIII" xml:space="preserve">
+    <value>Hurricane Slash III</value>
+  </data>
+    <data name="SKILL_TyphoonI" xml:space="preserve">
+    <value>Typhoon I</value>
+  </data>
+    <data name="SKILL_TyphoonII" xml:space="preserve">
+    <value>Typhoon II</value>
+  </data>
+    <data name="SKILL_TyphoonIII" xml:space="preserve">
+    <value>Typhoon III</value>
+  </data>
+    <data name="SKILL_NullifyI" xml:space="preserve">
+    <value>Nullify I</value>
+  </data>
+    <data name="SKILL_NullifyII" xml:space="preserve">
+    <value>Nullify II</value>
+  </data>
+    <data name="SKILL_NullifyIII" xml:space="preserve">
+    <value>Nullify III</value>
+  </data>
 </root>

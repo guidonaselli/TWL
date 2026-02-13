@@ -85,7 +85,7 @@ public class ContentIntegrationTests
     public void ValidateMonstersContent()
     {
         var monsters = LoadContent<MonsterDefinition>("monsters.json");
-        Assert.Equal(14, monsters.Count);
+        Assert.Equal(15, monsters.Count);
 
         // Verify a few sample mobs
         Assert.Contains(monsters, m => m.MonsterId == 2001 && m.Element == Element.Earth);
