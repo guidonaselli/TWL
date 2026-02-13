@@ -50,7 +50,8 @@ public class SpecialQuestTests
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 Type = "SpecialSkill",
                 SpecialCategory = "Dragon",
-                MutualExclusionGroup = "GlobalSpecial"
+                MutualExclusionGroup = "GlobalSpecial",
+                Repeatability = QuestRepeatability.Unlimited
             },
             // Quest 202: Special Category Dragon B
             new()
@@ -63,7 +64,8 @@ public class SpecialQuestTests
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 Type = "SpecialSkill",
                 SpecialCategory = "Dragon",
-                MutualExclusionGroup = "GlobalSpecial"
+                MutualExclusionGroup = "GlobalSpecial",
+                Repeatability = QuestRepeatability.Unlimited
             },
             // Quest 301: Special Category Rebirth
             new()
@@ -76,7 +78,8 @@ public class SpecialQuestTests
                 Rewards = new RewardDefinition(100, 0, new List<ItemReward>()),
                 Type = "SpecialSkill",
                 SpecialCategory = "Rebirth",
-                MutualExclusionGroup = "GlobalSpecial"
+                MutualExclusionGroup = "GlobalSpecial",
+                Repeatability = QuestRepeatability.Unlimited
             }
         };
 

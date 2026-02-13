@@ -44,7 +44,7 @@ public class QuestSystemExtendedTests
     [Fact]
     public void Quest8000_KillCount_ShouldProgress()
     {
-        var qId = 8000;
+        var qId = 99800;
         Assert.True(_playerQuests.StartQuest(qId));
 
         // Progress via HandleKillCount
@@ -66,7 +66,7 @@ public class QuestSystemExtendedTests
     [Fact]
     public void Quest8001_Collect_ShouldProgress()
     {
-        var qId = 8001;
+        var qId = 99801;
         Assert.True(_playerQuests.StartQuest(qId));
 
         // Add Item (ItemId 7001)
@@ -86,9 +86,9 @@ public class QuestSystemExtendedTests
     [Fact]
     public void Quest8002_Deliver_ShouldConsumeItem()
     {
-        // Prereq: 8001
-        var qId = 8002;
-        _playerQuests.QuestStates[8001] = QuestState.RewardClaimed; // Cheat prereq
+        // Prereq: 99801
+        var qId = 99802;
+        _playerQuests.QuestStates[99801] = QuestState.RewardClaimed; // Cheat prereq
 
         Assert.True(_playerQuests.StartQuest(qId));
 
@@ -106,8 +106,8 @@ public class QuestSystemExtendedTests
     [Fact]
     public void Quest8003_8004_MutualExclusion_ShouldBlock()
     {
-        var qA = 8003;
-        var qB = 8004;
+        var qA = 99803;
+        var qB = 99804;
 
         // Start A
         Assert.True(_playerQuests.StartQuest(qA));
@@ -126,7 +126,7 @@ public class QuestSystemExtendedTests
     [Fact]
     public void Quest8005_InstanceLockout_ShouldGate()
     {
-        var qId = 8005;
+        var qId = 99805;
         var instanceId = "CaveInstance";
 
         // Mock Lockout
@@ -149,7 +149,7 @@ public class QuestSystemExtendedTests
     [Fact]
     public void Quest8006_EscortFail_ShouldFailQuest()
     {
-        var qId = 8006;
+        var qId = 99806;
         Assert.True(_playerQuests.StartQuest(qId));
 
         // Fail via death

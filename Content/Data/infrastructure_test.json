@@ -1,6 +1,6 @@
 [
   {
-    "QuestId": 9001,
+    "QuestId": 99901,
     "Title": "Dungeon Prep",
     "Description": "Collect some wood before entering the dungeon.",
     "Requirements": [],
@@ -19,11 +19,11 @@
     }
   },
   {
-    "QuestId": 9002,
+    "QuestId": 99902,
     "Title": "The Dark Hollow",
     "Description": "Clear the Dark Hollow instance.",
     "Requirements": [
-      9001
+      99901
     ],
     "Objectives": [
       {
@@ -46,11 +46,11 @@
     }
   },
   {
-    "QuestId": 9003,
+    "QuestId": 99903,
     "Title": "Survivor",
     "Description": "You survived! Tell the Elder.",
     "Requirements": [
-      9002
+      99902
     ],
     "Objectives": [
       {

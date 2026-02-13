@@ -25,7 +25,8 @@ public class QuestSystemTests
                 Description = "...",
                 Objectives = new List<ObjectiveDefinition> { new("Talk", "Npc", 1, "Talk") },
                 Rewards = new RewardDefinition(10, 0, new List<ItemReward>()),
-                MutualExclusionGroup = "GroupA"
+                MutualExclusionGroup = "GroupA",
+                Repeatability = QuestRepeatability.Unlimited
             },
             // Quest 2: Mutual Exclusion Group A - Quest 2
             new()
@@ -35,7 +36,8 @@ public class QuestSystemTests
                 Description = "...",
                 Objectives = new List<ObjectiveDefinition> { new("Talk", "Npc", 1, "Talk") },
                 Rewards = new RewardDefinition(10, 0, new List<ItemReward>()),
-                MutualExclusionGroup = "GroupA"
+                MutualExclusionGroup = "GroupA",
+                Repeatability = QuestRepeatability.Unlimited
             },
             // Quest 3: Daily Quest
             new()

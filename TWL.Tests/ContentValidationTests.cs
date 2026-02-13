@@ -187,6 +187,9 @@ public class ContentValidationTests
 
                 // Rule: Quests CANNOT grant Goddess Skills
                 Assert.NotEqual(SkillCategory.Goddess, skill.Category);
+
+                // Rule: Quests must grant Special skills (Core skills come from stages/upgrades)
+                Assert.Equal(SkillFamily.Special, skill.Family);
             }
         }
     }
