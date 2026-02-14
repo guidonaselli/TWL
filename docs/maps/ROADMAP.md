@@ -24,7 +24,7 @@
     - **Entities:** Ship Captain, Sailors.
 
 - [x] **1002 - North Path (Sendero Norte)**
-    - **Status:** Implemented (Skeleton)
+    - **Status:** Implemented (Playable Alpha)
     - **Type:** Adventure Field
     - **Connections:** 1000
     - **Mobs:** Bandido del Camino (9200), Lobo del Bosque (9202).
