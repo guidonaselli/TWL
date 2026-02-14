@@ -14,7 +14,7 @@ public class EscortQuestTests
     {
         // Arrange
         var mockQuestManager = new Mock<ServerQuestManager>();
-        var questId = 5003;
+        var questId = 99503;
         var def = new QuestDefinition
         {
             QuestId = questId,

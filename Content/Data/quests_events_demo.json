@@ -1,6 +1,6 @@
 [
   {
-    "QuestId": 5001,
+    "QuestId": 99501,
     "Title": "The Festival Begins",
     "Description": "Wait for the Festival to start.",
     "Requirements": [],
@@ -19,11 +19,11 @@
     }
   },
   {
-    "QuestId": 5002,
+    "QuestId": 99502,
     "Title": "Enter the Challenge",
     "Description": "The festival has begun! Enter the Challenge Arena.",
     "Requirements": [
-      5001
+      99501
     ],
     "RequiredWorldFlags": [
       "FestivalStarted"
@@ -43,11 +43,11 @@
     }
   },
   {
-    "QuestId": 5003,
+    "QuestId": 99503,
     "Title": "Survive the Challenge",
     "Description": "Complete the challenge without failing.",
     "Requirements": [
-      5002
+      99502
     ],
     "FailConditions": [
       {
@@ -71,11 +71,11 @@
     }
   },
   {
-    "QuestId": 5004,
+    "QuestId": 99504,
     "Title": "Escort the VIP",
     "Description": "Escort the VIP to safety.",
     "Requirements": [
-      5003
+      99503
     ],
     "FailConditions": [
       {
