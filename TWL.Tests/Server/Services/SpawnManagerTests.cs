@@ -98,7 +98,7 @@ public class SpawnManagerTests
     }
 
     [Fact]
-    public void StartEncounter_AbortsIfElementNone()
+    public void StartEncounter_AbortsIfElementNone_Player()
     {
         // Arrange
         var player = new ServerCharacter { Id = 1, Name = "Player", CharacterElement = Element.None }; // Invalid
@@ -111,6 +111,43 @@ public class SpawnManagerTests
         // Assert
         Assert.Equal(0, result);
         _combatManager.Verify(cm => cm.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Never);
+    }
+
+    [Fact]
+    public void StartEncounter_AbortsIfElementNone_MonsterWithoutTag()
+    {
+        // Arrange
+        var player = new ServerCharacter { Id = 1, Name = "Player", CharacterElement = Element.Fire };
+        var session = new TestClientSession { Character = player };
+        var mob = new ServerCharacter { Id = -2, Name = "Mob", MonsterId = 100, CharacterElement = Element.None }; // Invalid
+
+        _monsterManager.Setup(m => m.GetDefinition(100)).Returns(new MonsterDefinition { MonsterId = 100, Tags = new List<string>() });
+
+        // Act
+        var result = _spawnManager.StartEncounter(session, new List<ServerCharacter> { mob }, EncounterSource.Scripted);
+
+        // Assert
+        Assert.Equal(0, result);
+        _combatManager.Verify(cm => cm.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Never);
+    }
+
+    [Fact]
+    public void StartEncounter_AllowsElementNone_MonsterWithQuestOnlyTag()
+    {
+        // Arrange
+        var player = new ServerCharacter { Id = 1, Name = "Player", CharacterElement = Element.Fire };
+        var session = new TestClientSession { Character = player };
+        var mob = new ServerCharacter { Id = -2, Name = "Dummy", MonsterId = 999, CharacterElement = Element.None };
+
+        _monsterManager.Setup(m => m.GetDefinition(999)).Returns(new MonsterDefinition { MonsterId = 999, Tags = new List<string> { "QuestOnly" } });
+        _random.Setup(r => r.Next(It.IsAny<string?>())).Returns(123);
+
+        // Act
+        var result = _spawnManager.StartEncounter(session, new List<ServerCharacter> { mob }, EncounterSource.Scripted);
+
+        // Assert
+        Assert.True(result > 0);
+        _combatManager.Verify(cm => cm.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Once);
     }
 
     [Fact]
@@ -168,7 +205,7 @@ public class SpawnManagerTests
 }
 
 // Helper for Session
-public class TestClientSession : ClientSession
+public sealed class TestClientSession : ClientSession
 {
     public new ServerCharacter? Character
     {
