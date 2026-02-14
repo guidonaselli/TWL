@@ -5,9 +5,20 @@ namespace TWL.Server.Features.Combat;
 public interface ITurnEngine
 {
     /// <summary>
+    /// Gets all participants in the encounter.
+    /// </summary>
+    IReadOnlyList<ServerCombatant> Participants { get; }
+
+    /// <summary>
     /// Gets the combatant whose turn it currently is.
     /// </summary>
     ServerCombatant? CurrentCombatant { get; }
+
+    /// <summary>
+    /// Tracks the world tick when the last action occurred (or turn started).
+    /// Used for AI pacing and player timeouts.
+    /// </summary>
+    long LastActionTick { get; set; }
 
     /// <summary>
     /// Initializes the turn order for a new encounter.

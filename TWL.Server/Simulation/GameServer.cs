@@ -11,12 +11,15 @@ using TWL.Server.Services.World;
 using TWL.Server.Services.World.Handlers;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Skills;
+using TWL.Shared.Net.Network;
 
 namespace TWL.Server.Simulation;
 
 public class GameServer
 {
+    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
     private NetworkServer _netServer;
 
     // Accesores para DB o lógic
@@ -79,7 +82,44 @@ public class GameServer
         var random = new SeedableRandomService(NullLogger<SeedableRandomService>.Instance);
         var combatResolver = new StandardCombatResolver(random, SkillRegistry.Instance);
         var statusEngine = new StatusEngine();
-        CombatManager = new CombatManager(combatResolver, random, SkillRegistry.Instance, statusEngine);
+        var autoBattleManager = new AutoBattleManager(SkillRegistry.Instance);
+        CombatManager = new CombatManager(combatResolver, random, SkillRegistry.Instance, statusEngine, autoBattleManager);
+
+        CombatManager.OnCombatActionResolved += (encounterId, results) =>
+        {
+            var participants = CombatManager.GetParticipants(encounterId);
+            var payloadJson = System.Text.Json.JsonSerializer.Serialize(results, _jsonOptions);
+            var netMsg = new NetMessage
+            {
+                Op = Opcode.AttackBroadcast,
+                JsonPayload = payloadJson
+            };
+
+            var notifiedPlayers = new HashSet<int>();
+
+            foreach (var p in participants)
+            {
+                int? playerIdToNotify = null;
+                if (p is ServerCharacter sc && sc.MonsterId == 0)
+                {
+                    playerIdToNotify = sc.Id;
+                }
+                else if (p is ServerPet pet && pet.OwnerId > 0)
+                {
+                    playerIdToNotify = pet.OwnerId;
+                }
+
+                if (playerIdToNotify.HasValue && !notifiedPlayers.Contains(playerIdToNotify.Value))
+                {
+                    var session = PlayerService.GetSession(playerIdToNotify.Value);
+                    if (session != null)
+                    {
+                        _ = session.SendAsync(netMsg);
+                        notifiedPlayers.Add(playerIdToNotify.Value);
+                    }
+                }
+            }
+        };
 
         PetService = new PetService(PlayerService, PetManager, MonsterManager, CombatManager, random, NullLogger<PetService>.Instance);
         EconomyManager = new EconomyManager();
@@ -90,6 +130,7 @@ public class GameServer
         // Init World System
         var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, Metrics);
         scheduler.ScheduleRepeating(() => SpawnManager.Update(0.05f), 1, "SpawnManager.Update");
+        scheduler.ScheduleRepeating(() => CombatManager.Update(scheduler.CurrentTick), 1, "CombatManager.Update");
         scheduler.Start();
 
         var mapLoader = new MapLoader(NullLogger<MapLoader>.Instance);
