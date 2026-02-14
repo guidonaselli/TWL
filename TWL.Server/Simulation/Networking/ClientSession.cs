@@ -472,19 +472,8 @@ public class ClientSession
         // Use Mediator
         var result = await _mediator.Send(new UseSkillCommand(request));
 
-        if (result != null)
-        {
-            // Broadcast result (in a real game, only to nearby players)
-            var responseJson = JsonSerializer.Serialize(result, _jsonOptions);
-            await SendAsync(new NetMessage
-            {
-                Op = Opcode.AttackBroadcast,
-                JsonPayload = responseJson
-            });
-
-            // Check for death and quest progress
-            // (Quest progress is now handled via OnCombatantDeath event)
-        }
+        // Broadcast is now handled via CombatManager.OnCombatActionResolved event in GameServer.
+        // Result is still returned for internal use if needed, but no manual broadcast here.
     }
 
     private async Task HandleInteractAsync(string payload, string traceId)

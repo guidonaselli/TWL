@@ -9,7 +9,9 @@ public class TurnEngine : ITurnEngine
     private readonly List<ServerCombatant> _combatants = new();
     private Queue<ServerCombatant> _turnQueue = new();
 
+    public IReadOnlyList<ServerCombatant> Participants => _combatants;
     public ServerCombatant? CurrentCombatant { get; private set; }
+    public long LastActionTick { get; set; }
 
     public TurnEngine(IRandomService random)
     {

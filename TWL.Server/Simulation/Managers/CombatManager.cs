@@ -20,18 +20,27 @@ public class CombatManager
     private readonly ICombatResolver _resolver;
     private readonly ISkillCatalog _skills;
     private readonly IStatusEngine _statusEngine;
+    private readonly AutoBattleManager _autoBattleManager;
 
     public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
         IStatusEngine statusEngine)
+        : this(resolver, random, skills, statusEngine, new AutoBattleManager(skills))
+    {
+    }
+
+    public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
+        IStatusEngine statusEngine, AutoBattleManager autoBattleManager)
     {
         _combatants = new ConcurrentDictionary<int, ServerCombatant>();
         _resolver = resolver;
         _random = random;
         _skills = skills;
         _statusEngine = statusEngine;
+        _autoBattleManager = autoBattleManager;
     }
 
     public event Action<ServerCombatant>? OnCombatantDeath;
+    public event Action<int, List<CombatResult>>? OnCombatActionResolved;
 
     public virtual void RegisterCombatant(ServerCombatant combatant) => _combatants[combatant.Id] = combatant;
 
@@ -276,7 +285,90 @@ public class CombatManager
             turnEngine.NextTurn();
         }
 
+        if (attacker.EncounterId > 0 && results.Count > 0)
+        {
+            OnCombatActionResolved?.Invoke(attacker.EncounterId, results);
+        }
+
         return results;
+    }
+
+    public IReadOnlyList<ServerCombatant> GetParticipants(int encounterId)
+    {
+        if (_encounters.TryGetValue(encounterId, out var turnEngine))
+        {
+            return turnEngine.Participants;
+        }
+        return new List<ServerCombatant>();
+    }
+
+    public void Update(long currentTick)
+    {
+        foreach (var kvp in _encounters)
+        {
+            var encounterId = kvp.Key;
+            var turnEngine = kvp.Value;
+
+            if (turnEngine.CurrentCombatant == null)
+            {
+                turnEngine.NextTurn();
+                turnEngine.LastActionTick = currentTick;
+                continue;
+            }
+
+            // Safety Check: Is combatant still alive/valid?
+            if (turnEngine.CurrentCombatant.Hp <= 0)
+            {
+                turnEngine.EndTurn();
+                turnEngine.NextTurn();
+                turnEngine.LastActionTick = currentTick;
+                continue;
+            }
+
+            // Check Team
+            // Enemies and Pets (if not strictly controlled by player packet) are AI
+            if (turnEngine.CurrentCombatant.Team == Team.Enemy ||
+                (turnEngine.CurrentCombatant is ServerPet && turnEngine.CurrentCombatant.Team == Team.Player))
+            {
+                // AI Turn
+                // 1 second delay (20 ticks at 50ms)
+                if (currentTick - turnEngine.LastActionTick < 20)
+                {
+                    continue;
+                }
+
+                // Act
+                var participants = GetParticipants(encounterId);
+
+                // If Pet, use owner's logic or simple AI? AutoBattleManager handles it.
+                var action = _autoBattleManager.GetBestAction(turnEngine.CurrentCombatant, participants, AutoBattlePolicy.Balanced, _random);
+
+                if (action != null)
+                {
+                    UseSkill(action);
+                    turnEngine.LastActionTick = currentTick;
+                }
+                else
+                {
+                    // Skip turn if no action (e.g. no SP)
+                    turnEngine.EndTurn();
+                    turnEngine.NextTurn();
+                    turnEngine.LastActionTick = currentTick;
+                }
+            }
+            else
+            {
+                // Player Turn
+                // Timeout check: 30 seconds (600 ticks)
+                if (currentTick - turnEngine.LastActionTick > 600)
+                {
+                    // Force skip
+                    turnEngine.EndTurn();
+                    turnEngine.NextTurn();
+                    turnEngine.LastActionTick = currentTick;
+                }
+            }
+        }
     }
 
     private void CheckSkillEvolution(ServerCombatant combatant, Skill skill)
