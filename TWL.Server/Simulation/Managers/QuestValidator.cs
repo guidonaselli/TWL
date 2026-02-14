@@ -14,7 +14,7 @@ public static class QuestValidator
         "Explore", "Visit",
         "Craft", "Compound", "Forge",
         "Party", "Guild",
-        "Instance", "InstanceCompleted", "InstanceFailed",
+        "Instance", "InstanceCompleted", "InstanceFailed", "InstanceEnter",
         "PvP", "PvPKill",
         "KillCount",
         "EventParticipation",
@@ -24,7 +24,8 @@ public static class QuestValidator
         "PetAcquired", "Trade",
         "PayGold",
         "Reach", "UseItem",
-        "ShowItem", "Fish"
+        "ShowItem", "Fish",
+        "WorldFlag"
     };
 
     public static List<string> Validate(IEnumerable<QuestDefinition> quests,
