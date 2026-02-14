@@ -21,6 +21,7 @@ public class ServerCharacter : ServerCombatant
     private readonly object _progressLock = new();
     private readonly object _orderLock = new();
     private readonly HashSet<string> _processedOrders = new();
+    private readonly HashSet<string> _worldFlags = new();
 
     private int _exp;
 
@@ -113,6 +114,17 @@ public class ServerCharacter : ServerCombatant
     public ICollection<int> KnownSkills => SkillMastery.Keys;
     public int Level { get; private set; } = 1;
     public int RebirthLevel { get; private set; }
+
+    public IReadOnlySet<string> WorldFlags
+    {
+        get
+        {
+            lock (_worldFlags)
+            {
+                return new HashSet<string>(_worldFlags);
+            }
+        }
+    }
     public int ExpToNextLevel { get; private set; } = 100;
     public int StatPoints { get; private set; }
 
@@ -280,6 +292,30 @@ public class ServerCharacter : ServerCombatant
     public event Action<string, int>? OnCompound; // resultName, quantity
     public event Action<string, int>? OnForge; // resultName, quantity
     public event Action<string>? OnEventParticipation; // eventName
+    public event Action<string>? OnWorldFlagSet; // flag
+    public event Action<string>? OnInstanceStarted; // instanceId
+    public event Action<string>? OnInstanceCompleted; // instanceId
+    public event Action<string>? OnInstanceFailed; // instanceId
+    public event Action<string>? OnEscortSuccess; // npcName
+    public event Action<string>? OnEscortFailure; // npcName
+
+    public void NotifyWorldFlagSet(string flag)
+    {
+        lock (_worldFlags)
+        {
+            if (_worldFlags.Add(flag))
+            {
+                IsDirty = true;
+                OnWorldFlagSet?.Invoke(flag);
+            }
+        }
+    }
+
+    public void NotifyInstanceStarted(string instanceId) => OnInstanceStarted?.Invoke(instanceId);
+    public void NotifyInstanceCompleted(string instanceId) => OnInstanceCompleted?.Invoke(instanceId);
+    public void NotifyInstanceFailed(string instanceId) => OnInstanceFailed?.Invoke(instanceId);
+    public void NotifyEscortSuccess(string npcName) => OnEscortSuccess?.Invoke(npcName);
+    public void NotifyEscortFailure(string npcName) => OnEscortFailure?.Invoke(npcName);
 
     public void SetLevel(int level) => Level = level; // For mobs
 
@@ -901,6 +937,7 @@ public class ServerCharacter : ServerCombatant
         {
             Id = Id,
             ProcessedOrders = ordersCopy,
+            WorldFlags = new HashSet<string>(WorldFlags),
             Name = Name,
             Hp = _hp,
             Sp = _sp,
@@ -1001,6 +1038,18 @@ public class ServerCharacter : ServerCombatant
                 foreach (var order in data.ProcessedOrders)
                 {
                     _processedOrders.Add(order);
+                }
+            }
+        }
+
+        lock (_worldFlags)
+        {
+            _worldFlags.Clear();
+            if (data.WorldFlags != null)
+            {
+                foreach (var f in data.WorldFlags)
+                {
+                    _worldFlags.Add(f);
                 }
             }
         }

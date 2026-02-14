@@ -1,0 +1,101 @@
+[
+  {
+    "QuestId": 5001,
+    "Title": "The Festival Begins",
+    "Description": "Wait for the Festival to start.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "WorldFlag",
+        "TargetName": "FestivalStarted",
+        "RequiredCount": 1,
+        "Description": "Wait for the FestivalStarted signal."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 5002,
+    "Title": "Enter the Challenge",
+    "Description": "The festival has begun! Enter the Challenge Arena.",
+    "Requirements": [
+      5001
+    ],
+    "RequiredWorldFlags": [
+      "FestivalStarted"
+    ],
+    "Objectives": [
+      {
+        "Type": "InstanceEnter",
+        "TargetName": "FestivalInstance",
+        "RequiredCount": 1,
+        "Description": "Enter the FestivalInstance."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 5003,
+    "Title": "Survive the Challenge",
+    "Description": "Complete the challenge without failing.",
+    "Requirements": [
+      5002
+    ],
+    "FailConditions": [
+      {
+        "Type": "InstanceFail",
+        "Value": "FestivalInstance",
+        "Description": "Do not fail the instance."
+      }
+    ],
+    "Objectives": [
+      {
+        "Type": "Instance",
+        "TargetName": "FestivalInstance",
+        "RequiredCount": 1,
+        "Description": "Complete the FestivalInstance."
+      }
+    ],
+    "Rewards": {
+      "Exp": 500,
+      "Gold": 100,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 5004,
+    "Title": "Escort the VIP",
+    "Description": "Escort the VIP to safety.",
+    "Requirements": [
+      5003
+    ],
+    "FailConditions": [
+      {
+        "Type": "EscortFail",
+        "Value": "VIP",
+        "Description": "Protect the VIP."
+      }
+    ],
+    "Objectives": [
+      {
+        "Type": "Escort",
+        "TargetName": "VIP",
+        "RequiredCount": 1,
+        "Description": "Escort VIP successfully."
+      }
+    ],
+    "Rewards": {
+      "Exp": 1000,
+      "Gold": 500,
+      "Items": []
+    }
+  }
+]

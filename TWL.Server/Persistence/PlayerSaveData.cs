@@ -15,6 +15,7 @@ public class ServerCharacterData
 {
     public int Id { get; set; }
     public HashSet<string> ProcessedOrders { get; set; } = new();
+    public HashSet<string> WorldFlags { get; set; } = new();
     public string Name { get; set; }
     public int Hp { get; set; }
     public int Sp { get; set; }

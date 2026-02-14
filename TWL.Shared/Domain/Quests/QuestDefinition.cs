@@ -42,6 +42,7 @@ public sealed record QuestDefinition
     public IReadOnlyList<string> FlagsSet { get; init; } = [];
     public IReadOnlyList<string> FlagsClear { get; init; } = [];
     public IReadOnlyList<string> RequiredFlags { get; init; } = [];
+    public IReadOnlyList<string> RequiredWorldFlags { get; init; } = [];
     public IReadOnlyList<string> BlockedByFlags { get; init; } = [];
 
     public int RequiredLevel { get; init; }

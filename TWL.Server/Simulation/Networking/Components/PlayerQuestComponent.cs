@@ -80,6 +80,12 @@ public class PlayerQuestComponent
                 _character.OnCompound -= HandleCompoundInternal;
                 _character.OnForge -= HandleForgeInternal;
                 _character.OnEventParticipation -= HandleEventParticipationInternal;
+                _character.OnWorldFlagSet -= HandleWorldFlagSetInternal;
+                _character.OnInstanceStarted -= HandleInstanceStartedInternal;
+                _character.OnInstanceCompleted -= HandleInstanceCompletionInternal;
+                _character.OnInstanceFailed -= HandleInstanceFailureInternal;
+                _character.OnEscortSuccess -= HandleEscortSuccessInternal;
+                _character.OnEscortFailure -= HandleEscortFailureInternal;
             }
 
             _character = value;
@@ -94,6 +100,12 @@ public class PlayerQuestComponent
                 _character.OnCompound += HandleCompoundInternal;
                 _character.OnForge += HandleForgeInternal;
                 _character.OnEventParticipation += HandleEventParticipationInternal;
+                _character.OnWorldFlagSet += HandleWorldFlagSetInternal;
+                _character.OnInstanceStarted += HandleInstanceStartedInternal;
+                _character.OnInstanceCompleted += HandleInstanceCompletionInternal;
+                _character.OnInstanceFailed += HandleInstanceFailureInternal;
+                _character.OnEscortSuccess += HandleEscortSuccessInternal;
+                _character.OnEscortFailure += HandleEscortFailureInternal;
             }
         }
     }
@@ -107,6 +119,12 @@ public class PlayerQuestComponent
     private void HandleCompoundInternal(string resultName, int quantity) => TryProgress("Compound", resultName, quantity);
     private void HandleForgeInternal(string resultName, int quantity) => TryProgress("Forge", resultName, quantity);
     private void HandleEventParticipationInternal(string eventName) => TryProgress("EventParticipation", eventName);
+    private void HandleWorldFlagSetInternal(string flag) => TryProgress("WorldFlag", flag);
+    private void HandleInstanceStartedInternal(string instanceId) => TryProgress("InstanceEnter", instanceId);
+    private void HandleInstanceCompletionInternal(string instanceId) => HandleInstanceCompletion(instanceId);
+    private void HandleInstanceFailureInternal(string instanceId) => HandleInstanceFailure(instanceId);
+    private void HandleEscortSuccessInternal(string npcName) => HandleEscort(npcName, true);
+    private void HandleEscortFailureInternal(string npcName) => HandleEscort(npcName, false);
 
     private void HandleMapChanged(int mapId)
     {
@@ -402,6 +420,15 @@ public class PlayerQuestComponent
                 {
                     return false;
                 }
+            }
+        }
+
+        // World Flag Check
+        foreach (var flag in def.RequiredWorldFlags)
+        {
+            if (!Character.WorldFlags.Contains(flag))
+            {
+                return false;
             }
         }
 
