@@ -36,7 +36,12 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
     *   **RebirthJob**: Quests granting `RebirthJob` skills must require Rebirth Class/Status (e.g. `SpecialCategory: "RebirthJob"`).
     *   **ElementSpecial**: Quests granting `ElementSpecial` skills must have strict prerequisites (Level >= 10 OR Instance/Challenge type).
 
-## 4. General Content Rules
+## 4. Test Data Convention
+*   **ID Range**: All test, demo, and infrastructure verification content MUST use IDs in the **99xxx** range (e.g., 99001, 99501).
+*   **Production Range**: Production content (Skills, Quests, Items) must use IDs < 90000.
+*   **Purpose**: This separation ensures no collisions between actual game content and temporary/testing data used in CI/CD.
+
+## 5. General Content Rules
 *   **Unique DisplayNameKeys**: No two skills can share the same localization key.
 *   **Anti-Snowball (Stage Upgrades)**:
     *   **Single Source of Truth**: The parent skill's `StageUpgradeRules` is the authoritative definition of the upgrade path.
@@ -44,11 +49,12 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
     *   **Strictness**: If Skill A upgrades to Skill B, Skill B CANNOT be unlocked independently; it strictly requires Skill A.
     *   **Integrity**: `StageUpgradeRules` MUST define `NextSkillId`. Partial rules (e.g. only RankThreshold) without a target are forbidden.
 
-## 5. Content Validation
-*   `TWL.Tests.ContentValidationTests` and `TWL.Tests.ContentValidationExtendedTests` are the enforcement mechanisms.
-*   The build must fail if inconsistencies are detected.
+## 6. Content Validation
+*   **Primary Validator**: `TWL.Tests.ContentValidationTests` is the consolidated Single Source of Truth for validating content integrity.
+*   **Scope**: It validates Schema, Cross-References (Quest->Skill, Skill->Quest), Budgets, and Logic constraints.
+*   The build pipeline **MUST** fail if any validation test in `ContentValidationTests` fails.
 
-## 6. Skill Categories Definition
+## 7. Skill Categories Definition
 *   **None**: Core skills (Tier 1-3).
 *   **Goddess**: Special skills granted at start (Shrink, Blockage, Hotfire, Vanish).
 *   **Dragon**: Legendary Fire physical skills.
@@ -56,7 +62,7 @@ This document establishes the Single Source of Truth (SSOT) for Skills and Quest
 *   **RebirthJob**: Skills unlocked after Rebirth.
 *   **ElementSpecial**: High-tier elemental skills requiring specific quests.
 
-## 7. Tier Budgets (SP & Cooldowns)
+## 8. Tier Budgets (SP & Cooldowns)
 These budgets are enforced by `ContentValidationTests` using values from `ContentRules.TierBudgets`.
 *Refer to `TWL.Shared.Domain.ContentRules.cs` for the exact values.*
 
