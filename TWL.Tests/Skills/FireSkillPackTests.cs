@@ -195,7 +195,7 @@ public class FireSkillPackTests
     public void AutoBattle_Selects_InnerFire_ForMageAlly()
     {
         // Arrange
-        var autoBattle = new AutoBattleManager(_skillCatalog);
+        var autoBattle = new AutoBattleService(_skillCatalog);
         var supporter = new FireTestCharacter { Id = 1, Name = "Supporter", Team = Team.Player, Sp = 100, Con = 10, Hp = 100 };
         var mageAlly = new FireTestCharacter { Id = 2, Name = "MageAlly", Team = Team.Player, Con = 10, Hp = 100, Int = 50 }; // High Int
         var enemy = new FireTestCharacter { Id = 3, Name = "Enemy", Team = Team.Enemy, Con = 10, Hp = 100 };

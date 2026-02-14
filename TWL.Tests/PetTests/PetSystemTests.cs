@@ -1,3 +1,4 @@
+using TWL.Shared.Domain.Battle;
 using Microsoft.Extensions.Logging;
 using Moq;
 using TWL.Server.Persistence;

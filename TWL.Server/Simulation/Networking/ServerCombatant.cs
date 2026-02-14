@@ -12,7 +12,7 @@ public class SkillMastery
     public int UsageCount { get; set; }
 }
 
-public abstract class ServerCombatant
+public abstract class ServerCombatant : ICombatant
 {
     // Cooldowns (Transient)
     private readonly ConcurrentDictionary<int, int> _activeCooldowns = new();
@@ -24,9 +24,9 @@ public abstract class ServerCombatant
     // Stats
     protected int _hp;
     protected int _sp;
-    public int Id;
+    public int Id { get; set; }
     public int EncounterId { get; set; }
-    public string Name;
+    public string Name { get; set; } = string.Empty;
     public Element CharacterElement { get; set; }
     public Team Team { get; set; }
 
@@ -64,6 +64,17 @@ public abstract class ServerCombatant
 
     // Skills
     public ConcurrentDictionary<int, SkillMastery> SkillMastery { get; protected set; } = new();
+
+    IEnumerable<StatusEffectInstance> ICombatant.StatusEffects
+    {
+        get
+        {
+            lock (_statusLock)
+            {
+                return _statusEffects.ToArray();
+            }
+        }
+    }
 
     public IReadOnlyList<StatusEffectInstance> StatusEffects
     {
@@ -291,5 +302,10 @@ public abstract class ServerCombatant
 
         IsDirty = true;
         return true;
+    }
+
+    public IEnumerable<int> GetKnownSkillIds()
+    {
+        return SkillMastery.Keys;
     }
 }

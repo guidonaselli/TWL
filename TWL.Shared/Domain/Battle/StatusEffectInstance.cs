@@ -24,4 +24,7 @@ public class StatusEffectInstance
     public StackingPolicy StackingPolicy { get; set; }
     public string? ConflictGroup { get; set; }
     public int Priority { get; set; }
+
+    // Outcome Model
+    public OutcomeModel Outcome { get; set; } = OutcomeModel.Full;
 }

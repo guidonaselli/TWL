@@ -1,3 +1,4 @@
+using TWL.Shared.Domain.Battle;
 using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -11,7 +12,7 @@ namespace TWL.Tests.Skills;
 
 public class DailySkillsTests
 {
-    private readonly AutoBattleManager _autoBattle;
+    private readonly AutoBattleService _autoBattle;
     private readonly Mock<ISkillCatalog> _skillCatalogMock;
     private readonly Mock<IRandomService> _randomMock;
 
@@ -19,7 +20,7 @@ public class DailySkillsTests
     {
         _skillCatalogMock = new Mock<ISkillCatalog>();
         _randomMock = new Mock<IRandomService>();
-        _autoBattle = new AutoBattleManager(_skillCatalogMock.Object);
+        _autoBattle = new AutoBattleService(_skillCatalogMock.Object);
     }
 
     [Fact]

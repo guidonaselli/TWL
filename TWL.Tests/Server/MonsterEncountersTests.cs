@@ -1,3 +1,4 @@
+using TWL.Shared.Domain.Battle;
 using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;

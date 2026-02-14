@@ -1,3 +1,4 @@
+using TWL.Shared.Domain.Battle;
 using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -10,7 +11,7 @@ namespace TWL.Tests.Server;
 
 public class AutoBattleTests
 {
-    private readonly AutoBattleManager _manager;
+    private readonly AutoBattleService _manager;
     private readonly Mock<ISkillCatalog> _skillCatalogMock;
     private readonly Mock<IRandomService> _randomMock;
 
@@ -18,7 +19,7 @@ public class AutoBattleTests
     {
         _skillCatalogMock = new Mock<ISkillCatalog>();
         _randomMock = new Mock<IRandomService>();
-        _manager = new AutoBattleManager(_skillCatalogMock.Object);
+        _manager = new AutoBattleService(_skillCatalogMock.Object);
     }
 
     private ServerCharacter CreateCharacter(int id, Team team, int hp, int maxHp)
