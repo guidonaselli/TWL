@@ -1,3 +1,4 @@
+using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Server.Features.Combat;
 using TWL.Server.Simulation.Managers;

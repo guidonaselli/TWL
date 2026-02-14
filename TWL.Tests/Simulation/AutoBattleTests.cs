@@ -1,3 +1,4 @@
+using TWL.Shared.Domain.Battle;
 using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
@@ -10,7 +11,7 @@ namespace TWL.Tests.Simulation;
 
 public class AutoBattleTests
 {
-    private readonly AutoBattleManager _autoBattleManager;
+    private readonly AutoBattleService _autoBattleManager;
     private readonly Mock<ISkillCatalog> _skillCatalogMock;
     private readonly Mock<IRandomService> _randomMock;
     private readonly StatusEngine _statusEngine; // Use real engine for logic
@@ -18,7 +19,7 @@ public class AutoBattleTests
     public AutoBattleTests()
     {
         _skillCatalogMock = new Mock<ISkillCatalog>();
-        _autoBattleManager = new AutoBattleManager(_skillCatalogMock.Object);
+        _autoBattleManager = new AutoBattleService(_skillCatalogMock.Object);
         _randomMock = new Mock<IRandomService>();
         _statusEngine = new StatusEngine();
     }

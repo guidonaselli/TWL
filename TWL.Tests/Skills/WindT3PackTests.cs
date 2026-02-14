@@ -142,7 +142,7 @@ public class WindT3PackTests
     public void AutoBattle_UsesNullify_WhenEnemyBuffed()
     {
         // Arrange
-        var autoBattleManager = new AutoBattleManager(_skillCatalog);
+        var autoBattleManager = new AutoBattleService(_skillCatalog);
         var actor = new WindTestCharacter { Id = 1, Name = "Support", Team = Team.Player };
         var enemy = new WindTestCharacter { Id = 2, Name = "Boss", Team = Team.Enemy };
 

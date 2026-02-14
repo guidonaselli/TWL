@@ -1,3 +1,4 @@
+using TWL.Shared.Domain.Battle;
 using Moq;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;

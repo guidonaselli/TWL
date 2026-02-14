@@ -1,3 +1,4 @@
+using TWL.Shared.Domain.Battle;
 using System.Text.Json;
 using Moq;
 using TWL.Server.Persistence;

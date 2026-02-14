@@ -1,3 +1,4 @@
+using TWL.Shared.Domain.Battle;
 using Moq;
 using System.Text.Json;
 using TWL.Server.Features.Combat;

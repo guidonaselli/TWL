@@ -1,24 +1,26 @@
+using TWL.Shared.Domain.Battle;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
 using TWL.Tests.Mocks;
+using Xunit;
 
 namespace TWL.Tests.Simulation;
 
-public class AutoBattleManagerTests
+public class AutoBattleServiceTests
 {
     private MockSkillCatalog _catalog;
     private MockRandomService _random;
-    private AutoBattleManager _manager;
+    private AutoBattleService _manager;
     private StatusEngine _statusEngine;
 
-    public AutoBattleManagerTests()
+    public AutoBattleServiceTests()
     {
         _catalog = new MockSkillCatalog();
         _random = new MockRandomService(0.5f);
-        _manager = new AutoBattleManager(_catalog);
+        _manager = new AutoBattleService(_catalog);
         _statusEngine = new StatusEngine();
     }
 

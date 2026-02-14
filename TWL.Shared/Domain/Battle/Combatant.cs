@@ -3,7 +3,7 @@ using TWL.Shared.Domain.Skills;
 
 namespace TWL.Shared.Domain.Battle;
 
-public class Combatant
+public class Combatant : ICombatant
 {
     public Combatant(Character character)
     {
@@ -14,6 +14,24 @@ public class Combatant
 
     public int BattleId { get; set; } // Unique ID within the battle
     public Character Character { get; private set; }
+
+    // ICombatant implementation
+    public int Id => Character.Id;
+    public string Name => Character.Name;
+    public int Hp => Character.Health;
+    public int MaxHp => Character.MaxHealth;
+    public int Sp => Character.Sp;
+    public int MaxSp => Character.MaxSp;
+
+    public int Atk => Character.Atk;
+    public int Def => Character.Def;
+    public int Mat => Character.Mat;
+    public int Mdf => Character.Mdf;
+    public int Spd => Character.Spd;
+
+    public Element CharacterElement => Character.CharacterElement;
+    public Team Team => Character.Team;
+
     public double Atb { get; set; } // 0 to 100
     public bool IsDefending { get; set; }
 
@@ -22,6 +40,8 @@ public class Combatant
     public Dictionary<int, int> SkillRanks { get; set; } = new();
 
     public List<StatusEffectInstance> StatusEffects { get; } = new();
+
+    IEnumerable<StatusEffectInstance> ICombatant.StatusEffects => StatusEffects;
 
     public void AddStatusEffect(StatusEffectInstance effect)
     {
@@ -47,4 +67,10 @@ public class Combatant
     }
 
     public bool IsReady() => Atb >= 100;
+
+    public bool IsSkillOnCooldown(int skillId) => false;
+
+    public IEnumerable<int> GetKnownSkillIds() => SkillRanks.Keys;
+
+    public float GetResistance(string tag) => 0f;
 }
