@@ -43,5 +43,6 @@ public enum Opcode
     StatsUpdate,
 
     // System
-    Disconnect
+    Disconnect,
+    SystemMessage
 }
