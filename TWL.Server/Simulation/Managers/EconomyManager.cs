@@ -770,8 +770,7 @@ public class EconomyManager : IEconomyService, IDisposable
                         return false;
                     }
 
-                    using var sha = System.Security.Cryptography.SHA256.Create();
-                    var actualHash = Convert.ToHexString(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(content + claimedPrev)));
+                    var actualHash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(content + claimedPrev)));
 
                     if (actualHash != claimedHash)
                     {
@@ -846,8 +845,7 @@ public class EconomyManager : IEconomyService, IDisposable
         lock (_ledgerLock)
         {
             var content = $"{DateTime.UtcNow:O},{type},{userId},{details},{delta},{newBalance}";
-            using var sha = System.Security.Cryptography.SHA256.Create();
-            var hash = Convert.ToHexString(sha.ComputeHash(System.Text.Encoding.UTF8.GetBytes(content + _lastHash)));
+            var hash = Convert.ToHexString(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(content + _lastHash)));
 
             line = $"{content},{_lastHash},{hash}\n";
             _lastHash = hash;

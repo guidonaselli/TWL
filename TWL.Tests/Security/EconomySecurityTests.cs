@@ -32,7 +32,7 @@ public class EconomySecurityTests
         var intent = manager.InitiatePurchase(charId, "gems_100");
 
         // Use a valid token
-        var validToken = $"mock_sig_{intent.OrderId}";
+        var validToken = manager.GenerateSignature(intent.OrderId);
         var result = manager.VerifyPurchase(charId, intent.OrderId, validToken, character);
 
         Assert.True(result.Success);
@@ -47,7 +47,7 @@ public class EconomySecurityTests
         var character = new ServerCharacter { Id = charId, PremiumCurrency = 0 };
 
         var intent = manager.InitiatePurchase(charId, "gems_100");
-        var validToken = $"mock_sig_{intent.OrderId}";
+        var validToken = manager.GenerateSignature(intent.OrderId);
 
         // First verification
         var result1 = manager.VerifyPurchase(charId, intent.OrderId, validToken, character);
