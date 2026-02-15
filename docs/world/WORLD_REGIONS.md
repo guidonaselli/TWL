@@ -40,6 +40,7 @@ camp where NPCs teach core mechanics.
 | 0005 | Mirador del Faro | Landmark | Ruined lighthouse on a cliff. Unlocks view of Puerto Roca across the water. |
 | 0006 | Cala Escondida | Adventure Field | Hidden cove with rare resources, accessed via secret path. |
 | 0007 | Santuario Olvidado | Safe Zone | Small hidden sanctuary with ancient ruins. |
+| 0008 | Gruta de los Susurros | Dungeon (Deep) | Deeper cave system with bats and slimes. Connects to Cueva del Eco. |
 
 ### NPCs (Starter Island)
 

@@ -86,6 +86,12 @@
     - **Connections:** 0003 (Sendero de la Selva)
     - **Entities:** Ancient Altar.
 
+- [x] **0008 - Gruta de los Susurros**
+    - **Status:** Implemented (Skeleton)
+    - **Type:** Dungeon (Deep)
+    - **Connections:** 0004 (Cueva del Eco)
+    - **Entities:** Bats, Slimes.
+
 ## Backlog
 - [ ] Starter Island (Tutorial) - Remaining maps (0003-0099)
 - [ ] South Island Jungle

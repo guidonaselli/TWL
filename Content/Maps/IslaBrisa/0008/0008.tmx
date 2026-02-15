@@ -47,22 +47,17 @@
     <property name="CollisionType" value="Solid"/>
    </properties>
   </object>
-  <object id="303" x="0" y="32" width="32" height="576">
+  <object id="305" x="1248" y="32" width="32" height="1216">
+   <properties>
+    <property name="CollisionType" value="Solid"/>
+   </properties>
+  </object>
+  <object id="303" x="0" y="32" width="32" height="544">
    <properties>
     <property name="CollisionType" value="Solid"/>
    </properties>
   </object>
   <object id="304" x="0" y="704" width="32" height="544">
-   <properties>
-    <property name="CollisionType" value="Solid"/>
-   </properties>
-  </object>
-  <object id="305" x="1248" y="32" width="32" height="544">
-   <properties>
-    <property name="CollisionType" value="Solid"/>
-   </properties>
-  </object>
-  <object id="306" x="1248" y="704" width="32" height="544">
    <properties>
     <property name="CollisionType" value="Solid"/>
    </properties>
@@ -82,57 +77,21 @@
     <property name="SpawnType" value="Monster"/>
     <property name="MonsterId" value="9101"/>
     <property name="RespawnSeconds" value="60"/>
-    <property name="LevelRange" value="3-5"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="103" x="800" y="400">
-   <properties>
-    <property name="Id" value="3"/>
-    <property name="SpawnType" value="NPC"/>
-    <property name="NpcId" value="1005"/>
-    <property name="Faction" value="Neutral"/>
-   </properties>
-   <point/>
-  </object>
-  <object id="104" x="1184" y="640">
-   <properties>
-    <property name="Id" value="4"/>
-    <property name="SpawnType" value="PlayerStart"/>
+    <property name="LevelRange" value="5-7"/>
    </properties>
    <point/>
   </object>
  </objectgroup>
  <objectgroup id="10" name="Triggers">
-  <object id="201" x="0" y="608" width="32" height="96">
+  <object id="201" x="0" y="576" width="32" height="128">
    <properties>
     <property name="TriggerType" value="MapTransition"/>
     <property name="Id" value="100"/>
-    <property name="TargetMapId" value="3"/>
-    <property name="TargetSpawnId" value="2"/>
+    <property name="TargetMapId" value="4"/>
+    <property name="TargetSpawnId" value="4"/>
     <property name="Cooldown" value="0"/>
     <property name="OncePerCharacter" value="false"/>
     <property name="RequiredLevel" value="0"/>
-    <property name="RequiredFlags" value=""/>
-   </properties>
-  </object>
-  <object id="202" x="400" y="200" width="64" height="64">
-   <properties>
-    <property name="TriggerType" value="Interaction"/>
-    <property name="Id" value="200"/>
-    <property name="Message" value="The stones hum with faint energy."/>
-    <property name="Cooldown" value="5"/>
-   </properties>
-  </object>
-  <object id="203" x="1248" y="576" width="32" height="128">
-   <properties>
-    <property name="TriggerType" value="MapTransition"/>
-    <property name="Id" value="101"/>
-    <property name="TargetMapId" value="8"/>
-    <property name="TargetSpawnId" value="1"/>
-    <property name="Cooldown" value="0"/>
-    <property name="OncePerCharacter" value="false"/>
-    <property name="RequiredLevel" value="5"/>
     <property name="RequiredFlags" value=""/>
    </properties>
   </object>
