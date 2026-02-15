@@ -38,6 +38,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
 
     // Result State
     private BattleFinished _result = null!;
+    private string _cachedResultMsg = "";
     private CombatActionType _selectedActionType;
     private int _selectedSkillId;
     private int _skillIndex;
@@ -120,6 +121,16 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
         _result = e;
         _uiState = BattleUiState.Result;
         _status = e.Victory ? "Victory!" : "Defeat...";
+
+        _cachedResultMsg = e.Victory ? "YOU WON! Press Enter" : "YOU LOST... Press Enter";
+        if (e.Victory)
+        {
+            _cachedResultMsg += $"\nEXP Gained: {e.ExpGained}";
+            if (e.Loot.Count > 0)
+            {
+                _cachedResultMsg += "\nLoot: " + string.Join(", ", e.Loot.Select(i => i.Name));
+            }
+        }
     }
 
     public override void Update(GameTime gt,
@@ -337,17 +348,7 @@ public sealed class SceneBattle : SceneBase, IPayloadReceiver
 
         if (_uiState == BattleUiState.Result)
         {
-            var msg = _result.Victory ? "YOU WON! Press Enter" : "YOU LOST... Press Enter";
-            if (_result.Victory)
-            {
-                msg += $"\nEXP Gained: {_result.ExpGained}";
-                if (_result.Loot.Count > 0)
-                {
-                    msg += "\nLoot: " + string.Join(", ", _result.Loot.Select(i => i.Name));
-                }
-            }
-
-            sb.DrawString(_font, msg, new Vector2(200, 200), Color.Yellow);
+            sb.DrawString(_font, _cachedResultMsg, new Vector2(200, 200), Color.Yellow);
             sb.End();
             return;
         }
