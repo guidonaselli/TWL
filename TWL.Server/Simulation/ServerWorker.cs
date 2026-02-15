@@ -157,7 +157,7 @@ public class ServerWorker : IHostedService
         await Task.Delay(500, ct);
 
         _worldScheduler.Stop();
-        _playerService.Stop();
+        await _playerService.StopAsync();
 
         sw.Stop();
         _metrics.RecordShutdown(sw.ElapsedMilliseconds, _playerService.Metrics.SessionsSavedInLastFlush);

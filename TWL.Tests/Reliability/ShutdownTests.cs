@@ -33,7 +33,7 @@ public class ShutdownTests
 
         // Setup PlayerService mocks
         mockPlayerService.Setup(s => s.DisconnectAllAsync(It.IsAny<string>())).Returns(Task.CompletedTask).Verifiable();
-        mockPlayerService.Setup(s => s.Stop()).Verifiable();
+        mockPlayerService.Setup(s => s.StopAsync()).Returns(Task.CompletedTask).Verifiable();
 
         var worker = new ServerWorker(
             mockNet.Object,
@@ -61,7 +61,7 @@ public class ShutdownTests
         mockNet.Verify(n => n.Stop(), Times.Once);
         mockPlayerService.Verify(s => s.DisconnectAllAsync("Server Shutdown"), Times.Once);
         mockScheduler.Verify(s => s.Stop(), Times.Once);
-        mockPlayerService.Verify(s => s.Stop(), Times.Once);
+        mockPlayerService.Verify(s => s.StopAsync(), Times.Once);
 
         // Verify metrics
         Assert.True(metrics.GetSnapshot().ShutdownDurationMs > 0 || metrics.GetSnapshot().ShutdownDurationMs == 0); // Can be 0 if too fast, but checking property exists

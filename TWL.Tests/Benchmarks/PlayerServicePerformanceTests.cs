@@ -17,37 +17,6 @@ public class PlayerServicePerformanceTests
         _output = output;
     }
 
-    [Fact]
-    public void Benchmark_Flush_Synchronous_Wrapper_Optimized()
-    {
-        var repo = new BenchmarkMockPlayerRepository();
-        var service = new PlayerService(repo, new ServerMetrics());
-        var count = 50;
-        var qm = new ServerQuestManager();
-
-        // Create dirty sessions
-        for (var i = 0; i < count; i++)
-        {
-            var s = new BenchmarkClientSession(i + 1);
-            var c = new ServerCharacter { Id = i + 1, Name = $"Bencher_{i}" };
-            c.AddGold(1); // Make dirty
-            s.SetCharacter(c);
-            s.SetQuestComponent(new PlayerQuestComponent(qm));
-            service.RegisterSession(s);
-        }
-
-        var sw = Stopwatch.StartNew();
-        service.FlushAllDirty();
-        sw.Stop();
-
-        _output.WriteLine($"[SYNC-WRAPPER] Flushed {count} sessions in {sw.ElapsedMilliseconds}ms");
-
-        Assert.Equal(count, repo.SaveCallCount);
-        // It should also be fast now because it delegates to FlushAllDirtyAsync
-        // Relaxed threshold for CI/VM environments where thread pool startup might add latency
-        Assert.True(sw.ElapsedMilliseconds < count * repo.DelayMs * 0.8,
-            "Synchronous wrapper is not using optimization!");
-    }
 
     [Fact]
     public async Task Benchmark_Flush_Async_Optimized()

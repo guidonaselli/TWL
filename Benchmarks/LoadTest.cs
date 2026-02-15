@@ -91,14 +91,16 @@ public class LoadTest
 
         _economy = new EconomyManager("loadtest_economy.log");
 
-        var petService = new PetService(_playerService, petManager, combatManager, random);
+        var monsterManager = new MonsterManager();
+        var petService = new PetService(_playerService, petManager, monsterManager, combatManager, random, NullLogger<PetService>.Instance);
         var mapLoader = new MapLoader(NullLogger<MapLoader>.Instance);
-        var worldTrigger = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, _metrics);
+        var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, _metrics);
+        var mapRegistry = new MapRegistry(NullLogger<MapRegistry>.Instance, mapLoader);
+        var worldTrigger = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, _metrics, _playerService, scheduler, mapRegistry);
         // Load some dummy map or skip map loading? For load test, if bots move, they might trigger stuff if maps loaded.
         // For simplicity, we skip loading maps, so CheckTriggers returns early.
 
-        var spawnManager = new SpawnManager(new MonsterManager(), combatManager, random, _playerService);
-        var mediator = new Mediator();
+        var spawnManager = new SpawnManager(monsterManager, combatManager, random, _playerService);
 
         var mediator = new Mediator(); // Using concrete Mediator for load test
         _server = new NetworkServer(0, db, petManager, questManager, combatManager, interactionManager,
@@ -156,7 +158,7 @@ public class LoadTest
 
         Console.WriteLine("[LoadTest] Stopping Server...");
         _server.Stop();
-        _playerService.Stop();
+        await _playerService.StopAsync();
         if (_economy is IDisposable disp) disp.Dispose();
 
         // Report
