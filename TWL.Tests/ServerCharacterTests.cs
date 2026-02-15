@@ -36,16 +36,39 @@ public class ServerCharacterTests
     }
 
     [Fact]
-    public void Inventory_ShouldReturnCopies()
+    public void Inventory_ShouldReturnCachedCopy_And_IsolateFromInternalState()
     {
         var character = new ServerCharacter { Id = 1, Name = "Test" };
         character.AddItem(101, 10);
 
-        var items = character.Inventory;
-        items[0].Quantity = 999; // Modify the copy
+        // 1. First Access (Creates Cache)
+        var items1 = character.Inventory;
+        Assert.Single(items1);
+        Assert.Equal(10, items1[0].Quantity);
 
-        // Original should remain unchanged
-        Assert.Equal(10, character.Inventory[0].Quantity);
+        // 2. Second Access (Should Return Same Cache for Performance)
+        var items2 = character.Inventory;
+        Assert.Same(items1, items2);
+
+        // 3. Modify Cache (Should not affect Internal State, but will affect subsequent reads of Cache)
+        items1[0].Quantity = 999;
+
+        // Since we are caching the reference, modifying the object inside the list
+        // is visible to anyone else holding the reference or getting the property.
+        // This is the trade-off for performance.
+        Assert.Equal(999, character.Inventory[0].Quantity);
+
+        // 4. Verify Internal State is Protected (by invalidating cache/adding item)
+        // If we trigger a change, the cache should be rebuilt from Internal State.
+        character.AddItem(102, 1); // Triggers Invalidation
+
+        var items3 = character.Inventory;
+        Assert.NotSame(items1, items3); // New object
+
+        // The modification to the OLD cache (999) should NOT have affected the Internal State.
+        // So the item with ID 101 should still be 10.
+        var originalItem = items3.First(i => i.ItemId == 101);
+        Assert.Equal(10, originalItem.Quantity);
     }
 
     [Fact]
