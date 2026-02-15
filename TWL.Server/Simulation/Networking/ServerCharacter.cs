@@ -15,6 +15,10 @@ public class ServerCharacter : ServerCombatant
     private readonly List<Item> _equipment = new();
     private readonly List<Item> _bank = new();
 
+    private IReadOnlyList<Item>? _inventoryCache;
+    private IReadOnlyList<Item>? _equipmentCache;
+    private IReadOnlyList<Item>? _bankCache;
+
     private readonly Dictionary<int, long> _itemTotalQuantities = new();
 
     private readonly List<ServerPet> _pets = new();
@@ -79,17 +83,22 @@ public class ServerCharacter : ServerCombatant
         {
             lock (_bank)
             {
-                return _bank.Select(i => new Item
+                if (_bankCache == null)
                 {
-                    ItemId = i.ItemId,
-                    Name = i.Name,
-                    Type = i.Type,
-                    MaxStack = i.MaxStack,
-                    Quantity = i.Quantity,
-                    ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
-                    Policy = i.Policy,
-                    BoundToId = i.BoundToId
-                }).ToArray();
+                    _bankCache = _bank.Select(i => new Item
+                    {
+                        ItemId = i.ItemId,
+                        Name = i.Name,
+                        Type = i.Type,
+                        MaxStack = i.MaxStack,
+                        Quantity = i.Quantity,
+                        ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
+                        Policy = i.Policy,
+                        BoundToId = i.BoundToId
+                    }).ToArray();
+                }
+
+                return _bankCache;
             }
         }
     }
@@ -107,6 +116,7 @@ public class ServerCharacter : ServerCombatant
             {
                 _bank.Add(item);
             }
+            _bankCache = null;
             IsDirty = true;
         }
     }
@@ -232,18 +242,23 @@ public class ServerCharacter : ServerCombatant
         {
             lock (_inventory)
             {
-                // Return deep copies to prevent external modification without lock
-                return _inventory.Select(i => new Item
+                if (_inventoryCache == null)
                 {
-                    ItemId = i.ItemId,
-                    Name = i.Name,
-                    Type = i.Type,
-                    MaxStack = i.MaxStack,
-                    Quantity = i.Quantity,
-                    ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
-                    Policy = i.Policy,
-                    BoundToId = i.BoundToId
-                }).ToArray();
+                    // Return deep copies to prevent external modification without lock
+                    _inventoryCache = _inventory.Select(i => new Item
+                    {
+                        ItemId = i.ItemId,
+                        Name = i.Name,
+                        Type = i.Type,
+                        MaxStack = i.MaxStack,
+                        Quantity = i.Quantity,
+                        ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
+                        Policy = i.Policy,
+                        BoundToId = i.BoundToId
+                    }).ToArray();
+                }
+
+                return _inventoryCache;
             }
         }
     }
@@ -254,17 +269,22 @@ public class ServerCharacter : ServerCombatant
         {
             lock (_equipment)
             {
-                return _equipment.Select(i => new Item
+                if (_equipmentCache == null)
                 {
-                    ItemId = i.ItemId,
-                    Name = i.Name,
-                    Type = i.Type,
-                    MaxStack = i.MaxStack,
-                    Quantity = i.Quantity,
-                    ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
-                    Policy = i.Policy,
-                    BoundToId = i.BoundToId
-                }).ToArray();
+                    _equipmentCache = _equipment.Select(i => new Item
+                    {
+                        ItemId = i.ItemId,
+                        Name = i.Name,
+                        Type = i.Type,
+                        MaxStack = i.MaxStack,
+                        Quantity = i.Quantity,
+                        ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
+                        Policy = i.Policy,
+                        BoundToId = i.BoundToId
+                    }).ToArray();
+                }
+
+                return _equipmentCache;
             }
         }
     }
@@ -450,6 +470,7 @@ public class ServerCharacter : ServerCombatant
                 }
             }
 
+            _inventoryCache = null;
             IsDirty = true;
             return true;
         }
@@ -634,6 +655,7 @@ public class ServerCharacter : ServerCombatant
                 }
 
                 _itemTotalQuantities[itemId] += quantity;
+                _inventoryCache = null;
                 IsDirty = true;
                 OnItemAdded?.Invoke(existing, quantity);
                 return true;
@@ -652,6 +674,7 @@ public class ServerCharacter : ServerCombatant
             }
 
             _itemTotalQuantities[itemId] += quantity;
+            _inventoryCache = null;
             IsDirty = true;
             OnItemAdded?.Invoke(newItem, quantity);
             return true;
@@ -682,6 +705,7 @@ public class ServerCharacter : ServerCombatant
             if (item.Type == ItemType.Equipment && item.Policy == BindPolicy.BindOnEquip && item.BoundToId == null)
             {
                 item.BoundToId = Id;
+                _inventoryCache = null;
                 IsDirty = true;
                 SecurityLogger.LogSecurityEvent("ItemBound", Id, $"ItemId:{item.ItemId} Policy:{item.Policy} BoundTo:{Id}");
 
@@ -736,6 +760,7 @@ public class ServerCharacter : ServerCombatant
                     _inventory.RemoveAt(slotIndex);
                 }
 
+                _inventoryCache = null;
                 return true;
             }
 
@@ -805,6 +830,7 @@ public class ServerCharacter : ServerCombatant
                 }
             }
 
+            _inventoryCache = null;
             IsDirty = true;
             return true;
         }
@@ -853,6 +879,7 @@ public class ServerCharacter : ServerCombatant
 
             var item = _inventory[inventorySlotIndex];
             _inventory.RemoveAt(inventorySlotIndex);
+            _inventoryCache = null;
 
             // Update cache for inventory
             if (_itemTotalQuantities.TryGetValue(item.ItemId, out var currentTotal))
@@ -871,6 +898,7 @@ public class ServerCharacter : ServerCombatant
             lock (_equipment)
             {
                 _equipment.Add(item);
+                _equipmentCache = null;
             }
 
             IsDirty = true;
@@ -898,8 +926,10 @@ public class ServerCharacter : ServerCombatant
 
                 var item = _equipment[equipmentSlotIndex];
                 _equipment.RemoveAt(equipmentSlotIndex);
+                _equipmentCache = null;
 
                 _inventory.Add(item);
+                _inventoryCache = null;
 
                 // Update cache
                 if (!_itemTotalQuantities.ContainsKey(item.ItemId))
@@ -1105,6 +1135,7 @@ public class ServerCharacter : ServerCombatant
         lock (_inventory)
         {
             _inventory.Clear();
+            _inventoryCache = null;
             _itemTotalQuantities.Clear();
             if (data.Inventory != null)
             {
@@ -1124,6 +1155,7 @@ public class ServerCharacter : ServerCombatant
         lock (_equipment)
         {
             _equipment.Clear();
+            _equipmentCache = null;
             if (data.Equipment != null)
             {
                 _equipment.AddRange(data.Equipment);
@@ -1133,6 +1165,7 @@ public class ServerCharacter : ServerCombatant
         lock (_bank)
         {
             _bank.Clear();
+            _bankCache = null;
             if (data.Bank != null)
             {
                 _bank.AddRange(data.Bank);

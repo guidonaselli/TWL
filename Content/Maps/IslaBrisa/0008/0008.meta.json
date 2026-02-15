@@ -1,20 +1,15 @@
 {
-  "MapId": 4,
+  "MapId": 8,
   "RegionId": "IslaBrisa",
   "Biome": "Cave",
-  "RecommendedLevelMin": 3,
-  "RecommendedLevelMax": 5,
+  "RecommendedLevelMin": 5,
+  "RecommendedLevelMax": 7,
   "EntryPoints": [ 1 ],
   "Exits": [
     {
-      "TargetMapId": 3,
-      "SpawnId": 2,
+      "TargetMapId": 4,
+      "SpawnId": 4,
       "Gating": { "MinLevel": 1 }
-    },
-    {
-      "TargetMapId": 8,
-      "SpawnId": 1,
-      "Gating": { "MinLevel": 5 }
     }
   ],
   "AmbientProfile": {
@@ -24,5 +19,5 @@
   },
   "WorldFlagsSet": [],
   "WorldFlagsCleared": [],
-  "Notes": "El Viejo Coral (1005) and Cave Bat (9101) added. Stone Circle interaction added."
+  "Notes": "Deeper cave area. Connected to 0004."
 }

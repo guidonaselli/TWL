@@ -82,9 +82,14 @@ public class LoginBenchmark
         var questManager = new ServerQuestManager();
         var interactionManager = new InteractionManager();
         var economy = new EconomyManager("login_bench_economy.log");
-        var petService = new PetService(_playerService, petManager, combatManager, random);
-        var spawnManager = new SpawnManager(new MonsterManager(), combatManager, random, _playerService);
-        var worldTrigger = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, _metrics);
+        var monsterManager = new MonsterManager();
+        var petService = new PetService(_playerService, petManager, monsterManager, combatManager, random, NullLogger<PetService>.Instance);
+        var spawnManager = new SpawnManager(monsterManager, combatManager, random, _playerService);
+
+        var mapLoader = new MapLoader(NullLogger<MapLoader>.Instance);
+        var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, _metrics);
+        var mapRegistry = new MapRegistry(NullLogger<MapRegistry>.Instance, mapLoader);
+        var worldTrigger = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, _metrics, _playerService, scheduler, mapRegistry);
 
         _server = new NetworkServer(0, _db, petManager, questManager, combatManager, interactionManager,
             _playerService, economy, _metrics, petService, new Mediator(), worldTrigger, spawnManager);
@@ -124,7 +129,7 @@ public class LoginBenchmark
         Console.WriteLine($"Throughput: {throughput:F2} logins/sec");
 
         _server.Stop();
-        _playerService.Stop();
+        await _playerService.StopAsync();
         if (economy is IDisposable d) d.Dispose();
 
         // Cleanup

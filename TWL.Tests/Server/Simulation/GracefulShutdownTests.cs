@@ -97,7 +97,7 @@ public class GracefulShutdownTests
         mockWorldScheduler.Verify(x => x.Stop(), Times.Once);
 
         // 5. Player Service Stop (Flush)
-        mockPlayerService.Verify(x => x.Stop(), Times.Once);
+        mockPlayerService.Verify(x => x.StopAsync(), Times.Once);
 
         // 6. Health Status Stopped (Verified by Sequence)
 

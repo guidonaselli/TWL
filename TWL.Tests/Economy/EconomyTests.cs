@@ -17,14 +17,16 @@ public class EconomyTests
         Assert.NotNull(intent);
         Assert.NotNull(intent.OrderId);
 
+        var validToken = manager.GenerateSignature(intent.OrderId);
+
         // 2. Verify (First time)
-        var result1 = manager.VerifyPurchase(charId, intent.OrderId, $"mock_sig_{intent.OrderId}", character);
+        var result1 = manager.VerifyPurchase(charId, intent.OrderId, validToken, character);
         Assert.True(result1.Success);
         Assert.Equal(100, character.PremiumCurrency);
         Assert.Equal(100, result1.NewBalance);
 
         // 3. Verify (Second time - Idempotency)
-        var result2 = manager.VerifyPurchase(charId, intent.OrderId, $"mock_sig_{intent.OrderId}", character);
+        var result2 = manager.VerifyPurchase(charId, intent.OrderId, validToken, character);
         Assert.True(result2.Success);
         Assert.Equal("Already completed", result2.Message);
         Assert.Equal(100, character.PremiumCurrency); // Should still be 100

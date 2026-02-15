@@ -43,6 +43,12 @@
       "type": "SafeZone"
     },
     {
+      "id": 8,
+      "name": "Gruta de los Susurros",
+      "region": "IslaBrisa",
+      "type": "Dungeon"
+    },
+    {
       "id": 1000,
       "name": "Puerto Roca City",
       "region": "PuertoRoca",
@@ -77,6 +83,7 @@
     { "from": 1, "to": 2, "bidirectional": true },
     { "from": 2, "to": 3, "bidirectional": true },
     { "from": 3, "to": 4, "bidirectional": true },
+    { "from": 4, "to": 8, "bidirectional": true },
     { "from": 3, "to": 7, "bidirectional": true },
     { "from": 2, "to": 5, "bidirectional": true },
     { "from": 2, "to": 6, "bidirectional": true },
