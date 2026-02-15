@@ -12,7 +12,12 @@ public class WorldScheduler : IWorldScheduler, IDisposable
     private readonly object _lock = new();
     private readonly ILogger<WorldScheduler> _logger;
     private readonly ServerMetrics _metrics;
-    private readonly List<ScheduledTask> _scheduledTasks = new();
+
+    // Use PriorityQueue for O(log N) scheduling instead of O(N)
+    // Priority is (TargetTick, SequenceId) to ensure stability (FIFO for same tick)
+    private readonly PriorityQueue<ScheduledTask, (long Tick, long Seq)> _scheduledTasks = new();
+    private long _nextSequenceId;
+
     private CancellationTokenSource? _cts;
 
     private Task? _loopTask;
@@ -75,13 +80,17 @@ public class WorldScheduler : IWorldScheduler, IDisposable
     {
         lock (_lock)
         {
-            _scheduledTasks.Add(new ScheduledTask
+            var targetTick = CurrentTick + delayTicks;
+            var seq = _nextSequenceId++;
+            var task = new ScheduledTask
             {
                 Action = action,
-                TargetTick = CurrentTick + delayTicks,
+                TargetTick = targetTick,
                 IntervalTicks = null,
-                Name = name
-            });
+                Name = name,
+                SequenceId = seq
+            };
+            _scheduledTasks.Enqueue(task, (targetTick, seq));
         }
     }
 
@@ -96,13 +105,17 @@ public class WorldScheduler : IWorldScheduler, IDisposable
     {
         lock (_lock)
         {
-            _scheduledTasks.Add(new ScheduledTask
+            var targetTick = CurrentTick + intervalTicks;
+            var seq = _nextSequenceId++;
+            var task = new ScheduledTask
             {
                 Action = action,
-                TargetTick = CurrentTick + intervalTicks,
+                TargetTick = targetTick,
                 IntervalTicks = intervalTicks,
-                Name = name
-            });
+                Name = name,
+                SequenceId = seq
+            };
+            _scheduledTasks.Enqueue(task, (targetTick, seq));
         }
     }
 
@@ -179,7 +192,7 @@ public class WorldScheduler : IWorldScheduler, IDisposable
         }
     }
 
-    private void ProcessTick()
+    public void ProcessTick()
     {
         var sw = Stopwatch.StartNew();
         CurrentTick++;
@@ -218,32 +231,31 @@ public class WorldScheduler : IWorldScheduler, IDisposable
         {
             queueDepth = _scheduledTasks.Count;
 
-            // 1. Identify tasks to run (FIFO)
-            for (var i = 0; i < _scheduledTasks.Count; i++)
+            // Peek at the top of the queue
+            while (_scheduledTasks.TryPeek(out var task, out var priority))
             {
-                var task = _scheduledTasks[i];
-                if (task.TargetTick <= CurrentTick)
+                // If the next task is scheduled for the future, we are done
+                if (priority.Tick > CurrentTick)
                 {
-                    tasksToRun.Add(task);
+                    break;
+                }
+
+                // Remove from queue
+                _scheduledTasks.Dequeue();
+                tasksToRun.Add(task);
+
+                // Handle repeating tasks
+                if (task.IntervalTicks.HasValue)
+                {
+                    task.TargetTick = CurrentTick + task.IntervalTicks.Value;
+                    // Maintain original sequence ID or generate new?
+                    // To keep it fair, repeating tasks should probably act as if they are NEWLY scheduled
+                    // for that tick, so they go to the back of the queue for THAT tick.
+                    // So we assign a NEW sequence ID.
+                    task.SequenceId = _nextSequenceId++;
+                    _scheduledTasks.Enqueue(task, (task.TargetTick, task.SequenceId));
                 }
             }
-
-            // 2. Update or Remove tasks
-            // RemoveAll efficiently compacts the list. We use the predicate to also update repeating tasks.
-            _scheduledTasks.RemoveAll(t =>
-            {
-                if (t.TargetTick <= CurrentTick)
-                {
-                    if (t.IntervalTicks.HasValue)
-                    {
-                        // Schedule next run
-                        t.TargetTick = CurrentTick + t.IntervalTicks.Value;
-                        return false; // Keep it
-                    }
-                    return true; // Remove it
-                }
-                return false; // Keep pending
-            });
         }
 
         foreach (var task in tasksToRun)
@@ -276,5 +288,6 @@ public class WorldScheduler : IWorldScheduler, IDisposable
         public long TargetTick { get; set; }
         public int? IntervalTicks { get; set; } // If null, one-off
         public string Name { get; set; } = "Unnamed";
+        public long SequenceId { get; set; }
     }
 }
