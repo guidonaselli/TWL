@@ -140,73 +140,73 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| INFRA-01 | TBD | Pending |
-| INFRA-02 | TBD | Pending |
-| INFRA-03 | TBD | Pending |
-| SEC-01 | TBD | Pending |
-| SEC-02 | TBD | Pending |
-| SEC-03 | TBD | Pending |
-| SEC-04 | TBD | Pending |
-| QUAL-01 | TBD | Pending |
-| MKT-01 | TBD | Pending |
-| MKT-02 | TBD | Pending |
-| MKT-03 | TBD | Pending |
-| MKT-04 | TBD | Pending |
-| MKT-05 | TBD | Pending |
-| MKT-06 | TBD | Pending |
-| MKT-07 | TBD | Pending |
-| MKT-08 | TBD | Pending |
-| CMP-01 | TBD | Pending |
-| CMP-02 | TBD | Pending |
-| CMP-03 | TBD | Pending |
-| CMP-04 | TBD | Pending |
-| CMP-05 | TBD | Pending |
-| CMP-06 | TBD | Pending |
-| PTY-01 | TBD | Pending |
-| PTY-02 | TBD | Pending |
-| PTY-03 | TBD | Pending |
-| PTY-04 | TBD | Pending |
-| PTY-05 | TBD | Pending |
-| PTY-06 | TBD | Pending |
-| PTY-07 | TBD | Pending |
-| PTY-08 | TBD | Pending |
-| PTY-09 | TBD | Pending |
-| GLD-01 | TBD | Pending |
-| GLD-02 | TBD | Pending |
-| GLD-03 | TBD | Pending |
-| GLD-04 | TBD | Pending |
-| GLD-05 | TBD | Pending |
-| GLD-06 | TBD | Pending |
-| GLD-07 | TBD | Pending |
-| GLD-08 | TBD | Pending |
-| GLD-09 | TBD | Pending |
-| REB-01 | TBD | Pending |
-| REB-02 | TBD | Pending |
-| REB-03 | TBD | Pending |
-| REB-04 | TBD | Pending |
-| REB-05 | TBD | Pending |
-| REB-06 | TBD | Pending |
-| REB-07 | TBD | Pending |
-| PET-01 | TBD | Pending |
-| PET-02 | TBD | Pending |
-| PET-03 | TBD | Pending |
-| PET-04 | TBD | Pending |
-| PET-05 | TBD | Pending |
-| PET-06 | TBD | Pending |
-| PET-07 | TBD | Pending |
-| CMB-01 | TBD | Pending |
-| CMB-02 | TBD | Pending |
-| CMB-03 | TBD | Pending |
-| CMB-04 | TBD | Pending |
-| INST-01 | TBD | Pending |
-| INST-02 | TBD | Pending |
-| INST-03 | TBD | Pending |
+| INFRA-01 | Phase 1 | Pending |
+| INFRA-02 | Phase 1 | Pending |
+| INFRA-03 | Phase 1 | Pending |
+| SEC-01 | Phase 2 | Pending |
+| SEC-02 | Phase 2 | Pending |
+| SEC-03 | Phase 2 | Pending |
+| SEC-04 | Phase 2 | Pending |
+| QUAL-01 | Phase 3 | Pending |
+| MKT-01 | Phase 7 | Pending |
+| MKT-02 | Phase 7 | Pending |
+| MKT-03 | Phase 7 | Pending |
+| MKT-04 | Phase 7 | Pending |
+| MKT-05 | Phase 7 | Pending |
+| MKT-06 | Phase 7 | Pending |
+| MKT-07 | Phase 7 | Pending |
+| MKT-08 | Phase 7 | Pending |
+| CMP-01 | Phase 8 | Pending |
+| CMP-02 | Phase 8 | Pending |
+| CMP-03 | Phase 8 | Pending |
+| CMP-04 | Phase 8 | Pending |
+| CMP-05 | Phase 8 | Pending |
+| CMP-06 | Phase 8 | Pending |
+| PTY-01 | Phase 4 | Pending |
+| PTY-02 | Phase 4 | Pending |
+| PTY-03 | Phase 4 | Pending |
+| PTY-04 | Phase 4 | Pending |
+| PTY-05 | Phase 4 | Pending |
+| PTY-06 | Phase 4 | Pending |
+| PTY-07 | Phase 4 | Pending |
+| PTY-08 | Phase 4 | Pending |
+| PTY-09 | Phase 4 | Pending |
+| GLD-01 | Phase 5 | Pending |
+| GLD-02 | Phase 5 | Pending |
+| GLD-03 | Phase 5 | Pending |
+| GLD-04 | Phase 5 | Pending |
+| GLD-05 | Phase 5 | Pending |
+| GLD-06 | Phase 5 | Pending |
+| GLD-07 | Phase 5 | Pending |
+| GLD-08 | Phase 5 | Pending |
+| GLD-09 | Phase 5 | Pending |
+| REB-01 | Phase 6 | Pending |
+| REB-02 | Phase 6 | Pending |
+| REB-03 | Phase 6 | Pending |
+| REB-04 | Phase 6 | Pending |
+| REB-05 | Phase 6 | Pending |
+| REB-06 | Phase 6 | Pending |
+| REB-07 | Phase 6 | Pending |
+| PET-01 | Phase 9 | Pending |
+| PET-02 | Phase 9 | Pending |
+| PET-03 | Phase 6 | Pending |
+| PET-04 | Phase 6 | Pending |
+| PET-05 | Phase 9 | Pending |
+| PET-06 | Phase 9 | Pending |
+| PET-07 | Phase 9 | Pending |
+| CMB-01 | Phase 10 | Pending |
+| CMB-02 | Phase 10 | Pending |
+| CMB-03 | Phase 10 | Pending |
+| CMB-04 | Phase 10 | Pending |
+| INST-01 | Phase 10 | Pending |
+| INST-02 | Phase 10 | Pending |
+| INST-03 | Phase 10 | Pending |
 
 **Coverage:**
 - v1 requirements: 61 total
-- Mapped to phases: 0 (roadmap not yet created)
-- Unmapped: 61 ⚠️
+- Mapped to phases: 61 (100% coverage)
+- Unmapped: 0
 
 ---
 *Requirements defined: 2026-02-15*
-*Last updated: 2026-02-15 after initial definition*
+*Last updated: 2026-02-15 after roadmap creation*
