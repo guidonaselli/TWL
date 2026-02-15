@@ -35,10 +35,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. Dapper handles high-performance read operations (market browsing, guild rosters) with 2x+ speed vs EF Core
   4. FilePlayerRepository is removed and all player operations use PostgreSQL
   5. Database migrations are version-controlled and can roll forward/backward
-**Plans**: TBD
+**Plans**: 2 plans
 
 Plans:
-- [ ] 01-01: TBD
+- [ ] 01-01-PLAN.md -- EF Core infrastructure: GameDbContext, entity configurations, NpgsqlDataSource pooling, initial migration
+- [ ] 01-02-PLAN.md -- DbPlayerRepository (hybrid EF Core + Dapper), DI swap, FilePlayerRepository removal
 
 ### Phase 2: Security Hardening
 **Goal**: Server prevents cheating through movement validation, anti-replay protection, and transaction race condition prevention
@@ -192,7 +193,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Infrastructure Foundation | 0/TBD | Not started | - |
+| 1. Infrastructure Foundation | 0/2 | Planned | - |
 | 2. Security Hardening | 0/TBD | Not started | - |
 | 3. Content Quality | 0/TBD | Not started | - |
 | 4. Party System | 0/TBD | Not started | - |
