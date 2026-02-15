@@ -40,19 +40,26 @@ public class PlayerService
         PersistenceLogger.LogEvent("ServiceStart", "PlayerService started (persistence).");
     }
 
-    public virtual void Stop()
+    public virtual async Task StopAsync()
     {
         _cts?.Cancel();
         try
         {
-            _backgroundTask?.Wait(2000);
+            if (_backgroundTask != null)
+            {
+                await _backgroundTask.WaitAsync(TimeSpan.FromSeconds(2));
+            }
+        }
+        catch (TimeoutException)
+        {
+            // Ignore timeout
         }
         catch (Exception ex)
         {
             PersistenceLogger.LogEvent("ServiceStopError", ex.Message, errors: 1);
         }
 
-        FlushAllDirtyAsync().GetAwaiter().GetResult();
+        await FlushAllDirtyAsync();
         PersistenceLogger.LogEvent("ServiceStop", "PlayerService stopped and flushed.");
     }
 
@@ -73,12 +80,6 @@ public class PlayerService
                 PersistenceLogger.LogEvent("FlushLoopError", ex.Message, errors: 1);
             }
         }
-    }
-
-    public void FlushAllDirty()
-    {
-        // Wrapper for synchronous calls
-        FlushAllDirtyAsync().GetAwaiter().GetResult();
     }
 
     public virtual async Task DisconnectAllAsync(string reason)

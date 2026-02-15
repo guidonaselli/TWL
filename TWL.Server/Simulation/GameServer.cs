@@ -163,10 +163,13 @@ public class GameServer
         Console.WriteLine("GameServer started on port 9050.");
     }
 
-    public void Stop()
+    public async Task StopAsync()
     {
         _netServer?.Stop();
-        PlayerService?.Stop();
+        if (PlayerService != null)
+        {
+            await PlayerService.StopAsync();
+        }
         DB?.Dispose();
         (EconomyManager as IDisposable)?.Dispose();
         Console.WriteLine("GameServer stopped.");
