@@ -500,7 +500,65 @@ public class LocalizationAuditor
                 }
             }
         }
+
+        // 6. Semantic Duplicates
+        var valueGroups = _baseResourceValues
+            .GroupBy(kvp => kvp.Value)
+            .Where(g => g.Count() > 1);
+
+        foreach (var group in valueGroups)
+        {
+            var keys = group.Select(kvp => kvp.Key).OrderBy(k => k).ToList();
+            results.Findings.Add(new AuditFinding
+            {
+                Code = "WARN_SEMANTIC_DUPLICATE",
+                Severity = "WARN", // Report only
+                File = "Resources/Strings.resx",
+                Location = string.Join(", ", keys),
+                Message = $"Multiple keys have the same value: '{group.Key}'. Keys: {string.Join(", ", keys)}",
+                SuggestedFix = "Consolidate keys if possible."
+            });
+        }
+
+        // 7. Placeholder Consistency
+        foreach (var kvp in _baseResourceValues)
+        {
+            var key = kvp.Key;
+            var value = kvp.Value;
+
+            // Check for malformed braces: { without number or name, or unbalanced
+            if (value.Count(c => c == '{') != value.Count(c => c == '}'))
+            {
+                results.Findings.Add(new AuditFinding
+                {
+                    Code = "ERR_PLACEHOLDER_UNBALANCED",
+                    Severity = "ERROR",
+                    File = "Resources/Strings.resx",
+                    Location = key,
+                    Message = $"Unbalanced braces in value: '{value}'",
+                    SuggestedFix = "Fix braces."
+                });
+            }
+
+            // Check for named placeholders if not supported (assuming only indexed {0} is supported)
+            // Regex to find {name} where name starts with a letter
+            var potentialNamed = _namedPlaceholderRegex.Matches(value);
+            foreach (Match m in potentialNamed)
+            {
+                results.Findings.Add(new AuditFinding
+                {
+                    Code = "WARN_PLACEHOLDER_NAMED",
+                    Severity = "WARN",
+                    File = "Resources/Strings.resx",
+                    Location = key,
+                    Message = $"Named placeholder found: '{m.Value}'. Ensure system supports it.",
+                    SuggestedFix = "Use indexed placeholder {0} if necessary."
+                });
+            }
+        }
     }
+
+    private static readonly Regex _namedPlaceholderRegex = new(@"\{([a-zA-Z_][a-zA-Z0-9_]*)\}", RegexOptions.Compiled);
 
     public class AuditConfig
     {
