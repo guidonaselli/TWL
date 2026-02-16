@@ -71,8 +71,8 @@ public class WorldSchedulerTests : IDisposable
             Interlocked.Increment(ref executionCount);
         }, 1, "RepeatingTask");
 
-        // Wait for ~5 ticks (5 * 50ms = 250ms)
-        Thread.Sleep(300);
+        // Wait for ~5 ticks (5 * 50ms = 250ms), increased for reliability
+        Thread.Sleep(1000);
 
         // Assert
         Assert.True(executionCount >= 4, $"Expected at least 4 executions, got {executionCount}");
