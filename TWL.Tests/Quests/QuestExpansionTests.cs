@@ -77,14 +77,14 @@ public class QuestExpansionTests
     }
 
     [Fact]
-    public void QuestChain_1007_to_1009_ShouldWork()
+    public void QuestChain_1507_to_1509_ShouldWork()
     {
-        // Fake complete 1006 as it is a prerequisite for 1007
+        // Fake complete 1006 as it is a prerequisite for 1507
         _playerQuests.QuestStates[1006] = QuestState.Completed;
 
-        // 1007: Cooking
-        var q1007 = 1007;
-        Assert.True(_playerQuests.StartQuest(q1007), "Should start 1007");
+        // 1507: Cooking
+        var q1507 = 1507;
+        Assert.True(_playerQuests.StartQuest(q1507), "Should start 1507");
 
         // Obj 1: Collect Raw Fish (304) x 3
         // Simulate collecting by ID
@@ -94,27 +94,27 @@ public class QuestExpansionTests
         // Simulate crafting (Note: HandleCraft relies on Name matching as it doesn't pass DataId)
         _playerQuests.HandleCraft("Cangrejo Asado", 1);
 
-        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[q1007]);
-        _playerQuests.ClaimReward(q1007);
+        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[q1507]);
+        _playerQuests.ClaimReward(q1507);
 
-        // 1008: Strange Egg
-        var q1008 = 1008;
-        Assert.True(_playerQuests.StartQuest(q1008), "Should start 1008");
+        // 1508: Strange Egg
+        var q1508 = 1508;
+        Assert.True(_playerQuests.StartQuest(q1508), "Should start 1508");
 
         _playerQuests.TryProgress("Explore", "Nido Oculto");
         _playerQuests.TryProgress("Interact", "Huevo Extraño");
 
-        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[q1008]);
-        _playerQuests.ClaimReward(q1008);
+        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[q1508]);
+        _playerQuests.ClaimReward(q1508);
 
-        // 1009: Hatching
-        var q1009 = 1009;
-        Assert.True(_playerQuests.StartQuest(q1009), "Should start 1009");
+        // 1509: Hatching
+        var q1509 = 1509;
+        Assert.True(_playerQuests.StartQuest(q1509), "Should start 1509");
 
         // Deliver
         _playerQuests.TryProgress("Deliver", "Entrenador de Bestias", 1, 7376);
 
-        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[q1009]);
-        _playerQuests.ClaimReward(q1009);
+        Assert.Equal(QuestState.Completed, _playerQuests.QuestStates[q1509]);
+        _playerQuests.ClaimReward(q1509);
     }
 }

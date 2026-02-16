@@ -743,6 +743,30 @@ public class PlayerQuestComponent
                 }
             }
 
+            // Party Rules
+            if (!string.IsNullOrEmpty(def.PartyRules))
+            {
+                if (def.PartyRules.Contains("MustBeInParty"))
+                {
+                    if (Character == null || !Character.PartyId.HasValue)
+                    {
+                        return false;
+                    }
+                }
+            }
+
+            // Guild Rules
+            if (!string.IsNullOrEmpty(def.GuildRules))
+            {
+                if (def.GuildRules.Contains("MustBeInGuild"))
+                {
+                    if (Character == null || !Character.GuildId.HasValue)
+                    {
+                        return false;
+                    }
+                }
+            }
+
             if (!CheckGating(def))
             {
                 return false;

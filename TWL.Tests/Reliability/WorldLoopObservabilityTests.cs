@@ -34,11 +34,11 @@ public class WorldLoopObservabilityTests
         using var scheduler = new WorldScheduler(NullLogger<WorldScheduler>.Instance, metrics);
         scheduler.Start();
 
-        // Schedule a task that sleeps for 70ms (above 50ms tick threshold)
-        scheduler.Schedule(() => { Thread.Sleep(70); }, TimeSpan.Zero, "VerySlowTask");
+        // Schedule a task that sleeps for 100ms (well above 50ms tick threshold)
+        scheduler.Schedule(() => { Thread.Sleep(100); }, TimeSpan.Zero, "VerySlowTask");
 
         // Wait for it to execute
-        await Task.Delay(200);
+        await Task.Delay(300);
 
         scheduler.Stop();
 

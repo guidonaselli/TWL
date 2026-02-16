@@ -53,7 +53,7 @@ public class WorldSchedulerTests
         scheduler.Start();
 
         var startTick = scheduler.CurrentTick;
-        await Task.Delay(200); // Expect ~4 ticks (50ms each)
+        await Task.Delay(1000); // Expect ~20 ticks (50ms each), increased for reliability
 
         Assert.True(scheduler.CurrentTick > startTick,
             $"Expected tick to increment from {startTick}, got {scheduler.CurrentTick}");

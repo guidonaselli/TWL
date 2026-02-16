@@ -37,6 +37,7 @@ public class ServerPet : ServerCombatant
         Hp = MaxHp;
         Sp = MaxSp;
         ExpToNextLevel = PetGrowthCalculator.GetExpForLevel(Level);
+        CheckSkillUnlocks();
     }
 
     public string InstanceId { get; set; } = Guid.NewGuid().ToString();
