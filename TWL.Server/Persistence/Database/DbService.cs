@@ -28,26 +28,8 @@ public class DbService : IDisposable
 
     public virtual void InitDatabase()
     {
-        // Ejemplo: crear tablas si no existen
-        using var con = new NpgsqlConnection(_connString);
-        con.Open();
-        using var cmd = new NpgsqlCommand(@"
-                CREATE TABLE IF NOT EXISTS accounts (
-                    user_id SERIAL PRIMARY KEY,
-                    username VARCHAR(50) UNIQUE NOT NULL,
-                    pass_hash VARCHAR(128) NOT NULL
-                );
-                CREATE TABLE IF NOT EXISTS players (
-                    player_id SERIAL PRIMARY KEY,
-                    user_id INT REFERENCES accounts(user_id),
-                    pos_x FLOAT,
-                    pos_y FLOAT,
-                    hp INT,
-                    max_hp INT
-                    -- mas campos, etc.
-                );
-            ", con);
-        cmd.ExecuteNonQuery();
+        // Database initialization is now handled by EF Core migrations.
+        Console.WriteLine("Database initialization skipped (EF Core in use).");
     }
 
     // Ejemplo: login

@@ -1,7 +1,9 @@
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using Npgsql;
 using Serilog;
 using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Features.Combat;
@@ -30,9 +32,14 @@ Host.CreateDefaultBuilder(args)
     // 3) DI
     .ConfigureServices((ctx, svcs) =>
     {
+        var cs = ctx.Configuration.GetConnectionString("PostgresConn");
+
+        // Persistence (EF Core & Dapper)
+        svcs.AddSingleton(NpgsqlDataSource.Create(cs));
+        svcs.AddDbContext<GameDbContext>(options => options.UseNpgsql(cs));
+
         svcs.AddSingleton<DbService>(sp =>
         {
-            var cs = ctx.Configuration.GetConnectionString("PostgresConn");
             return new DbService(cs);
         });
 
@@ -108,7 +115,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<SpawnManager>()
             );
         });
-        svcs.AddHostedService<HealthCheckService>();
+        svcs.AddSingleton<HealthCheckService>();
+        svcs.AddHostedService(sp => sp.GetRequiredService<HealthCheckService>());
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer
     })
     .Build()
