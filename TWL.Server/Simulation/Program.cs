@@ -1,3 +1,4 @@
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -32,15 +33,19 @@ Host.CreateDefaultBuilder(args)
     // 3) DI
     .ConfigureServices((ctx, svcs) =>
     {
-        var cs = ctx.Configuration.GetConnectionString("PostgresConn");
+        var connString = ctx.Configuration.GetConnectionString("PostgresConn");
 
-        // Persistence (EF Core & Dapper)
-        svcs.AddSingleton(NpgsqlDataSource.Create(cs));
-        svcs.AddDbContext<GameDbContext>(options => options.UseNpgsql(cs));
+        // EF Core
+        svcs.AddDbContext<GameDbContext>(opts =>
+        {
+            opts.UseNpgsql(connString);
+        });
 
+        // DbService (Singleton wrapper for legacy code + new migration trigger)
         svcs.AddSingleton<DbService>(sp =>
         {
-            return new DbService(cs);
+            // Note: DbService takes IServiceProvider to create scopes for EF Core
+            return new DbService(connString, sp);
         });
 
         // Base Services
@@ -116,7 +121,7 @@ Host.CreateDefaultBuilder(args)
             );
         });
         svcs.AddSingleton<HealthCheckService>();
-        svcs.AddHostedService(sp => sp.GetRequiredService<HealthCheckService>());
+        svcs.AddHostedService<HealthCheckService>(sp => sp.GetRequiredService<HealthCheckService>());
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer
     })
     .Build()
