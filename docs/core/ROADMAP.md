@@ -74,7 +74,9 @@ Objetivo: contenido continuo, tooling, operaciones, monetización segura (item m
 - [ ] **CORE-010**: Tests de seguridad básicos (replay/retry, invalid ranges, spoofed ownership).
 
 ### 4.2 PERSISTENCE / RELIABILITY / OBSERVABILITY (P0/P1)
-- [ ] **PERS-001**: Modelo de estado persistente mínimo (character, inventory, quest flags, skill mastery, pets stub).
+- [ ] **PERS-001**: Modelo de estado persistente mínimo.
+    - [ ] **PERS-001a**: Infraestructura EF Core + Entities + Migrations (PostgreSQL).
+    - [ ] **PERS-001b**: Implementación DbPlayerRepository + CRUD (Save/Load transactions).
 - [ ] **PERS-002**: Dirty flags + batch/interval flush (evitar write por microcambio).
 - [ ] **PERS-003**: Operaciones económicas con estado `Pending -> Committed` (journal mínimo).
 - [ ] **PERS-004**: Outbox/inbox (o equivalente) para entregas críticas (rewards, mall delivery).
