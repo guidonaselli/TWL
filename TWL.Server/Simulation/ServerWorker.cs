@@ -62,7 +62,8 @@ public class ServerWorker : IHostedService
     {
         _healthCheck.SetStatus(ServerStatus.Starting);
         _log.LogInformation("Init DB...");
-        _db.InitDatabase();
+        // Use the new Init() method which handles EF Core migrations and legacy init
+        _db.Init();
 
         _log.LogInformation("Starting World Scheduler...");
         _worldScheduler.Start();
