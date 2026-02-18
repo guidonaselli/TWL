@@ -449,7 +449,14 @@ public class ClientSession
             return;
         }
 
-        var result = _economyManager.BuyShopItem(Character, request.ShopItemId, request.Quantity, request.OperationId, traceId);
+        // Pass the OperationId from the request to ensure idempotency.
+        // Falls back to a new GUID if not provided, satisfying reliability requirements.
+        var result = _economyManager.BuyShopItem(
+            character: Character,
+            shopItemId: request.ShopItemId,
+            quantity: request.Quantity,
+            operationId: string.IsNullOrEmpty(request.OperationId) ? Guid.NewGuid().ToString() : request.OperationId,
+            traceId: traceId);
 
         await SendAsync(new NetMessage
             { Op = Opcode.BuyShopItemRequest, JsonPayload = JsonSerializer.Serialize(result, _jsonOptions) });
