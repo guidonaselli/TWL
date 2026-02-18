@@ -4,7 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
 
-namespace TWL.Server.Persistence.Migrations
+namespace TWL.Server.Persistence.Database.Migrations
 {
     /// <inheritdoc />
     public partial class InitialPlayerSchema : Migration
@@ -39,6 +39,8 @@ namespace TWL.Server.Persistence.Migrations
                     MapId = table.Column<int>(type: "integer", nullable: false),
                     X = table.Column<float>(type: "real", nullable: false),
                     Y = table.Column<float>(type: "real", nullable: false),
+                    Quests = table.Column<string>(type: "jsonb", nullable: false),
+                    InstanceLockouts = table.Column<string>(type: "jsonb", nullable: false),
                     LastSaved = table.Column<DateTime>(type: "timestamp with time zone", nullable: false),
                     Data = table.Column<string>(type: "jsonb", nullable: false)
                 },

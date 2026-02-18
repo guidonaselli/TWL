@@ -10,10 +10,10 @@ using TWL.Server.Persistence.Database;
 
 #nullable disable
 
-namespace TWL.Server.Persistence.Migrations
+namespace TWL.Server.Persistence.Database.Migrations
 {
     [DbContext(typeof(GameDbContext))]
-    [Migration("20260217204020_InitialPlayerSchema")]
+    [Migration("20260218151751_InitialPlayerSchema")]
     partial class InitialPlayerSchema
     {
         /// <inheritdoc />
@@ -58,6 +58,10 @@ namespace TWL.Server.Persistence.Migrations
                     b.Property<int>("Hp")
                         .HasColumnType("integer");
 
+                    b.Property<string>("InstanceLockouts")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
+
                     b.Property<int>("Int")
                         .HasColumnType("integer");
 
@@ -80,6 +84,10 @@ namespace TWL.Server.Persistence.Migrations
 
                     b.Property<long>("PremiumCurrency")
                         .HasColumnType("bigint");
+
+                    b.Property<string>("Quests")
+                        .IsRequired()
+                        .HasColumnType("jsonb");
 
                     b.Property<int>("RebirthLevel")
                         .HasColumnType("integer");
