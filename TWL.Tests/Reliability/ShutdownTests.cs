@@ -22,7 +22,7 @@ public class ShutdownTests
     {
         // Arrange
         var mockNet = new Mock<INetworkServer>();
-        var mockDb = new Mock<DbService>("connstring");
+        var mockDb = new Mock<DbService>("connstring", new Mock<IServiceProvider>().Object);
         var mockLog = new Mock<ILogger<ServerWorker>>();
         var mockScheduler = new Mock<IWorldScheduler>();
 

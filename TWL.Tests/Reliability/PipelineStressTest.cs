@@ -10,11 +10,9 @@ using TWL.Server.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
-using TWL.Server.Architecture.Pipeline;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Services;
-using TWL.Server.Architecture.Pipeline;
 
 namespace TWL.Tests.Reliability;
 
@@ -27,7 +25,7 @@ public class PipelineStressTest
         var metrics = new ServerMetrics();
 
         // Dependencies (Mocks)
-        var db = new DbService("Host=invalid;Database=dummy");
+        var db = new DbService("Host=invalid;Database=dummy", new Mock<IServiceProvider>().Object);
         var mockPet = new Mock<PetManager>();
         var mockQuest = new Mock<ServerQuestManager>();
         var mockSkillCatalog = new Mock<ISkillCatalog>();

@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using TWL.Server.Persistence.Database.Entities;
+using TWL.Server.Persistence.Database;
 
 namespace TWL.Server.Persistence.Database.Configurations;
 
@@ -12,7 +12,6 @@ public class PlayerConfiguration : IEntityTypeConfiguration<PlayerEntity>
         builder.HasKey(x => x.Id);
         builder.Property(x => x.Id).HasColumnName("player_id").UseIdentityColumn();
 
-        builder.Property(x => x.AccountId).HasColumnName("user_id");
         builder.Property(x => x.Name).HasColumnName("name").HasMaxLength(50);
 
         // Stats
@@ -23,11 +22,5 @@ public class PlayerConfiguration : IEntityTypeConfiguration<PlayerEntity>
 
         // JSONB
         builder.Property(x => x.Data).HasColumnName("data").HasColumnType("jsonb");
-
-        // Relationships
-        builder.HasOne(x => x.Account)
-               .WithMany()
-               .HasForeignKey(x => x.AccountId)
-               .OnDelete(DeleteBehavior.Cascade);
     }
 }
