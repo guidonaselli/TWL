@@ -3,6 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Models;
+using TWL.Server.Persistence;
 
 namespace TWL.Server.Persistence.Database;
 
@@ -48,6 +49,12 @@ public class PlayerEntity
     [Column(TypeName = "jsonb")]
     public PlayerSaveDataWrapper Data { get; set; } = new();
 
+    [Column(TypeName = "jsonb")]
+    public QuestData Quests { get; set; } = new();
+
+    [Column(TypeName = "jsonb")]
+    public Dictionary<string, DateTime> InstanceLockouts { get; set; } = new();
+
     public DateTime LastSaved { get; set; }
 }
 
@@ -63,12 +70,4 @@ public class PlayerSaveDataWrapper
     public List<SkillMasteryData> Skills { get; set; } = new();
 
     public string ActivePetInstanceId { get; set; } = string.Empty;
-
-    // Ignore Dictionaries for now (or flatten them if critical)
-    // We can map them manually later if needed.
-    [NotMapped]
-    public Dictionary<string, DateTime> InstanceLockouts { get; set; } = new();
-
-    [NotMapped]
-    public QuestData Quests { get; set; } = new();
 }

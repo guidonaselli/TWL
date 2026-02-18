@@ -1,3 +1,4 @@
+using System.Text.Json;
 using Microsoft.EntityFrameworkCore;
 using TWL.Server.Persistence;
 
@@ -19,6 +20,17 @@ public class GameDbContext : DbContext
         {
             entity.HasIndex(e => e.Name).IsUnique();
 
+            // Map QuestData and InstanceLockouts via JSON serialization
+            entity.Property(e => e.Quests)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => JsonSerializer.Deserialize<QuestData>(v, (JsonSerializerOptions)null) ?? new QuestData());
+
+            entity.Property(e => e.InstanceLockouts)
+                .HasConversion(
+                    v => JsonSerializer.Serialize(v, (JsonSerializerOptions)null),
+                    v => JsonSerializer.Deserialize<Dictionary<string, DateTime>>(v, (JsonSerializerOptions)null) ?? new Dictionary<string, DateTime>());
+
             // Map the Data property to a JSONB column
             entity.OwnsOne(e => e.Data, builder =>
             {
@@ -34,12 +46,6 @@ public class GameDbContext : DbContext
                 });
 
                 builder.OwnsMany(d => d.Skills);
-
-                // Dictionaries are marked as [NotMapped] in the Entity class
-                // to avoid migration issues for now.
-                // We will add proper dictionary support (flattening or value conversion)
-                // in PERS-001b or subsequent steps if strictly required by EF Core.
-                // Note: EF Core 9+ might support some dictionaries but it's flaky in preview.
             });
         });
     }
