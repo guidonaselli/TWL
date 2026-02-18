@@ -382,4 +382,85 @@
     <data name="SKILL_NullifyIII" xml:space="preserve">
     <value>Nullify III</value>
   </data>
+    <data name="SKILL_EarthquakeI" xml:space="preserve">
+    <value>Earthquake I</value>
+  </data>
+    <data name="SKILL_EarthquakeII" xml:space="preserve">
+    <value>Earthquake II</value>
+  </data>
+    <data name="SKILL_EarthquakeIII" xml:space="preserve">
+    <value>Earthquake III</value>
+  </data>
+    <data name="SKILL_MeteorStrikeI" xml:space="preserve">
+    <value>Meteor Strike I</value>
+  </data>
+    <data name="SKILL_MeteorStrikeII" xml:space="preserve">
+    <value>Meteor Strike II</value>
+  </data>
+    <data name="SKILL_MeteorStrikeIII" xml:space="preserve">
+    <value>Meteor Strike III</value>
+  </data>
+    <data name="SKILL_StoneFortressI" xml:space="preserve">
+    <value>Stone Fortress I</value>
+  </data>
+    <data name="SKILL_StoneFortressII" xml:space="preserve">
+    <value>Stone Fortress II</value>
+  </data>
+    <data name="SKILL_StoneFortressIII" xml:space="preserve">
+    <value>Stone Fortress III</value>
+  </data>
+    <data name="SKILL_TsunamiI" xml:space="preserve">
+    <value>Tsunami I</value>
+  </data>
+    <data name="SKILL_TsunamiII" xml:space="preserve">
+    <value>Tsunami II</value>
+  </data>
+    <data name="SKILL_TsunamiIII" xml:space="preserve">
+    <value>Tsunami III</value>
+  </data>
+    <data name="SKILL_BlizzardI" xml:space="preserve">
+    <value>Blizzard I</value>
+  </data>
+    <data name="SKILL_BlizzardII" xml:space="preserve">
+    <value>Blizzard II</value>
+  </data>
+    <data name="SKILL_BlizzardIII" xml:space="preserve">
+    <value>Blizzard III</value>
+  </data>
+    <data name="SKILL_OceansBlessingI" xml:space="preserve">
+    <value>Ocean's Blessing I</value>
+  </data>
+    <data name="SKILL_OceansBlessingII" xml:space="preserve">
+    <value>Ocean's Blessing II</value>
+  </data>
+    <data name="SKILL_OceansBlessingIII" xml:space="preserve">
+    <value>Ocean's Blessing III</value>
+  </data>
+    <data name="SKILL_VolcanicEruptionI" xml:space="preserve">
+    <value>Volcanic Eruption I</value>
+  </data>
+    <data name="SKILL_VolcanicEruptionII" xml:space="preserve">
+    <value>Volcanic Eruption II</value>
+  </data>
+    <data name="SKILL_VolcanicEruptionIII" xml:space="preserve">
+    <value>Volcanic Eruption III</value>
+  </data>
+    <data name="SKILL_SupernovaI" xml:space="preserve">
+    <value>Supernova I</value>
+  </data>
+    <data name="SKILL_SupernovaII" xml:space="preserve">
+    <value>Supernova II</value>
+  </data>
+    <data name="SKILL_SupernovaIII" xml:space="preserve">
+    <value>Supernova III</value>
+  </data>
+    <data name="SKILL_WarCryI" xml:space="preserve">
+    <value>War Cry I</value>
+  </data>
+    <data name="SKILL_WarCryII" xml:space="preserve">
+    <value>War Cry II</value>
+  </data>
+    <data name="SKILL_WarCryIII" xml:space="preserve">
+    <value>War Cry III</value>
+  </data>
 </root>

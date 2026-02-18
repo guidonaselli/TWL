@@ -163,7 +163,11 @@
       "ParentSkillId": 1003,
       "ParentSkillRank": 10
     },
-    "Stage": 1
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 10,
+      "NextSkillId": 1020
+    }
   },
   {
     "SkillId": 1101,
@@ -290,7 +294,11 @@
       "ParentSkillId": 1103,
       "ParentSkillRank": 10
     },
-    "Stage": 1
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 10,
+      "NextSkillId": 1120
+    }
   },
   {
     "SkillId": 1201,
@@ -468,7 +476,11 @@
       "MinChance": 0.1,
       "MaxChance": 1.0
     },
-    "Stage": 1
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 10,
+      "NextSkillId": 1220
+    }
   },
   {
     "SkillId": 3001,
@@ -787,7 +799,11 @@
       "ParentSkillId": 3003,
       "ParentSkillRank": 10
     },
-    "Stage": 1
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 10,
+      "NextSkillId": 3020
+    }
   },
   {
     "SkillId": 3110,
@@ -836,7 +852,11 @@
       "MinChance": 0.1,
       "MaxChance": 0.9
     },
-    "Stage": 1
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 10,
+      "NextSkillId": 3120
+    }
   },
   {
     "SkillId": 3210,
@@ -872,7 +892,11 @@
       "ParentSkillId": 3203,
       "ParentSkillRank": 10
     },
-    "Stage": 1
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 10,
+      "NextSkillId": 3220
+    }
   },
   {
     "SkillId": 2001,
@@ -1232,7 +1256,11 @@
       "ParentSkillId": 4003,
       "ParentSkillRank": 10
     },
-    "Stage": 1
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 10,
+      "NextSkillId": 4020
+    }
   },
   {
     "SkillId": 4101,
@@ -1355,7 +1383,11 @@
       "ParentSkillId": 4103,
       "ParentSkillRank": 10
     },
-    "Stage": 1
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 10,
+      "NextSkillId": 4120
+    }
   },
   {
     "SkillId": 4201,
@@ -1482,7 +1514,11 @@
       "ParentSkillId": 4203,
       "ParentSkillRank": 10
     },
-    "Stage": 1
+    "Stage": 1,
+    "StageUpgradeRules": {
+      "RankThreshold": 10,
+      "NextSkillId": 4220
+    }
   },
   {
     "SkillId": 5001,
@@ -2145,6 +2181,564 @@
         "Outcome": "Resist",
         "ResistanceTags": ["SealResist"]
       }
+    ],
+    "Stage": 3
+  },
+  {
+    "SkillId": 1020,
+    "Name": "Earthquake I",
+    "DisplayNameKey": "SKILL_EarthquakeI",
+    "Description": "A massive quake that damages and slows enemies. Stage 1.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Earth",
+    "Branch": "Physical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 45,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.0 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
+      { "Tag": "DebuffStats", "Param": "Spd", "Value": 10, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Spd" }
+    ],
+    "UnlockRules": { "ParentSkillId": 1010, "ParentSkillRank": 10 },
+    "Stage": 1,
+    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 1021 }
+  },
+  {
+    "SkillId": 1021,
+    "Name": "Earthquake II",
+    "DisplayNameKey": "SKILL_EarthquakeII",
+    "Description": "A massive quake that damages and slows enemies. Stage 2.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Earth",
+    "Branch": "Physical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 50,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.2 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
+      { "Tag": "DebuffStats", "Param": "Spd", "Value": 15, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Spd" }
+    ],
+    "Stage": 2,
+    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 1022 }
+  },
+  {
+    "SkillId": 1022,
+    "Name": "Earthquake III",
+    "DisplayNameKey": "SKILL_EarthquakeIII",
+    "Description": "A massive quake that damages and slows enemies. Stage 3.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Earth",
+    "Branch": "Physical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 55,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.4 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
+      { "Tag": "DebuffStats", "Param": "Spd", "Value": 20, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Spd" }
+    ],
+    "Stage": 3
+  },
+  {
+    "SkillId": 1120,
+    "Name": "Meteor Strike I",
+    "DisplayNameKey": "SKILL_MeteorStrikeI",
+    "Description": "Calls down a meteor on a single foe. Stage 1.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Earth",
+    "Branch": "Magical",
+    "Tier": 3,
+    "TargetType": "SingleEnemy",
+    "SpCost": 50,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.5 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    ],
+    "UnlockRules": { "ParentSkillId": 1110, "ParentSkillRank": 10 },
+    "Stage": 1,
+    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 1121 }
+  },
+  {
+    "SkillId": 1121,
+    "Name": "Meteor Strike II",
+    "DisplayNameKey": "SKILL_MeteorStrikeII",
+    "Description": "Calls down a meteor on a single foe. Stage 2.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Earth",
+    "Branch": "Magical",
+    "Tier": 3,
+    "TargetType": "SingleEnemy",
+    "SpCost": 55,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.7 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    ],
+    "Stage": 2,
+    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 1122 }
+  },
+  {
+    "SkillId": 1122,
+    "Name": "Meteor Strike III",
+    "DisplayNameKey": "SKILL_MeteorStrikeIII",
+    "Description": "Calls down a meteor on a single foe. Stage 3.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Earth",
+    "Branch": "Magical",
+    "Tier": 3,
+    "TargetType": "SingleEnemy",
+    "SpCost": 60,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.9 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    ],
+    "Stage": 3
+  },
+  {
+    "SkillId": 1220,
+    "Name": "Stone Fortress I",
+    "DisplayNameKey": "SKILL_StoneFortressI",
+    "Description": "Significantly buffs defense of all allies. Stage 1.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Earth",
+    "Branch": "Support",
+    "Tier": 3,
+    "TargetType": "AllAllies",
+    "SpCost": 40,
+    "Cooldown": 4,
+    "Scaling": [],
+    "Effects": [
+      { "Tag": "BuffStats", "Param": "Def", "Value": 25, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Def", "Priority": 2 },
+      { "Tag": "BuffStats", "Param": "SealResist", "Value": 0.4, "Duration": 3, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Resist", "Priority": 2 }
+    ],
+    "UnlockRules": { "ParentSkillId": 1210, "ParentSkillRank": 10 },
+    "Stage": 1,
+    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 1221 }
+  },
+  {
+    "SkillId": 1221,
+    "Name": "Stone Fortress II",
+    "DisplayNameKey": "SKILL_StoneFortressII",
+    "Description": "Significantly buffs defense of all allies. Stage 2.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Earth",
+    "Branch": "Support",
+    "Tier": 3,
+    "TargetType": "AllAllies",
+    "SpCost": 45,
+    "Cooldown": 4,
+    "Scaling": [],
+    "Effects": [
+      { "Tag": "BuffStats", "Param": "Def", "Value": 30, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Def", "Priority": 2 },
+      { "Tag": "BuffStats", "Param": "SealResist", "Value": 0.45, "Duration": 3, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Resist", "Priority": 2 }
+    ],
+    "Stage": 2,
+    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 1222 }
+  },
+  {
+    "SkillId": 1222,
+    "Name": "Stone Fortress III",
+    "DisplayNameKey": "SKILL_StoneFortressIII",
+    "Description": "Significantly buffs defense of all allies. Stage 3.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Earth",
+    "Branch": "Support",
+    "Tier": 3,
+    "TargetType": "AllAllies",
+    "SpCost": 50,
+    "Cooldown": 4,
+    "Scaling": [],
+    "Effects": [
+      { "Tag": "BuffStats", "Param": "Def", "Value": 35, "Duration": 4, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Def", "Priority": 2 },
+      { "Tag": "BuffStats", "Param": "SealResist", "Value": 0.5, "Duration": 4, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Resist", "Priority": 2 }
+    ],
+    "Stage": 3
+  },
+  {
+    "SkillId": 3020,
+    "Name": "Tsunami I",
+    "DisplayNameKey": "SKILL_TsunamiI",
+    "Description": "A tidal wave that crashes over all enemies. Stage 1.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Physical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 45,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Atk", "Coefficient": 1.8 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
+      { "Tag": "DebuffStats", "Param": "Atk", "Value": 10, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Atk" }
+    ],
+    "UnlockRules": { "ParentSkillId": 3010, "ParentSkillRank": 10 },
+    "Stage": 1,
+    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 3021 }
+  },
+  {
+    "SkillId": 3021,
+    "Name": "Tsunami II",
+    "DisplayNameKey": "SKILL_TsunamiII",
+    "Description": "A tidal wave that crashes over all enemies. Stage 2.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Physical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 50,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.0 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
+      { "Tag": "DebuffStats", "Param": "Atk", "Value": 15, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Atk" }
+    ],
+    "Stage": 2,
+    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 3022 }
+  },
+  {
+    "SkillId": 3022,
+    "Name": "Tsunami III",
+    "DisplayNameKey": "SKILL_TsunamiIII",
+    "Description": "A tidal wave that crashes over all enemies. Stage 3.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Physical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 55,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.2 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
+      { "Tag": "DebuffStats", "Param": "Atk", "Value": 20, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Atk" }
+    ],
+    "Stage": 3
+  },
+  {
+    "SkillId": 3120,
+    "Name": "Blizzard I",
+    "DisplayNameKey": "SKILL_BlizzardI",
+    "Description": "A freezing storm that may seal enemies. Stage 1.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Magical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 50,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.0 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
+      { "Tag": "Seal", "Value": 0, "Duration": 1, "Chance": 0.4, "StackingPolicy": "RefreshDuration", "ConflictGroup": "HardControl", "Outcome": "Resist", "ResistanceTags": ["SealResist"] }
+    ],
+    "UnlockRules": { "ParentSkillId": 3110, "ParentSkillRank": 10 },
+    "Stage": 1,
+    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 3121 }
+  },
+  {
+    "SkillId": 3121,
+    "Name": "Blizzard II",
+    "DisplayNameKey": "SKILL_BlizzardII",
+    "Description": "A freezing storm that may seal enemies. Stage 2.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Magical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 55,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.2 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
+      { "Tag": "Seal", "Value": 0, "Duration": 1, "Chance": 0.5, "StackingPolicy": "RefreshDuration", "ConflictGroup": "HardControl", "Outcome": "Resist", "ResistanceTags": ["SealResist"] }
+    ],
+    "Stage": 2,
+    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 3122 }
+  },
+  {
+    "SkillId": 3122,
+    "Name": "Blizzard III",
+    "DisplayNameKey": "SKILL_BlizzardIII",
+    "Description": "A freezing storm that may seal enemies. Stage 3.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Magical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 60,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.4 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
+      { "Tag": "Seal", "Value": 0, "Duration": 2, "Chance": 0.5, "StackingPolicy": "RefreshDuration", "ConflictGroup": "HardControl", "Outcome": "Resist", "ResistanceTags": ["SealResist"] }
+    ],
+    "Stage": 3
+  },
+  {
+    "SkillId": 3220,
+    "Name": "Ocean's Blessing I",
+    "DisplayNameKey": "SKILL_OceansBlessingI",
+    "Description": "Heals and cleanses all allies. Stage 1.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Support",
+    "Tier": 3,
+    "TargetType": "AllAllies",
+    "SpCost": 60,
+    "Cooldown": 5,
+    "Scaling": [{ "Stat": "Wis", "Coefficient": 2.5 }],
+    "Effects": [
+      { "Tag": "Cleanse", "Value": 0 },
+      { "Tag": "Heal", "Value": 0, "Chance": 1.0 }
+    ],
+    "UnlockRules": { "ParentSkillId": 3210, "ParentSkillRank": 10 },
+    "Stage": 1,
+    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 3221 }
+  },
+  {
+    "SkillId": 3221,
+    "Name": "Ocean's Blessing II",
+    "DisplayNameKey": "SKILL_OceansBlessingII",
+    "Description": "Heals and cleanses all allies. Stage 2.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Support",
+    "Tier": 3,
+    "TargetType": "AllAllies",
+    "SpCost": 65,
+    "Cooldown": 5,
+    "Scaling": [{ "Stat": "Wis", "Coefficient": 2.8 }],
+    "Effects": [
+      { "Tag": "Cleanse", "Value": 0 },
+      { "Tag": "Heal", "Value": 0, "Chance": 1.0 }
+    ],
+    "Stage": 2,
+    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 3222 }
+  },
+  {
+    "SkillId": 3222,
+    "Name": "Ocean's Blessing III",
+    "DisplayNameKey": "SKILL_OceansBlessingIII",
+    "Description": "Heals and cleanses all allies. Stage 3.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Water",
+    "Branch": "Support",
+    "Tier": 3,
+    "TargetType": "AllAllies",
+    "SpCost": 70,
+    "Cooldown": 5,
+    "Scaling": [{ "Stat": "Wis", "Coefficient": 3.1 }],
+    "Effects": [
+      { "Tag": "Cleanse", "Value": 0 },
+      { "Tag": "Heal", "Value": 0, "Chance": 1.0 }
+    ],
+    "Stage": 3
+  },
+  {
+    "SkillId": 4020,
+    "Name": "Volcanic Eruption I",
+    "DisplayNameKey": "SKILL_VolcanicEruptionI",
+    "Description": "Erupts the ground beneath all enemies. Stage 1.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Physical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 50,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.2 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    ],
+    "UnlockRules": { "ParentSkillId": 4010, "ParentSkillRank": 10 },
+    "Stage": 1,
+    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 4021 }
+  },
+  {
+    "SkillId": 4021,
+    "Name": "Volcanic Eruption II",
+    "DisplayNameKey": "SKILL_VolcanicEruptionII",
+    "Description": "Erupts the ground beneath all enemies. Stage 2.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Physical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 55,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.4 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    ],
+    "Stage": 2,
+    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 4022 }
+  },
+  {
+    "SkillId": 4022,
+    "Name": "Volcanic Eruption III",
+    "DisplayNameKey": "SKILL_VolcanicEruptionIII",
+    "Description": "Erupts the ground beneath all enemies. Stage 3.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Physical",
+    "Tier": 3,
+    "TargetType": "AllEnemies",
+    "SpCost": 60,
+    "Cooldown": 3,
+    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.6 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    ],
+    "Stage": 3
+  },
+  {
+    "SkillId": 4120,
+    "Name": "Supernova I",
+    "DisplayNameKey": "SKILL_SupernovaI",
+    "Description": "An explosion of star energy on a single target. Stage 1.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Magical",
+    "Tier": 3,
+    "TargetType": "SingleEnemy",
+    "SpCost": 60,
+    "Cooldown": 4,
+    "Scaling": [{ "Stat": "Mat", "Coefficient": 3.0 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    ],
+    "UnlockRules": { "ParentSkillId": 4110, "ParentSkillRank": 10 },
+    "Stage": 1,
+    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 4121 }
+  },
+  {
+    "SkillId": 4121,
+    "Name": "Supernova II",
+    "DisplayNameKey": "SKILL_SupernovaII",
+    "Description": "An explosion of star energy on a single target. Stage 2.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Magical",
+    "Tier": 3,
+    "TargetType": "SingleEnemy",
+    "SpCost": 65,
+    "Cooldown": 4,
+    "Scaling": [{ "Stat": "Mat", "Coefficient": 3.2 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    ],
+    "Stage": 2,
+    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 4122 }
+  },
+  {
+    "SkillId": 4122,
+    "Name": "Supernova III",
+    "DisplayNameKey": "SKILL_SupernovaIII",
+    "Description": "An explosion of star energy on a single target. Stage 3.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Magical",
+    "Tier": 3,
+    "TargetType": "SingleEnemy",
+    "SpCost": 70,
+    "Cooldown": 4,
+    "Scaling": [{ "Stat": "Mat", "Coefficient": 3.5 }],
+    "Effects": [
+      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    ],
+    "Stage": 3
+  },
+  {
+    "SkillId": 4220,
+    "Name": "War Cry I",
+    "DisplayNameKey": "SKILL_WarCryI",
+    "Description": "Raises Attack and Magic Attack of all allies. Stage 1.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Support",
+    "Tier": 3,
+    "TargetType": "AllAllies",
+    "SpCost": 40,
+    "Cooldown": 4,
+    "Scaling": [],
+    "Effects": [
+      { "Tag": "BuffStats", "Param": "Atk", "Value": 25, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Atk", "Priority": 2 },
+      { "Tag": "BuffStats", "Param": "Mat", "Value": 25, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Mat", "Priority": 2 }
+    ],
+    "UnlockRules": { "ParentSkillId": 4210, "ParentSkillRank": 10 },
+    "Stage": 1,
+    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 4221 }
+  },
+  {
+    "SkillId": 4221,
+    "Name": "War Cry II",
+    "DisplayNameKey": "SKILL_WarCryII",
+    "Description": "Raises Attack and Magic Attack of all allies. Stage 2.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Support",
+    "Tier": 3,
+    "TargetType": "AllAllies",
+    "SpCost": 45,
+    "Cooldown": 4,
+    "Scaling": [],
+    "Effects": [
+      { "Tag": "BuffStats", "Param": "Atk", "Value": 30, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Atk", "Priority": 2 },
+      { "Tag": "BuffStats", "Param": "Mat", "Value": 30, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Mat", "Priority": 2 }
+    ],
+    "Stage": 2,
+    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 4222 }
+  },
+  {
+    "SkillId": 4222,
+    "Name": "War Cry III",
+    "DisplayNameKey": "SKILL_WarCryIII",
+    "Description": "Raises Attack and Magic Attack of all allies. Stage 3.",
+    "Family": "Core",
+    "Category": "None",
+    "Element": "Fire",
+    "Branch": "Support",
+    "Tier": 3,
+    "TargetType": "AllAllies",
+    "SpCost": 50,
+    "Cooldown": 4,
+    "Scaling": [],
+    "Effects": [
+      { "Tag": "BuffStats", "Param": "Atk", "Value": 35, "Duration": 4, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Atk", "Priority": 2 },
+      { "Tag": "BuffStats", "Param": "Mat", "Value": 35, "Duration": 4, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Mat", "Priority": 2 }
     ],
     "Stage": 3
   }
