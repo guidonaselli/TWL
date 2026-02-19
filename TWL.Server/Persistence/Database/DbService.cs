@@ -48,7 +48,7 @@ public class DbService : IDisposable
         }
 
         // Legacy Init (maintain for 'accounts' table until full migration)
-        InitDatabase();
+        // InitDatabase();
 
         Console.WriteLine("Database initialized successfully.");
     }
