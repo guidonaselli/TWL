@@ -41,6 +41,9 @@ Host.CreateDefaultBuilder(args)
         var dataSource = dataSourceBuilder.Build();
         svcs.AddSingleton(dataSource);
 
+        // IDbConnectionFactory for Dapper (mockable)
+        svcs.AddSingleton<IDbConnectionFactory, NpgsqlConnectionFactory>();
+
         // EF Core — factory pattern (required because DbPlayerRepository is a singleton
         // and cannot inject a scoped/transient DbContext directly)
         svcs.AddDbContextFactory<GameDbContext>(opts =>
@@ -97,7 +100,7 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<IPlayerRepository>(sp =>
             new DbPlayerRepository(
                 sp.GetRequiredService<IDbContextFactory<GameDbContext>>(),
-                sp.GetRequiredService<NpgsqlDataSource>(),
+                sp.GetRequiredService<IDbConnectionFactory>(),
                 sp.GetRequiredService<ILogger<DbPlayerRepository>>()));
         svcs.AddSingleton<PlayerService>();
         svcs.AddSingleton<PetService>();

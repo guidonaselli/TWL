@@ -15,7 +15,7 @@ namespace TWL.Server.Persistence.Repositories;
 /// <summary>
 /// Hybrid EF Core (writes) + Dapper (reads) implementation of IPlayerRepository.
 /// Uses IDbContextFactory to create short-lived contexts per save operation (safe for singleton lifecycle).
-/// Uses NpgsqlDataSource for Dapper reads (high-performance single-query loads).
+/// Uses IDbConnectionFactory for Dapper reads (high-performance single-query loads).
 /// </summary>
 public class DbPlayerRepository : IPlayerRepository
 {
@@ -25,16 +25,16 @@ public class DbPlayerRepository : IPlayerRepository
     };
 
     private readonly IDbContextFactory<GameDbContext> _contextFactory;
-    private readonly NpgsqlDataSource _dataSource;
+    private readonly IDbConnectionFactory _connectionFactory;
     private readonly ILogger<DbPlayerRepository> _logger;
 
     public DbPlayerRepository(
         IDbContextFactory<GameDbContext> contextFactory,
-        NpgsqlDataSource dataSource,
+        IDbConnectionFactory connectionFactory,
         ILogger<DbPlayerRepository> logger)
     {
         _contextFactory = contextFactory;
-        _dataSource = dataSource;
+        _connectionFactory = connectionFactory;
         _logger = logger;
     }
 
@@ -119,7 +119,7 @@ public class DbPlayerRepository : IPlayerRepository
     {
         try
         {
-            await using var conn = await _dataSource.OpenConnectionAsync();
+            await using var conn = await _connectionFactory.OpenConnectionAsync();
             var dto = await conn.QueryFirstOrDefaultAsync<PlayerDto>(
                 PlayerQueries.LoadByUserId,
                 new { UserId = userId });
