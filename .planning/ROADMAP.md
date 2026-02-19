@@ -12,7 +12,7 @@ This roadmap delivers production-ready multiplayer systems for commercial launch
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Infrastructure Foundation** - PostgreSQL migration and production-grade persistence
+- [x] **Phase 1: Infrastructure Foundation** - PostgreSQL migration and production-grade persistence
 - [ ] **Phase 2: Security Hardening** - Anti-cheat, anti-replay, and transaction safety
 - [ ] **Phase 3: Content Quality** - Fix broken quest chains and localization
 - [ ] **Phase 4: Party System** - Invite, join, XP/loot sharing, tactical formation
@@ -38,8 +38,8 @@ Decimal phases appear between their surrounding integers in numeric order.
 **Plans**: 2 plans
 
 Plans:
-- [ ] 01-01-PLAN.md -- EF Core infrastructure: GameDbContext, entity configurations, NpgsqlDataSource pooling, initial migration
-- [ ] 01-02-PLAN.md -- DbPlayerRepository (hybrid EF Core + Dapper), DI swap, FilePlayerRepository removal
+- [x] 01-01-PLAN.md -- EF Core infrastructure: GameDbContext, entity configurations, NpgsqlDataSource pooling, initial migration
+- [x] 01-02-PLAN.md -- DbPlayerRepository (hybrid EF Core + Dapper), DI swap, FilePlayerRepository removal
 
 ### Phase 2: Security Hardening
 **Goal**: Server prevents cheating through movement validation, anti-replay protection, and transaction race condition prevention
@@ -222,10 +222,10 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Infrastructure Foundation | 0/2 | Planned | - |
-| 2. Security Hardening | 0/TBD | Not started | - |
-| 3. Content Quality | 0/TBD | Not started | - |
-| 4. Party System | 0/TBD | Not started | - |
+| 1. Infrastructure Foundation | 2/2 | ✅ Complete | 2026-02-19 |
+| 2. Security Hardening | 0/3 | Not started | - |
+| 3. Content Quality | 0/3 | Not started | - |
+| 4. Party System | 0/4 | Not started | - |
 | 5. Guild System | 0/4 | Not started | - |
 | 6. Rebirth System | 0/4 | Not started | - |
 | 7. P2P Market System | 0/5 | Not started | - |
@@ -235,4 +235,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 ---
 *Roadmap created: 2026-02-15*
-*Last updated: 2026-02-17*
+*Last updated: 2026-02-19*

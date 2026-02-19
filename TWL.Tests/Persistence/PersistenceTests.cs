@@ -3,28 +3,32 @@ using TWL.Server.Simulation.Networking;
 
 namespace TWL.Tests.Persistence;
 
-public class PersistenceTests : IDisposable
+/// <summary>
+/// In-memory IPlayerRepository for testing without DB or filesystem dependencies.
+/// </summary>
+internal class InMemoryPlayerRepository : IPlayerRepository
 {
-    private readonly string _testDir;
+    private readonly Dictionary<int, PlayerSaveData> _store = new();
 
-    public PersistenceTests()
+    public Task SaveAsync(int userId, PlayerSaveData data)
     {
-        _testDir = Path.Combine(Path.GetTempPath(), "TWL_Tests_" + Guid.NewGuid());
-        Directory.CreateDirectory(_testDir);
+        _store[userId] = data;
+        return Task.CompletedTask;
     }
 
-    public void Dispose()
-    {
-        if (Directory.Exists(_testDir))
-        {
-            Directory.Delete(_testDir, true);
-        }
-    }
+    public PlayerSaveData? Load(int userId) =>
+        _store.TryGetValue(userId, out var data) ? data : null;
 
+    public Task<PlayerSaveData?> LoadAsync(int userId) =>
+        Task.FromResult(Load(userId));
+}
+
+public class PersistenceTests
+{
     [Fact]
     public async Task Repo_SaveAndLoad_CharacterData()
     {
-        var repo = new FilePlayerRepository(_testDir);
+        var repo = new InMemoryPlayerRepository();
         var data = new PlayerSaveData
         {
             Character = new ServerCharacterData { Id = 1, Name = "TestUser", Hp = 50, Gold = 100 },

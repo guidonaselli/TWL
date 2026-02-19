@@ -40,6 +40,7 @@ public class ClientSession
     private readonly PlayerService _playerService;
     private readonly ServerQuestManager _questManager;
     private readonly RateLimiter _rateLimiter;
+    private readonly ReplayGuard _replayGuard;
     private readonly SpawnManager _spawnManager;
     private readonly NetworkStream _stream;
     private readonly IWorldTriggerService _worldTriggerService;
@@ -53,7 +54,7 @@ public class ClientSession
     public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
-        IWorldTriggerService worldTriggerService, SpawnManager spawnManager)
+        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard)
     {
         _client = client;
         _stream = client.GetStream();
@@ -72,6 +73,7 @@ public class ClientSession
         QuestComponent = new PlayerQuestComponent(questManager, petManager);
         QuestComponent.OnFlagAdded += OnQuestFlagAdded;
         _rateLimiter = new RateLimiter();
+        _replayGuard = replayGuard;
 
         if (_combatManager != null)
         {
@@ -209,6 +211,7 @@ public class ClientSession
             {
                 await _playerService.SaveSessionAsync(this);
                 _playerService.UnregisterSession(UserId);
+                _replayGuard.RemoveSession(UserId);
             }
 
             _stream.Close();
@@ -224,6 +227,18 @@ public class ClientSession
         }
 
         var swValidate = Stopwatch.StartNew();
+
+        // Replay guard check (before rate limiter and opcode dispatch)
+        if (!_replayGuard.Validate(UserId >= 0 ? UserId : msg.GetHashCode(), msg.Nonce, msg.TimestampUtc, out var replayReason))
+        {
+            swValidate.Stop();
+            _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
+            _metrics?.RecordValidationError();
+            SecurityLogger.LogSecurityEvent("ReplayRejected", UserId, $"Opcode:{msg.Op} Reason:{replayReason}");
+            PipelineLogger.LogStage(traceId, "Validate", swValidate.Elapsed.TotalMilliseconds, $"Failed: Replay ({replayReason})");
+            return;
+        }
+
         if (!_rateLimiter.Check(msg.Op))
         {
             swValidate.Stop();

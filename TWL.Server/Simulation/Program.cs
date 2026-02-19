@@ -2,7 +2,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Npgsql;
 using Serilog;
@@ -11,7 +10,9 @@ using TWL.Server.Features.Combat;
 using TWL.Server.Features.Interactions;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
+using TWL.Server.Persistence.Repositories;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Security;
 using TWL.Server.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation;
@@ -35,10 +36,16 @@ Host.CreateDefaultBuilder(args)
     {
         var connString = ctx.Configuration.GetConnectionString("PostgresConn");
 
-        // EF Core
-        svcs.AddDbContext<GameDbContext>(opts =>
+        // NpgsqlDataSource — shared connection pool for both EF Core and Dapper
+        var dataSourceBuilder = new NpgsqlDataSourceBuilder(connString);
+        var dataSource = dataSourceBuilder.Build();
+        svcs.AddSingleton(dataSource);
+
+        // EF Core — factory pattern (required because DbPlayerRepository is a singleton
+        // and cannot inject a scoped/transient DbContext directly)
+        svcs.AddDbContextFactory<GameDbContext>(opts =>
         {
-            opts.UseNpgsql(connString);
+            opts.UseNpgsql(dataSource);
         });
 
         // DbService (Singleton wrapper for legacy code + new migration trigger)
@@ -87,7 +94,11 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<ICombatResolver, StandardCombatResolver>();
         svcs.AddSingleton<CombatManager>();
 
-        svcs.AddSingleton<IPlayerRepository, FilePlayerRepository>();
+        svcs.AddSingleton<IPlayerRepository>(sp =>
+            new DbPlayerRepository(
+                sp.GetRequiredService<IDbContextFactory<GameDbContext>>(),
+                sp.GetRequiredService<NpgsqlDataSource>(),
+                sp.GetRequiredService<ILogger<DbPlayerRepository>>()));
         svcs.AddSingleton<PlayerService>();
         svcs.AddSingleton<PetService>();
 
@@ -100,6 +111,10 @@ Host.CreateDefaultBuilder(args)
             mediator.Register(new InteractHandler(sp.GetRequiredService<InteractionManager>()));
             return mediator;
         });
+
+        // Security: Replay protection
+        svcs.AddSingleton(new ReplayGuardOptions());
+        svcs.AddSingleton<ReplayGuard>();
 
         svcs.AddSingleton<INetworkServer>(sp =>
         {
@@ -117,7 +132,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<PetService>(),
                 sp.GetRequiredService<IMediator>(),
                 sp.GetRequiredService<IWorldTriggerService>(),
-                sp.GetRequiredService<SpawnManager>()
+                sp.GetRequiredService<SpawnManager>(),
+                sp.GetRequiredService<ReplayGuard>()
             );
         });
         svcs.AddSingleton<HealthCheckService>();

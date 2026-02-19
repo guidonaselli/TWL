@@ -26,6 +26,7 @@ using TWL.Shared.Domain.Skills;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Net.Payloads;
 using TWL.Shared.Services;
+using TWL.Server.Security;
 
 namespace Benchmarks;
 
@@ -53,6 +54,14 @@ public class MockRandomService : IRandomService
     public double NextDouble(string? context = null) => _random.NextDouble();
     public float NextFloat(string? context = null) => _random.NextSingle();
     public float NextFloat(float min, float max, string? context = null) => min + (float)_random.NextDouble() * (max - min);
+}
+
+internal class InMemoryPlayerRepository : IPlayerRepository
+{
+    private readonly Dictionary<int, PlayerSaveData> _store = new();
+    public Task SaveAsync(int userId, PlayerSaveData data) { _store[userId] = data; return Task.CompletedTask; }
+    public PlayerSaveData? Load(int userId) => _store.TryGetValue(userId, out var d) ? d : null;
+    public Task<PlayerSaveData?> LoadAsync(int userId) => Task.FromResult(Load(userId));
 }
 
 public class LoadTest
@@ -86,7 +95,7 @@ public class LoadTest
         var interactionManager = new InteractionManager();
 
         // Repo
-        var repo = new FilePlayerRepository("LoadTest_Saves"); // Temp folder
+        var repo = new InMemoryPlayerRepository();
         _playerService = new PlayerService(repo, _metrics);
 
         _economy = new EconomyManager("loadtest_economy.log");
@@ -104,7 +113,8 @@ public class LoadTest
 
         var mediator = new Mediator(); // Using concrete Mediator for load test
         _server = new NetworkServer(0, db, petManager, questManager, combatManager, interactionManager,
-            _playerService, _economy, _metrics, petService, mediator, worldTrigger, spawnManager);
+            _playerService, _economy, _metrics, petService, mediator, worldTrigger, spawnManager,
+            new ReplayGuard(new ReplayGuardOptions()));
     }
 
     public async Task RunAsync()

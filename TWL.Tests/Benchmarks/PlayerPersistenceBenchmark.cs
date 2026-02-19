@@ -5,25 +5,36 @@ using Xunit.Abstractions;
 
 namespace TWL.Tests.Benchmarks;
 
-public class PlayerPersistenceBenchmark : IDisposable
+/// <summary>
+/// In-memory repository for persistence benchmarking.
+/// Simulates I/O delay without filesystem or DB dependencies.
+/// </summary>
+internal class InMemoryBenchmarkRepository : IPlayerRepository
+{
+    private readonly Dictionary<int, PlayerSaveData> _store = new();
+
+    public Task SaveAsync(int userId, PlayerSaveData data)
+    {
+        _store[userId] = data;
+        return Task.CompletedTask;
+    }
+
+    public PlayerSaveData? Load(int userId) =>
+        _store.TryGetValue(userId, out var data) ? data : null;
+
+    public Task<PlayerSaveData?> LoadAsync(int userId) =>
+        Task.FromResult(Load(userId));
+}
+
+public class PlayerPersistenceBenchmark
 {
     private readonly ITestOutputHelper _output;
-    private readonly FilePlayerRepository _repo;
-    private readonly string _tempDir;
+    private readonly InMemoryBenchmarkRepository _repo;
 
     public PlayerPersistenceBenchmark(ITestOutputHelper output)
     {
         _output = output;
-        _tempDir = Path.Combine(Path.GetTempPath(), "TWL_Benchmark_" + Guid.NewGuid());
-        _repo = new FilePlayerRepository(_tempDir);
-    }
-
-    public void Dispose()
-    {
-        if (Directory.Exists(_tempDir))
-        {
-            Directory.Delete(_tempDir, true);
-        }
+        _repo = new InMemoryBenchmarkRepository();
     }
 
     private PlayerSaveData CreateDummyData()

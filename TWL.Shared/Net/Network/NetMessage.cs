@@ -13,6 +13,18 @@ public class NetMessage
     public Opcode Op { get; set; }
     public string JsonPayload { get; set; }
 
+    /// <summary>
+    /// Unique nonce per message for replay protection.
+    /// Legacy clients may omit this field (nullable for backward safety).
+    /// </summary>
+    public string? Nonce { get; set; }
+
+    /// <summary>
+    /// UTC timestamp of message creation for freshness validation.
+    /// Legacy clients may omit this field (nullable for backward safety).
+    /// </summary>
+    public DateTime? TimestampUtc { get; set; }
+
     public static NetMessage? Deserialize(byte[] buffer, int count)
     {
         var span = new ReadOnlySpan<byte>(buffer, 0, count);

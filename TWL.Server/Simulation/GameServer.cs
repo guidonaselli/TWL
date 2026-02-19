@@ -6,6 +6,7 @@ using TWL.Server.Features.Interactions;
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Security;
 using TWL.Server.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Services.World.Handlers;
@@ -25,11 +26,13 @@ public class GameServer
     // Accesores para DB o lógic
     public DbService DB { get; private set; }
     public PetManager PetManager { get; private set; }
+    private readonly IPlayerRepository _playerRepo;
 
     // Add constructor for DI or manual instantiation with dependencies
-    public GameServer(DbService dbService)
+    public GameServer(DbService dbService, IPlayerRepository playerRepo)
     {
         DB = dbService;
+        _playerRepo = playerRepo;
     }
     public MonsterManager MonsterManager { get; private set; }
     public NpcManager NpcManager { get; private set; }
@@ -71,8 +74,7 @@ public class GameServer
         // Let's check ServerWorker.cs.
 
         // Init Player Persistence
-        var playerRepo = new FilePlayerRepository();
-        PlayerService = new PlayerService(playerRepo, Metrics);
+        PlayerService = new PlayerService(_playerRepo, Metrics);
         PlayerService.Start();
 
         // 2) Carga definiciones (items, quests, skills)
@@ -181,7 +183,8 @@ public class GameServer
 
         // 3) Inicia Network
         _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager,
-            PlayerService, EconomyManager, Metrics, PetService, mediator, worldTriggerService, SpawnManager);
+            PlayerService, EconomyManager, Metrics, PetService, mediator, worldTriggerService, SpawnManager,
+            new ReplayGuard(new ReplayGuardOptions()));
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");

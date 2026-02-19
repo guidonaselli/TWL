@@ -25,6 +25,7 @@ using TWL.Shared.Domain.Skills;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Net.Payloads;
 using TWL.Shared.Services;
+using TWL.Server.Security;
 
 namespace Benchmarks;
 
@@ -48,7 +49,7 @@ public class LoginBenchmark
 
         _metrics = new ServerMetrics();
         _db = new MockDbService(); // Reuse from LoadTest.cs logic
-        var repo = new FilePlayerRepository(SaveDir);
+        var repo = new InMemoryPlayerRepository();
         _playerService = new PlayerService(repo, _metrics);
 
         // Populate dummy data so LoadData hits the disk
@@ -92,7 +93,8 @@ public class LoginBenchmark
         var worldTrigger = new WorldTriggerService(NullLogger<WorldTriggerService>.Instance, _metrics, _playerService, scheduler, mapRegistry);
 
         _server = new NetworkServer(0, _db, petManager, questManager, combatManager, interactionManager,
-            _playerService, economy, _metrics, petService, new Mediator(), worldTrigger, spawnManager);
+            _playerService, economy, _metrics, petService, new Mediator(), worldTrigger, spawnManager,
+            new ReplayGuard(new ReplayGuardOptions()));
 
         _playerService.Start();
         _server.Start();

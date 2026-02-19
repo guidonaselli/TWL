@@ -5,33 +5,33 @@
 See: .planning/PROJECT.md (updated 2026-02-14)
 
 **Core value:** The multiplayer gameplay loop works end-to-end: players can party up for tactical combat, trade items through a player-driven market, form guilds with shared resources, progress their characters through rebirth mechanics, and experience deep pet companion gameplay - all in a secure, persistent shared world.
-**Current focus:** Phase 1: Infrastructure Foundation
+**Current focus:** Phase 2: Security Hardening
 
 ## Current Position
 
-Phase: 1 of 10 (Infrastructure Foundation)
+Phase: 2 of 10 (Security Hardening)
 Plan: Not yet planned
 Status: Ready to plan
-Last activity: 2026-02-15 — Roadmap created with 10 phases covering all 61 v1 requirements
+Last activity: 2026-02-19 — Phase 1 Infrastructure Foundation completed (both plans executed)
 
-Progress: [░░░░░░░░░░] 0%
+Progress: [█░░░░░░░░░] 10%
 
 ## Performance Metrics
 
 **Velocity:**
-- Total plans completed: 0
-- Average duration: N/A
-- Total execution time: 0.0 hours
+- Total plans completed: 2
+- Average duration: ~15 min/plan
+- Total execution time: ~0.5 hours
 
 **By Phase:**
 
 | Phase | Plans | Total | Avg/Plan |
 |-------|-------|-------|----------|
-| - | - | - | - |
+| 1. Infrastructure | 2/2 | ~30 min | ~15 min |
 
 **Recent Trend:**
-- Last 5 plans: None yet
-- Trend: N/A
+- Last 5 plans: 01-01 ✅, 01-02 ✅
+- Trend: N/A (first completions)
 
 *Updated after each plan completion*
 
@@ -48,14 +48,15 @@ Recent decisions affecting current work:
 
 ### Pending Todos
 
-None yet.
+- End-to-end PostgreSQL test (requires Docker running with `docker-compose up`)
+- Apply migration to live DB: `dotnet ef database update --project TWL.Server`
 
 ### Blockers/Concerns
 
-**Phase 1 (Infrastructure):**
-- PostgreSQL connection string configuration needed (environment variables vs config files)
-- EF Core migration strategy needs definition (code-first vs database-first)
-- FilePlayerRepository removal impacts existing save files (migration path needed)
+**Phase 1 (Infrastructure):** ✅ RESOLVED
+- ~~PostgreSQL connection string configuration~~ → Uses `ConnectionStrings:PostgresConn` in `ServerConfig.json`
+- ~~EF Core migration strategy~~ → Code-first with `ApplyConfigurationsFromAssembly`
+- ~~FilePlayerRepository removal~~ → Deleted, replaced by `DbPlayerRepository`, tests use `InMemoryPlayerRepository`
 
 **Phase 2 (Security):**
 - Movement validation requires baseline movement speed data (not yet defined in content files)
@@ -67,9 +68,9 @@ None yet.
 
 ## Session Continuity
 
-Last session: 2026-02-15 (roadmap creation)
-Stopped at: ROADMAP.md and STATE.md created, ready for Phase 1 planning
+Last session: 2026-02-19 (Phase 1 execution)
+Stopped at: Phase 1 complete (2/2 plans), ready for Phase 2 planning
 Resume file: None
 
 ---
-*Next step: Run `/gsd:plan-phase 1` to create execution plan for Infrastructure Foundation*
+*Next step: Plan Phase 2 (Security Hardening) — anti-replay, movement validation, transaction safety*
