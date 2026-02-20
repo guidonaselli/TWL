@@ -59,6 +59,19 @@ public class ContentValidationTests
 
                 Assert.True(skill.StageUpgradeRules.RankThreshold > 0,
                     $"Skill {skill.SkillId} has StageUpgradeRules but invalid RankThreshold {skill.StageUpgradeRules.RankThreshold}");
+
+                // SKL-004: Enforce Standard Rank Thresholds for Core Skills (6 for Stage 1->2, 12 for Stage 2->3)
+                if (skill.Family == SkillFamily.Core)
+                {
+                    if (skill.Stage == 1)
+                    {
+                        Assert.Equal(6, skill.StageUpgradeRules.RankThreshold);
+                    }
+                    else if (skill.Stage == 2)
+                    {
+                        Assert.Equal(12, skill.StageUpgradeRules.RankThreshold);
+                    }
+                }
             }
         }
     }
@@ -295,6 +308,10 @@ public class ContentValidationTests
                 return; // Unreachable, but satisfies compiler analysis
             }
 
+            // Sanity check on the Rule itself (SKL-004)
+            Assert.True(budget.MinSp <= budget.MaxSp, $"ContentRules Error: MinSp > MaxSp for {skill.Family} Tier {skill.Tier}");
+            Assert.True(budget.MinCd <= budget.MaxCd, $"ContentRules Error: MinCd > MaxCd for {skill.Family} Tier {skill.Tier}");
+
             Assert.True(skill.SpCost >= budget.MinSp && skill.SpCost <= budget.MaxSp,
                 $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated SP Budget [{budget.MinSp}-{budget.MaxSp}]. Value: {skill.SpCost}");
             Assert.True(skill.Cooldown >= budget.MinCd && skill.Cooldown <= budget.MaxCd,
@@ -324,6 +341,10 @@ public class ContentValidationTests
 
                 if (isHardControl)
                 {
+                    // SKL-004: Hard Control must have duration >= 1
+                    Assert.True(effect.Duration >= 1,
+                        $"Skill {skill.SkillId} ({skill.Name}) has Hard Control effect with 0 Duration. Must be >= 1.");
+
                     Assert.True(effect.Duration <= budget.MaxHardControlDuration,
                         $"Skill {skill.SkillId} ({skill.Name}) Tier {skill.Tier} {skill.Family} violated Control Duration Limit. Value: {effect.Duration}, Max: {budget.MaxHardControlDuration}");
 
