@@ -25,16 +25,16 @@ public class DbPlayerRepository : IPlayerRepository
     };
 
     private readonly IDbContextFactory<GameDbContext> _contextFactory;
-    private readonly IDbConnectionFactory _connectionFactory;
+    private readonly IDapperService _dapperService;
     private readonly ILogger<DbPlayerRepository> _logger;
 
     public DbPlayerRepository(
         IDbContextFactory<GameDbContext> contextFactory,
-        IDbConnectionFactory connectionFactory,
+        IDapperService dapperService,
         ILogger<DbPlayerRepository> logger)
     {
         _contextFactory = contextFactory;
-        _connectionFactory = connectionFactory;
+        _dapperService = dapperService;
         _logger = logger;
     }
 
@@ -119,8 +119,7 @@ public class DbPlayerRepository : IPlayerRepository
     {
         try
         {
-            await using var conn = await _connectionFactory.OpenConnectionAsync();
-            var dto = await conn.QueryFirstOrDefaultAsync<PlayerDto>(
+            var dto = await _dapperService.QueryFirstOrDefaultAsync<PlayerDto>(
                 PlayerQueries.LoadByUserId,
                 new { UserId = userId });
 
