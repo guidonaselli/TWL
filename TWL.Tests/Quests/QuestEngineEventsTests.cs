@@ -145,10 +145,8 @@ public class QuestEngineEventsTests : IDisposable
         var type = _interactionManager.ProcessInteraction(_player, _questComponent, "AlchemyTable");
         Assert.Equal("Compound", type);
 
-        if (type != null)
-        {
-            _questComponent.TryProgress(new HashSet<int>(), "AlchemyTable", type);
-        }
+        // Simulate ServerCharacter event
+        _player.NotifyInteract("AlchemyTable", type);
 
         // Assert
         Assert.Equal(QuestState.Completed, _questComponent.QuestStates[3]);

@@ -36,6 +36,7 @@ public class PlayerQuestComponent
 
     public event Action<string>? OnFlagAdded;
     public event Action<string>? OnFlagRemoved;
+    public event Action<int>? OnQuestUpdated;
 
     public void AddFlag(string flag)
     {
@@ -86,6 +87,8 @@ public class PlayerQuestComponent
                 _character.OnInstanceFailed -= HandleInstanceFailureInternal;
                 _character.OnEscortSuccess -= HandleEscortSuccessInternal;
                 _character.OnEscortFailure -= HandleEscortFailureInternal;
+                _character.OnInteract -= HandleInteractInternal;
+                _character.OnFish -= HandleFishInternal;
             }
 
             _character = value;
@@ -106,9 +109,34 @@ public class PlayerQuestComponent
                 _character.OnInstanceFailed += HandleInstanceFailureInternal;
                 _character.OnEscortSuccess += HandleEscortSuccessInternal;
                 _character.OnEscortFailure += HandleEscortFailureInternal;
+                _character.OnInteract += HandleInteractInternal;
+                _character.OnFish += HandleFishInternal;
             }
         }
     }
+
+    private void HandleInteractInternal(string targetName, string? interactionType)
+    {
+        var uniqueUpdates = new HashSet<int>();
+
+        // Try "Talk", "Collect", "Interact"
+        TryProgress(uniqueUpdates, targetName, "Talk", "Collect", "Interact");
+
+        // Try "Deliver" objectives
+        var deliveredQuests = TryDeliver(targetName);
+        foreach (var qid in deliveredQuests)
+        {
+            uniqueUpdates.Add(qid);
+        }
+
+        // If specific interaction type exists (e.g. Craft), try it
+        if (!string.IsNullOrEmpty(interactionType))
+        {
+            TryProgress(uniqueUpdates, targetName, interactionType);
+        }
+    }
+
+    private void HandleFishInternal(string location) => TryProgress("Fish", location);
 
     private void HandleKill(string targetName, int? monsterId)
     {
@@ -777,6 +805,7 @@ public class PlayerQuestComponent
             QuestStartTimes[questId] = DateTime.UtcNow;
 
             IsDirty = true;
+            OnQuestUpdated?.Invoke(questId);
             return true;
         }
     }
@@ -818,6 +847,7 @@ public class PlayerQuestComponent
 
         CheckCompletion(questId);
         IsDirty = true;
+        OnQuestUpdated?.Invoke(questId);
     }
 
     private void CheckCompletion(int questId)
@@ -910,6 +940,7 @@ public class PlayerQuestComponent
             QuestStates[questId] = QuestState.RewardClaimed;
             QuestCompletionTimes[questId] = DateTime.UtcNow;
             IsDirty = true;
+            OnQuestUpdated?.Invoke(questId);
             return true;
         }
     }
@@ -925,6 +956,7 @@ public class PlayerQuestComponent
 
             QuestStates[questId] = QuestState.Failed;
             IsDirty = true;
+            OnQuestUpdated?.Invoke(questId);
             return true;
         }
     }
@@ -973,6 +1005,7 @@ public class PlayerQuestComponent
         {
             QuestStates[id] = QuestState.Failed;
             IsDirty = true;
+            OnQuestUpdated?.Invoke(id);
         }
     }
 
