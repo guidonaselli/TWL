@@ -25,28 +25,15 @@ public class InteractHandler : ICommandHandler<InteractCommand, InteractResult>
             interactionType = _interactionManager.ProcessInteraction(character, questComponent, targetName);
         }
 
-        var uniqueUpdates = new HashSet<int>();
-
-        // Try "Talk", "Collect", "Interact"
-        questComponent.TryProgress(uniqueUpdates, targetName, "Talk", "Collect", "Interact");
-
-        // Try "Deliver" objectives
-        var deliveredQuests = questComponent.TryDeliver(targetName);
-        foreach (var qid in deliveredQuests)
-        {
-            uniqueUpdates.Add(qid);
-        }
-
-        // If interaction was successful (e.g. Crafting done), try "Craft" objectives
-        if (!string.IsNullOrEmpty(interactionType))
-        {
-            questComponent.TryProgress(uniqueUpdates, targetName, interactionType);
-        }
+        // Notify character of interaction (Event-Driven)
+        // PlayerQuestComponent listens to OnInteract and updates state.
+        // ClientSession listens to OnQuestUpdated and sends packets.
+        character.NotifyInteract(targetName, interactionType);
 
         var result = new InteractResult
         {
             Success = true,
-            UpdatedQuestIds = new List<int>(uniqueUpdates)
+            UpdatedQuestIds = new List<int>() // Events handle updates now
         };
 
         return Task.FromResult(result);

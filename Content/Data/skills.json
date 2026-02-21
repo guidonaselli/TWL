@@ -165,7 +165,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 1020
     }
   },
@@ -296,7 +296,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 1120
     }
   },
@@ -478,7 +478,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 1220
     }
   },
@@ -801,7 +801,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 3020
     }
   },
@@ -854,7 +854,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 3120
     }
   },
@@ -894,7 +894,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 3220
     }
   },
@@ -1258,7 +1258,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 4020
     }
   },
@@ -1385,7 +1385,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 4120
     }
   },
@@ -1516,7 +1516,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 4220
     }
   },
@@ -1652,7 +1652,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 5020
     }
   },
@@ -1776,7 +1776,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 5120
     }
   },
@@ -1904,7 +1904,7 @@
     },
     "Stage": 1,
     "StageUpgradeRules": {
-      "RankThreshold": 10,
+      "RankThreshold": 6,
       "NextSkillId": 5220
     }
   },
@@ -1922,11 +1922,21 @@
     "SpCost": 45,
     "Cooldown": 3,
     "Scaling": [
-      { "Stat": "Atk", "Coefficient": 2.0 },
-      { "Stat": "Spd", "Coefficient": 0.5 }
+      {
+        "Stat": "Atk",
+        "Coefficient": 2.0
+      },
+      {
+        "Stat": "Spd",
+        "Coefficient": 0.5
+      }
     ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "UnlockRules": {
       "ParentSkillId": 5010,
@@ -1952,11 +1962,21 @@
     "SpCost": 50,
     "Cooldown": 3,
     "Scaling": [
-      { "Stat": "Atk", "Coefficient": 2.2 },
-      { "Stat": "Spd", "Coefficient": 0.6 }
+      {
+        "Stat": "Atk",
+        "Coefficient": 2.2
+      },
+      {
+        "Stat": "Spd",
+        "Coefficient": 0.6
+      }
     ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "Stage": 2,
     "StageUpgradeRules": {
@@ -1978,11 +1998,21 @@
     "SpCost": 55,
     "Cooldown": 3,
     "Scaling": [
-      { "Stat": "Atk", "Coefficient": 2.4 },
-      { "Stat": "Spd", "Coefficient": 0.7 }
+      {
+        "Stat": "Atk",
+        "Coefficient": 2.4
+      },
+      {
+        "Stat": "Spd",
+        "Coefficient": 0.7
+      }
     ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "Stage": 3
   },
@@ -2000,10 +2030,17 @@
     "SpCost": 50,
     "Cooldown": 3,
     "Scaling": [
-      { "Stat": "Mat", "Coefficient": 2.2 }
+      {
+        "Stat": "Mat",
+        "Coefficient": 2.2
+      }
     ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "UnlockRules": {
       "ParentSkillId": 5110,
@@ -2029,10 +2066,17 @@
     "SpCost": 55,
     "Cooldown": 3,
     "Scaling": [
-      { "Stat": "Mat", "Coefficient": 2.4 }
+      {
+        "Stat": "Mat",
+        "Coefficient": 2.4
+      }
     ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "Stage": 2,
     "StageUpgradeRules": {
@@ -2054,10 +2098,17 @@
     "SpCost": 60,
     "Cooldown": 3,
     "Scaling": [
-      { "Stat": "Mat", "Coefficient": 2.6 }
+      {
+        "Stat": "Mat",
+        "Coefficient": 2.6
+      }
     ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "Stage": 3
   },
@@ -2091,7 +2142,9 @@
         "StackingPolicy": "RefreshDuration",
         "ConflictGroup": "HardControl",
         "Outcome": "Resist",
-        "ResistanceTags": ["SealResist"]
+        "ResistanceTags": [
+          "SealResist"
+        ]
       }
     ],
     "UnlockRules": {
@@ -2140,7 +2193,9 @@
         "StackingPolicy": "RefreshDuration",
         "ConflictGroup": "HardControl",
         "Outcome": "Resist",
-        "ResistanceTags": ["SealResist"]
+        "ResistanceTags": [
+          "SealResist"
+        ]
       }
     ],
     "Stage": 2,
@@ -2179,7 +2234,9 @@
         "StackingPolicy": "RefreshDuration",
         "ConflictGroup": "HardControl",
         "Outcome": "Resist",
-        "ResistanceTags": ["SealResist"]
+        "ResistanceTags": [
+          "SealResist"
+        ]
       }
     ],
     "Stage": 3
@@ -2197,14 +2254,37 @@
     "TargetType": "AllEnemies",
     "SpCost": 45,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.0 }],
-    "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
-      { "Tag": "DebuffStats", "Param": "Spd", "Value": 10, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Spd" }
+    "Scaling": [
+      {
+        "Stat": "Atk",
+        "Coefficient": 2.0
+      }
     ],
-    "UnlockRules": { "ParentSkillId": 1010, "ParentSkillRank": 10 },
+    "Effects": [
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "DebuffStats",
+        "Param": "Spd",
+        "Value": 10,
+        "Duration": 2,
+        "Chance": 0.8,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Debuff_Spd"
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 1010,
+      "ParentSkillRank": 10
+    },
     "Stage": 1,
-    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 1021 }
+    "StageUpgradeRules": {
+      "RankThreshold": 6,
+      "NextSkillId": 1021
+    }
   },
   {
     "SkillId": 1021,
@@ -2219,13 +2299,33 @@
     "TargetType": "AllEnemies",
     "SpCost": 50,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.2 }],
+    "Scaling": [
+      {
+        "Stat": "Atk",
+        "Coefficient": 2.2
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
-      { "Tag": "DebuffStats", "Param": "Spd", "Value": 15, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Spd" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "DebuffStats",
+        "Param": "Spd",
+        "Value": 15,
+        "Duration": 2,
+        "Chance": 0.8,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Debuff_Spd"
+      }
     ],
     "Stage": 2,
-    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 1022 }
+    "StageUpgradeRules": {
+      "RankThreshold": 12,
+      "NextSkillId": 1022
+    }
   },
   {
     "SkillId": 1022,
@@ -2240,10 +2340,27 @@
     "TargetType": "AllEnemies",
     "SpCost": 55,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.4 }],
+    "Scaling": [
+      {
+        "Stat": "Atk",
+        "Coefficient": 2.4
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
-      { "Tag": "DebuffStats", "Param": "Spd", "Value": 20, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Spd" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "DebuffStats",
+        "Param": "Spd",
+        "Value": 20,
+        "Duration": 2,
+        "Chance": 0.8,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Debuff_Spd"
+      }
     ],
     "Stage": 3
   },
@@ -2260,13 +2377,28 @@
     "TargetType": "SingleEnemy",
     "SpCost": 50,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.5 }],
-    "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    "Scaling": [
+      {
+        "Stat": "Mat",
+        "Coefficient": 2.5
+      }
     ],
-    "UnlockRules": { "ParentSkillId": 1110, "ParentSkillRank": 10 },
+    "Effects": [
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 1110,
+      "ParentSkillRank": 10
+    },
     "Stage": 1,
-    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 1121 }
+    "StageUpgradeRules": {
+      "RankThreshold": 6,
+      "NextSkillId": 1121
+    }
   },
   {
     "SkillId": 1121,
@@ -2281,12 +2413,24 @@
     "TargetType": "SingleEnemy",
     "SpCost": 55,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.7 }],
+    "Scaling": [
+      {
+        "Stat": "Mat",
+        "Coefficient": 2.7
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "Stage": 2,
-    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 1122 }
+    "StageUpgradeRules": {
+      "RankThreshold": 12,
+      "NextSkillId": 1122
+    }
   },
   {
     "SkillId": 1122,
@@ -2301,9 +2445,18 @@
     "TargetType": "SingleEnemy",
     "SpCost": 60,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.9 }],
+    "Scaling": [
+      {
+        "Stat": "Mat",
+        "Coefficient": 2.9
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "Stage": 3
   },
@@ -2322,12 +2475,35 @@
     "Cooldown": 4,
     "Scaling": [],
     "Effects": [
-      { "Tag": "BuffStats", "Param": "Def", "Value": 25, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Def", "Priority": 2 },
-      { "Tag": "BuffStats", "Param": "SealResist", "Value": 0.4, "Duration": 3, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Resist", "Priority": 2 }
+      {
+        "Tag": "BuffStats",
+        "Param": "Def",
+        "Value": 25,
+        "Duration": 3,
+        "Chance": 1.0,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Def",
+        "Priority": 2
+      },
+      {
+        "Tag": "BuffStats",
+        "Param": "SealResist",
+        "Value": 0.4,
+        "Duration": 3,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Resist",
+        "Priority": 2
+      }
     ],
-    "UnlockRules": { "ParentSkillId": 1210, "ParentSkillRank": 10 },
+    "UnlockRules": {
+      "ParentSkillId": 1210,
+      "ParentSkillRank": 10
+    },
     "Stage": 1,
-    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 1221 }
+    "StageUpgradeRules": {
+      "RankThreshold": 6,
+      "NextSkillId": 1221
+    }
   },
   {
     "SkillId": 1221,
@@ -2344,11 +2520,31 @@
     "Cooldown": 4,
     "Scaling": [],
     "Effects": [
-      { "Tag": "BuffStats", "Param": "Def", "Value": 30, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Def", "Priority": 2 },
-      { "Tag": "BuffStats", "Param": "SealResist", "Value": 0.45, "Duration": 3, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Resist", "Priority": 2 }
+      {
+        "Tag": "BuffStats",
+        "Param": "Def",
+        "Value": 30,
+        "Duration": 3,
+        "Chance": 1.0,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Def",
+        "Priority": 2
+      },
+      {
+        "Tag": "BuffStats",
+        "Param": "SealResist",
+        "Value": 0.45,
+        "Duration": 3,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Resist",
+        "Priority": 2
+      }
     ],
     "Stage": 2,
-    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 1222 }
+    "StageUpgradeRules": {
+      "RankThreshold": 12,
+      "NextSkillId": 1222
+    }
   },
   {
     "SkillId": 1222,
@@ -2365,8 +2561,25 @@
     "Cooldown": 4,
     "Scaling": [],
     "Effects": [
-      { "Tag": "BuffStats", "Param": "Def", "Value": 35, "Duration": 4, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Def", "Priority": 2 },
-      { "Tag": "BuffStats", "Param": "SealResist", "Value": 0.5, "Duration": 4, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Resist", "Priority": 2 }
+      {
+        "Tag": "BuffStats",
+        "Param": "Def",
+        "Value": 35,
+        "Duration": 4,
+        "Chance": 1.0,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Def",
+        "Priority": 2
+      },
+      {
+        "Tag": "BuffStats",
+        "Param": "SealResist",
+        "Value": 0.5,
+        "Duration": 4,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Resist",
+        "Priority": 2
+      }
     ],
     "Stage": 3
   },
@@ -2383,14 +2596,37 @@
     "TargetType": "AllEnemies",
     "SpCost": 45,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Atk", "Coefficient": 1.8 }],
-    "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
-      { "Tag": "DebuffStats", "Param": "Atk", "Value": 10, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Atk" }
+    "Scaling": [
+      {
+        "Stat": "Atk",
+        "Coefficient": 1.8
+      }
     ],
-    "UnlockRules": { "ParentSkillId": 3010, "ParentSkillRank": 10 },
+    "Effects": [
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "DebuffStats",
+        "Param": "Atk",
+        "Value": 10,
+        "Duration": 2,
+        "Chance": 0.8,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Debuff_Atk"
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 3010,
+      "ParentSkillRank": 10
+    },
     "Stage": 1,
-    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 3021 }
+    "StageUpgradeRules": {
+      "RankThreshold": 6,
+      "NextSkillId": 3021
+    }
   },
   {
     "SkillId": 3021,
@@ -2405,13 +2641,33 @@
     "TargetType": "AllEnemies",
     "SpCost": 50,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.0 }],
+    "Scaling": [
+      {
+        "Stat": "Atk",
+        "Coefficient": 2.0
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
-      { "Tag": "DebuffStats", "Param": "Atk", "Value": 15, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Atk" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "DebuffStats",
+        "Param": "Atk",
+        "Value": 15,
+        "Duration": 2,
+        "Chance": 0.8,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Debuff_Atk"
+      }
     ],
     "Stage": 2,
-    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 3022 }
+    "StageUpgradeRules": {
+      "RankThreshold": 12,
+      "NextSkillId": 3022
+    }
   },
   {
     "SkillId": 3022,
@@ -2426,10 +2682,27 @@
     "TargetType": "AllEnemies",
     "SpCost": 55,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.2 }],
+    "Scaling": [
+      {
+        "Stat": "Atk",
+        "Coefficient": 2.2
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
-      { "Tag": "DebuffStats", "Param": "Atk", "Value": 20, "Duration": 2, "Chance": 0.8, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Debuff_Atk" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "DebuffStats",
+        "Param": "Atk",
+        "Value": 20,
+        "Duration": 2,
+        "Chance": 0.8,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Debuff_Atk"
+      }
     ],
     "Stage": 3
   },
@@ -2446,14 +2719,40 @@
     "TargetType": "AllEnemies",
     "SpCost": 50,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.0 }],
-    "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
-      { "Tag": "Seal", "Value": 0, "Duration": 1, "Chance": 0.4, "StackingPolicy": "RefreshDuration", "ConflictGroup": "HardControl", "Outcome": "Resist", "ResistanceTags": ["SealResist"] }
+    "Scaling": [
+      {
+        "Stat": "Mat",
+        "Coefficient": 2.0
+      }
     ],
-    "UnlockRules": { "ParentSkillId": 3110, "ParentSkillRank": 10 },
+    "Effects": [
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "Seal",
+        "Value": 0,
+        "Duration": 1,
+        "Chance": 0.4,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "HardControl",
+        "Outcome": "Resist",
+        "ResistanceTags": [
+          "SealResist"
+        ]
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 3110,
+      "ParentSkillRank": 10
+    },
     "Stage": 1,
-    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 3121 }
+    "StageUpgradeRules": {
+      "RankThreshold": 6,
+      "NextSkillId": 3121
+    }
   },
   {
     "SkillId": 3121,
@@ -2468,13 +2767,36 @@
     "TargetType": "AllEnemies",
     "SpCost": 55,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.2 }],
+    "Scaling": [
+      {
+        "Stat": "Mat",
+        "Coefficient": 2.2
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
-      { "Tag": "Seal", "Value": 0, "Duration": 1, "Chance": 0.5, "StackingPolicy": "RefreshDuration", "ConflictGroup": "HardControl", "Outcome": "Resist", "ResistanceTags": ["SealResist"] }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "Seal",
+        "Value": 0,
+        "Duration": 1,
+        "Chance": 0.5,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "HardControl",
+        "Outcome": "Resist",
+        "ResistanceTags": [
+          "SealResist"
+        ]
+      }
     ],
     "Stage": 2,
-    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 3122 }
+    "StageUpgradeRules": {
+      "RankThreshold": 12,
+      "NextSkillId": 3122
+    }
   },
   {
     "SkillId": 3122,
@@ -2489,10 +2811,30 @@
     "TargetType": "AllEnemies",
     "SpCost": 60,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Mat", "Coefficient": 2.4 }],
+    "Scaling": [
+      {
+        "Stat": "Mat",
+        "Coefficient": 2.4
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" },
-      { "Tag": "Seal", "Value": 0, "Duration": 2, "Chance": 0.5, "StackingPolicy": "RefreshDuration", "ConflictGroup": "HardControl", "Outcome": "Resist", "ResistanceTags": ["SealResist"] }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      },
+      {
+        "Tag": "Seal",
+        "Value": 0,
+        "Duration": 2,
+        "Chance": 0.5,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "HardControl",
+        "Outcome": "Resist",
+        "ResistanceTags": [
+          "SealResist"
+        ]
+      }
     ],
     "Stage": 3
   },
@@ -2509,14 +2851,32 @@
     "TargetType": "AllAllies",
     "SpCost": 60,
     "Cooldown": 5,
-    "Scaling": [{ "Stat": "Wis", "Coefficient": 2.5 }],
-    "Effects": [
-      { "Tag": "Cleanse", "Value": 0 },
-      { "Tag": "Heal", "Value": 0, "Chance": 1.0 }
+    "Scaling": [
+      {
+        "Stat": "Wis",
+        "Coefficient": 2.5
+      }
     ],
-    "UnlockRules": { "ParentSkillId": 3210, "ParentSkillRank": 10 },
+    "Effects": [
+      {
+        "Tag": "Cleanse",
+        "Value": 0
+      },
+      {
+        "Tag": "Heal",
+        "Value": 0,
+        "Chance": 1.0
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 3210,
+      "ParentSkillRank": 10
+    },
     "Stage": 1,
-    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 3221 }
+    "StageUpgradeRules": {
+      "RankThreshold": 6,
+      "NextSkillId": 3221
+    }
   },
   {
     "SkillId": 3221,
@@ -2531,13 +2891,28 @@
     "TargetType": "AllAllies",
     "SpCost": 65,
     "Cooldown": 5,
-    "Scaling": [{ "Stat": "Wis", "Coefficient": 2.8 }],
+    "Scaling": [
+      {
+        "Stat": "Wis",
+        "Coefficient": 2.8
+      }
+    ],
     "Effects": [
-      { "Tag": "Cleanse", "Value": 0 },
-      { "Tag": "Heal", "Value": 0, "Chance": 1.0 }
+      {
+        "Tag": "Cleanse",
+        "Value": 0
+      },
+      {
+        "Tag": "Heal",
+        "Value": 0,
+        "Chance": 1.0
+      }
     ],
     "Stage": 2,
-    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 3222 }
+    "StageUpgradeRules": {
+      "RankThreshold": 12,
+      "NextSkillId": 3222
+    }
   },
   {
     "SkillId": 3222,
@@ -2552,10 +2927,22 @@
     "TargetType": "AllAllies",
     "SpCost": 70,
     "Cooldown": 5,
-    "Scaling": [{ "Stat": "Wis", "Coefficient": 3.1 }],
+    "Scaling": [
+      {
+        "Stat": "Wis",
+        "Coefficient": 3.1
+      }
+    ],
     "Effects": [
-      { "Tag": "Cleanse", "Value": 0 },
-      { "Tag": "Heal", "Value": 0, "Chance": 1.0 }
+      {
+        "Tag": "Cleanse",
+        "Value": 0
+      },
+      {
+        "Tag": "Heal",
+        "Value": 0,
+        "Chance": 1.0
+      }
     ],
     "Stage": 3
   },
@@ -2572,13 +2959,28 @@
     "TargetType": "AllEnemies",
     "SpCost": 50,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.2 }],
-    "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    "Scaling": [
+      {
+        "Stat": "Atk",
+        "Coefficient": 2.2
+      }
     ],
-    "UnlockRules": { "ParentSkillId": 4010, "ParentSkillRank": 10 },
+    "Effects": [
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 4010,
+      "ParentSkillRank": 10
+    },
     "Stage": 1,
-    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 4021 }
+    "StageUpgradeRules": {
+      "RankThreshold": 6,
+      "NextSkillId": 4021
+    }
   },
   {
     "SkillId": 4021,
@@ -2593,12 +2995,24 @@
     "TargetType": "AllEnemies",
     "SpCost": 55,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.4 }],
+    "Scaling": [
+      {
+        "Stat": "Atk",
+        "Coefficient": 2.4
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "Stage": 2,
-    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 4022 }
+    "StageUpgradeRules": {
+      "RankThreshold": 12,
+      "NextSkillId": 4022
+    }
   },
   {
     "SkillId": 4022,
@@ -2613,9 +3027,18 @@
     "TargetType": "AllEnemies",
     "SpCost": 60,
     "Cooldown": 3,
-    "Scaling": [{ "Stat": "Atk", "Coefficient": 2.6 }],
+    "Scaling": [
+      {
+        "Stat": "Atk",
+        "Coefficient": 2.6
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "Stage": 3
   },
@@ -2632,13 +3055,28 @@
     "TargetType": "SingleEnemy",
     "SpCost": 60,
     "Cooldown": 4,
-    "Scaling": [{ "Stat": "Mat", "Coefficient": 3.0 }],
-    "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+    "Scaling": [
+      {
+        "Stat": "Mat",
+        "Coefficient": 3.0
+      }
     ],
-    "UnlockRules": { "ParentSkillId": 4110, "ParentSkillRank": 10 },
+    "Effects": [
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
+    ],
+    "UnlockRules": {
+      "ParentSkillId": 4110,
+      "ParentSkillRank": 10
+    },
     "Stage": 1,
-    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 4121 }
+    "StageUpgradeRules": {
+      "RankThreshold": 6,
+      "NextSkillId": 4121
+    }
   },
   {
     "SkillId": 4121,
@@ -2653,12 +3091,24 @@
     "TargetType": "SingleEnemy",
     "SpCost": 65,
     "Cooldown": 4,
-    "Scaling": [{ "Stat": "Mat", "Coefficient": 3.2 }],
+    "Scaling": [
+      {
+        "Stat": "Mat",
+        "Coefficient": 3.2
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "Stage": 2,
-    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 4122 }
+    "StageUpgradeRules": {
+      "RankThreshold": 12,
+      "NextSkillId": 4122
+    }
   },
   {
     "SkillId": 4122,
@@ -2673,9 +3123,18 @@
     "TargetType": "SingleEnemy",
     "SpCost": 70,
     "Cooldown": 4,
-    "Scaling": [{ "Stat": "Mat", "Coefficient": 3.5 }],
+    "Scaling": [
+      {
+        "Stat": "Mat",
+        "Coefficient": 3.5
+      }
+    ],
     "Effects": [
-      { "Tag": "Damage", "Value": 0, "StackingPolicy": "NoStackOverwrite" }
+      {
+        "Tag": "Damage",
+        "Value": 0,
+        "StackingPolicy": "NoStackOverwrite"
+      }
     ],
     "Stage": 3
   },
@@ -2694,12 +3153,36 @@
     "Cooldown": 4,
     "Scaling": [],
     "Effects": [
-      { "Tag": "BuffStats", "Param": "Atk", "Value": 25, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Atk", "Priority": 2 },
-      { "Tag": "BuffStats", "Param": "Mat", "Value": 25, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Mat", "Priority": 2 }
+      {
+        "Tag": "BuffStats",
+        "Param": "Atk",
+        "Value": 25,
+        "Duration": 3,
+        "Chance": 1.0,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Atk",
+        "Priority": 2
+      },
+      {
+        "Tag": "BuffStats",
+        "Param": "Mat",
+        "Value": 25,
+        "Duration": 3,
+        "Chance": 1.0,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Mat",
+        "Priority": 2
+      }
     ],
-    "UnlockRules": { "ParentSkillId": 4210, "ParentSkillRank": 10 },
+    "UnlockRules": {
+      "ParentSkillId": 4210,
+      "ParentSkillRank": 10
+    },
     "Stage": 1,
-    "StageUpgradeRules": { "RankThreshold": 6, "NextSkillId": 4221 }
+    "StageUpgradeRules": {
+      "RankThreshold": 6,
+      "NextSkillId": 4221
+    }
   },
   {
     "SkillId": 4221,
@@ -2716,11 +3199,32 @@
     "Cooldown": 4,
     "Scaling": [],
     "Effects": [
-      { "Tag": "BuffStats", "Param": "Atk", "Value": 30, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Atk", "Priority": 2 },
-      { "Tag": "BuffStats", "Param": "Mat", "Value": 30, "Duration": 3, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Mat", "Priority": 2 }
+      {
+        "Tag": "BuffStats",
+        "Param": "Atk",
+        "Value": 30,
+        "Duration": 3,
+        "Chance": 1.0,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Atk",
+        "Priority": 2
+      },
+      {
+        "Tag": "BuffStats",
+        "Param": "Mat",
+        "Value": 30,
+        "Duration": 3,
+        "Chance": 1.0,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Mat",
+        "Priority": 2
+      }
     ],
     "Stage": 2,
-    "StageUpgradeRules": { "RankThreshold": 12, "NextSkillId": 4222 }
+    "StageUpgradeRules": {
+      "RankThreshold": 12,
+      "NextSkillId": 4222
+    }
   },
   {
     "SkillId": 4222,
@@ -2737,8 +3241,26 @@
     "Cooldown": 4,
     "Scaling": [],
     "Effects": [
-      { "Tag": "BuffStats", "Param": "Atk", "Value": 35, "Duration": 4, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Atk", "Priority": 2 },
-      { "Tag": "BuffStats", "Param": "Mat", "Value": 35, "Duration": 4, "Chance": 1.0, "StackingPolicy": "RefreshDuration", "ConflictGroup": "Buff_Mat", "Priority": 2 }
+      {
+        "Tag": "BuffStats",
+        "Param": "Atk",
+        "Value": 35,
+        "Duration": 4,
+        "Chance": 1.0,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Atk",
+        "Priority": 2
+      },
+      {
+        "Tag": "BuffStats",
+        "Param": "Mat",
+        "Value": 35,
+        "Duration": 4,
+        "Chance": 1.0,
+        "StackingPolicy": "RefreshDuration",
+        "ConflictGroup": "Buff_Mat",
+        "Priority": 2
+      }
     ],
     "Stage": 3
   }
