@@ -184,7 +184,7 @@ public class GameServer
         // 3) Inicia Network
         _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager,
             PlayerService, EconomyManager, Metrics, PetService, mediator, worldTriggerService, SpawnManager,
-            new ReplayGuard(new ReplayGuardOptions()));
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()));
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");

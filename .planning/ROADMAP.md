@@ -41,7 +41,15 @@ Plans:
 - [x] 01-01-PLAN.md -- EF Core infrastructure: GameDbContext, entity configurations, NpgsqlDataSource pooling, initial migration
 - [x] 01-02-PLAN.md -- DbPlayerRepository (hybrid EF Core + Dapper), DI swap, FilePlayerRepository removal
 
-### Phase 2: Security Hardening
+### Phase 2: Security Hardening (Current)
+*Status: In Progress*
+*Goal: Prevent common multiplayer exploits (replay, speedhacks, injection).*
+
+**Plan 02-01: Packet Replay Protection** ✅
+- Add unique `Nonce` and `Timestamp` to `NetMessage` envelope.
+- Implement server-side `ReplayGuard` to track recent nonces (with TTL) per session.
+- Reject duplicate nonces or strictly out-of-window timestamps.
+- **Success:** Legacy clients disconnected safely; valid clients proceed. Tests verify rejection of duplicated nonces.
 **Goal**: Server prevents cheating through movement validation, anti-replay protection, and transaction race condition prevention
 **Depends on**: Phase 1 (requires PostgreSQL for transaction isolation)
 **Requirements**: SEC-01, SEC-02, SEC-03, SEC-04
@@ -53,7 +61,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 02-01-PLAN.md -- Packet replay protection (nonce + timestamp) and pre-dispatch replay gate
+- [x] 02-01-PLAN.md -- Packet replay protection (nonce + timestamp) and pre-dispatch replay gate
 - [ ] 02-02-PLAN.md -- Server-authoritative movement validation (max distance per tick, anti-speedhack checks)
 - [ ] 02-03-PLAN.md -- Serializable transaction and shared idempotency foundations for valuable operations
 

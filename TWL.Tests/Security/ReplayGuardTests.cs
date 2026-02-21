@@ -161,14 +161,14 @@ public class ReplayGuardTests
         var result = guard.Validate(1, "nonce-4", now, out _);
         Assert.True(result);
 
-        // "nonce-1" should now be accepted again (evicted)
-        result = guard.Validate(1, "nonce-1", now, out _);
-        Assert.True(result);
-
         // "nonce-2" should still be rejected (not yet evicted)
         result = guard.Validate(1, "nonce-2", now, out var reason);
         Assert.False(result);
         Assert.Contains("DuplicateNonce", reason);
+
+        // "nonce-1" should now be accepted again (evicted)
+        result = guard.Validate(1, "nonce-1", now, out _);
+        Assert.True(result);
     }
 
     // --- Session cleanup ---

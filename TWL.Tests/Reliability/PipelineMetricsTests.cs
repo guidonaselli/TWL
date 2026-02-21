@@ -55,7 +55,7 @@ public class PipelineMetricsTests
         var port = 9123;
         var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
             playerService, mockEconomy.Object, metrics, petService, new Mock<IMediator>().Object, mockWorldTrigger.Object, spawnManager,
-            new ReplayGuard(new ReplayGuardOptions()));
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()));
 
         server.Start();
 

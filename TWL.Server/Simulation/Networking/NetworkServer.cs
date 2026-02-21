@@ -25,6 +25,7 @@ public class NetworkServer : INetworkServer
     private readonly PlayerService _playerService;
     private readonly ServerQuestManager _questManager;
     private readonly ReplayGuard _replayGuard;
+    private readonly MovementValidator _movementValidator;
     private readonly SpawnManager _spawnManager;
     private readonly IWorldTriggerService _worldTriggerService;
     private CancellationTokenSource _cts;
@@ -35,7 +36,7 @@ public class NetworkServer : INetworkServer
     public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
-        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard)
+        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator)
     {
         _listener = new TcpListener(IPAddress.Any, port);
         _dbService = dbService;
@@ -51,6 +52,7 @@ public class NetworkServer : INetworkServer
         _worldTriggerService = worldTriggerService;
         _spawnManager = spawnManager;
         _replayGuard = replayGuard;
+        _movementValidator = movementValidator;
     }
 
     public void Start()
@@ -80,7 +82,7 @@ public class NetworkServer : INetworkServer
                 var session = new ClientSession(client, _dbService, _petManager, _questManager, _combatManager,
                     _interactionManager, _playerService, _economyManager, _metrics, _petService, _mediator,
                     _worldTriggerService,
-                    _spawnManager, _replayGuard);
+                    _spawnManager, _replayGuard, _movementValidator);
                 session.StartHandling();
             }
         }

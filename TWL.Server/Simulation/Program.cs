@@ -116,6 +116,10 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton(new ReplayGuardOptions());
         svcs.AddSingleton<ReplayGuard>();
 
+        // Security: Movement validation
+        svcs.AddSingleton(new MovementValidationOptions());
+        svcs.AddSingleton<MovementValidator>();
+
         svcs.AddSingleton<INetworkServer>(sp =>
         {
             var port = ctx.Configuration.GetValue<int>("Network:Port");
@@ -133,7 +137,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<IMediator>(),
                 sp.GetRequiredService<IWorldTriggerService>(),
                 sp.GetRequiredService<SpawnManager>(),
-                sp.GetRequiredService<ReplayGuard>()
+                sp.GetRequiredService<ReplayGuard>(),
+                sp.GetRequiredService<MovementValidator>()
             );
         });
         svcs.AddSingleton<HealthCheckService>();

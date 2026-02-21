@@ -41,11 +41,13 @@ public class ClientSession
     private readonly ServerQuestManager _questManager;
     private readonly RateLimiter _rateLimiter;
     private readonly ReplayGuard _replayGuard;
+    private readonly MovementValidator _movementValidator;
     private readonly SpawnManager _spawnManager;
     private readonly NetworkStream _stream;
     private readonly IWorldTriggerService _worldTriggerService;
 
     public int UserId = -1; // se setea tras login
+    private DateTime _lastMoveTimeUtc = DateTime.UtcNow;
 
     protected ClientSession()
     {
@@ -54,7 +56,7 @@ public class ClientSession
     public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
-        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard)
+        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator)
     {
         _client = client;
         _stream = client.GetStream();
@@ -74,6 +76,7 @@ public class ClientSession
         QuestComponent.OnFlagAdded += OnQuestFlagAdded;
         _rateLimiter = new RateLimiter();
         _replayGuard = replayGuard;
+        _movementValidator = movementValidator;
 
         if (_combatManager != null)
         {
@@ -830,6 +833,19 @@ public class ClientSession
         {
             return;
         }
+
+        var now = DateTime.UtcNow;
+        var deltaTime = now - _lastMoveTimeUtc;
+        
+        // Use MovementValidator
+        if (!(_movementValidator?.Validate(Character.X, Character.Y, moveDto, deltaTime, out var reason) ?? true))
+        {
+            _metrics?.RecordValidationError();
+            SecurityLogger.LogSecurityEvent("MoveValidationRejected", UserId, $"Dest={Character.X + moveDto.dx:F1},{Character.Y + moveDto.dy:F1} Reason={reason}");
+            return;
+        }
+
+        _lastMoveTimeUtc = now;
 
         // Actualizar la pos en el server side:
         var oldX = Character.X;

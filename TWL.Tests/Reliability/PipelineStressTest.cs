@@ -48,7 +48,7 @@ public class PipelineStressTest
         // Dynamic port assignment: use port 0 to let OS assign a free port
         var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
             playerService, mockEconomy.Object, metrics, petService, new Mock<IMediator>().Object, mockWorldTrigger.Object, spawnManager,
-            new ReplayGuard(new ReplayGuardOptions()));
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()));
 
         server.Start();
         var port = server.Port;
