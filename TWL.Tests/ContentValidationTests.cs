@@ -359,6 +359,20 @@ public class ContentValidationTests
     }
 
     [Fact]
+    public void ValidateContentRulesIntegrity()
+    {
+        foreach (var budget in ContentRules.TierBudgets.Values)
+        {
+            Assert.True(budget.MinSp <= budget.MaxSp, $"ContentRules Error: MinSp > MaxSp ({budget.MinSp} > {budget.MaxSp})");
+            Assert.True(budget.MinCd <= budget.MaxCd, $"ContentRules Error: MinCd > MaxCd ({budget.MinCd} > {budget.MaxCd})");
+            Assert.True(budget.MaxDamageCoeff > 0, $"ContentRules Error: MaxDamageCoeff must be > 0 (Value: {budget.MaxDamageCoeff})");
+            Assert.True(budget.MaxHealCoeff > 0, $"ContentRules Error: MaxHealCoeff must be > 0 (Value: {budget.MaxHealCoeff})");
+            Assert.True(budget.MaxHardControlDuration >= 0, $"ContentRules Error: MaxHardControlDuration must be >= 0 (Value: {budget.MaxHardControlDuration})");
+            Assert.True(budget.MaxHardControlChance > 0 && budget.MaxHardControlChance <= 1.0f, $"ContentRules Error: MaxHardControlChance must be between 0 and 1 (Value: {budget.MaxHardControlChance})");
+        }
+    }
+
+    [Fact]
     public void ValidateMonsterElements()
     {
         var monsters = ContentTestHelper.LoadMonsters();
