@@ -318,6 +318,8 @@ public class ServerCharacter : ServerCombatant
     public event Action<string>? OnInstanceFailed; // instanceId
     public event Action<string>? OnEscortSuccess; // npcName
     public event Action<string>? OnEscortFailure; // npcName
+    public event Action<string, string?>? OnInteract; // targetName, interactionType
+    public event Action<string>? OnFish; // location
 
     public void NotifyWorldFlagSet(string flag)
     {
@@ -336,6 +338,8 @@ public class ServerCharacter : ServerCombatant
     public void NotifyInstanceFailed(string instanceId) => OnInstanceFailed?.Invoke(instanceId);
     public void NotifyEscortSuccess(string npcName) => OnEscortSuccess?.Invoke(npcName);
     public void NotifyEscortFailure(string npcName) => OnEscortFailure?.Invoke(npcName);
+    public void NotifyInteract(string targetName, string? interactionType) => OnInteract?.Invoke(targetName, interactionType);
+    public void NotifyFish(string location) => OnFish?.Invoke(location);
 
     public void SetLevel(int level) => Level = level; // For mobs
 

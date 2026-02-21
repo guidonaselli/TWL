@@ -72,6 +72,7 @@ public class ClientSession
         _spawnManager = spawnManager;
         QuestComponent = new PlayerQuestComponent(questManager, petManager);
         QuestComponent.OnFlagAdded += OnQuestFlagAdded;
+        QuestComponent.OnQuestUpdated += OnQuestUpdated;
         _rateLimiter = new RateLimiter();
         _replayGuard = replayGuard;
 
@@ -89,6 +90,11 @@ public class ClientSession
         {
             _worldTriggerService.OnFlagChanged(Character, flag);
         }
+    }
+
+    private void OnQuestUpdated(int questId)
+    {
+        _ = SendQuestUpdateAsync(questId);
     }
 
     private void OnMapChanged(int mapId)
@@ -205,6 +211,7 @@ public class ClientSession
             if (QuestComponent != null)
             {
                 QuestComponent.OnFlagAdded -= OnQuestFlagAdded;
+                QuestComponent.OnQuestUpdated -= OnQuestUpdated;
             }
 
             if (UserId > 0)
