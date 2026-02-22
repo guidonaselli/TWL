@@ -30,11 +30,64 @@ public class HiddenCoveTests
         _interactionManager.Load(Path.Combine(contentPath, "interactions.json"));
     }
 
+    private void SimulateQuestCompletion(int questId)
+    {
+        if (_questComponent.QuestStates.TryGetValue(questId, out var state) && (state == QuestState.Completed || state == QuestState.RewardClaimed))
+        {
+            return;
+        }
+
+        var def = _questManager.GetDefinition(questId);
+        Assert.NotNull(def);
+
+        foreach (var reqId in def.Requirements)
+        {
+            SimulateQuestCompletion(reqId);
+        }
+
+        _character.SetLevel(Math.Max(_character.Level, def.RequiredLevel > 0 ? def.RequiredLevel : 100));
+        if (def.RequiredItems != null)
+        {
+            foreach (var reqItem in def.RequiredItems)
+            {
+                if (!_character.HasItem(reqItem.ItemId, reqItem.Quantity))
+                {
+                    _character.AddItem(reqItem.ItemId, reqItem.Quantity);
+                }
+            }
+        }
+
+        Assert.True(_questComponent.StartQuest(questId), $"Failed to start prerequisite quest {questId}");
+
+        foreach (var obj in def.Objectives)
+        {
+            if (obj.Type == "Talk") 
+                _questComponent.TryProgress("Talk", obj.TargetName);
+            else if (obj.Type == "Kill") 
+                _questComponent.TryProgress("Kill", obj.TargetName, obj.RequiredCount);
+            else if (obj.Type == "Collect" || obj.Type == "Interact" || obj.Type == "Gather" || obj.Type == "Craft" || obj.Type == "Compound" || obj.Type == "Explore" || obj.Type == "Reach")
+            {
+                 if (obj.DataId.HasValue && obj.Type == "Collect")
+                 {
+                     _character.AddItem(obj.DataId.Value, obj.RequiredCount);
+                 }
+                 _questComponent.TryProgress(obj.Type, obj.TargetName, obj.RequiredCount);
+            }
+            else
+            {
+                _questComponent.TryProgress(obj.Type, obj.TargetName, obj.RequiredCount);
+            }
+        }
+
+        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[questId]);
+        _questComponent.ClaimReward(questId);
+    }
+
     [Fact]
     public void HiddenCove_Chain_Progression()
     {
         // Setup: Complete 1305
-        SetQuestCompleted(1305);
+        SimulateQuestCompletion(1305);
 
         // 1. Start Quest 1401 (Echoes from the Sea)
         Assert.True(_questComponent.StartQuest(1401), "Should start 1401");
@@ -104,14 +157,12 @@ public class HiddenCoveTests
         Assert.True(_questComponent.ClaimReward(1404));
     }
 
-    private void SetQuestCompleted(int questId) => _questComponent.QuestStates[questId] = QuestState.Completed;
-
     [Fact]
     public void HiddenCove_Sidequest_Fisherman()
     {
         // Prerequisites
-        SetQuestCompleted(2011); // First Catch
-        SetQuestCompleted(1404); // Hidden Dock
+        SimulateQuestCompletion(2011); // First Catch
+        SimulateQuestCompletion(1404); // Hidden Dock
 
         Assert.True(_questComponent.StartQuest(2401), "Should start 2401");
 

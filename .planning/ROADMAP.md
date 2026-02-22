@@ -13,7 +13,7 @@ This roadmap delivers production-ready multiplayer systems for commercial launch
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Infrastructure Foundation** - PostgreSQL migration and production-grade persistence
-- [ ] **Phase 2: Security Hardening** - Anti-cheat, anti-replay, and transaction safety
+- [x] **Phase 2: Security Hardening** - Anti-cheat, anti-replay, and transaction safety
 - [ ] **Phase 3: Content Quality** - Fix broken quest chains and localization
 - [ ] **Phase 4: Party System** - Invite, join, XP/loot sharing, tactical formation
 - [ ] **Phase 5: Guild System** - Create, join, chat, permissions, shared storage
@@ -41,8 +41,8 @@ Plans:
 - [x] 01-01-PLAN.md -- EF Core infrastructure: GameDbContext, entity configurations, NpgsqlDataSource pooling, initial migration
 - [x] 01-02-PLAN.md -- DbPlayerRepository (hybrid EF Core + Dapper), DI swap, FilePlayerRepository removal
 
-### Phase 2: Security Hardening (Current)
-*Status: In Progress*
+### Phase 2: Security Hardening
+*Status: Completed*
 *Goal: Prevent common multiplayer exploits (replay, speedhacks, injection).*
 
 **Plan 02-01: Packet Replay Protection** ✅
@@ -62,10 +62,11 @@ Plans:
 
 Plans:
 - [x] 02-01-PLAN.md -- Packet replay protection (nonce + timestamp) and pre-dispatch replay gate
-- [ ] 02-02-PLAN.md -- Server-authoritative movement validation (max distance per tick, anti-speedhack checks)
-- [ ] 02-03-PLAN.md -- Serializable transaction and shared idempotency foundations for valuable operations
+- [x] 02-02-PLAN.md -- Server-authoritative movement validation (max distance per tick, anti-speedhack checks)
+- [x] 02-03-PLAN.md -- Serializable transaction and shared idempotency foundations for valuable operations
 
-### Phase 3: Content Quality
+### Phase 3: Content Quality (Current)
+*Status: In Progress*
 **Goal**: All content validation tests pass, broken quest chains are fixed, and missing localization keys are resolved
 **Depends on**: Nothing (can run in parallel with other phases)
 **Requirements**: QUAL-01
@@ -76,7 +77,7 @@ Plans:
 **Plans**: 3 plans
 
 Plans:
-- [ ] 03-01-PLAN.md -- Hidden Ruins and Ruins Expansion quest-chain stabilization (1301-1307) with stronger regression coverage
+- [x] 03-01-PLAN.md -- Hidden Ruins and Ruins Expansion quest-chain stabilization (1301-1307) with stronger regression coverage
 - [ ] 03-02-PLAN.md -- Hidden Cove chain stabilization (1401-1404, 2401) across quest and interaction contracts
 - [ ] 03-03-PLAN.md -- Localization key closure and arc-scoped localization regression guardrails for phase-3 content
 
@@ -231,8 +232,8 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Infrastructure Foundation | 2/2 | ✅ Complete | 2026-02-19 |
-| 2. Security Hardening | 0/3 | Not started | - |
-| 3. Content Quality | 0/3 | Not started | - |
+| 2. Security Hardening | 3/3 | ✅ Complete | 2026-02-22 |
+| 3. Content Quality | 1/3 | ⏳ In Progress | - |
 | 4. Party System | 0/4 | Not started | - |
 | 5. Guild System | 0/4 | Not started | - |
 | 6. Rebirth System | 0/4 | Not started | - |

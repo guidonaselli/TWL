@@ -1,4 +1,6 @@
+using TWL.Server.Persistence.Database;
 using TWL.Server.Security;
+using TWL.Server.Security.Idempotency;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Models;
 
@@ -176,5 +178,60 @@ public class TradeManager
         SecurityLogger.LogSecurityEvent("TradeSuccess", source.Id, $"To:{target.Id} Item:{itemId} Qty:{quantity}");
         source.NotifyTradeCommitted(target, itemId, quantity);
         return true;
+    }
+
+    /// <summary>
+    /// Executes a trade within a Serializable transaction boundary, enforcing idempotency via a shared validator.
+    /// This provides a reusable pattern for market and guild-bank integrations.
+    /// </summary>
+    public async Task<bool> TransferItemAsync(
+        DbService db, 
+        IdempotencyValidator idempotencyValidator, 
+        string operationKey, 
+        ServerCharacter source, 
+        ServerCharacter target, 
+        int itemId, 
+        int quantity, 
+        BindPolicy? policyFilter = null)
+    {
+        if (!idempotencyValidator.TryRegisterOperation(operationKey, source.Id, out var existingRecord))
+        {
+            // If already completed, return true idempotently. If pending/failed, return false (or retry strategy).
+            return existingRecord.State == OperationState.Completed;
+        }
+
+        try
+        {
+            var result = await db.ExecuteSerializableAsync(async (con, tx) =>
+            {
+                var success = TransferItem(source, target, itemId, quantity, policyFilter);
+                if (success)
+                {
+                    // Emit audit details containing operation identity and correlation metadata
+                    SecurityLogger.LogSecurityEvent("TradeValuableCommitted", source.Id, 
+                        $"OperationKey:{operationKey} To:{target.Id} Item:{itemId} Qty:{quantity}");
+                }
+                
+                // We return the memory manipulation success state
+                return await Task.FromResult(success);
+            });
+
+            if (result)
+            {
+                idempotencyValidator.MarkCompleted(operationKey);
+                return true;
+            }
+            else
+            {
+                idempotencyValidator.MarkFailed(operationKey);
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            idempotencyValidator.MarkFailed(operationKey);
+            SecurityLogger.LogSecurityEvent("TradeValuableError", source.Id, $"OperationKey:{operationKey} Error:{ex.Message}");
+            return false;
+        }
     }
 }

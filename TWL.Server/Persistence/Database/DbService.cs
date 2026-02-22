@@ -138,6 +138,34 @@ public class DbService : IDisposable
         }
     }
 
+    /// <summary>
+    /// Executes the provided work within a Serializable transaction.
+    /// This is the required isolation level for valuable multi-party operations
+    /// to prevent write skew, phantom reads, and double-spend anomalies.
+    /// </summary>
+    public virtual async Task<T> ExecuteSerializableAsync<T>(Func<NpgsqlConnection, NpgsqlTransaction, Task<T>> work)
+    {
+        await using var con = new NpgsqlConnection(_connString);
+        await con.OpenAsync();
+        
+        // Begin transaction with Serializable isolation level
+        await using var transaction = await con.BeginTransactionAsync(System.Data.IsolationLevel.Serializable);
+        
+        try
+        {
+            var result = await work(con, transaction);
+            await transaction.CommitAsync();
+            return result;
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync();
+            // In a real production system, log this failure to a telemetry sink for operational triage
+            Console.WriteLine($"[DbService] Serializable transaction failed: {ex.Message}");
+            throw;
+        }
+    }
+
     protected virtual void Dispose(bool disposing)
     {
         if (!_disposed)

@@ -32,13 +32,67 @@ public class QuestRuinsExpansionTests
         _interactionManager.Load(Path.Combine(contentPath, "interactions.json"));
     }
 
-    private void SetQuestCompleted(int questId) => _questComponent.QuestStates[questId] = QuestState.Completed;
+    private void SimulateQuestCompletion(int questId)
+    {
+        if (_questComponent.QuestStates.TryGetValue(questId, out var state) && (state == QuestState.Completed || state == QuestState.RewardClaimed))
+        {
+            return;
+        }
+
+        var def = _questManager.GetDefinition(questId);
+        Assert.NotNull(def);
+
+        // Fulfill prerequisites recursively
+        foreach (var reqId in def.Requirements)
+        {
+            SimulateQuestCompletion(reqId);
+        }
+
+        // Fulfill gating conditions
+        _character.SetLevel(Math.Max(_character.Level, def.RequiredLevel > 0 ? def.RequiredLevel : 100));
+        if (def.RequiredItems != null)
+        {
+            foreach (var reqItem in def.RequiredItems)
+            {
+                if (!_character.HasItem(reqItem.ItemId, reqItem.Quantity))
+                {
+                    _character.AddItem(reqItem.ItemId, reqItem.Quantity);
+                }
+            }
+        }
+
+        Assert.True(_questComponent.StartQuest(questId), $"Failed to start prerequisite quest {questId}");
+
+        foreach (var obj in def.Objectives)
+        {
+            if (obj.Type == "Talk") 
+                _questComponent.TryProgress("Talk", obj.TargetName);
+            else if (obj.Type == "Kill") 
+                _questComponent.TryProgress("Kill", obj.TargetName, obj.RequiredCount);
+            else if (obj.Type == "Collect" || obj.Type == "Interact" || obj.Type == "Gather" || obj.Type == "Craft" || obj.Type == "Compound" || obj.Type == "Explore" || obj.Type == "Reach")
+            {
+                 // For collect objectives, we might need to actually inject the item
+                 if (obj.DataId.HasValue && obj.Type == "Collect")
+                 {
+                     _character.AddItem(obj.DataId.Value, obj.RequiredCount);
+                 }
+                 _questComponent.TryProgress(obj.Type, obj.TargetName, obj.RequiredCount);
+            }
+            else
+            {
+                _questComponent.TryProgress(obj.Type, obj.TargetName, obj.RequiredCount);
+            }
+        }
+
+        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[questId]);
+        _questComponent.ClaimReward(questId);
+    }
 
     [Fact]
     public void SecretsOfTheRuins_Chain_Progression()
     {
         // Setup Prereq: 1304 Completed (Entering Ruins)
-        SetQuestCompleted(1304);
+        SimulateQuestCompletion(1304);
 
         // --- Quest 1305: Dark Corridors ---
         Assert.True(_questComponent.StartQuest(1305), "Should be able to start 1305");
@@ -87,7 +141,7 @@ public class QuestRuinsExpansionTests
     public void Sidequest_BatWings()
     {
         // Setup Prereq: 1305 Completed
-        SetQuestCompleted(1305);
+        SimulateQuestCompletion(1305);
 
         // Start 2303
         Assert.True(_questComponent.StartQuest(2303), "Should be able to start 2303");

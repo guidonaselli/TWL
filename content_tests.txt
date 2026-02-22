@@ -1,0 +1,45 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  TWL.Shared -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Shared\bin\Debug\net10.0\TWL.Shared.dll
+  TWL.Server -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Server\bin\Debug\net10.0\TWL.Server.dll
+  TWL.Tests -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll
+Test run for D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll
+[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.5+1b188a7b0a (64-bit .NET 10.0.3)
+[xUnit.net 00:00:00.04]   Discovering: TWL.Tests
+[xUnit.net 00:00:00.09]   Discovered:  TWL.Tests
+[xUnit.net 00:00:00.10]   Starting:    TWL.Tests
+  Passed TWL.Tests.Server.Services.ContentValidationTests.Monsters_ElementNone_MustNotBeCapturable [29 ms]
+  Passed TWL.Tests.Server.Services.ContentValidationTests.Monsters_ElementNone_MustHaveQuestOnlyTag [3 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateStageUpgradeAntiSnowball [50 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateSkillCategories [5 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateStageUpgradeRulesIntegrity [2 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateSkillRequirements [1 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidatePetSkills [16 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateGoddessSkills [4 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateSpecialSkillQuestPrerequisites [22 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidatePetUtilities [2 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateQuestIdempotency [11 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateStageUpgradeConsistency [2 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateSkillGrantExclusivity [5 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateSkillRewardsConsistency [7 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateMonsterElements [< 1 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateTierBudgets [3 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateContentRulesIntegrity [< 1 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateCrossDomainIntegrity [8 ms]
+[xUnit.net 00:00:00.28]   Finished:    TWL.Tests
+  Passed TWL.Tests.ContentValidationTests.ValidateSpawnConfigs [3 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateAmityItems [< 1 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateUniqueDisplayNameKeys [2 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateContentIntegrity [9 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidatePetElements [1 ms]
+  Passed TWL.Tests.ContentValidationTests.ValidateStage_Evolution_Chains_Are_Complete [3 ms]
+
+Test Run Successful.
+Total tests: 24
+     Passed: 24
+ Total time: 0,5529 Seconds

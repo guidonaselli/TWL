@@ -1,0 +1,7 @@
+D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\Economy\ClientSessionEconomyTests.cs(79,54): error CS1503: Argument 1: cannot convert from 'Microsoft.Extensions.Options.IOptions<TWL.Server.Security.ReplayGuardOptions>' to 'TWL.Server.Security.ReplayGuardOptions' [D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\TWL.Tests.csproj]
+
+Build FAILED.
+    780 Warning(s)
+    1 Error(s)
+
+Time Elapsed 00:00:01.51

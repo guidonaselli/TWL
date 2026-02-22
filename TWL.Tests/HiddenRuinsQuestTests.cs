@@ -34,11 +34,8 @@ public class HiddenRuinsQuestTests
     public void HiddenRuins_FullChain_Progression()
     {
         // 1. Start Quest 1301
-        // Prereq 1103 must be completed if we were enforcing it strictly,
-        // but CanStartQuest checks QuestStates of prerequisites.
-        // For this test, let's force-set prereq 1103 as completed if needed.
-        // Actually, let's just cheat and assume we can start it if we satisfy prereqs manually.
-        SetQuestCompleted(1103);
+        // Simulate prerequisites using actual game logic
+        SimulateQuestCompletion(1103);
 
         Assert.True(_questComponent.StartQuest(1301), "Should be able to start 1301");
         Assert.Equal(QuestState.InProgress, _questComponent.QuestStates[1301]);
@@ -96,13 +93,59 @@ public class HiddenRuinsQuestTests
         Assert.Equal(QuestState.Completed, _questComponent.QuestStates[1304]);
     }
 
-    private void SetQuestCompleted(int questId)
+    private void SimulateQuestCompletion(int questId)
     {
-        // Reflection or public access needed?
-        // PlayerQuestComponent.QuestStates is public get, private set.
-        // But the dictionary it returns is the actual reference?
-        // "public Dictionary<int, QuestState> QuestStates { get; private set; } = new();"
-        // Yes, likely returning the reference.
-        _questComponent.QuestStates[questId] = QuestState.Completed;
+        if (_questComponent.QuestStates.TryGetValue(questId, out var state) && (state == QuestState.Completed || state == QuestState.RewardClaimed))
+        {
+            return;
+        }
+
+        var def = _questManager.GetDefinition(questId);
+        Assert.NotNull(def);
+
+        // Fulfill prerequisites recursively
+        foreach (var reqId in def.Requirements)
+        {
+            SimulateQuestCompletion(reqId);
+        }
+
+        // Fulfill gating conditions
+        _character.SetLevel(Math.Max(_character.Level, def.RequiredLevel > 0 ? def.RequiredLevel : 100));
+        if (def.RequiredItems != null)
+        {
+            foreach (var reqItem in def.RequiredItems)
+            {
+                if (!_character.HasItem(reqItem.ItemId, reqItem.Quantity))
+                {
+                    _character.AddItem(reqItem.ItemId, reqItem.Quantity);
+                }
+            }
+        }
+
+        Assert.True(_questComponent.StartQuest(questId), $"Failed to start prerequisite quest {questId}");
+
+        foreach (var obj in def.Objectives)
+        {
+            if (obj.Type == "Talk") 
+                _questComponent.TryProgress("Talk", obj.TargetName);
+            else if (obj.Type == "Kill") 
+                _questComponent.TryProgress("Kill", obj.TargetName, obj.RequiredCount);
+            else if (obj.Type == "Collect" || obj.Type == "Interact" || obj.Type == "Gather" || obj.Type == "Craft" || obj.Type == "Compound" || obj.Type == "Explore")
+            {
+                 // For collect objectives, we might need to actually inject the item
+                 if (obj.DataId.HasValue && obj.Type == "Collect")
+                 {
+                     _character.AddItem(obj.DataId.Value, obj.RequiredCount);
+                 }
+                 _questComponent.TryProgress(obj.Type, obj.TargetName, obj.RequiredCount);
+            }
+            else
+            {
+                _questComponent.TryProgress(obj.Type, obj.TargetName, obj.RequiredCount);
+            }
+        }
+
+        Assert.Equal(QuestState.Completed, _questComponent.QuestStates[questId]);
+        _questComponent.ClaimReward(questId);
     }
 }

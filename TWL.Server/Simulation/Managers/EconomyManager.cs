@@ -5,6 +5,7 @@ using System.Text.Json;
 using System.Text.RegularExpressions;
 using System.Threading.Channels;
 using TWL.Server.Security;
+using TWL.Server.Security.Idempotency;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Models;
@@ -28,6 +29,7 @@ public class EconomyManager : IEconomyService, IDisposable
     private readonly object _ledgerLock = new();
     private readonly Channel<string> _logChannel;
     private readonly Task _logTask;
+    private readonly IdempotencyValidator _idempotencyValidator = new(TimeSpan.FromMinutes(EXPIRATION_MINUTES));
 
     private string _lastHash = "0000000000000000000000000000000000000000000000000000000000000000";
 
@@ -73,6 +75,19 @@ public class EconomyManager : IEconomyService, IDisposable
         {
             var snapshotTime = LoadSnapshot();
             ReplayLedger(snapshotTime);
+        }
+
+        // Hydrate idempotency validator from recovered transactions
+        foreach (var tx in _transactions.Values)
+        {
+            if (tx.State == TransactionState.Completed)
+            {
+                // Register and mark completed so idempotency checks work post-restart
+                if (_idempotencyValidator.TryRegisterOperation(tx.OrderId, tx.UserId, out _))
+                {
+                    _idempotencyValidator.MarkCompleted(tx.OrderId);
+                }
+            }
         }
 
         // Initialize Async Logging
@@ -232,14 +247,14 @@ public class EconomyManager : IEconomyService, IDisposable
         }
 
         // Idempotency Check
-        Transaction? tx = null;
-        if (!string.IsNullOrEmpty(operationId))
+        bool hasOperation = !string.IsNullOrEmpty(operationId);
+        if (hasOperation)
         {
-            if (_transactions.TryGetValue(operationId, out tx))
+            if (!_idempotencyValidator.TryRegisterOperation(operationId!, character.Id, out var existingRecord))
             {
-                lock (tx!)
+                lock (existingRecord)
                 {
-                    if (tx.State == TransactionState.Completed)
+                    if (existingRecord.State == OperationState.Completed)
                     {
                         return new EconomyOperationResultDTO
                         {
@@ -250,41 +265,21 @@ public class EconomyManager : IEconomyService, IDisposable
                         };
                     }
 
-                    if (tx.State == TransactionState.Pending)
+                    if (existingRecord.State == OperationState.Pending)
                     {
                         return new EconomyOperationResultDTO { Success = false, Message = "Transaction in progress" };
                     }
-                    // If Failed, allow retry (fall through)
-                }
-            }
-            else
-            {
-                // Register Pending Transaction
-                tx = new Transaction
-                {
-                    OrderId = operationId,
-                    UserId = character.Id,
-                    ProductId = $"shop_{shopItemId}",
-                    State = TransactionState.Pending,
-                    Timestamp = DateTime.UtcNow
-                };
-                if (!_transactions.TryAdd(operationId, tx))
-                {
-                    // If we failed to add, it means someone else added it concurrently.
-                    // Recursively retry to hit the TryGetValue path.
-                    return BuyShopItem(character, shopItemId, quantity, operationId);
+                    // If Failed, allow retry by setting back to pending
+                    existingRecord.State = OperationState.Pending;
                 }
             }
         }
 
         if (!_shopItems.TryGetValue(shopItemId, out var itemDef))
         {
-            if (tx != null)
+            if (hasOperation)
             {
-                lock (tx)
-                {
-                    tx.State = TransactionState.Failed;
-                }
+                _idempotencyValidator.MarkFailed(operationId!);
             }
 
             SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id, $"Reason:ItemNotFound Item:{shopItemId}", traceId);
@@ -295,12 +290,9 @@ public class EconomyManager : IEconomyService, IDisposable
 
         if (!character.TryConsumePremiumCurrency(totalCost))
         {
-            if (tx != null)
+            if (hasOperation)
             {
-                lock (tx)
-                {
-                    tx.State = TransactionState.Failed;
-                }
+                _idempotencyValidator.MarkFailed(operationId!);
             }
 
             SecurityLogger.LogSecurityEvent("ShopBuyFailed", character.Id,
@@ -314,7 +306,7 @@ public class EconomyManager : IEconomyService, IDisposable
             details += $", BoundTo:{character.Id}";
         }
 
-        if (!string.IsNullOrEmpty(operationId))
+        if (hasOperation)
         {
             details += $", OrderId:{operationId}";
         }
@@ -327,12 +319,9 @@ public class EconomyManager : IEconomyService, IDisposable
             // Compensation: Refund
             character.AddPremiumCurrency(totalCost);
 
-            if (tx != null)
+            if (hasOperation)
             {
-                lock (tx)
-                {
-                    tx.State = TransactionState.Failed;
-                }
+                _idempotencyValidator.MarkFailed(operationId!);
             }
 
             LogLedger("ShopBuyFailed", character.Id, details + ", Reason:InventoryFull", 0, character.PremiumCurrency, traceId);
@@ -341,12 +330,19 @@ public class EconomyManager : IEconomyService, IDisposable
         }
 
         // Mark Transaction as Completed
-        if (tx != null)
+        if (hasOperation)
         {
-            lock (tx)
+            _idempotencyValidator.MarkCompleted(operationId!);
+            
+            // Register in _transactions so it is included in SaveSnapshot() and preserved across restarts
+            _transactions[operationId!] = new Transaction
             {
-                tx.State = TransactionState.Completed;
-            }
+                OrderId = operationId!,
+                UserId = character.Id,
+                ProductId = $"Item:{shopItemId}",
+                State = TransactionState.Completed,
+                Timestamp = DateTime.UtcNow
+            };
         }
 
         LogLedger("ShopBuy", character.Id, details, -totalCost, character.PremiumCurrency, traceId);
@@ -384,12 +380,11 @@ public class EconomyManager : IEconomyService, IDisposable
         }
 
         // Idempotency Check
-        Transaction? tx = null;
-        if (_transactions.TryGetValue(operationId, out tx))
+        if (!_idempotencyValidator.TryRegisterOperation(operationId, giver.Id, out var existingRecord))
         {
-            lock (tx!)
+            lock (existingRecord)
             {
-                if (tx.State == TransactionState.Completed)
+                if (existingRecord.State == OperationState.Completed)
                 {
                     return new EconomyOperationResultDTO
                     {
@@ -400,38 +395,18 @@ public class EconomyManager : IEconomyService, IDisposable
                     };
                 }
 
-                if (tx.State == TransactionState.Pending)
+                if (existingRecord.State == OperationState.Pending)
                 {
                     return new EconomyOperationResultDTO { Success = false, Message = "Transaction in progress" };
                 }
-                // If Failed, allow retry
-            }
-        }
-        else
-        {
-            tx = new Transaction
-            {
-                OrderId = operationId,
-                UserId = giver.Id,
-                ProductId = $"gift_shop_{shopItemId}_to_{receiver.Id}",
-                State = TransactionState.Pending,
-                Timestamp = DateTime.UtcNow
-            };
-            if (!_transactions.TryAdd(operationId, tx))
-            {
-                return GiftShopItem(giver, receiver, shopItemId, quantity, operationId);
+                // If Failed, allow retry by setting back to pending
+                existingRecord.State = OperationState.Pending;
             }
         }
 
         if (!_shopItems.TryGetValue(shopItemId, out var itemDef))
         {
-            if (tx != null)
-            {
-                lock (tx)
-                {
-                    tx.State = TransactionState.Failed;
-                }
-            }
+            _idempotencyValidator.MarkFailed(operationId);
 
             return new EconomyOperationResultDTO { Success = false, Message = "Item not found" };
         }
@@ -442,18 +417,13 @@ public class EconomyManager : IEconomyService, IDisposable
         // HARDENING: Check Daily Gift Limit
         if (!giver.TryConsumeDailyGiftLimit(totalCost, DAILY_GIFT_LIMIT))
         {
+            _idempotencyValidator.MarkFailed(operationId);
             return new EconomyOperationResultDTO { Success = false, Message = "Daily gift limit exceeded" };
         }
 
         if (!giver.TryConsumePremiumCurrency(totalCost))
         {
-            if (tx != null)
-            {
-                lock (tx)
-                {
-                    tx.State = TransactionState.Failed;
-                }
-            }
+            _idempotencyValidator.MarkFailed(operationId);
 
             return new EconomyOperationResultDTO { Success = false, Message = "Insufficient funds" };
         }
@@ -468,10 +438,7 @@ public class EconomyManager : IEconomyService, IDisposable
             details += $", BoundTo:{receiver.Id}";
         }
 
-        if (!string.IsNullOrEmpty(operationId))
-        {
-            details += $", OrderId:{operationId}";
-        }
+        details += $", OrderId:{operationId}";
 
         var added = receiver.AddItem(itemDef.ItemId, quantity, itemDef.Policy, boundToId);
 
@@ -480,13 +447,7 @@ public class EconomyManager : IEconomyService, IDisposable
             // Compensation: Refund Giver
             giver.AddPremiumCurrency(totalCost);
 
-            if (tx != null)
-            {
-                lock (tx)
-                {
-                    tx.State = TransactionState.Failed;
-                }
-            }
+            _idempotencyValidator.MarkFailed(operationId);
 
             LogLedger("GiftBuyFailed", giver.Id, details + ", Reason:ReceiverInventoryFull", 0, giver.PremiumCurrency, traceId);
 
@@ -494,13 +455,7 @@ public class EconomyManager : IEconomyService, IDisposable
         }
 
         // Mark Transaction as Completed
-        if (tx != null)
-        {
-            lock (tx)
-            {
-                tx.State = TransactionState.Completed;
-            }
-        }
+        _idempotencyValidator.MarkCompleted(operationId);
 
         LogLedger("GiftBuy", giver.Id, details, -totalCost, giver.PremiumCurrency, traceId);
 
@@ -643,7 +598,7 @@ public class EconomyManager : IEconomyService, IDisposable
                 string? orderId = null;
                 string? productId = null;
 
-                if (type == "ShopBuy")
+                if (type == "ShopBuy" || type == "GiftBuy")
                 {
                     // Details: ShopItem:X, Item:Y xZ, OrderId:ABC
                     var split = details.Split(", OrderId:");
@@ -690,7 +645,7 @@ public class EconomyManager : IEconomyService, IDisposable
                             _transactions[orderId!] = tx;
                         }
                     }
-                    else if (type == "PurchaseVerify" || type == "ShopBuy")
+                    else if (type == "PurchaseVerify" || type == "ShopBuy" || type == "GiftBuy")
                     {
                         // Mark as Completed
                         if (_transactions.TryGetValue(orderId!, out var tx))
