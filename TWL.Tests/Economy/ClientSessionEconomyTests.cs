@@ -76,6 +76,7 @@ public class ClientSessionEconomyTests
             // Use reflection to set private fields
             SetField("_economyManager", economyService);
             SetField("_rateLimiter", new RateLimiter()); // Required for HandleMessageAsync check
+            SetField("_replayGuard", new ReplayGuard(Microsoft.Extensions.Options.Options.Create(new ReplayGuardOptions()))); // Added to prevent NRE
 
             // Metrics can be null in HandleMessageAsync, null checks exist
         }

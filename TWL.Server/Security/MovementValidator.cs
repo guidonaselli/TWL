@@ -30,7 +30,7 @@ public class MovementValidator
         // 2. Check maximum axis delta limits
         if (Math.Abs(move.dx) > _options.MaxAxisDeltaPerTick || Math.Abs(move.dy) > _options.MaxAxisDeltaPerTick)
         {
-            reason = $"AxisDeltaExceeded:dx={move.dx:F2},dy={move.dy:F2},max={_options.MaxAxisDeltaPerTick:F2}";
+            reason = $"SpeedHack:AxisSpeedLimitExceeded:dx={move.dx:F2},dy={move.dy:F2},max={_options.MaxAxisDeltaPerTick:F2}";
             return false;
         }
 
@@ -48,7 +48,7 @@ public class MovementValidator
         // but distance > allowedDistance is enough.
         if (distance > allowedDistance + 0.001f)
         {
-            reason = $"DistanceExceeded:dist={distance:F2},max={allowedDistance:F2}";
+            reason = $"SpeedHack:EuclideanSpeedLimitExceeded:dist={distance:F2},max={allowedDistance:F2}";
             return false;
         }
 
@@ -58,7 +58,7 @@ public class MovementValidator
         
         if (Math.Abs(nextX) > _options.MaxAbsoluteCoordinate || Math.Abs(nextY) > _options.MaxAbsoluteCoordinate)
         {
-            reason = $"OutOfBounds:x={nextX:F2},y={nextY:F2},max={_options.MaxAbsoluteCoordinate:F2}";
+            reason = $"OutOfBounds:MaxCoordinateExceeded:x={nextX:F2},y={nextY:F2},max={_options.MaxAbsoluteCoordinate:F2}";
             return false;
         }
 
