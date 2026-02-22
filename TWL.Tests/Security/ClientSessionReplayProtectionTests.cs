@@ -18,8 +18,6 @@ using System.Net;
 
 namespace TWL.Tests.Security;
 
-
-
 public class ClientSessionReplayProtectionTests
 {
     [Fact]
@@ -29,13 +27,8 @@ public class ClientSessionReplayProtectionTests
         var metrics = new ServerMetrics();
         var guardOptions = new ReplayGuardOptions { NonceTtlSeconds = 60, AllowedClockSkewSeconds = 30 };
         var replayGuard = new ReplayGuard(guardOptions, () => DateTime.UtcNow);
-        
-        // We need a dummy TcpClient for the base constructor, but we won't use its stream
-        // Actually, ClientSession constructor gets the stream. We must have a connected client or throw.
-        // Let's use the parameterless constructor for testing!
-        // ClientSession has `protected ClientSession() { } // For testing`
-        
-        var session = new TestableClientSession(metrics, replayGuard);
+
+        var session = new TestableClientSession(metrics, replayGuard); // Default userId=1
 
         var msg = new NetMessage
         {
@@ -52,11 +45,55 @@ public class ClientSessionReplayProtectionTests
 
         // Act 2: Duplicate message should be rejected
         await session.InvokeHandleMessageAsync(msg);
-        
+
         // Assert
         Assert.Equal(initialErrors + 1, metrics.GetSnapshot().ValidationErrors);
     }
-    
+
+    [Fact]
+    public async Task HandleMessageAsync_PreLogin_DuplicateNonce_Rejected()
+    {
+        // Arrange
+        var metrics = new ServerMetrics();
+        var guardOptions = new ReplayGuardOptions { NonceTtlSeconds = 60, AllowedClockSkewSeconds = 30 };
+        var replayGuard = new ReplayGuard(guardOptions, () => DateTime.UtcNow);
+
+        // Use userId = -1 (Pre-login state)
+        var session = new TestableClientSession(metrics, replayGuard, -1);
+
+        var timestamp = DateTime.UtcNow;
+        var nonce = "nonce-prelogin";
+
+        // Create TWO distinct message objects with SAME content to simulate deserialization
+        // This is critical because the bug relies on GetHashCode() being different for distinct objects
+        var msg1 = new NetMessage
+        {
+            Op = Opcode.LoginRequest,
+            Nonce = nonce,
+            TimestampUtc = timestamp,
+            JsonPayload = "{}"
+        };
+
+        var msg2 = new NetMessage
+        {
+            Op = Opcode.LoginRequest,
+            Nonce = nonce,
+            TimestampUtc = timestamp,
+            JsonPayload = "{}"
+        };
+
+        // Act 1: First message should be accepted
+        var initialErrors = metrics.GetSnapshot().ValidationErrors;
+        await session.InvokeHandleMessageAsync(msg1);
+        Assert.Equal(initialErrors, metrics.GetSnapshot().ValidationErrors);
+
+        // Act 2: Duplicate message (different object, same content) should be rejected
+        await session.InvokeHandleMessageAsync(msg2);
+
+        // Assert
+        Assert.Equal(initialErrors + 1, metrics.GetSnapshot().ValidationErrors);
+    }
+
     // Test helper wrapper using the protected constructor
     private class TestableClientSession : ClientSession
     {
@@ -64,11 +101,11 @@ public class ClientSessionReplayProtectionTests
         private readonly ReplayGuard _replayGuard;
         private readonly RateLimiter _rateLimiter;
 
-        public TestableClientSession(ServerMetrics metrics, ReplayGuard replayGuard) 
+        public TestableClientSession(ServerMetrics metrics, ReplayGuard replayGuard, int userId = 1)
             : base() // Use protected constructor
         {
-            UserId = 1;
-            
+            UserId = userId;
+
             // Set private fields using reflection
             SetPrivateField("_metrics", metrics);
             SetPrivateField("_replayGuard", replayGuard);
@@ -89,9 +126,14 @@ public class ClientSessionReplayProtectionTests
             var method = typeof(ClientSession).GetMethod("HandleMessageAsync", BindingFlags.NonPublic | BindingFlags.Instance);
             if (method == null)
                 throw new InvalidOperationException("HandleMessageAsync not found");
-            
+
             var task = method.Invoke(this, new object[] { msg, "test-trace-id" }) as Task;
             return task ?? Task.CompletedTask;
+        }
+
+        public override Task SendAsync(NetMessage msg)
+        {
+            return Task.CompletedTask;
         }
     }
 }
