@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using System.Net.Sockets;
 using System.Text.Json;
+using System.Threading;
 using TWL.Server.Architecture.Observability;
 using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Features.Combat;
@@ -45,6 +46,9 @@ public class ClientSession
     private readonly SpawnManager _spawnManager;
     private readonly NetworkStream _stream;
     private readonly IWorldTriggerService _worldTriggerService;
+
+    private static int _nextConnectionId = -1;
+    private readonly int _connectionId = Interlocked.Decrement(ref _nextConnectionId);
 
     public int UserId = -1; // se setea tras login
     private DateTime _lastMoveTimeUtc = DateTime.UtcNow;
@@ -224,6 +228,7 @@ public class ClientSession
                 _replayGuard.RemoveSession(UserId);
             }
 
+            _replayGuard.RemoveSession(_connectionId);
             _stream.Close();
             _client.Close();
         }
@@ -239,7 +244,7 @@ public class ClientSession
         var swValidate = Stopwatch.StartNew();
 
         // Replay guard check (before rate limiter and opcode dispatch)
-        if (!_replayGuard.Validate(UserId >= 0 ? UserId : msg.GetHashCode(), msg.Nonce, msg.TimestampUtc, out var replayReason))
+        if (!_replayGuard.Validate(UserId >= 0 ? UserId : _connectionId, msg.Nonce, msg.TimestampUtc, out var replayReason))
         {
             swValidate.Stop();
             _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
