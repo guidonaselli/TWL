@@ -29,10 +29,13 @@ public class GameServer
     private readonly IPlayerRepository _playerRepo;
 
     // Add constructor for DI or manual instantiation with dependencies
-    public GameServer(DbService dbService, IPlayerRepository playerRepo)
+    private readonly IPartyService _partyService;
+
+    public GameServer(DbService dbService, IPlayerRepository playerRepo, IPartyService partyService)
     {
         DB = dbService;
         _playerRepo = playerRepo;
+        _partyService = partyService;
     }
     public MonsterManager MonsterManager { get; private set; }
     public NpcManager NpcManager { get; private set; }
@@ -184,7 +187,7 @@ public class GameServer
         // 3) Inicia Network
         _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager,
             PlayerService, EconomyManager, Metrics, PetService, mediator, worldTriggerService, SpawnManager,
-            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()));
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), _partyService);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");
