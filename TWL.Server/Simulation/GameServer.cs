@@ -29,10 +29,13 @@ public class GameServer
     private readonly IPlayerRepository _playerRepo;
 
     // Add constructor for DI or manual instantiation with dependencies
-    public GameServer(DbService dbService, IPlayerRepository playerRepo)
+    private readonly IPartyService _partyService;
+
+    public GameServer(DbService dbService, IPlayerRepository playerRepo, IPartyService partyService)
     {
         DB = dbService;
         _playerRepo = playerRepo;
+        _partyService = partyService;
     }
     public MonsterManager MonsterManager { get; private set; }
     public NpcManager NpcManager { get; private set; }

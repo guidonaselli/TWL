@@ -999,7 +999,7 @@ public class ClientSession
 
         if (_partyService.DeclineInvite(UserId, request.InviterId))
         {
-            var inviterSession = _playerService.GetSessionByUserId(request.InviterId);
+            var inviterSession = _playerService.GetSession(request.InviterId);
             if (inviterSession != null)
             {
                 await inviterSession.SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = $"{Character.Name} declined your party invite." }, _jsonOptions) });
@@ -1036,10 +1036,10 @@ public class ClientSession
         var party = _partyService.GetPartyByMember(UserId);
         if (party == null) return;
         
-        var targetSession = _playerService.GetSessionByUserId(request.TargetMemberId);
+        var targetSession = _playerService.GetSession(request.TargetMemberId);
         
-        bool isLeaderInCombat = _combatManager.IsCombatantInCombat(Character.Id);
-        bool isTargetInCombat = targetSession != null && _combatManager.IsCombatantInCombat(targetSession.Character!.Id);
+        bool isLeaderInCombat = _combatManager.GetCombatant(Character.Id) != null;
+        bool isTargetInCombat = targetSession != null && targetSession.Character != null && _combatManager.GetCombatant(targetSession.Character.Id) != null;
 
         var result = _partyService.KickMember(UserId, request.TargetMemberId, isLeaderInCombat, isTargetInCombat);
         await SendAsync(new NetMessage { Op = Opcode.PartyKickResponse, JsonPayload = JsonSerializer.Serialize(new PartyKickResponse { Success = result.Success, Message = result.Message }, _jsonOptions) });
@@ -1071,7 +1071,7 @@ public class ClientSession
 
         foreach (var memberId in party.MemberIds)
         {
-            var memberSession = _playerService.GetSessionByUserId(memberId);
+            var memberSession = _playerService.GetSession(memberId);
             if (memberSession != null && memberSession.Character != null)
             {
                 memberSession.Character.PartyId = party.PartyId; // Ensure parity across server representation
@@ -1092,7 +1092,7 @@ public class ClientSession
         var json = JsonSerializer.Serialize(broadcast, _jsonOptions);
         foreach (var memberId in party.MemberIds)
         {
-            var memberSession = _playerService.GetSessionByUserId(memberId);
+            var memberSession = _playerService.GetSession(memberId);
             if (memberSession != null)
             {
                 await memberSession.SendAsync(new NetMessage { Op = Opcode.PartyUpdateBroadcast, JsonPayload = json });
