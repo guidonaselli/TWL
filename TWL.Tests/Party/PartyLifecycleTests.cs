@@ -29,7 +29,7 @@ public class PartyLifecycleTests
         Assert.Contains(1, party.MemberIds);
         Assert.Contains(2, party.MemberIds);
         Assert.Equal(2, party.MemberIds.Count);
-        
+
         // Ensure character 2 correctly points to the same party
         var party2 = _partyManager.GetPartyByMember(2);
         Assert.Same(party, party2);
@@ -52,10 +52,10 @@ public class PartyLifecycleTests
     {
         // 1 invites 2
         _partyManager.InviteMember(1, "P1", 2, "P2");
-        
+
         // 3 invites 2
         _partyManager.InviteMember(3, "P3", 2, "P2");
-        
+
         // 2 accepts 1
         var accept1 = _partyManager.AcceptInvite(2, 1);
         Assert.True(accept1.Success);
@@ -71,10 +71,10 @@ public class PartyLifecycleTests
     {
         _partyManager.InviteMember(1, "P1", 2, "P2");
         _partyManager.AcceptInvite(2, 1);
-        
+
         _partyManager.InviteMember(1, "P1", 3, "P3");
         _partyManager.AcceptInvite(3, 1);
-        
+
         _partyManager.InviteMember(1, "P1", 4, "P4");
         _partyManager.AcceptInvite(4, 1);
 
@@ -139,11 +139,18 @@ public class PartyLifecycleTests
         _partyManager.InviteMember(1, "P1", 2, "P2");
         _partyManager.AcceptInvite(2, 1);
 
-        // Leave
+        // Member leaves
         Assert.True(_partyManager.LeaveParty(2));
         Assert.Null(_partyManager.GetPartyByMember(2));
 
-        // When leaving, if party count drops to 1, it disbands
+        // Party should still exist with Leader
+        var party = _partyManager.GetPartyByMember(1);
+        Assert.NotNull(party);
+        Assert.Single(party.MemberIds);
+        Assert.Equal(1, party.LeaderId);
+
+        // Leader leaves
+        Assert.True(_partyManager.LeaveParty(1));
         Assert.Null(_partyManager.GetPartyByMember(1));
     }
 
@@ -152,18 +159,18 @@ public class PartyLifecycleTests
     {
         _partyManager.InviteMember(1, "P1", 2, "P2");
         _partyManager.AcceptInvite(2, 1);
-        
+
         _partyManager.InviteMember(1, "P1", 3, "P3");
         _partyManager.AcceptInvite(3, 1);
 
         // Leader leaves
         Assert.True(_partyManager.LeaveParty(1));
-        
+
         var party = _partyManager.GetPartyByMember(2);
         Assert.NotNull(party);
         Assert.Equal(2, party.MemberIds.Count);
         Assert.DoesNotContain(1, party.MemberIds);
-        
+
         // Leadership should transfer to the next member (2)
         Assert.Equal(2, party.LeaderId);
     }

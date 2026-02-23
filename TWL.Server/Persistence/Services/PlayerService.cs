@@ -182,6 +182,15 @@ public class PlayerService
         return session;
     }
 
+    public virtual ClientSession? GetSessionByUserId(int userId) => GetSession(userId);
+
+    public virtual ClientSession? GetSessionByName(string name)
+    {
+        return _sessions.Values.FirstOrDefault(s =>
+            s.Character != null &&
+            string.Equals(s.Character.Name, name, StringComparison.OrdinalIgnoreCase));
+    }
+
     public virtual IEnumerable<ClientSession> GetAllSessions() => _sessions.Values;
 
     public virtual void GetSessions(List<ClientSession> buffer, Func<ClientSession, bool>? filter = null)

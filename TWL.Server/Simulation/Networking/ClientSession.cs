@@ -1082,8 +1082,8 @@ public class ClientSession
                     Level = memberSession.Character.Level,
                     MaxHp = memberSession.Character.MaxHp,
                     CurrentHp = memberSession.Character.Hp,
-                    MaxMp = memberSession.Character.MaxMp,
-                    CurrentMp = memberSession.Character.Mp,
+                    MaxMp = memberSession.Character.MaxSp,
+                    CurrentMp = memberSession.Character.Sp,
                     IsOnline = true
                 });
             }
