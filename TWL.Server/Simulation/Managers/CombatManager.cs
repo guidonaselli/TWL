@@ -52,6 +52,12 @@ public class CombatManager
         return combatant;
     }
 
+    public virtual bool IsCombatantInCombat(int id)
+    {
+        var combatant = GetCombatant(id);
+        return combatant != null && combatant.EncounterId > 0;
+    }
+
     public virtual void StartEncounter(int encounterId, IEnumerable<ServerCombatant> participants, int seed = 0)
     {
         foreach (var p in participants)

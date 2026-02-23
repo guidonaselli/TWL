@@ -47,6 +47,7 @@ public class GameServer
     public IEconomyService EconomyManager { get; private set; }
     public SpawnManager SpawnManager { get; private set; }
     public ServerMetrics Metrics { get; private set; }
+    public PartyManager PartyManager { get; private set; }
 
     public void Start()
     {
@@ -107,6 +108,8 @@ public class GameServer
 
         InteractionManager = new InteractionManager();
         InteractionManager.Load("Content/Data/interactions.json");
+
+        PartyManager = new PartyManager();
 
         var random = new SeedableRandomService(NullLogger<SeedableRandomService>.Instance);
         var combatResolver = new StandardCombatResolver(random, SkillRegistry.Instance);
@@ -187,7 +190,7 @@ public class GameServer
         // 3) Inicia Network
         _netServer = new NetworkServer(9050, DB, PetManager, QuestManager, CombatManager, InteractionManager,
             PlayerService, EconomyManager, Metrics, PetService, mediator, worldTriggerService, SpawnManager,
-            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), _partyService);
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), PartyManager);
         _netServer.Start();
 
         Console.WriteLine("GameServer started on port 9050.");

@@ -182,12 +182,13 @@ public class PlayerService
         return session;
     }
 
-    public virtual ClientSession? GetSessionByName(string characterName)
+    public virtual ClientSession? GetSessionByUserId(int userId) => GetSession(userId);
+
+    public virtual ClientSession? GetSessionByName(string name)
     {
-        // Not O(1) but acceptable for invite lookup
         return _sessions.Values.FirstOrDefault(s =>
             s.Character != null &&
-            s.Character.Name.Equals(characterName, StringComparison.OrdinalIgnoreCase));
+            string.Equals(s.Character.Name, name, StringComparison.OrdinalIgnoreCase));
     }
 
     public virtual IEnumerable<ClientSession> GetAllSessions() => _sessions.Values;

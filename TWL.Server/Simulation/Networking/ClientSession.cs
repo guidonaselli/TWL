@@ -1082,8 +1082,8 @@ public class ClientSession
                     Level = memberSession.Character.Level,
                     MaxHp = memberSession.Character.MaxHp,
                     CurrentHp = memberSession.Character.Hp,
-                    MaxMp = 100, // TODO: Implement MP
-                    CurrentMp = 100, // TODO: Implement MP
+                    MaxMp = memberSession.Character.MaxSp,
+                    CurrentMp = memberSession.Character.Sp,
                     IsOnline = true
                 });
             }
