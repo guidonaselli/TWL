@@ -78,8 +78,8 @@ Plans:
 
 Plans:
 - [x] 03-01-PLAN.md -- Hidden Ruins and Ruins Expansion quest-chain stabilization (1301-1307) with stronger regression coverage
-- [ ] 03-02-PLAN.md -- Hidden Cove chain stabilization (1401-1404, 2401) across quest and interaction contracts
-- [ ] 03-03-PLAN.md -- Localization key closure and arc-scoped localization regression guardrails for phase-3 content
+- [x] 03-02-PLAN.md -- Hidden Cove chain stabilization (1401-1404, 2401) across quest and interaction contracts
+- [x] 03-03-PLAN.md -- Localization key closure and arc-scoped localization regression guardrails for phase-3 content
 
 ### Phase 4: Party System
 **Goal**: Players can form parties of up to 4 members, share XP and loot, and use tactical formation for combat
@@ -233,7 +233,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 |-------|----------------|--------|-----------|
 | 1. Infrastructure Foundation | 2/2 | ✅ Complete | 2026-02-19 |
 | 2. Security Hardening | 3/3 | ✅ Complete | 2026-02-22 |
-| 3. Content Quality | 1/3 | ⏳ In Progress | - |
+| 3. Content Quality | 3/3 | ✅ Complete | 2026-02-23 |
 | 4. Party System | 0/4 | Not started | - |
 | 5. Guild System | 0/4 | Not started | - |
 | 6. Rebirth System | 0/4 | Not started | - |
@@ -244,4 +244,4 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 
 ---
 *Roadmap created: 2026-02-15*
-*Last updated: 2026-02-19*
+*Last updated: 2026-02-23*

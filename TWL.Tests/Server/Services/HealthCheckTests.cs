@@ -2,6 +2,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
+using TWL.Server.Persistence;
 using TWL.Server.Services;
 using TWL.Server.Simulation.Managers;
 using Xunit;
@@ -18,11 +19,11 @@ public class HealthCheckTests
 
     public HealthCheckTests()
     {
-        _mockDb = new Mock<DbService>("Host=dummy;");
+        _mockDb = new Mock<DbService>("Host=dummy;", new Mock<IServiceProvider>().Object);
         _serverMetrics = new ServerMetrics();
         // We pass null for repository as we won't call methods that use it in this test (hopefully)
         // Only Metrics property is accessed which is initialized in ctor.
-        _mockPlayerService = new Mock<PlayerService>(null, _serverMetrics);
+        _mockPlayerService = new Mock<PlayerService>((IPlayerRepository)null, _serverMetrics);
         _mockLogger = new Mock<ILogger<HealthCheckService>>();
 
         _service = new HealthCheckService(_mockDb.Object, _mockPlayerService.Object, _serverMetrics, _mockLogger.Object);

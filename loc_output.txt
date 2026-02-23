@@ -1,0 +1,12 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  TWL.Shared -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Shared\bin\Debug\net10.0\TWL.Shared.dll
+  TWL.Server -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Server\bin\Debug\net10.0\TWL.Server.dll
+  TWL.Tests -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll
+Test run for D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+
+Passed!  - Failed:     0, Passed:     1, Skipped:     0, Total:     1, Duration: 85 ms - TWL.Tests.dll (net10.0)

@@ -1,0 +1,32 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  TWL.Shared -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Shared\bin\Debug\net10.0\TWL.Shared.dll
+  TWL.Server -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Server\bin\Debug\net10.0\TWL.Server.dll
+  TWL.Tests -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll
+Test run for D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed TWL.Tests.Server.Simulation.GracefulShutdownTests.StopAsync_ShouldDisconnectPlayersAndStopServices [96 ms]
+  Error Message:
+   System.ArgumentException : Can not instantiate proxy of class: TWL.Server.Persistence.Database.DbService.
+Could not find a constructor that would match given arguments:
+System.String
+ (Parameter 'constructorArguments')
+---- System.MissingMethodException : Constructor on type 'Castle.Proxies.DbServiceProxy' not found.
+  Stack Trace:
+     at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)
+   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options, Object[] constructorArguments, IInterceptor[] interceptors)
+   at Moq.CastleProxyFactory.CreateProxy(Type mockType, IInterceptor interceptor, Type[] interfaces, Object[] arguments) in C:\projects\moq4\src\Moq\Interception\CastleProxyFactory.cs:line 62
+   at Moq.Mock`1.InitializeInstance() in C:\projects\moq4\src\Moq\Mock`1.cs:line 309
+   at Moq.Mock`1.OnGetObject() in C:\projects\moq4\src\Moq\Mock`1.cs:line 323
+   at Moq.Mock.get_Object() in C:\projects\moq4\src\Moq\Mock.cs:line 179
+   at Moq.Mock`1.get_Object() in C:\projects\moq4\src\Moq\Mock`1.cs:line 281
+   at TWL.Tests.Server.Simulation.GracefulShutdownTests.StopAsync_ShouldDisconnectPlayersAndStopServices() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\Server\Simulation\GracefulShutdownTests.cs:line 69
+--- End of stack trace from previous location ---
+----- Inner Stack Trace -----
+   at System.RuntimeType.CreateInstanceImpl(BindingFlags bindingAttr, Binder binder, Object[] args, CultureInfo culture)
+   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 112 ms - TWL.Tests.dll (net10.0)

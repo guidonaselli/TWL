@@ -39,6 +39,17 @@ public enum Opcode
     // Encounter
     EncounterStarted,
 
+    // Party
+    PartyInviteRequest,
+    PartyInviteResponse,
+    PartyInviteReceived,
+    PartyAcceptInvite,
+    PartyDeclineInvite,
+    PartyLeaveRequest,
+    PartyKickRequest,
+    PartyKickResponse,
+    PartyUpdateBroadcast,
+
     // Status
     StatsUpdate,
 

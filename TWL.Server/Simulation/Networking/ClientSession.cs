@@ -43,6 +43,7 @@ public class ClientSession
     private readonly RateLimiter _rateLimiter;
     private readonly ReplayGuard _replayGuard;
     private readonly MovementValidator _movementValidator;
+    private readonly IPartyService _partyService;
     private readonly SpawnManager _spawnManager;
     private readonly NetworkStream _stream;
     private readonly IWorldTriggerService _worldTriggerService;
@@ -60,7 +61,7 @@ public class ClientSession
     public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
-        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator)
+        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator, IPartyService partyService)
     {
         _client = client;
         _stream = client.GetStream();
@@ -82,6 +83,7 @@ public class ClientSession
         _rateLimiter = new RateLimiter();
         _replayGuard = replayGuard;
         _movementValidator = movementValidator;
+        _partyService = partyService;
 
         if (_combatManager != null)
         {
@@ -303,6 +305,21 @@ public class ClientSession
                 break;
             case Opcode.UseItemRequest:
                 await HandleUseItemAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.PartyInviteRequest:
+                await HandlePartyInviteAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.PartyAcceptInvite:
+                await HandlePartyAcceptAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.PartyDeclineInvite:
+                await HandlePartyDeclineAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.PartyLeaveRequest:
+                await HandlePartyLeaveAsync(traceId);
+                break;
+            case Opcode.PartyKickRequest:
+                await HandlePartyKickAsync(msg.JsonPayload, traceId);
                 break;
             // etc.
         }
@@ -805,6 +822,13 @@ public class ClientSession
                     MapId = Character?.MapId ?? 0
                 }, _jsonOptions)
             });
+
+            // If the user belongs to a party, synchronize the party state
+            var party = _partyService.GetPartyByMember(UserId);
+            if (party != null)
+            {
+                await BroadcastPartyUpdateAsync(party);
+            }
         }
     }
 
@@ -913,6 +937,166 @@ public class ClientSession
         foreach (var questId in failedQuests)
         {
             _ = SendQuestUpdateAsync(questId);
+        }
+    }
+
+    private async Task HandlePartyInviteAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        var request = JsonSerializer.Deserialize<PartyInviteRequest>(payload, _jsonOptions);
+        if (request == null || string.IsNullOrWhiteSpace(request.TargetCharacterName)) return;
+
+        var targetSession = _playerService.GetSessionByName(request.TargetCharacterName);
+        if (targetSession == null || targetSession.UserId <= 0)
+        {
+            await SendAsync(new NetMessage { Op = Opcode.PartyInviteResponse, JsonPayload = JsonSerializer.Serialize(new PartyInviteResponse { Success = false, Message = "Player not found or offline." }, _jsonOptions) });
+            return;
+        }
+
+        var result = _partyService.InviteMember(UserId, Character.Name, targetSession.UserId, targetSession.Character!.Name);
+        await SendAsync(new NetMessage { Op = Opcode.PartyInviteResponse, JsonPayload = JsonSerializer.Serialize(new PartyInviteResponse { Success = result.Success, Message = result.Message }, _jsonOptions) });
+
+        if (result.Success)
+        {
+            await targetSession.SendAsync(new NetMessage
+            {
+                Op = Opcode.PartyInviteReceived,
+                JsonPayload = JsonSerializer.Serialize(new PartyInviteReceivedEvent
+                {
+                    InviterId = UserId,
+                    InviterName = Character.Name,
+                    ExpiresAtUtc = DateTime.UtcNow.AddSeconds(PartyManager.InviteTimeoutSeconds)
+                }, _jsonOptions)
+            });
+        }
+    }
+
+    private async Task HandlePartyAcceptAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        var request = JsonSerializer.Deserialize<PartyAcceptInviteRequest>(payload, _jsonOptions);
+        if (request == null) return;
+
+        var result = _partyService.AcceptInvite(UserId, request.InviterId);
+        if (!result.Success)
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = result.Message }, _jsonOptions) });
+            return;
+        }
+
+        var party = _partyService.GetPartyByMember(UserId);
+        if (party != null)
+        {
+            await BroadcastPartyUpdateAsync(party);
+        }
+    }
+
+    private async Task HandlePartyDeclineAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        var request = JsonSerializer.Deserialize<PartyDeclineInviteRequest>(payload, _jsonOptions);
+        if (request == null) return;
+
+        if (_partyService.DeclineInvite(UserId, request.InviterId))
+        {
+            var inviterSession = _playerService.GetSessionByUserId(request.InviterId);
+            if (inviterSession != null)
+            {
+                await inviterSession.SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = $"{Character.Name} declined your party invite." }, _jsonOptions) });
+            }
+        }
+    }
+
+    private async Task HandlePartyLeaveAsync(string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        
+        var party = _partyService.GetPartyByMember(UserId);
+        if (party == null) return;
+
+        if (_partyService.LeaveParty(UserId))
+        {
+            Character.PartyId = null;
+            await SendAsync(new NetMessage { Op = Opcode.PartyUpdateBroadcast, JsonPayload = JsonSerializer.Serialize(new PartyUpdateBroadcast { PartyId = 0 }, _jsonOptions) });
+
+            var updatedParty = _partyService.GetParty(party.PartyId);
+            if (updatedParty != null)
+            {
+                await BroadcastPartyUpdateAsync(updatedParty);
+            }
+        }
+    }
+
+    private async Task HandlePartyKickAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        var request = JsonSerializer.Deserialize<PartyKickRequest>(payload, _jsonOptions);
+        if (request == null) return;
+
+        var party = _partyService.GetPartyByMember(UserId);
+        if (party == null) return;
+        
+        var targetSession = _playerService.GetSessionByUserId(request.TargetMemberId);
+        
+        bool isLeaderInCombat = _combatManager.IsCombatantInCombat(Character.Id);
+        bool isTargetInCombat = targetSession != null && _combatManager.IsCombatantInCombat(targetSession.Character!.Id);
+
+        var result = _partyService.KickMember(UserId, request.TargetMemberId, isLeaderInCombat, isTargetInCombat);
+        await SendAsync(new NetMessage { Op = Opcode.PartyKickResponse, JsonPayload = JsonSerializer.Serialize(new PartyKickResponse { Success = result.Success, Message = result.Message }, _jsonOptions) });
+
+        if (result.Success)
+        {
+            if (targetSession != null && targetSession.Character != null)
+            {
+                targetSession.Character.PartyId = null;
+                await targetSession.SendAsync(new NetMessage { Op = Opcode.PartyUpdateBroadcast, JsonPayload = JsonSerializer.Serialize(new PartyUpdateBroadcast { PartyId = 0 }, _jsonOptions) });
+                await targetSession.SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "You have been kicked from the party." }, _jsonOptions) });
+            }
+            
+            var updatedParty = _partyService.GetParty(party.PartyId); // Getting updated state of party or null if disbanded
+            if (updatedParty != null)
+            {
+                await BroadcastPartyUpdateAsync(updatedParty);
+            }
+        }
+    }
+
+    private async Task BroadcastPartyUpdateAsync(Party party)
+    {
+        var broadcast = new PartyUpdateBroadcast
+        {
+            PartyId = party.PartyId,
+            LeaderId = party.LeaderId
+        };
+
+        foreach (var memberId in party.MemberIds)
+        {
+            var memberSession = _playerService.GetSessionByUserId(memberId);
+            if (memberSession != null && memberSession.Character != null)
+            {
+                memberSession.Character.PartyId = party.PartyId; // Ensure parity across server representation
+                broadcast.Members.Add(new PartyMemberDto
+                {
+                    CharacterId = memberSession.Character.Id,
+                    Name = memberSession.Character.Name,
+                    Level = memberSession.Character.Level,
+                    MaxHp = memberSession.Character.MaxHp,
+                    CurrentHp = memberSession.Character.Hp,
+                    MaxMp = memberSession.Character.MaxMp,
+                    CurrentMp = memberSession.Character.Mp,
+                    IsOnline = true
+                });
+            }
+        }
+
+        var json = JsonSerializer.Serialize(broadcast, _jsonOptions);
+        foreach (var memberId in party.MemberIds)
+        {
+            var memberSession = _playerService.GetSessionByUserId(memberId);
+            if (memberSession != null)
+            {
+                await memberSession.SendAsync(new NetMessage { Op = Opcode.PartyUpdateBroadcast, JsonPayload = json });
+            }
         }
     }
 

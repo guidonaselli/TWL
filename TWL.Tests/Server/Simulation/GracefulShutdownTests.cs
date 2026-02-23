@@ -23,7 +23,7 @@ public class GracefulShutdownTests
     {
         // Arrange
         var mockNet = new Mock<INetworkServer>();
-        var mockDb = new Mock<DbService>("dummy");
+        var mockDb = new Mock<DbService>("dummy", new Mock<IServiceProvider>().Object);
         var mockLog = new Mock<ILogger<ServerWorker>>();
         var mockPetManager = new Mock<PetManager>();
         var mockQuestManager = new Mock<ServerQuestManager>();

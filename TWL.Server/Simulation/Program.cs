@@ -99,6 +99,7 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<InteractionManager>();
         svcs.AddSingleton<ICombatResolver, StandardCombatResolver>();
         svcs.AddSingleton<CombatManager>();
+        svcs.AddSingleton<IPartyService, PartyManager>();
 
         svcs.AddSingleton<IPlayerRepository>(sp =>
             new DbPlayerRepository(
@@ -144,7 +145,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<IWorldTriggerService>(),
                 sp.GetRequiredService<SpawnManager>(),
                 sp.GetRequiredService<ReplayGuard>(),
-                sp.GetRequiredService<MovementValidator>()
+                sp.GetRequiredService<MovementValidator>(),
+                sp.GetRequiredService<IPartyService>()
             );
         });
         svcs.AddSingleton<HealthCheckService>();

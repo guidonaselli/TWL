@@ -8,15 +8,44 @@ VSTest version 18.0.1 (x64)
 
 Starting test execution, please wait...
 A total of 1 test files matched the specified pattern.
-[xUnit.net 00:00:00.47]     TWL.Tests.QuestFlagsTests.RepeatableQuest_ShouldAllowRestart [SKIP]
-  Skipped TWL.Tests.QuestFlagsTests.RepeatableQuest_ShouldAllowRestart [1 ms]
-[xUnit.net 00:00:00.51]     TWL.Tests.QuestFlagsTests.FlagFlow_ShouldWork [SKIP]
-  Skipped TWL.Tests.QuestFlagsTests.FlagFlow_ShouldWork [1 ms]
-[xUnit.net 00:00:00.51]     TWL.Tests.QuestFlagsTests.StartQuest_ShouldFail_WhenMissingRequiredFlag [SKIP]
-  Skipped TWL.Tests.QuestFlagsTests.StartQuest_ShouldFail_WhenMissingRequiredFlag [1 ms]
-[xUnit.net 00:00:00.71]     TWL.Tests.Economy.EconomyDoubleSpendTests.Should_Prevent_Double_Spend_When_Ledger_Is_Pending_But_Char_Processed [SKIP]
+[xUnit.net 00:00:00.44]     TWL.Tests.Economy.EconomyDoubleSpendTests.Should_Prevent_Double_Spend_When_Ledger_Is_Pending_But_Char_Processed [SKIP]
   Skipped TWL.Tests.Economy.EconomyDoubleSpendTests.Should_Prevent_Double_Spend_When_Ledger_Is_Pending_But_Char_Processed [1 ms]
-[xUnit.net 00:00:00.76]     TWL.Tests.Server.Services.HealthCheckTests.ExecuteAsync_ShouldWriteHealthJson [FAIL]
+  Failed TWL.Tests.Server.Simulation.GracefulShutdownTests.StopAsync_ShouldDisconnectPlayersAndStopServices [54 ms]
+  Error Message:
+   System.ArgumentException : Can not instantiate proxy of class: TWL.Server.Persistence.Database.DbService.
+Could not find a constructor that would match given arguments:
+System.String
+ (Parameter 'constructorArguments')
+---- System.MissingMethodException : Constructor on type 'Castle.Proxies.DbServiceProxy' not found.
+  Stack Trace:
+     at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)
+   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options, Object[] constructorArguments, IInterceptor[] interceptors)
+   at Moq.CastleProxyFactory.CreateProxy(Type mockType, IInterceptor interceptor, Type[] interfaces, Object[] arguments) in C:\projects\moq4\src\Moq\Interception\CastleProxyFactory.cs:line 62
+   at Moq.Mock`1.InitializeInstance() in C:\projects\moq4\src\Moq\Mock`1.cs:line 309
+   at Moq.Mock`1.OnGetObject() in C:\projects\moq4\src\Moq\Mock`1.cs:line 323
+   at Moq.Mock.get_Object() in C:\projects\moq4\src\Moq\Mock.cs:line 179
+   at Moq.Mock`1.get_Object() in C:\projects\moq4\src\Moq\Mock`1.cs:line 281
+   at TWL.Tests.Server.Simulation.GracefulShutdownTests.StopAsync_ShouldDisconnectPlayersAndStopServices() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\Server\Simulation\GracefulShutdownTests.cs:line 69
+--- End of stack trace from previous location ---
+----- Inner Stack Trace -----
+   at System.RuntimeType.CreateInstanceImpl(BindingFlags bindingAttr, Binder binder, Object[] args, CultureInfo culture)
+   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)
+  Failed TWL.Tests.Reliability.WorldLoopObservabilityTests.SlowTicks_AreRecordedInMetrics [1 s]
+  Error Message:
+   Should record at least one slow tick. Actual: 0
+  Stack Trace:
+     at TWL.Tests.Reliability.WorldLoopObservabilityTests.SlowTicks_AreRecordedInMetrics() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\Reliability\WorldLoopObservabilityTests.cs:line 46
+--- End of stack trace from previous location ---
+  Failed TWL.Tests.Server.QuestCombatIntegrationTests.CombatDamage_ShouldNotProgressQuest_IfTargetAlive [20 ms]
+  Error Message:
+   System.ArgumentOutOfRangeException : Index was out of range. Must be non-negative and less than the size of the collection. (Parameter 'index')
+  Stack Trace:
+     at System.Collections.Generic.List`1.get_Item(Int32 index)
+   at TWL.Tests.Server.QuestCombatIntegrationTests.CombatDamage_ShouldNotProgressQuest_IfTargetAlive() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\Server\QuestCombatIntegrationTests.cs:line 139
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+[xUnit.net 00:00:03.23]     TWL.Tests.JungleQuestTests.VerifyJungleQuestsExistAndAreValid [SKIP]
+  Skipped TWL.Tests.JungleQuestTests.VerifyJungleQuestsExistAndAreValid [1 ms]
   Failed TWL.Tests.Server.Services.HealthCheckTests.ExecuteAsync_ShouldWriteHealthJson [1 ms]
   Error Message:
    System.ArgumentException : Can not instantiate proxy of class: TWL.Server.Persistence.Database.DbService.
@@ -37,7 +66,6 @@ System.String
 ----- Inner Stack Trace -----
    at System.RuntimeType.CreateInstanceImpl(BindingFlags bindingAttr, Binder binder, Object[] args, CultureInfo culture)
    at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)
-[xUnit.net 00:00:00.77]     TWL.Tests.Server.Services.HealthCheckTests.SetStatus_ShouldUpdateStatusAndTriggerWrite [FAIL]
   Failed TWL.Tests.Server.Services.HealthCheckTests.SetStatus_ShouldUpdateStatusAndTriggerWrite [1 ms]
   Error Message:
    System.ArgumentException : Can not instantiate proxy of class: TWL.Server.Persistence.Database.DbService.
@@ -58,87 +86,11 @@ System.String
 ----- Inner Stack Trace -----
    at System.RuntimeType.CreateInstanceImpl(BindingFlags bindingAttr, Binder binder, Object[] args, CultureInfo culture)
    at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)
-[xUnit.net 00:00:00.82]     TWL.Tests.Server.Simulation.GracefulShutdownTests.StopAsync_ShouldDisconnectPlayersAndStopServices [FAIL]
-  Failed TWL.Tests.Server.Simulation.GracefulShutdownTests.StopAsync_ShouldDisconnectPlayersAndStopServices [360 ms]
-  Error Message:
-   System.ArgumentException : Can not instantiate proxy of class: TWL.Server.Persistence.Database.DbService.
-Could not find a constructor that would match given arguments:
-System.String
- (Parameter 'constructorArguments')
----- System.MissingMethodException : Constructor on type 'Castle.Proxies.DbServiceProxy' not found.
-  Stack Trace:
-     at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)
-   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxy(Type classToProxy, Type[] additionalInterfacesToProxy, ProxyGenerationOptions options, Object[] constructorArguments, IInterceptor[] interceptors)
-   at Moq.CastleProxyFactory.CreateProxy(Type mockType, IInterceptor interceptor, Type[] interfaces, Object[] arguments) in C:\projects\moq4\src\Moq\Interception\CastleProxyFactory.cs:line 62
-   at Moq.Mock`1.InitializeInstance() in C:\projects\moq4\src\Moq\Mock`1.cs:line 309
-   at Moq.Mock`1.OnGetObject() in C:\projects\moq4\src\Moq\Mock`1.cs:line 323
-   at Moq.Mock.get_Object() in C:\projects\moq4\src\Moq\Mock.cs:line 179
-   at Moq.Mock`1.get_Object() in C:\projects\moq4\src\Moq\Mock`1.cs:line 281
-   at TWL.Tests.Server.Simulation.GracefulShutdownTests.StopAsync_ShouldDisconnectPlayersAndStopServices() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\Server\Simulation\GracefulShutdownTests.cs:line 69
---- End of stack trace from previous location ---
------ Inner Stack Trace -----
-   at System.RuntimeType.CreateInstanceImpl(BindingFlags bindingAttr, Binder binder, Object[] args, CultureInfo culture)
-   at Castle.DynamicProxy.ProxyGenerator.CreateClassProxyInstance(Type proxyType, List`1 proxyArguments, Type classToProxy, Object[] constructorArguments)
-[xUnit.net 00:00:01.37]     TWL.Tests.JungleQuestTests.VerifyJungleQuestsExistAndAreValid [SKIP]
-  Skipped TWL.Tests.JungleQuestTests.VerifyJungleQuestsExistAndAreValid [1 ms]
-[xUnit.net 00:00:01.42]     TWL.Tests.Localization.LocalizationValidationTests.RunLocalizationValidation [FAIL]
-  Failed TWL.Tests.Localization.LocalizationValidationTests.RunLocalizationValidation [831 ms]
-  Error Message:
-   Assert.Equal() Failure: Values differ
-Expected: 0
-Actual:   27
-  Stack Trace:
-     at TWL.Tests.Localization.LocalizationValidationTests.RunLocalizationValidation() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\Localization\LocalizationValidationTests.cs:line 39
-   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
-   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
-[xUnit.net 00:00:02.39]     TWL.Tests.Localization.Audit.LocalizationAuditRunner.RunFullAudit [FAIL]
-[xUnit.net 00:00:03.31]     TWL.Tests.Services.WorldSchedulerTests.Tasks_Run_In_FIFO_Order [FAIL]
-  Failed TWL.Tests.Localization.Audit.LocalizationAuditRunner.RunFullAudit [908 ms]
-  Error Message:
-   Found 27 localization errors. See output or artifacts/localization-report.json for details.
-  Stack Trace:
-     at TWL.Tests.Localization.Audit.LocalizationAuditRunner.RunFullAudit() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\Localization\Audit\LocalizationAuditRunner.cs:line 72
-   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
-   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
-  Standard Output Messages:
- Solution Root: D:\IT\Projects\Rider\TheWonderlandSolution
- Artifacts generated in D:\IT\Projects\Rider\TheWonderlandSolution\artifacts
- Localization Audit Errors:
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_EarthquakeI' is used but missing from 'en' resources. (SKILL_EarthquakeI)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_EarthquakeII' is used but missing from 'en' resources. (SKILL_EarthquakeII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_EarthquakeIII' is used but missing from 'en' resources. (SKILL_EarthquakeIII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_MeteorStrikeI' is used but missing from 'en' resources. (SKILL_MeteorStrikeI)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_MeteorStrikeII' is used but missing from 'en' resources. (SKILL_MeteorStrikeII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_MeteorStrikeIII' is used but missing from 'en' resources. (SKILL_MeteorStrikeIII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_StoneFortressI' is used but missing from 'en' resources. (SKILL_StoneFortressI)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_StoneFortressII' is used but missing from 'en' resources. (SKILL_StoneFortressII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_StoneFortressIII' is used but missing from 'en' resources. (SKILL_StoneFortressIII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_TsunamiI' is used but missing from 'en' resources. (SKILL_TsunamiI)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_TsunamiII' is used but missing from 'en' resources. (SKILL_TsunamiII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_TsunamiIII' is used but missing from 'en' resources. (SKILL_TsunamiIII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_BlizzardI' is used but missing from 'en' resources. (SKILL_BlizzardI)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_BlizzardII' is used but missing from 'en' resources. (SKILL_BlizzardII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_BlizzardIII' is used but missing from 'en' resources. (SKILL_BlizzardIII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_OceansBlessingI' is used but missing from 'en' resources. (SKILL_OceansBlessingI)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_OceansBlessingII' is used but missing from 'en' resources. (SKILL_OceansBlessingII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_OceansBlessingIII' is used but missing from 'en' resources. (SKILL_OceansBlessingIII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_VolcanicEruptionI' is used but missing from 'en' resources. (SKILL_VolcanicEruptionI)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_VolcanicEruptionII' is used but missing from 'en' resources. (SKILL_VolcanicEruptionII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_VolcanicEruptionIII' is used but missing from 'en' resources. (SKILL_VolcanicEruptionIII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_SupernovaI' is used but missing from 'en' resources. (SKILL_SupernovaI)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_SupernovaII' is used but missing from 'en' resources. (SKILL_SupernovaII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_SupernovaIII' is used but missing from 'en' resources. (SKILL_SupernovaIII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_WarCryI' is used but missing from 'en' resources. (SKILL_WarCryI)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_WarCryII' is used but missing from 'en' resources. (SKILL_WarCryII)
- [ERR_MISSING_KEY] Resources/Strings.en.resx: Key 'SKILL_WarCryIII' is used but missing from 'en' resources. (SKILL_WarCryIII)
+[xUnit.net 00:00:03.32]     TWL.Tests.QuestFlagsTests.RepeatableQuest_ShouldAllowRestart [SKIP]
+  Skipped TWL.Tests.QuestFlagsTests.RepeatableQuest_ShouldAllowRestart [1 ms]
+[xUnit.net 00:00:03.33]     TWL.Tests.QuestFlagsTests.FlagFlow_ShouldWork [SKIP]
+[xUnit.net 00:00:03.33]     TWL.Tests.QuestFlagsTests.StartQuest_ShouldFail_WhenMissingRequiredFlag [SKIP]
+  Skipped TWL.Tests.QuestFlagsTests.FlagFlow_ShouldWork [1 ms]
+  Skipped TWL.Tests.QuestFlagsTests.StartQuest_ShouldFail_WhenMissingRequiredFlag [1 ms]
 
-
-  Failed TWL.Tests.Services.WorldSchedulerTests.Tasks_Run_In_FIFO_Order [1 s]
-  Error Message:
-   Tasks did not complete in time
-  Stack Trace:
-     at TWL.Tests.Services.WorldSchedulerTests.Tasks_Run_In_FIFO_Order() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\Services\WorldSchedulerTests.cs:line 96
-   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
-   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
-
-Failed!  - Failed:     6, Passed:   594, Skipped:     5, Total:   605, Duration: 2 m 52 s - TWL.Tests.dll (net10.0)
+Failed!  - Failed:     5, Passed:   596, Skipped:     5, Total:   606, Duration: 1 m 26 s - TWL.Tests.dll (net10.0)
