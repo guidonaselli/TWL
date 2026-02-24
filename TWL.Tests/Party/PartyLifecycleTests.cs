@@ -48,22 +48,20 @@ public class PartyLifecycleTests
     }
 
     [Fact]
-    public void Should_FailAccept_When_TargetInParty()
+    public void Should_PreventConcurrentInvites_ToSameTarget()
     {
         // 1 invites 2
-        _partyManager.InviteMember(1, "P1", 2, "P2");
+        var invite1 = _partyManager.InviteMember(1, "P1", 2, "P2");
+        Assert.True(invite1.Success);
 
-        // 3 invites 2
-        _partyManager.InviteMember(3, "P3", 2, "P2");
+        // 3 invites 2 - Should fail because 2 has a pending invite
+        var invite2 = _partyManager.InviteMember(3, "P3", 2, "P2");
+        Assert.False(invite2.Success);
+        Assert.Contains("pending party invite", invite2.Message.ToLower());
 
         // 2 accepts 1
         var accept1 = _partyManager.AcceptInvite(2, 1);
         Assert.True(accept1.Success);
-
-        // 2 tries to accept 3
-        var accept2 = _partyManager.AcceptInvite(2, 3);
-        Assert.False(accept2.Success);
-        Assert.Contains("already in a party", accept2.Message);
     }
 
     [Fact]
@@ -173,5 +171,29 @@ public class PartyLifecycleTests
 
         // Leadership should transfer to the next member (2)
         Assert.Equal(2, party.LeaderId);
+    }
+
+    [Fact]
+    public void Should_TransferLeadership_When_LeaderLeaves_TwoPersonParty()
+    {
+        // Arrange
+        _partyManager.InviteMember(1, "Leader", 2, "Member");
+        _partyManager.AcceptInvite(2, 1);
+
+        var initialParty = _partyManager.GetPartyByMember(1);
+        Assert.NotNull(initialParty);
+        Assert.Equal(2, initialParty.MemberIds.Count);
+        Assert.Equal(1, initialParty.LeaderId);
+
+        // Act
+        // Leader leaves
+        _partyManager.LeaveParty(1);
+
+        // Assert
+        // Party should persist with Member (2) as new Leader
+        var remainingParty = _partyManager.GetPartyByMember(2);
+        Assert.NotNull(remainingParty);
+        Assert.Single(remainingParty.MemberIds);
+        Assert.Equal(2, remainingParty.LeaderId);
     }
 }
