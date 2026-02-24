@@ -1,3 +1,4 @@
+using TWL.Shared.Net.Network;
 namespace TWL.Server.Simulation.Managers;
 
 // Simple Histogram structure
@@ -100,6 +101,7 @@ public class ServerMetrics
     private long _triggersExecuted;
 
     private long _validationErrors;
+    private long _rateLimitRejections;
     private long _worldLoopSlowTasks;
 
     private long _worldLoopSlowTicks;
@@ -138,6 +140,12 @@ public class ServerMetrics
     public void RecordNetError() => Interlocked.Increment(ref _netErrors);
 
     public void RecordValidationError() => Interlocked.Increment(ref _validationErrors);
+
+    public void RecordRateLimitRejected(Opcode op)
+    {
+        Interlocked.Increment(ref _rateLimitRejections);
+        RecordValidationError();
+    }
 
     public void RecordPersistenceFlush(long durationMs, int errors)
     {
@@ -209,6 +217,7 @@ public class ServerMetrics
             NetMessagesProcessed = Interlocked.Read(ref _netMessagesProcessed),
             NetErrors = Interlocked.Read(ref _netErrors),
             ValidationErrors = Interlocked.Read(ref _validationErrors),
+            RateLimitRejections = Interlocked.Read(ref _rateLimitRejections),
             PersistenceFlushes = Interlocked.Read(ref _persistenceFlushes),
             PersistenceErrors = Interlocked.Read(ref _persistenceErrors),
             TotalPersistenceDurationMs = Interlocked.Read(ref _totalPersistenceDurationMs),
@@ -277,6 +286,7 @@ public class MetricsSnapshot
     public long NetMessagesProcessed { get; set; }
     public long NetErrors { get; set; }
     public long ValidationErrors { get; set; }
+    public long RateLimitRejections { get; set; }
     public long PersistenceFlushes { get; set; }
     public long PersistenceErrors { get; set; }
     public long TotalPersistenceDurationMs { get; set; }
