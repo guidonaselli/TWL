@@ -11,6 +11,14 @@ public class NetMessage
     };
 
     public Opcode Op { get; set; }
+
+    /// <summary>
+    /// Protocol Schema Version.
+    /// Used to enforce strict version matching between client and server.
+    /// If null (legacy client) or mismatched, the message is rejected.
+    /// </summary>
+    public int? SchemaVersion { get; set; }
+
     public string JsonPayload { get; set; }
 
     /// <summary>
