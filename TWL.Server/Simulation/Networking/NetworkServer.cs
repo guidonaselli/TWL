@@ -7,7 +7,6 @@ using TWL.Server.Security;
 using TWL.Server.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation.Managers;
-using TWL.Shared.Net.Messages;
 
 namespace TWL.Server.Simulation.Networking;
 
@@ -106,10 +105,4 @@ public class NetworkServer : INetworkServer
         }
     }
 
-    public void SendMessageToClient(int playerId, ServerMessage msg)
-    {
-        // Implement sending message to specific client
-        // This is a placeholder for the actual implementation
-        Console.WriteLine($"Sending message to player {playerId}: {msg}");
-    }
 }
