@@ -115,7 +115,8 @@ public class GameServer
         var combatResolver = new StandardCombatResolver(random, SkillRegistry.Instance);
         var statusEngine = new StatusEngine();
         var autoBattleManager = new AutoBattleManager(SkillRegistry.Instance);
-        CombatManager = new CombatManager(combatResolver, random, SkillRegistry.Instance, statusEngine, autoBattleManager);
+        var partyRewardDistributor = new PartyRewardDistributor(PartyManager, PlayerService, MonsterManager, random);
+        CombatManager = new CombatManager(combatResolver, random, SkillRegistry.Instance, statusEngine, autoBattleManager, partyRewardDistributor);
 
         CombatManager.OnCombatActionResolved += (encounterId, results) =>
         {

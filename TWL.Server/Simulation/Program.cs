@@ -98,6 +98,7 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<ServerQuestManager>();
         svcs.AddSingleton<InteractionManager>();
         svcs.AddSingleton<ICombatResolver, StandardCombatResolver>();
+        svcs.AddSingleton<PartyRewardDistributor>();
         svcs.AddSingleton<CombatManager>();
         svcs.AddSingleton<IPartyService, PartyManager>();
 

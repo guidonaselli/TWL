@@ -21,15 +21,16 @@ public class CombatManager
     private readonly ISkillCatalog _skills;
     private readonly IStatusEngine _statusEngine;
     private readonly AutoBattleManager _autoBattleManager;
+    private readonly PartyRewardDistributor? _partyRewardDistributor;
 
     public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
-        IStatusEngine statusEngine)
-        : this(resolver, random, skills, statusEngine, new AutoBattleManager(skills))
+        IStatusEngine statusEngine, PartyRewardDistributor? partyRewardDistributor = null)
+        : this(resolver, random, skills, statusEngine, new AutoBattleManager(skills), partyRewardDistributor)
     {
     }
 
     public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
-        IStatusEngine statusEngine, AutoBattleManager autoBattleManager)
+        IStatusEngine statusEngine, AutoBattleManager autoBattleManager, PartyRewardDistributor? partyRewardDistributor = null)
     {
         _combatants = new ConcurrentDictionary<int, ServerCombatant>();
         _resolver = resolver;
@@ -37,6 +38,7 @@ public class CombatManager
         _skills = skills;
         _statusEngine = statusEngine;
         _autoBattleManager = autoBattleManager;
+        _partyRewardDistributor = partyRewardDistributor;
     }
 
     public event Action<ServerCombatant>? OnCombatantDeath;
@@ -241,6 +243,9 @@ public class CombatManager
             {
                 turnEngine?.RemoveCombatant(target.Id);
                 OnCombatantDeath?.Invoke(target);
+
+                // Party Rewards
+                _partyRewardDistributor?.DistributeKillRewards(attacker, target);
 
                 // Quest Propagation
                 if (target.LastAttackerId.HasValue)
