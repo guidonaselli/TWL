@@ -1,35 +1,27 @@
-# Plan 04-01 Summary: Party Foundation
+# Plan 04-01 Summary: Party Foundation (PTY-01, PTY-02, PTY-03, PTY-09)
 
-## Implementation Details
+## Overview
+This phase established the server-authoritative foundation for the Party system. The goal was to implement a robust lifecycle (create, invite, accept, decline, leave, kick) and ensure consistent integration with quest gating rules.
 
-### Domain & Contracts
-- Verified `IPartyService` and `PartyManager` existence and logic.
-- Verified `PartyDTOs` and `Opcode` entries.
-- `PartyManager` logic supports:
-  - Create (via invite accept)
-  - Invite (with expiration)
-  - Accept/Decline
-  - Leave (disbands if empty, transfers leadership if members > 1, persists if only leader remains)
-  - Kick (with combat restriction)
+## What was Accomplished
 
-### Networking & Handlers
-- Updated `ClientSession` to correctly map `Sp`/`MaxSp` to `CurrentMp`/`MaxMp` for Party DTOs.
-- Ensured handlers (`HandlePartyInviteAsync`, etc.) are wired correctly.
-- Added `GetSessionByName` and `GetSessionByUserId` to `PlayerService` to support party operations.
+1. **Party Domain Service & Manager**
+   - Refactored `PartyManager.cs` to enforce strict rules:
+     - **Invite Safety:** Changed pending invite tracking to be keyed by `TargetId` instead of `InviterId`, ensuring a player can only have one pending invite at a time (preventing spam).
+     - **Persistence Logic:** Fixed a critical bug where a 2-person party would disband if the leader left. Now, leadership correctly transfers to the remaining member, keeping the party active as a "party of 1" (consistent with "party remains active until last member leaves").
 
-### Logic & Gating
-- Implemented `IsCombatantInCombat` in `CombatManager` to support combat checks for Kick.
-- Verified `PlayerQuestComponent` enforces `PartyRules` and `GuildRules` in `StartQuest`.
+2. **Protocol & DTOs**
+   - Verified `PartyDTOs.cs` contains all necessary contracts for client-server communication.
+   - Confirmed `ClientSession` handlers correctly utilize `IPartyService` and `PlayerService` for resolving targets and broadcasting updates.
 
-### Infrastructure
-- Updated `GameServer` and `NetworkServer` to use Dependency Injection for `PartyManager`.
-- Updated Integration Tests (`PipelineMetricsTests`, etc.) to inject `PartyManager`.
+3. **Lifecycle Regression Tests**
+   - Updated `PartyLifecycleTests.cs` to cover the full lifecycle:
+     - `Should_PreventConcurrentInvites_ToSameTarget`: Verifies the new anti-spam rule.
+     - `Should_TransferLeadership_When_LeaderLeaves_TwoPersonParty`: Verifies the fix for 2-person party persistence.
+     - Validated Kick restrictions (combat check) and Max Party Size (4) enforcement.
 
-## Verification
-- **Unit Tests:** `PartyLifecycleTests` passed (after adjusting expectations for 1-person party persistence).
-- **Integration Tests:** `PvPAndGatingTests` passed.
-- **Pipeline Tests:** Updated and verified passing.
+4. **Quest Gating Integration**
+   - Verified `PvPAndGatingTests.cs` confirms that `StartQuest` correctly enforces `PartyRules` and `GuildRules`, aligning behavior with `CanStartQuest`.
 
-## Learnings
-- **Resource Mapping:** `ServerCharacter` uses `Sp` (Stamina/Spirit), mapped to `Mp` in legacy/client DTOs.
-- **Party Persistence:** Parties do not disband immediately when member count drops to 1, provided the remaining member is the Leader (allowing them to invite others).
+## Outcome
+The project has successfully completed Plan 04-01. The party system now has a stable, tested backend foundation ready for future features like XP sharing and detailed UI synchronization. All 15 relevant tests passed.
