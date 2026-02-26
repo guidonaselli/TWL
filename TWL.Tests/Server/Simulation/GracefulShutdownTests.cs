@@ -82,7 +82,7 @@ public class GracefulShutdownTests
             mockSpawnManager.Object,
             mockLoggerFactory.Object,
             mockHealthCheck.Object,
-            new Mock<InstanceService>(metrics).Object
+            new Mock<InstanceService>(metrics).Object, mockCombatManager.Object
         );
 
         // Act

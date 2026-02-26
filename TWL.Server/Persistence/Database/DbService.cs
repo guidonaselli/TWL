@@ -22,7 +22,6 @@ public class DbService : IDisposable
         GC.SuppressFinalize(this);
     }
 
-    // Method called by GameServer.Start()
     public virtual void Init()
     {
         Console.WriteLine("Initializing database...");

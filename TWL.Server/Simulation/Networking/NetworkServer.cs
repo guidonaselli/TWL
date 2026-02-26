@@ -1,5 +1,6 @@
 using System.Net;
 using System.Net.Sockets;
+using Microsoft.Extensions.Options;
 using TWL.Server.Architecture.Pipeline;
 using TWL.Server.Persistence.Database;
 using TWL.Server.Persistence.Services;
@@ -7,7 +8,6 @@ using TWL.Server.Security;
 using TWL.Server.Services;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation.Managers;
-using TWL.Shared.Net.Messages;
 
 namespace TWL.Server.Simulation.Networking;
 
@@ -29,6 +29,7 @@ public class NetworkServer : INetworkServer
     private readonly SpawnManager _spawnManager;
     private readonly IWorldTriggerService _worldTriggerService;
     private readonly IPartyService _partyService;
+    private readonly IOptions<RateLimiterOptions> _rateLimiterOptions;
     private CancellationTokenSource _cts;
     private bool _running;
 
@@ -37,7 +38,8 @@ public class NetworkServer : INetworkServer
     public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
-        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator, IPartyService partyService)
+        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator, IPartyService partyService,
+        IOptions<RateLimiterOptions> rateLimiterOptions)
     {
         _listener = new TcpListener(IPAddress.Any, port);
         _dbService = dbService;
@@ -55,6 +57,7 @@ public class NetworkServer : INetworkServer
         _replayGuard = replayGuard;
         _movementValidator = movementValidator;
         _partyService = partyService;
+        _rateLimiterOptions = rateLimiterOptions;
     }
 
     public void Start()
@@ -84,7 +87,7 @@ public class NetworkServer : INetworkServer
                 var session = new ClientSession(client, _dbService, _petManager, _questManager, _combatManager,
                     _interactionManager, _playerService, _economyManager, _metrics, _petService, _mediator,
                     _worldTriggerService,
-                    _spawnManager, _replayGuard, _movementValidator, _partyService);
+                    _spawnManager, _replayGuard, _movementValidator, _partyService, _rateLimiterOptions.Value);
                 session.StartHandling();
             }
         }
@@ -106,10 +109,4 @@ public class NetworkServer : INetworkServer
         }
     }
 
-    public void SendMessageToClient(int playerId, ServerMessage msg)
-    {
-        // Implement sending message to specific client
-        // This is a placeholder for the actual implementation
-        Console.WriteLine($"Sending message to player {playerId}: {msg}");
-    }
 }

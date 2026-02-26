@@ -61,7 +61,8 @@ public class ClientSession
     public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
-        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator, IPartyService partyService)
+        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator, IPartyService partyService,
+        RateLimiterOptions rateLimiterOptions)
     {
         _client = client;
         _stream = client.GetStream();
@@ -80,7 +81,7 @@ public class ClientSession
         QuestComponent = new PlayerQuestComponent(questManager, petManager);
         QuestComponent.OnFlagAdded += OnQuestFlagAdded;
         QuestComponent.OnQuestUpdated += OnQuestUpdated;
-        _rateLimiter = new RateLimiter();
+        _rateLimiter = new RateLimiter(rateLimiterOptions);
         _replayGuard = replayGuard;
         _movementValidator = movementValidator;
         _partyService = partyService;
@@ -260,9 +261,21 @@ public class ClientSession
         {
             swValidate.Stop();
             _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
-            _metrics?.RecordValidationError();
+            _metrics?.RecordRateLimitRejected(msg.Op);
             SecurityLogger.LogSecurityEvent("RateLimitExceeded", UserId, $"Opcode: {msg.Op}");
             PipelineLogger.LogStage(traceId, "Validate", swValidate.Elapsed.TotalMilliseconds, "Failed: RateLimit");
+            return;
+        }
+
+        // Schema Version Validation (Strict Fail-Closed)
+        if (msg.SchemaVersion != ProtocolConstants.CurrentSchemaVersion)
+        {
+            swValidate.Stop();
+            _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
+            _metrics?.RecordValidationError();
+            SecurityLogger.LogSecurityEvent("InvalidSchemaVersion", UserId, $"Expected:{ProtocolConstants.CurrentSchemaVersion} Got:{msg.SchemaVersion}");
+            PipelineLogger.LogStage(traceId, "Validate", swValidate.Elapsed.TotalMilliseconds, $"Failed: SchemaMismatch ({msg.SchemaVersion})");
+            _ = DisconnectAsync("InvalidSchemaVersion");
             return;
         }
 
@@ -903,6 +916,7 @@ public class ClientSession
 
     public virtual async Task SendAsync(NetMessage msg)
     {
+        msg.SchemaVersion = ProtocolConstants.CurrentSchemaVersion;
         var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
         _metrics?.RecordNetBytesSent(bytes.Length);
@@ -1100,7 +1114,7 @@ public class ClientSession
         }
     }
 
-    public async Task DisconnectAsync(string reason)
+    public virtual async Task DisconnectAsync(string reason)
     {
         try
         {

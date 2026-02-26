@@ -10,13 +10,16 @@ using TWL.Server.Services.World.Actions.Handlers;
 using TWL.Server.Services.World.Handlers;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Skills;
+using TWL.Shared.Net.Network;
 using TWL.Shared.Services;
 
 namespace TWL.Server.Simulation;
 
 public class ServerWorker : IHostedService
 {
+    private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
     private readonly DbService _db;
     private readonly InteractionManager _interactionManager;
     private readonly ILogger<ServerWorker> _log;
@@ -33,12 +36,14 @@ public class ServerWorker : IHostedService
     private readonly IWorldTriggerService _worldTriggerService;
     private readonly HealthCheckService _healthCheck;
     private readonly InstanceService _instanceService;
+    private readonly CombatManager _combatManager;
 
     public ServerWorker(INetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager,
         ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService,
         IWorldScheduler worldScheduler, ServerMetrics metrics, IMapRegistry mapRegistry,
         IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager,
-        ILoggerFactory loggerFactory, HealthCheckService healthCheck, InstanceService instanceService)
+        ILoggerFactory loggerFactory, HealthCheckService healthCheck, InstanceService instanceService,
+        CombatManager combatManager)
     {
         _net = net;
         _db = db;
@@ -56,6 +61,7 @@ public class ServerWorker : IHostedService
         _loggerFactory = loggerFactory;
         _healthCheck = healthCheck;
         _instanceService = instanceService;
+        _combatManager = combatManager;
     }
 
     public Task StartAsync(CancellationToken ct)
@@ -91,6 +97,46 @@ public class ServerWorker : IHostedService
         // Schedule Spawn Manager
         _worldScheduler.ScheduleRepeating(() => _spawnManager.Update(0.05f), TimeSpan.FromMilliseconds(50),
             "SpawnManager");
+
+        // Combat Loop
+        _worldScheduler.ScheduleRepeating(() => _combatManager.Update(_worldScheduler.CurrentTick), TimeSpan.FromMilliseconds(50), "CombatManager.Update");
+
+        // Combat Broadcast
+        _combatManager.OnCombatActionResolved += (encounterId, results) =>
+        {
+            var participants = _combatManager.GetParticipants(encounterId);
+            var payloadJson = System.Text.Json.JsonSerializer.Serialize(results, _jsonOptions);
+            var netMsg = new NetMessage
+            {
+                Op = Opcode.AttackBroadcast,
+                JsonPayload = payloadJson
+            };
+
+            var notifiedPlayers = new HashSet<int>();
+
+            foreach (var p in participants)
+            {
+                int? playerIdToNotify = null;
+                if (p is ServerCharacter sc && sc.MonsterId == 0)
+                {
+                    playerIdToNotify = sc.Id;
+                }
+                else if (p is ServerPet pet && pet.OwnerId > 0)
+                {
+                    playerIdToNotify = pet.OwnerId;
+                }
+
+                if (playerIdToNotify.HasValue && !notifiedPlayers.Contains(playerIdToNotify.Value))
+                {
+                    var session = _playerService.GetSession(playerIdToNotify.Value);
+                    if (session != null)
+                    {
+                        _ = session.SendAsync(netMsg);
+                        notifiedPlayers.Add(playerIdToNotify.Value);
+                    }
+                }
+            }
+        };
 
         if (File.Exists("Content/Data/skills.json"))
         {

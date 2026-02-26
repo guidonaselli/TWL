@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Npgsql;
@@ -60,6 +61,9 @@ Host.CreateDefaultBuilder(args)
             // Note: DbService takes IServiceProvider to create scopes for EF Core
             return new DbService(connString, sp);
         });
+
+        // Configuration Options
+        svcs.Configure<RateLimiterOptions>(ctx.Configuration.GetSection("Security:RateLimiter"));
 
         // Base Services
         svcs.AddSingleton<ServerMetrics>();
@@ -147,7 +151,8 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<SpawnManager>(),
                 sp.GetRequiredService<ReplayGuard>(),
                 sp.GetRequiredService<MovementValidator>(),
-                sp.GetRequiredService<IPartyService>()
+                sp.GetRequiredService<IPartyService>(),
+                sp.GetRequiredService<IOptions<RateLimiterOptions>>()
             );
         });
         svcs.AddSingleton<HealthCheckService>();

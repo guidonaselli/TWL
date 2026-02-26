@@ -4,6 +4,7 @@ using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Net;
+using TWL.Shared.Constants;
 using TWL.Shared.Net.Network;
 
 namespace TWL.Client.Presentation.Networking;
@@ -126,6 +127,8 @@ public class NetworkClient
 
     public void SendNetMessage(NetMessage message)
     {
+        message.SchemaVersion = ProtocolConstants.CurrentSchemaVersion;
+
         if (!IsConnected)
         {
             Console.WriteLine("Cannot send message: not connected");

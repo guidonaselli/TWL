@@ -1,3 +1,5 @@
+using TWL.Shared.Constants;
+using Microsoft.Extensions.Options;
 using TWL.Shared.Domain.Battle;
 using System.Net.Sockets;
 using System.Text.Json;
@@ -55,7 +57,7 @@ public class PipelineMetricsTests
         var port = 9123;
         var server = new NetworkServer(port, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
             playerService, mockEconomy.Object, metrics, petService, new Mock<IMediator>().Object, mockWorldTrigger.Object, spawnManager,
-            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager());
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager(), Options.Create(new RateLimiterOptions()));
 
         server.Start();
 
@@ -67,7 +69,7 @@ public class PipelineMetricsTests
 
             await client.ConnectAsync("127.0.0.1", port);
 
-            var msg = new NetMessage { Op = Opcode.MoveRequest, JsonPayload = "{\"dx\":1,\"dy\":0}" };
+            var msg = new NetMessage { Op = Opcode.MoveRequest, JsonPayload = "{\"dx\":1,\"dy\":0}", SchemaVersion = ProtocolConstants.CurrentSchemaVersion };
             var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
             var stream = client.GetStream();
             await stream.WriteAsync(bytes, 0, bytes.Length);

@@ -51,7 +51,8 @@ public class ShutdownTests
             null!,  // SpawnManager
             null!,  // ILoggerFactory
             mockHealthCheck.Object,
-            null!   // InstanceService
+            null!,  // InstanceService
+            null!   // CombatManager
         );
 
         // Act

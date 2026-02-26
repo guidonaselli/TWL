@@ -62,7 +62,7 @@ Objetivo: contenido continuo, tooling, operaciones, monetización segura (item m
 ## 4) Backlog de Core Systems
 
 ### 4.1 CORE SERVER / NETWORK / SECURITY (P0)
-- [ ] **CORE-001**: Protocolo de mensajes versionado (opcode + schemaVersion) con validación estricta (fail-closed).
+- [ ] **CORE-001**: Protocolo de mensajes versionado (opcode + schemaVersion) con validación estricta (fail-closed). **(P0 - Security)**
 - [ ] **CORE-002**: Sesiones + `sequence/nonce` por cliente para protección anti-replay (mínimo viable).
 - [ ] **CORE-003**: Rate limiting por opcode (move/cast/chat/trade) + métricas de rechazos.
 - [ ] **CORE-004**: Correlation ID end-to-end (client intent → server resolve → persist).
@@ -74,9 +74,9 @@ Objetivo: contenido continuo, tooling, operaciones, monetización segura (item m
 - [ ] **CORE-010**: Tests de seguridad básicos (replay/retry, invalid ranges, spoofed ownership).
 
 ### 4.2 PERSISTENCE / RELIABILITY / OBSERVABILITY (P0/P1)
-- [ ] **PERS-001**: Modelo de estado persistente mínimo.
-    - [ ] **PERS-001a**: Infraestructura EF Core + Entities + Migrations (PostgreSQL).
-    - [ ] **PERS-001b**: Implementación DbPlayerRepository + CRUD (Save/Load transactions).
+- [x] **PERS-001**: Modelo de estado persistente mínimo.
+    - [x] **PERS-001a**: Infraestructura EF Core + Entities + Migrations (PostgreSQL).
+    - [x] **PERS-001b**: Implementación DbPlayerRepository + CRUD (Save/Load transactions).
 - [ ] **PERS-002**: Dirty flags + batch/interval flush (evitar write por microcambio).
 - [ ] **PERS-003**: Operaciones económicas con estado `Pending -> Committed` (journal mínimo).
 - [ ] **PERS-004**: Outbox/inbox (o equivalente) para entregas críticas (rewards, mall delivery).
@@ -104,7 +104,9 @@ Objetivo: contenido continuo, tooling, operaciones, monetización segura (item m
 - [ ] **ECO-002**: Manufacturing System: Blueprints + Workbench interactions.
 - [ ] **ECO-003**: RNG del compound auditable + métricas de éxito/fallo.
 - [ ] **ECO-004**: Anti-dupe: doble consumo/rollback parcial/imposible.
-- [ ] **ECO-005**: Marketplace P2P (listing, buy, cancel) con locks/idempotencia.
+- [ ] **ECO-005**: Marketplace P2P System.
+    - [ ] **ECO-005a**: Listing Core (Add/Remove Listing) + Ledger Persistence.
+    - [ ] **ECO-005b**: Search & Buy Operations (Transactional Exchange).
 - [ ] **ECO-006**: Sinks (fees/taxes) + límites anti-bot.
 - [ ] **ECO-007**: Item Mall: flujo receipt-verification + ledger append-only + delivery garantizada.
 - [ ] **ECO-008**: Refund/chargeback handling (mínimo: marcar y bloquear benefits si aplica).
