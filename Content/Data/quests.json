@@ -379,7 +379,7 @@
       "Gold": 50,
       "Items": [
         {
-          "ItemId": 3001,
+          "ItemId": 4739,
           "Quantity": 1
         }
       ]
@@ -539,7 +539,7 @@
       "Gold": 0,
       "Items": [
         {
-          "ItemId": 3001,
+          "ItemId": 4739,
           "Quantity": 1
         }
       ]
@@ -700,7 +700,7 @@
       "Gold": 0,
       "Items": [
         {
-          "ItemId": 3001,
+          "ItemId": 4739,
           "Quantity": 3
         }
       ]
@@ -883,7 +883,7 @@
       "Gold": 0,
       "Items": [
         {
-          "ItemId": 800,
+          "ItemId": 7373,
           "Quantity": 1
         }
       ]
@@ -1418,7 +1418,7 @@
       "Gold": 0,
       "Items": [
         {
-          "ItemId": 10001,
+          "ItemId": 7316,
           "Quantity": 1
         }
       ]
@@ -1432,7 +1432,7 @@
       1020
     ],
     "RequiredEquipment": [
-      10001
+      7316
     ],
     "Objectives": [
       {

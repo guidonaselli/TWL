@@ -45,7 +45,7 @@
         "Description": "Participate in the Beach Festival."
       }
     ],
-    "Rewards": { "Exp": 50, "Gold": 0, "Items": [{"ItemId": 8005, "Quantity": 1}] }
+    "Rewards": { "Exp": 50, "Gold": 0, "Items": [{"ItemId": 6312, "Quantity": 1}] }
   },
   {
     "QuestId": 1016,
@@ -61,5 +61,49 @@
       }
     ],
     "Rewards": { "Exp": 150, "Gold": 0, "Items": [] }
+  },
+  {
+    "QuestId": 1025,
+    "Title": "Seashell Seeker",
+    "Description": "The local artisan needs shells for jewelry. Collect 5 Conch Shells.",
+    "Requirements": [
+      1002
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Conch Shell",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Conch Shells.",
+        "DataId": 6312
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 10,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1026,
+    "Title": "Crab Armor",
+    "Description": "Harder shells are needed for armor plating. Collect 3 Crab Shells.",
+    "Requirements": [
+      1025
+    ],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Crab Shell",
+        "RequiredCount": 3,
+        "Description": "Collect 3 Crab Shells.",
+        "DataId": 6311
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 20,
+      "Items": []
+    }
   }
 ]
