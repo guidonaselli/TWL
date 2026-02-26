@@ -12,6 +12,7 @@ using TWL.Server.Services.World;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Net.Network;
+using TWL.Shared.Constants;
 using Xunit;
 
 namespace TWL.Tests.Security;
@@ -36,6 +37,7 @@ public class ClientSessionMovementValidationTests
         var msg = new NetMessage
         {
             Op = Opcode.MoveRequest,
+            SchemaVersion = ProtocolConstants.CurrentSchemaVersion,
             JsonPayload = "{\"dx\":2.0,\"dy\":3.0}"
         };
 
@@ -69,6 +71,7 @@ public class ClientSessionMovementValidationTests
         var msg = new NetMessage
         {
             Op = Opcode.MoveRequest,
+            SchemaVersion = ProtocolConstants.CurrentSchemaVersion,
             JsonPayload = "{\"dx\":10.0,\"dy\":0.0}" // Exceeds MaxAxisDelta and MaxDistance
         };
 
@@ -79,7 +82,7 @@ public class ClientSessionMovementValidationTests
         // Position should not change
         Assert.Equal(0f, session.Character.X);
         Assert.Equal(0f, session.Character.Y);
-        
+
         // Error recorded
         Assert.Equal(1, metrics.GetSnapshot().ValidationErrors);
 
@@ -107,11 +110,11 @@ public class ClientSessionMovementValidationTests
             var mockStatusEngine = new Mock<IStatusEngine>();
             var combatManager = new CombatManager(mockCombatResolver.Object, mockRandom.Object, mockSkillCatalog.Object, mockStatusEngine.Object);
             SetPrivateField("_combatManager", combatManager);
-            
+
             // Just to prevent NullReferenceExceptions in base.HandleMessageAsync if needed
             var guardOptions = new ReplayGuardOptions { NonceTtlSeconds = 60 };
             SetPrivateField("_replayGuard", new ReplayGuard(guardOptions, () => DateTime.UtcNow));
-            
+
             // _spawnManager is nullable in ClientSession so it's fine to leave it null
         }
 
@@ -132,6 +135,16 @@ public class ClientSessionMovementValidationTests
 
             var task = method.Invoke(this, new object[] { msg, "test-trace-id" }) as Task;
             return task ?? Task.CompletedTask;
+        }
+
+        public override Task SendAsync(NetMessage msg)
+        {
+            return Task.CompletedTask;
+        }
+
+        public override Task DisconnectAsync(string reason)
+        {
+            return Task.CompletedTask;
         }
     }
 }

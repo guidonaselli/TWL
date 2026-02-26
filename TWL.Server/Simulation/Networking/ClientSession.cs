@@ -267,6 +267,18 @@ public class ClientSession
             return;
         }
 
+        // Schema Version Validation (Strict Fail-Closed)
+        if (msg.SchemaVersion != ProtocolConstants.CurrentSchemaVersion)
+        {
+            swValidate.Stop();
+            _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
+            _metrics?.RecordValidationError();
+            SecurityLogger.LogSecurityEvent("InvalidSchemaVersion", UserId, $"Expected:{ProtocolConstants.CurrentSchemaVersion} Got:{msg.SchemaVersion}");
+            PipelineLogger.LogStage(traceId, "Validate", swValidate.Elapsed.TotalMilliseconds, $"Failed: SchemaMismatch ({msg.SchemaVersion})");
+            _ = DisconnectAsync("InvalidSchemaVersion");
+            return;
+        }
+
         swValidate.Stop();
         _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
         PipelineLogger.LogStage(traceId, "Validate", swValidate.Elapsed.TotalMilliseconds, "Success");
@@ -904,6 +916,7 @@ public class ClientSession
 
     public virtual async Task SendAsync(NetMessage msg)
     {
+        msg.SchemaVersion = ProtocolConstants.CurrentSchemaVersion;
         var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
         await _stream.WriteAsync(bytes, 0, bytes.Length);
         _metrics?.RecordNetBytesSent(bytes.Length);
@@ -1101,7 +1114,7 @@ public class ClientSession
         }
     }
 
-    public async Task DisconnectAsync(string reason)
+    public virtual async Task DisconnectAsync(string reason)
     {
         try
         {
