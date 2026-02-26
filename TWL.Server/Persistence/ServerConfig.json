@@ -1,8 +1,54 @@
-﻿{
+{
   "ConnectionStrings": {
     "PostgresConn": "Host=localhost;Port=55432;Database=twl_db;Username=twl;Password=twladmin;"
   },
   "Network": {
     "Port": 7777
+  },
+  "Security": {
+    "RateLimiter": {
+      "Policies": {
+        "LoginRequest": {
+          "Capacity": 3,
+          "RefillRate": 0.1
+        },
+        "MoveRequest": {
+          "Capacity": 20,
+          "RefillRate": 10
+        },
+        "AttackRequest": {
+          "Capacity": 10,
+          "RefillRate": 5
+        },
+        "InteractRequest": {
+          "Capacity": 10,
+          "RefillRate": 5
+        },
+        "UseItemRequest": {
+          "Capacity": 10,
+          "RefillRate": 5
+        },
+        "StartQuestRequest": {
+          "Capacity": 3,
+          "RefillRate": 1
+        },
+        "ClaimRewardRequest": {
+          "Capacity": 3,
+          "RefillRate": 1
+        },
+        "PurchaseGemsIntent": {
+          "Capacity": 2,
+          "RefillRate": 0.2
+        },
+        "PurchaseGemsVerify": {
+          "Capacity": 2,
+          "RefillRate": 0.2
+        },
+        "BuyShopItemRequest": {
+          "Capacity": 5,
+          "RefillRate": 1
+        }
+      }
+    }
   }
 }

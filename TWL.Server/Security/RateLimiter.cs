@@ -1,4 +1,5 @@
 using System.Collections.Concurrent;
+using Microsoft.Extensions.Options;
 using TWL.Shared.Net.Network;
 
 namespace TWL.Server.Security;
@@ -7,33 +8,32 @@ public class RateLimiter
 {
     private readonly ConcurrentDictionary<Opcode, Bucket> _buckets;
 
-    public RateLimiter()
+    public RateLimiter(IOptions<RateLimiterOptions> options) : this(options.Value)
     {
-        _buckets = new ConcurrentDictionary<Opcode, Bucket>();
-        InitializeDefaultPolicies();
     }
 
-    private void InitializeDefaultPolicies()
+    public RateLimiter(RateLimiterOptions options)
     {
-        // Login: 5 per minute ~ 0.08/sec. Burst 2.
-        SetPolicy(Opcode.LoginRequest, 3, 0.1);
+        _buckets = new ConcurrentDictionary<Opcode, Bucket>();
+        InitializePolicies(options);
+    }
 
-        // Move: Frequent.
-        SetPolicy(Opcode.MoveRequest, 20, 10);
+    // For testing or manual initialization without options
+    public RateLimiter() : this(new RateLimiterOptions())
+    {
+    }
 
-        // Combat/Interaction: Moderate.
-        SetPolicy(Opcode.AttackRequest, 10, 5);
-        SetPolicy(Opcode.InteractRequest, 10, 5);
-        SetPolicy(Opcode.UseItemRequest, 10, 5);
+    private void InitializePolicies(RateLimiterOptions options)
+    {
+        if (options?.Policies == null) return;
 
-        // Quests: Low frequency.
-        SetPolicy(Opcode.StartQuestRequest, 3, 1);
-        SetPolicy(Opcode.ClaimRewardRequest, 3, 1);
-
-        // Economy: Strict.
-        SetPolicy(Opcode.PurchaseGemsIntent, 2, 0.2);
-        SetPolicy(Opcode.PurchaseGemsVerify, 2, 0.2);
-        SetPolicy(Opcode.BuyShopItemRequest, 5, 1);
+        foreach (var policy in options.Policies)
+        {
+            if (Enum.TryParse<Opcode>(policy.Key, true, out var op))
+            {
+                SetPolicy(op, policy.Value.Capacity, policy.Value.RefillRate);
+            }
+        }
     }
 
     public void SetPolicy(Opcode op, double capacity, double refillRate) =>
@@ -41,7 +41,7 @@ public class RateLimiter
 
     public bool Check(Opcode op)
     {
-        // Default policy for undefined opcodes: 1 per second
+        // Default policy for undefined opcodes: 2 burst, 1 refill/sec
         var bucket = _buckets.GetOrAdd(op, _ => new Bucket(2, 1));
         return bucket.Consume();
     }

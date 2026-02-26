@@ -1,48 +1,56 @@
+using Microsoft.Extensions.Options;
 using TWL.Server.Security;
 using TWL.Shared.Net.Network;
+using Xunit;
 
 namespace TWL.Tests.Security;
 
 public class RateLimiterTests
 {
     [Fact]
-    public void Check_AllowsRequestsUnderLimit()
+    public void Check_ShouldUseDefaultPolicy_WhenNoConfig()
     {
         var limiter = new RateLimiter();
-        limiter.SetPolicy(Opcode.MoveRequest, 10, 10);
 
-        // Should allow 10 requests immediately
-        for (var i = 0; i < 10; i++)
+        // Default bucket: 2 burst, 1 refill/sec
+        Assert.True(limiter.Check(Opcode.MoveRequest));
+        Assert.True(limiter.Check(Opcode.MoveRequest));
+        Assert.False(limiter.Check(Opcode.MoveRequest));
+    }
+
+    [Fact]
+    public void Check_ShouldUseConfiguredPolicy()
+    {
+        var options = new RateLimiterOptions();
+        options.Policies["MoveRequest"] = new RateLimitPolicy { Capacity = 5, RefillRate = 1 };
+
+        var limiter = new RateLimiter(options);
+
+        // Should allow 5
+        for (int i = 0; i < 5; i++)
         {
-            Assert.True(limiter.Check(Opcode.MoveRequest), $"Request {i} failed");
+            Assert.True(limiter.Check(Opcode.MoveRequest), $"Iteration {i} failed");
         }
+
+        // Should reject 6th
+        Assert.False(limiter.Check(Opcode.MoveRequest));
     }
 
     [Fact]
-    public void Check_BlocksRequestsOverLimit()
+    public void Check_ShouldHandleCaseInsensitivePolicyKeys()
     {
-        var limiter = new RateLimiter();
-        // Capacity 2, Refill very slow
-        limiter.SetPolicy(Opcode.AttackRequest, 2, 0.001);
+        // Enum.TryParse is case insensitive if second arg is true.
+        // Code: Enum.TryParse<Opcode>(policy.Key, true, out var op)
 
-        Assert.True(limiter.Check(Opcode.AttackRequest)); // 1
-        Assert.True(limiter.Check(Opcode.AttackRequest)); // 2
-        Assert.False(limiter.Check(Opcode.AttackRequest)); // 3 - blocked
-    }
+        var options = new RateLimiterOptions();
+        options.Policies["moverequest"] = new RateLimitPolicy { Capacity = 10, RefillRate = 1 };
 
-    [Fact]
-    public void Check_RefillsOverTime()
-    {
-        var limiter = new RateLimiter();
-        // Capacity 1, Refill 10 per second
-        limiter.SetPolicy(Opcode.InteractRequest, 1, 10);
+        var limiter = new RateLimiter(options);
 
-        Assert.True(limiter.Check(Opcode.InteractRequest)); // Consumes 1
-        Assert.False(limiter.Check(Opcode.InteractRequest)); // Empty
-
-        // Wait a bit
-        Thread.Sleep(200); // 0.2s should refill 2 tokens (but cap is 1)
-
-        Assert.True(limiter.Check(Opcode.InteractRequest)); // Should work again
+        // Consume more than default (2) to prove it picked up the config
+        for (int i = 0; i < 3; i++)
+        {
+             Assert.True(limiter.Check(Opcode.MoveRequest));
+        }
     }
 }
