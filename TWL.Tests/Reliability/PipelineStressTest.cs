@@ -14,6 +14,7 @@ using TWL.Shared.Domain.Characters;
 using TWL.Server.Security;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Services;
+using TWL.Shared.Constants;
 
 namespace TWL.Tests.Reliability;
 
@@ -61,7 +62,7 @@ public class PipelineStressTest
 
             var stream = client.GetStream();
             var msgCount = 50;
-            var msg = new NetMessage { Op = Opcode.MoveRequest, JsonPayload = "{\"dx\":1,\"dy\":0}" };
+            var msg = new NetMessage { Op = Opcode.MoveRequest, JsonPayload = "{\"dx\":1,\"dy\":0}", SchemaVersion = ProtocolConstants.CurrentSchemaVersion };
             var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
 
             // Act

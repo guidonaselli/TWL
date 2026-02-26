@@ -14,6 +14,7 @@ using TWL.Shared.Domain.Characters;
 using TWL.Server.Security;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Services;
+using TWL.Shared.Constants;
 
 namespace TWL.Tests.Reliability;
 
@@ -59,7 +60,7 @@ public class PipelineGranularMetricsTests
             await Task.Delay(100);
             await client.ConnectAsync("127.0.0.1", port);
 
-            var msg = new NetMessage { Op = Opcode.MoveRequest, JsonPayload = "{\"dx\":1,\"dy\":0}" };
+            var msg = new NetMessage { Op = Opcode.MoveRequest, JsonPayload = "{\"dx\":1,\"dy\":0}", SchemaVersion = ProtocolConstants.CurrentSchemaVersion };
             var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
             var stream = client.GetStream();
             await stream.WriteAsync(bytes, 0, bytes.Length);

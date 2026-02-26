@@ -12,6 +12,7 @@ using TWL.Server.Security;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Net.Payloads;
+using TWL.Shared.Constants;
 
 namespace TWL.Tests.Economy;
 
@@ -46,7 +47,8 @@ public class ClientSessionEconomyTests
         var msg = new NetMessage
         {
             Op = Opcode.BuyShopItemRequest,
-            JsonPayload = payload
+            JsonPayload = payload,
+            SchemaVersion = ProtocolConstants.CurrentSchemaVersion
         };
 
         // Act
