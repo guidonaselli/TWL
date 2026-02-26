@@ -8,17 +8,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Current Verified State
-**Maturity**: Proto-Alpha (Vertical Slice Incomplete)
-*   **Core**: Networking loop established.
+**Maturity**: Proto-Alpha (Vertical Slice In Progress)
+*   **Core**: Networking loop established. Protocol versioning pending (P0).
 *   **Economy**: Premium Currency & Shop implemented (Idempotent).
-*   **Combat**: Basic turn-based resolution active.
-*   **Persistence**: **PROTOTYPE ONLY** (JSON Files).
+*   **Combat**: Basic turn-based resolution active. Pet AI integrated.
+*   **Persistence**: **Hybrid PostgreSQL** (EF Core + Dapper) active. `FilePlayerRepository` removed.
 
 ### Production V1 Blockers (P0)
-*   **Persistence**: Migration from `FilePlayerRepository` to PostgreSQL (Atomic Transactions).
-*   **Quality**: Fix 8 Failing Validation Tests (Localization, Quest Chains).
+*   **Security**: Protocol Schema Validation (Fail-Closed).
 *   **Security**: Authoritative Movement Validation (Anti-Speedhack).
 *   **Security**: Packet Replay Protection (Nonce/Sequence).
+*   **Quality**: Fix 5 Failing Validation/Reliability Tests.
 
 ### Next Milestones (P1)
 *   **Economy**: Hybrid Market (Centralized Ledger + Stalls) - *Currently Missing*.
@@ -30,6 +30,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - **Docs**: `PRODUCTION_GAP_ANALYSIS.md` detailing technical risks and feature matrix.
 - **Docs**: `PRODUCTION_BACKLOG.md` with prioritized P0/P1 tasks.
 - **Docs**: `docs/rules/GAMEPLAY_CONTRACTS.md` defining strict SSOT.
+
+### Changed
+- **Persistence**: Replaced `FilePlayerRepository` with `DbPlayerRepository` (PostgreSQL).
+- **Pets**: Integrated `AutoBattleManager` for Pet AI.
+- **Roadmap**: Re-prioritized `CORE-001` (Security) as P0. Split `ECO-005` (Marketplace).
 
 ## [0.1.0] - 2024-05-01
 ### Added
