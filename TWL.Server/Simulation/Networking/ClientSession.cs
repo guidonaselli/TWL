@@ -266,6 +266,17 @@ public class ClientSession
             return;
         }
 
+        // Schema Validation (Fail-Closed)
+        if (msg.SchemaVersion != ProtocolConstants.CurrentSchemaVersion)
+        {
+            swValidate.Stop();
+            _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
+            _metrics?.RecordValidationError();
+            SecurityLogger.LogSecurityEvent("SchemaMismatch", UserId, $"Expected:{ProtocolConstants.CurrentSchemaVersion} Got:{msg.SchemaVersion}");
+            PipelineLogger.LogStage(traceId, "Validate", swValidate.Elapsed.TotalMilliseconds, $"Failed: SchemaMismatch ({msg.SchemaVersion})");
+            return;
+        }
+
         swValidate.Stop();
         _metrics?.RecordPipelineValidateDuration(swValidate.ElapsedTicks);
         PipelineLogger.LogStage(traceId, "Validate", swValidate.Elapsed.TotalMilliseconds, "Success");

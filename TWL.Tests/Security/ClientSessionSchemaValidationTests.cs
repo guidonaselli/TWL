@@ -1,51 +1,40 @@
 using System.Reflection;
-using System.Text.Json;
 using TWL.Server.Architecture.Observability;
-using TWL.Server.Features.Combat;
-using TWL.Server.Features.Interactions;
-using TWL.Server.Persistence.Database;
-using TWL.Server.Persistence.Services;
-using TWL.Server.Security;
-using TWL.Server.Services;
-using TWL.Server.Services.World;
 using TWL.Server.Simulation.Managers;
+using TWL.Server.Security;
 using TWL.Server.Simulation.Networking;
-using TWL.Shared.Net.Network;
 using TWL.Shared.Constants;
-using Moq;
+using TWL.Shared.Net.Network;
 using Xunit;
-using System.Net.Sockets;
-using System.Net;
 
 namespace TWL.Tests.Security;
 
-public class ClientSessionReplayProtectionTests
+public class ClientSessionSchemaValidationTests
 {
     [Fact]
-    public async Task HandleMessageAsync_DuplicateNonce_RejectedAndMetricsRecorded()
+    public async Task HandleMessageAsync_MissingSchemaVersion_Rejected()
     {
         // Arrange
         var metrics = new ServerMetrics();
         var guardOptions = new ReplayGuardOptions { NonceTtlSeconds = 60, AllowedClockSkewSeconds = 30 };
         var replayGuard = new ReplayGuard(guardOptions, () => DateTime.UtcNow);
 
-        var session = new TestableClientSession(metrics, replayGuard); // Default userId=1
+        var session = new TestableClientSession(metrics, replayGuard);
 
         var msg = new NetMessage
         {
             Op = Opcode.MoveRequest,
-            Nonce = "nonce-123",
+            Nonce = "nonce-missing-version",
             TimestampUtc = DateTime.UtcNow,
             JsonPayload = "{}",
-            SchemaVersion = ProtocolConstants.CurrentSchemaVersion
+            SchemaVersion = null // Missing
         };
 
-        // Act 1: First message should be accepted (metrics validate duration recorded, but no validation error)
         var initialErrors = metrics.GetSnapshot().ValidationErrors;
-        await session.InvokeHandleMessageAsync(msg);
-        Assert.Equal(initialErrors, metrics.GetSnapshot().ValidationErrors);
 
-        // Act 2: Duplicate message should be rejected
+        // Act
+        // This should NOT throw exception if handled correctly.
+        // It should just reject the message and increment validation errors.
         await session.InvokeHandleMessageAsync(msg);
 
         // Assert
@@ -53,49 +42,62 @@ public class ClientSessionReplayProtectionTests
     }
 
     [Fact]
-    public async Task HandleMessageAsync_PreLogin_DuplicateNonce_Rejected()
+    public async Task HandleMessageAsync_InvalidSchemaVersion_Rejected()
     {
         // Arrange
         var metrics = new ServerMetrics();
         var guardOptions = new ReplayGuardOptions { NonceTtlSeconds = 60, AllowedClockSkewSeconds = 30 };
         var replayGuard = new ReplayGuard(guardOptions, () => DateTime.UtcNow);
 
-        // Use userId = -1 (Pre-login state)
-        var session = new TestableClientSession(metrics, replayGuard, -1);
+        var session = new TestableClientSession(metrics, replayGuard);
 
-        var timestamp = DateTime.UtcNow;
-        var nonce = "nonce-prelogin";
-
-        // Create TWO distinct message objects with SAME content to simulate deserialization
-        // This is critical because the bug relies on GetHashCode() being different for distinct objects
-        var msg1 = new NetMessage
+        var msg = new NetMessage
         {
-            Op = Opcode.LoginRequest,
-            Nonce = nonce,
-            TimestampUtc = timestamp,
+            Op = Opcode.MoveRequest,
+            Nonce = "nonce-wrong-version",
+            TimestampUtc = DateTime.UtcNow,
             JsonPayload = "{}",
-            SchemaVersion = ProtocolConstants.CurrentSchemaVersion
+            SchemaVersion = ProtocolConstants.CurrentSchemaVersion + 1 // Mismatch
         };
 
-        var msg2 = new NetMessage
-        {
-            Op = Opcode.LoginRequest,
-            Nonce = nonce,
-            TimestampUtc = timestamp,
-            JsonPayload = "{}",
-            SchemaVersion = ProtocolConstants.CurrentSchemaVersion
-        };
-
-        // Act 1: First message should be accepted
         var initialErrors = metrics.GetSnapshot().ValidationErrors;
-        await session.InvokeHandleMessageAsync(msg1);
-        Assert.Equal(initialErrors, metrics.GetSnapshot().ValidationErrors);
 
-        // Act 2: Duplicate message (different object, same content) should be rejected
-        await session.InvokeHandleMessageAsync(msg2);
+        // Act
+        await session.InvokeHandleMessageAsync(msg);
 
         // Assert
         Assert.Equal(initialErrors + 1, metrics.GetSnapshot().ValidationErrors);
+    }
+
+    [Fact]
+    public async Task HandleMessageAsync_ValidSchemaVersion_ProceedsToDispatch()
+    {
+        // Arrange
+        var metrics = new ServerMetrics();
+        var guardOptions = new ReplayGuardOptions { NonceTtlSeconds = 60, AllowedClockSkewSeconds = 30 };
+        var replayGuard = new ReplayGuard(guardOptions, () => DateTime.UtcNow);
+
+        var session = new TestableClientSession(metrics, replayGuard);
+
+        var msg = new NetMessage
+        {
+            Op = Opcode.MoveRequest,
+            Nonce = "nonce-correct-version",
+            TimestampUtc = DateTime.UtcNow,
+            JsonPayload = "{}",
+            SchemaVersion = ProtocolConstants.CurrentSchemaVersion // Correct
+        };
+
+        var initialErrors = metrics.GetSnapshot().ValidationErrors;
+
+        // Act
+        // It should NOT throw. If schema matches, it proceeds to dispatch.
+        // In this test harness, HandleMoveAsync returns early because Character is null.
+        // This counts as "success" (no validation error).
+        await session.InvokeHandleMessageAsync(msg);
+
+        // Assert
+        Assert.Equal(initialErrors, metrics.GetSnapshot().ValidationErrors);
     }
 
     // Test helper wrapper using the protected constructor
@@ -131,8 +133,16 @@ public class ClientSessionReplayProtectionTests
             if (method == null)
                 throw new InvalidOperationException("HandleMessageAsync not found");
 
-            var task = method.Invoke(this, new object[] { msg, "test-trace-id" }) as Task;
-            return task ?? Task.CompletedTask;
+            try
+            {
+                var task = method.Invoke(this, new object[] { msg, "test-trace-id" }) as Task;
+                return task ?? Task.CompletedTask;
+            }
+            catch (TargetInvocationException ex)
+            {
+                // Unwrap
+                throw ex.InnerException ?? ex;
+            }
         }
 
         public override Task SendAsync(NetMessage msg)

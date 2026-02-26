@@ -3,6 +3,7 @@ using System.Text.Json;
 using System.Threading.Channels;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Managers;
+using TWL.Shared.Constants;
 using TWL.Shared.Net;
 using TWL.Shared.Net.Network;
 
@@ -131,6 +132,9 @@ public class NetworkClient
             Console.WriteLine("Cannot send message: not connected");
             return;
         }
+
+        // Auto-inject Schema Version
+        message.SchemaVersion = ProtocolConstants.CurrentSchemaVersion;
 
         if (!_sendChannel.Writer.TryWrite(message))
         {

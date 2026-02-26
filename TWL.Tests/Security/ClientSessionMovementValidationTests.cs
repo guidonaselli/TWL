@@ -12,6 +12,7 @@ using TWL.Server.Services.World;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Net.Network;
+using TWL.Shared.Constants;
 using Xunit;
 
 namespace TWL.Tests.Security;
@@ -36,7 +37,8 @@ public class ClientSessionMovementValidationTests
         var msg = new NetMessage
         {
             Op = Opcode.MoveRequest,
-            JsonPayload = "{\"dx\":2.0,\"dy\":3.0}"
+            JsonPayload = "{\"dx\":2.0,\"dy\":3.0}",
+            SchemaVersion = ProtocolConstants.CurrentSchemaVersion
         };
 
         // Act
@@ -69,7 +71,8 @@ public class ClientSessionMovementValidationTests
         var msg = new NetMessage
         {
             Op = Opcode.MoveRequest,
-            JsonPayload = "{\"dx\":10.0,\"dy\":0.0}" // Exceeds MaxAxisDelta and MaxDistance
+            JsonPayload = "{\"dx\":10.0,\"dy\":0.0}", // Exceeds MaxAxisDelta and MaxDistance
+            SchemaVersion = ProtocolConstants.CurrentSchemaVersion
         };
 
         // Act
@@ -79,7 +82,7 @@ public class ClientSessionMovementValidationTests
         // Position should not change
         Assert.Equal(0f, session.Character.X);
         Assert.Equal(0f, session.Character.Y);
-        
+
         // Error recorded
         Assert.Equal(1, metrics.GetSnapshot().ValidationErrors);
 
@@ -107,11 +110,11 @@ public class ClientSessionMovementValidationTests
             var mockStatusEngine = new Mock<IStatusEngine>();
             var combatManager = new CombatManager(mockCombatResolver.Object, mockRandom.Object, mockSkillCatalog.Object, mockStatusEngine.Object);
             SetPrivateField("_combatManager", combatManager);
-            
+
             // Just to prevent NullReferenceExceptions in base.HandleMessageAsync if needed
             var guardOptions = new ReplayGuardOptions { NonceTtlSeconds = 60 };
             SetPrivateField("_replayGuard", new ReplayGuard(guardOptions, () => DateTime.UtcNow));
-            
+
             // _spawnManager is nullable in ClientSession so it's fine to leave it null
         }
 
