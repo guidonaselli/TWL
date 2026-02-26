@@ -226,7 +226,9 @@ public class PlayerView : IDisposable
     {
         if (!HasLayeredSprites)
         {
+#if DEBUG
             System.Console.WriteLine("[DEBUG] No layered sprites available");
+#endif
             return;
         }
 
@@ -235,13 +237,17 @@ public class PlayerView : IDisposable
 
         if (bodyBase == null || bodyMap == null)
         {
+#if DEBUG
             System.Console.WriteLine($"[DEBUG] Missing textures - Body Base: {bodyBase != null}, Body Map: {bodyMap != null}");
+#endif
             return;
         }
 
+#if DEBUG
         System.Console.WriteLine($"[DEBUG BODY] Direction: {_player.CurrentDirection}");
         System.Console.WriteLine($"[DEBUG BODY] Skin: {colors.Skin}, Cloth: {colors.Cloth}, Eye: {colors.Eye}");
         System.Console.WriteLine($"[DEBUG BODY] Body Base: {bodyBase.Width}x{bodyBase.Height}, Map: {bodyMap.Width}x{bodyMap.Height}");
+#endif
 
         // Configure shader for body
         _paletteEffect.Parameters["MapTexture"]?.SetValue(bodyMap);
