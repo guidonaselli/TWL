@@ -127,6 +127,8 @@ public class NetworkClient
 
     public void SendNetMessage(NetMessage message)
     {
+        message.SchemaVersion = ProtocolConstants.CurrentSchemaVersion;
+
         if (!IsConnected)
         {
             Console.WriteLine("Cannot send message: not connected");

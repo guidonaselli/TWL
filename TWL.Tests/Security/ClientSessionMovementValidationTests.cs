@@ -37,8 +37,8 @@ public class ClientSessionMovementValidationTests
         var msg = new NetMessage
         {
             Op = Opcode.MoveRequest,
-            JsonPayload = "{\"dx\":2.0,\"dy\":3.0}",
-            SchemaVersion = ProtocolConstants.CurrentSchemaVersion
+            SchemaVersion = ProtocolConstants.CurrentSchemaVersion,
+            JsonPayload = "{\"dx\":2.0,\"dy\":3.0}"
         };
 
         // Act
@@ -71,8 +71,8 @@ public class ClientSessionMovementValidationTests
         var msg = new NetMessage
         {
             Op = Opcode.MoveRequest,
-            JsonPayload = "{\"dx\":10.0,\"dy\":0.0}", // Exceeds MaxAxisDelta and MaxDistance
-            SchemaVersion = ProtocolConstants.CurrentSchemaVersion
+            SchemaVersion = ProtocolConstants.CurrentSchemaVersion,
+            JsonPayload = "{\"dx\":10.0,\"dy\":0.0}" // Exceeds MaxAxisDelta and MaxDistance
         };
 
         // Act
@@ -135,6 +135,16 @@ public class ClientSessionMovementValidationTests
 
             var task = method.Invoke(this, new object[] { msg, "test-trace-id" }) as Task;
             return task ?? Task.CompletedTask;
+        }
+
+        public override Task SendAsync(NetMessage msg)
+        {
+            return Task.CompletedTask;
+        }
+
+        public override Task DisconnectAsync(string reason)
+        {
+            return Task.CompletedTask;
         }
     }
 }

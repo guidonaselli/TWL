@@ -10,7 +10,8 @@ public class PartyManager : IPartyService
     // CharacterId -> PartyId
     private readonly ConcurrentDictionary<int, int> _playerPartyMap = new();
 
-    // InviterId -> (TargetId, ExpirationUtc)
+    // TargetId -> PartyInvite
+    // Enforcing 1 pending invite per target to prevent spam
     private readonly ConcurrentDictionary<int, PartyInvite> _pendingInvites = new();
 
     private int _nextPartyId = 1;
@@ -56,8 +57,17 @@ public class PartyManager : IPartyService
         if (targetParty != null)
             return (false, $"{targetName} is already in a party.");
 
+        // Check if target already has a pending invite
+        if (_pendingInvites.TryGetValue(targetId, out var existingInvite))
+        {
+            if (DateTime.UtcNow < existingInvite.ExpiresAtUtc)
+            {
+                return (false, $"{targetName} already has a pending party invite.");
+            }
+        }
+
         // Register the invite
-        _pendingInvites[inviterId] = new PartyInvite
+        _pendingInvites[targetId] = new PartyInvite
         {
             InviterId = inviterId,
             TargetId = targetId,
@@ -69,13 +79,25 @@ public class PartyManager : IPartyService
 
     public (bool Success, string Message) AcceptInvite(int targetId, int inviterId)
     {
-        if (!_pendingInvites.TryGetValue(inviterId, out var invite) || invite.TargetId != targetId || DateTime.UtcNow > invite.ExpiresAtUtc)
+        if (!_pendingInvites.TryGetValue(targetId, out var invite))
         {
-            return (false, "Invite expired or not found.");
+            return (false, "No pending invite found.");
+        }
+
+        if (invite.InviterId != inviterId)
+        {
+            // This could happen if inviter ID doesn't match the one stored for this target
+            return (false, "Invite mismatch.");
+        }
+
+        if (DateTime.UtcNow > invite.ExpiresAtUtc)
+        {
+            _pendingInvites.TryRemove(targetId, out _);
+            return (false, "Invite expired.");
         }
 
         // Cleanup the pending invite
-        _pendingInvites.TryRemove(inviterId, out _);
+        _pendingInvites.TryRemove(targetId, out _);
 
         var targetParty = GetPartyByMember(targetId);
         if (targetParty != null)
@@ -115,9 +137,9 @@ public class PartyManager : IPartyService
 
     public bool DeclineInvite(int targetId, int inviterId)
     {
-        if (_pendingInvites.TryGetValue(inviterId, out var invite) && invite.TargetId == targetId)
+        if (_pendingInvites.TryGetValue(targetId, out var invite) && invite.InviterId == inviterId)
         {
-            _pendingInvites.TryRemove(inviterId, out _);
+            _pendingInvites.TryRemove(targetId, out _);
             return true;
         }
         return false;
@@ -133,18 +155,15 @@ public class PartyManager : IPartyService
             party.MemberIds.Remove(characterId);
             _playerPartyMap.TryRemove(characterId, out _);
 
-            if (party.MemberIds.Count == 0 || (party.MemberIds.Count == 1 && party.LeaderId == characterId))
+            if (party.MemberIds.Count == 0)
             {
-                // Disband party
-                foreach (var memberId in party.MemberIds.ToList())
-                {
-                    _playerPartyMap.TryRemove(memberId, out _);
-                }
+                // Disband party if no members left
                 _parties.TryRemove(party.PartyId, out _);
             }
             else if (party.LeaderId == characterId)
             {
                 // Transfer leadership to the next available member
+                // This applies even if only 1 member remains
                 party.LeaderId = party.MemberIds.First();
             }
         }
@@ -155,7 +174,7 @@ public class PartyManager : IPartyService
     public (bool Success, string Message) KickMember(int leaderId, int targetId, bool isLeaderInCombat, bool isTargetInCombat)
     {
         if (leaderId == targetId) return (false, "Cannot kick yourself. Use leave instead.");
-        
+
         var party = GetPartyByMember(leaderId);
         if (party == null || party.LeaderId != leaderId)
             return (false, "You are not the leader of a party.");

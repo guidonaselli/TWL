@@ -35,10 +35,10 @@
 ## Backlog
 
 ### P1 - Core System
-- [ ] **PET-001**: Persistent pet model (ownership, stats, element, level, amity) in PostgreSQL
-- [ ] **PET-002**: Pet in combat (SPD-based turns, basic AI: attack/heal/defend)
+- [x] **PET-001**: Persistent pet model (ownership, stats, element, level, amity) in PostgreSQL
+- [x] **PET-002**: Pet in combat (SPD-based turns, basic AI: attack/heal/defend)
 - [ ] **PET-003**: Capture system: combat capture with HP threshold + level cap + base chance %
-- [ ] **PET-004**: Quest-unique pet rules: `PetUnlockId` reward type, bound to character, non-tradeable
+- [x] **PET-004**: Quest-unique pet rules: `PetUnlockId` reward type, bound to character, non-tradeable
 - [ ] **PET-005**: Anti-dupe protections (cannot duplicate pets via trade/reconnect)
 
 ### P2 - Progression & Features
