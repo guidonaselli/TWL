@@ -124,7 +124,28 @@ public class NetworkClient
         }
     }
 
-    private void HandleServerMessage(NetMessage serverMsg) => EventBus.Publish(serverMsg);
+    private void HandleServerMessage(NetMessage serverMsg)
+    {
+        switch (serverMsg.Op)
+        {
+            case Opcode.PartyUpdateBroadcast:
+                var update = JsonSerializer.Deserialize<PartyUpdateBroadcast>(serverMsg.JsonPayload, _jsonOptions);
+                if (update != null)
+                {
+                    _gameClientManager.Party.Update(update);
+                }
+                break;
+            case Opcode.PartyChatBroadcast:
+                var chat = JsonSerializer.Deserialize<PartyChatMessage>(serverMsg.JsonPayload, _jsonOptions);
+                if (chat != null)
+                {
+                    _gameClientManager.Party.AddMessage(chat);
+                }
+                break;
+        }
+
+        EventBus.Publish(serverMsg);
+    }
 
     public void SendNetMessage(NetMessage message)
     {
