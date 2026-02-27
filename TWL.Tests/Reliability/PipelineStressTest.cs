@@ -1,3 +1,5 @@
+using TWL.Shared.Constants;
+using Microsoft.Extensions.Options;
 using TWL.Shared.Domain.Battle;
 using System.Net.Sockets;
 using System.Text.Json;
@@ -49,7 +51,7 @@ public class PipelineStressTest
         // Dynamic port assignment: use port 0 to let OS assign a free port
         var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
             playerService, mockEconomy.Object, metrics, petService, new Mock<IMediator>().Object, mockWorldTrigger.Object, spawnManager,
-            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager());
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager(), Options.Create(new RateLimiterOptions()));
 
         server.Start();
         var port = server.Port;

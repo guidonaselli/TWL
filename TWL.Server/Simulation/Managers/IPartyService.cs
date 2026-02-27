@@ -22,4 +22,5 @@ public class Party
     public int PartyId { get; set; }
     public int LeaderId { get; set; }
     public List<int> MemberIds { get; set; } = new();
+    public int NextLootMemberIndex { get; set; }
 }
