@@ -33,12 +33,6 @@ public class NetMessage
     /// </summary>
     public DateTime? TimestampUtc { get; set; }
 
-    /// <summary>
-    /// Protocol Schema Version for compatibility validation.
-    /// Used for Fail-Closed security.
-    /// </summary>
-    public int? SchemaVersion { get; set; }
-
     public static NetMessage? Deserialize(byte[] buffer, int count)
     {
         var span = new ReadOnlySpan<byte>(buffer, 0, count);

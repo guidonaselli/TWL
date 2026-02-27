@@ -31,7 +31,7 @@ public class ClientSession
 
     private readonly TcpClient _client;
     private readonly CombatManager _combatManager;
-    private readonly DbService _dbService;
+    private readonly IDbService _dbService;
     private readonly IEconomyService _economyManager;
     private readonly InteractionManager _interactionManager;
     private readonly IMediator _mediator;
@@ -58,7 +58,7 @@ public class ClientSession
     {
     } // For testing
 
-    public ClientSession(TcpClient client, DbService db, PetManager petManager, ServerQuestManager questManager,
+    public ClientSession(TcpClient client, IDbService db, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
         IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator, IPartyService partyService,

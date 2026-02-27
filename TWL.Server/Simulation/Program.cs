@@ -56,11 +56,12 @@ Host.CreateDefaultBuilder(args)
         });
 
         // DbService (Singleton wrapper for legacy code + new migration trigger)
-        svcs.AddSingleton<DbService>(sp =>
+        svcs.AddSingleton<IDbService>(sp =>
         {
             // Note: DbService takes IServiceProvider to create scopes for EF Core
             return new DbService(connString, sp);
         });
+        svcs.AddSingleton<DbService>(sp => (DbService)sp.GetRequiredService<IDbService>());
 
         // Configuration Options
         svcs.Configure<RateLimiterOptions>(ctx.Configuration.GetSection("Security:RateLimiter"));
@@ -137,7 +138,7 @@ Host.CreateDefaultBuilder(args)
             var port = ctx.Configuration.GetValue<int>("Network:Port");
             return new NetworkServer(
                 port,
-                sp.GetRequiredService<DbService>(),
+                sp.GetRequiredService<DbService>(), // NetworkServer still depends on concrete DbService? Need to check NetworkServer
                 sp.GetRequiredService<PetManager>(),
                 sp.GetRequiredService<ServerQuestManager>(),
                 sp.GetRequiredService<CombatManager>(),

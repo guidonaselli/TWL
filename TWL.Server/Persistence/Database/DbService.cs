@@ -4,7 +4,7 @@ using Npgsql;
 
 namespace TWL.Server.Persistence.Database;
 
-public class DbService : IDisposable
+public class DbService : IDbService
 {
     private readonly string _connString;
     private readonly IServiceProvider _serviceProvider;

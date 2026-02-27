@@ -14,7 +14,7 @@ namespace TWL.Server.Simulation.Networking;
 public class NetworkServer : INetworkServer
 {
     private readonly CombatManager _combatManager;
-    private readonly DbService _dbService;
+    private readonly IDbService _dbService;
     private readonly IEconomyService _economyManager;
     private readonly InteractionManager _interactionManager;
     private readonly TcpListener _listener;
@@ -35,7 +35,7 @@ public class NetworkServer : INetworkServer
 
     public int Port => ((IPEndPoint)_listener.LocalEndpoint).Port;
 
-    public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager,
+    public NetworkServer(int port, IDbService dbService, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
         IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator, IPartyService partyService,
