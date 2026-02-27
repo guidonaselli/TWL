@@ -136,6 +136,7 @@ public class QuestCombatIntegrationTests
         var request = new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 999 };
         var result = _combatManager.UseSkill(request);
 
+        Assert.NotEmpty(result);
         Assert.True(result[0].NewTargetHp > 0);
 
         // Simulate ClientSession Logic

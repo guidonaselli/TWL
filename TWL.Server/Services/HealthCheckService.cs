@@ -34,7 +34,7 @@ public class HealthStatus
 
 public class HealthCheckService : BackgroundService
 {
-    private readonly DbService _db;
+    private readonly IDbService _db;
     private readonly PlayerService _playerService;
     private readonly ServerMetrics _serverMetrics;
     private readonly ILogger<HealthCheckService> _logger;
@@ -45,7 +45,7 @@ public class HealthCheckService : BackgroundService
     // Default constructor for mocking/testing if needed, though we usually mock the class with arguments
     protected HealthCheckService() { }
 
-    public HealthCheckService(DbService db, PlayerService playerService, ServerMetrics serverMetrics, ILogger<HealthCheckService> logger)
+    public HealthCheckService(IDbService db, PlayerService playerService, ServerMetrics serverMetrics, ILogger<HealthCheckService> logger)
     {
         _db = db;
         _playerService = playerService;

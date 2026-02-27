@@ -11,7 +11,7 @@ namespace TWL.Tests.Server.Services;
 
 public class HealthCheckTests
 {
-    private readonly Mock<DbService> _mockDb;
+    private readonly Mock<IDbService> _mockDb;
     private readonly Mock<PlayerService> _mockPlayerService;
     private readonly ServerMetrics _serverMetrics;
     private readonly Mock<ILogger<HealthCheckService>> _mockLogger;
@@ -19,7 +19,7 @@ public class HealthCheckTests
 
     public HealthCheckTests()
     {
-        _mockDb = new Mock<DbService>("Host=dummy;", new Mock<IServiceProvider>().Object);
+        _mockDb = new Mock<IDbService>();
         _serverMetrics = new ServerMetrics();
         // We pass null for repository as we won't call methods that use it in this test (hopefully)
         // Only Metrics property is accessed which is initialized in ctor.

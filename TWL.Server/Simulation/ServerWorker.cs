@@ -20,7 +20,7 @@ namespace TWL.Server.Simulation;
 public class ServerWorker : IHostedService
 {
     private static readonly System.Text.Json.JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
-    private readonly DbService _db;
+    private readonly IDbService _db;
     private readonly InteractionManager _interactionManager;
     private readonly ILogger<ServerWorker> _log;
     private readonly IMapRegistry _mapRegistry;
@@ -38,7 +38,7 @@ public class ServerWorker : IHostedService
     private readonly InstanceService _instanceService;
     private readonly CombatManager _combatManager;
 
-    public ServerWorker(INetworkServer net, DbService db, ILogger<ServerWorker> log, PetManager petManager,
+    public ServerWorker(INetworkServer net, IDbService db, ILogger<ServerWorker> log, PetManager petManager,
         ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService,
         IWorldScheduler worldScheduler, ServerMetrics metrics, IMapRegistry mapRegistry,
         IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager,

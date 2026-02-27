@@ -23,7 +23,7 @@ public class GracefulShutdownTests
     {
         // Arrange
         var mockNet = new Mock<INetworkServer>();
-        var mockDb = new Mock<DbService>("dummy", new Mock<IServiceProvider>().Object);
+        var mockDb = new Mock<IDbService>();
         var mockLog = new Mock<ILogger<ServerWorker>>();
         var mockPetManager = new Mock<PetManager>();
         var mockQuestManager = new Mock<ServerQuestManager>();
@@ -41,7 +41,8 @@ public class GracefulShutdownTests
             new Mock<ICombatResolver>().Object,
             new Mock<IRandomService>().Object,
             new Mock<ISkillCatalog>().Object,
-            new Mock<IStatusEngine>().Object
+            new Mock<IStatusEngine>().Object,
+            (PartyRewardDistributor)null // Pass null for PartyRewardDistributor to match the second constructor
         );
         var mockRandom = new Mock<IRandomService>();
 
