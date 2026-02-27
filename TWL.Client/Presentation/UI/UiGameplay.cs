@@ -6,7 +6,9 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using MonoGame.Extended;
 using TWL.Client.Presentation.Services;
+using TWL.Client.Presentation.Managers;
 using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.State;
 
 namespace TWL.Client.Presentation.UI;
 
@@ -20,6 +22,7 @@ namespace TWL.Client.Presentation.UI;
 public class UiGameplay : UiManager
 {
     private readonly UiInventoryWindow _invWindow;
+    private readonly UiPartyWindow _partyWindow;
     private readonly PlayerCharacter _player;
 
     // recursos HUD
@@ -27,7 +30,7 @@ public class UiGameplay : UiManager
     private Texture2D _miniMapBg = null!; // placeholder minimap
     private Texture2D _panelBg = null!; // panel barra HP/XP
 
-    public UiGameplay(PlayerCharacter player)
+    public UiGameplay(PlayerCharacter player, PartyState partyState, TWL.Client.Presentation.Networking.NetworkClient networkClient)
     {
         _player = player;
         _invWindow = new UiInventoryWindow(
@@ -36,6 +39,9 @@ public class UiGameplay : UiManager
         _invWindow.Visible = false;
         _invWindow.Active = false;
         AddWindow(_invWindow);
+
+        _partyWindow = new UiPartyWindow(partyState, networkClient);
+        AddWindow(_partyWindow);
     }
 
     public bool IsInventoryVisible => _invWindow.Visible;
@@ -66,6 +72,7 @@ public class UiGameplay : UiManager
         }
 
         _invWindow.LoadContent(content);
+        _partyWindow.LoadContent(content, gd);
     }
 
     public void ToggleInventory()

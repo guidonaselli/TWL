@@ -4,6 +4,7 @@ using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
+using TWL.Shared.Domain.State;
 
 namespace TWL.Client.Presentation.Managers;
 
@@ -46,6 +47,8 @@ public class GameClientManager
     public ClientQuestManager QuestManager { get; }
     public ClientInventoryManager InventoryManager { get; }
     public ClientMarketplaceManager MarketplaceManager { get; }
+
+    public PartyState Party { get; } = new();
 
     /// <summary>
     ///     Called by NetworkClient when a CombatResult is received from the server.

@@ -29,6 +29,7 @@ public class NetworkServer : INetworkServer
     private readonly SpawnManager _spawnManager;
     private readonly IWorldTriggerService _worldTriggerService;
     private readonly IPartyService _partyService;
+    private readonly IPartyChatService _partyChatService;
     private readonly IOptions<RateLimiterOptions> _rateLimiterOptions;
     private CancellationTokenSource _cts;
     private bool _running;
@@ -38,7 +39,8 @@ public class NetworkServer : INetworkServer
     public NetworkServer(int port, DbService dbService, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
-        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator, IPartyService partyService,
+        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard,
+        MovementValidator movementValidator, IPartyService partyService, IPartyChatService partyChatService,
         IOptions<RateLimiterOptions> rateLimiterOptions)
     {
         _listener = new TcpListener(IPAddress.Any, port);
@@ -57,6 +59,7 @@ public class NetworkServer : INetworkServer
         _replayGuard = replayGuard;
         _movementValidator = movementValidator;
         _partyService = partyService;
+        _partyChatService = partyChatService;
         _rateLimiterOptions = rateLimiterOptions;
     }
 
@@ -87,7 +90,8 @@ public class NetworkServer : INetworkServer
                 var session = new ClientSession(client, _dbService, _petManager, _questManager, _combatManager,
                     _interactionManager, _playerService, _economyManager, _metrics, _petService, _mediator,
                     _worldTriggerService,
-                    _spawnManager, _replayGuard, _movementValidator, _partyService, _rateLimiterOptions.Value);
+                    _spawnManager, _replayGuard, _movementValidator, _partyService, _partyChatService,
+                    _rateLimiterOptions.Value);
                 session.StartHandling();
             }
         }
