@@ -1,34 +1,25 @@
-# Consistency Auditor Report
-
-## RESULT: REPORT
-
-## SUMMARY
-A comprehensive audit of the Skills and Quests data was performed. The Skill system is robust, but the Quest system has significant consistency issues regarding reward Item IDs and logical references. Specifically, several quests reward items that do not exist in the client item database, and some quests reward items that contradict their narrative context (e.g., rewarding Sandals for a Potion quest).
-
-## VIOLATIONS (Prioritized)
-
-### P0: Broken Item References (Quest Rewards)
-*   **Content/Data/quests_islabrisa_side.json** (Quest 1015): Reward ItemId `8005` does not exist.
-*   **Content/Data/quests.json** (Quest 9004): Reward ItemId `800` does not exist.
-*   **Content/Data/quests.json** (Quest 1020): Reward ItemId `10001` does not exist.
-
-### P1: Logical Inconsistencies (Narrative vs Data)
-*   **Content/Data/quests.json** (Quest 2003): Quest "Basic Brew" rewards `3001` (Camelia Sandal). Should likely be `4739` (Healing Potion).
-*   **Content/Data/quests.json** (Quest 1051): Quest "La Fuente del Ruido" rewards `3001` (Camelia Sandal). Narrative implies `4739` (Healing Potion).
-*   **Content/Data/quests.json** (Quest 1100): Quest "Partida Inminente" rewards `3001` (Camelia Sandal). Narrative implies `4739` (Healing Potion).
-*   **Content/Data/quests_messenger.json** (Quest 5002): Objective requires delivering `3001` (Camelia Sandal). Narrative explicitly says "Deliver 1 Potion".
-
-## PROPOSED FIX
-
-1.  **Correct Missing IDs**:
-    *   Quest 1015: Replace `8005` with `6312` (Conch Shell).
-    *   Quest 9004: Replace `800` with `7373` (Saving Box).
-    *   Quest 1020: Replace `10001` with `7316` (Wooden Stick).
-
-2.  **Align Narrative**:
-    *   Quest 2003, 1051, 1100, 5002: Replace ItemId/DataId `3001` with `4739` (Healing Potion).
-
-## ACTION ITEMS
-1.  [FIX] Apply ID corrections to `Content/Data/quests*.json`.
-2.  [AUDIT] Run `consistency_check.py` post-fix to verify zero violations.
-3.  [TEST] Verify `ContentValidationTests` pass.
+1) TITLE: Implement Protocol Schema Validation (CORE-001)
+2) TYPE: REPORT
+3) SCOPE (IN):
+- `TWL.Shared/Constants/ProtocolConstants.cs`
+- `TWL.Shared/Net/Network/NetMessage.cs`
+- `TWL.Server/Simulation/Networking/ClientSession.cs`
+- `TWL.Client/Net/NetworkClient.cs`
+- `TWL.Tests/Security/SecurityTests.cs` (y actualización de instanciación en otros tests)
+4) OUT-OF-SCOPE:
+- Modificación de la lógica interna de `ReplayGuard` o `RateLimiter`.
+- Modificación de handlers de Opcodes específicos.
+- Cualquier sistema de gameplay o contenido.
+5) ACCEPTANCE CRITERIA (DoD):
+- `ProtocolConstants.CurrentSchemaVersion` existe en el namespace `TWL.Shared.Constants`.
+- `NetMessage` incluye una propiedad nullable `int? SchemaVersion`.
+- `ClientSession.HandleMessageAsync` valida `SchemaVersion` en el orden estricto: 1) ReplayGuard, 2) RateLimiter, 3) SchemaVersion, 4) Opcode Dispatch.
+- Si `SchemaVersion` es null o no coincide con `ProtocolConstants.CurrentSchemaVersion`, el servidor desconecta la sesión inmediatamente (Fail-Closed).
+- `NetworkClient` inyecta automáticamente `CurrentSchemaVersion` en los paquetes salientes antes de su envío.
+6) REQUIRED TESTS / VALIDATIONS:
+- `SecurityTests.Connect_WithInvalidSchema_ShouldDisconnect` debe implementarse y pasar exitosamente.
+- Los tests existentes que instancian `NetMessage` deben pasar (requerirá asignar explícitamente `SchemaVersion = ProtocolConstants.CurrentSchemaVersion` en los tests para evitar rechazos del `ClientSession`).
+7) RISKS:
+- Riesgo: Caída de la suite de tests por rechazos generalizados de `ClientSession`. Mitigación: Actualizar todas las instancias manuales de `NetMessage` en el proyecto de tests.
+- Riesgo: Desconexiones del cliente por olvido de inyección. Mitigación: Centralizar la inyección únicamente en la capa base de `NetworkClient.SendNetMessage` de forma automática.
+8) NEXT: PET-003: Wire Pet Capture System (Gameplay P1)
