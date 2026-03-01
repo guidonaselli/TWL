@@ -44,6 +44,7 @@ public class ClientSession
     private readonly ReplayGuard _replayGuard;
     private readonly MovementValidator _movementValidator;
     private readonly IPartyService _partyService;
+    private readonly IPartyChatService _partyChatService;
     private readonly SpawnManager _spawnManager;
     private readonly NetworkStream _stream;
     private readonly IWorldTriggerService _worldTriggerService;
@@ -61,7 +62,8 @@ public class ClientSession
     public ClientSession(TcpClient client, IDbService db, PetManager petManager, ServerQuestManager questManager,
         CombatManager combatManager, InteractionManager interactionManager, PlayerService playerService,
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
-        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard, MovementValidator movementValidator, IPartyService partyService,
+        IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard,
+        MovementValidator movementValidator, IPartyService partyService, IPartyChatService partyChatService,
         RateLimiterOptions rateLimiterOptions)
     {
         _client = client;
@@ -85,6 +87,7 @@ public class ClientSession
         _replayGuard = replayGuard;
         _movementValidator = movementValidator;
         _partyService = partyService;
+        _partyChatService = partyChatService;
 
         if (_combatManager != null)
         {
@@ -333,6 +336,9 @@ public class ClientSession
                 break;
             case Opcode.PartyKickRequest:
                 await HandlePartyKickAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.PartyChatRequest:
+                await HandlePartyChatAsync(msg.JsonPayload, traceId);
                 break;
             // etc.
         }
@@ -1073,6 +1079,16 @@ public class ClientSession
                 await BroadcastPartyUpdateAsync(updatedParty);
             }
         }
+    }
+
+    private async Task HandlePartyChatAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null || Character.PartyId == null) return;
+        var request = JsonSerializer.Deserialize<PartyChatRequest>(payload, _jsonOptions);
+        if (request == null || string.IsNullOrWhiteSpace(request.Content)) return;
+        if (request.Content.Length > 200) return; // Simple length limit
+
+        await _partyChatService.SendPartyMessageAsync(Character.PartyId.Value, UserId, Character.Name, request.Content);
     }
 
     private async Task BroadcastPartyUpdateAsync(Party party)
