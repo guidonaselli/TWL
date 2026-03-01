@@ -106,6 +106,7 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<PartyRewardDistributor>();
         svcs.AddSingleton<CombatManager>();
         svcs.AddSingleton<IPartyService, PartyManager>();
+        svcs.AddSingleton<IPartyChatService, PartyChatService>();
 
         svcs.AddSingleton<IPlayerRepository>(sp =>
             new DbPlayerRepository(
@@ -153,6 +154,7 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<ReplayGuard>(),
                 sp.GetRequiredService<MovementValidator>(),
                 sp.GetRequiredService<IPartyService>(),
+                sp.GetRequiredService<IPartyChatService>(),
                 sp.GetRequiredService<IOptions<RateLimiterOptions>>()
             );
         });
