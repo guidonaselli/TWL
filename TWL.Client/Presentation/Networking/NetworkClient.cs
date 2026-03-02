@@ -7,6 +7,8 @@ using TWL.Shared.Constants;
 using TWL.Shared.Net;
 using TWL.Shared.Constants;
 using TWL.Shared.Net.Network;
+using TWL.Shared.Domain.DTO;
+using TWL.Shared.Domain.State;
 
 namespace TWL.Client.Presentation.Networking;
 

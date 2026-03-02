@@ -115,7 +115,7 @@ public sealed class SceneGameplay : SceneBase, IPayloadReceiver
         // You might want to set other stats from _playerData here as well
 
         _playerView = new PlayerView(_player);
-        _ui = new UiGameplay(_player);
+        _ui = new UiGameplay(_player, _gameManager.Party, _gameManager.NetworkClient);
         _prevKeyboardState = Keyboard.GetState();
 
         EventBus.Subscribe<BattleStarted>(e => Scenes.ChangeScene("Battle", e));

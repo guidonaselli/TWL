@@ -18,7 +18,7 @@ public class UiMainMenu
 {
     private readonly IAssetLoader _assets;
     private readonly GraphicsDevice _graphicsDevice;
-    private readonly List<string> _loginOptions = new() { Loc.T("UI_Login"), Loc.T("UI_Back") };
+    private readonly List<string> _loginOptions = new() { Loc.T("UI_Login"), Loc.T("UI_COMMON_BACK") };
     private readonly int _loginSelectedIndex = 0;
     private readonly NetworkClient _networkClient;
 
