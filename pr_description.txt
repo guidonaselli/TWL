@@ -1,0 +1,5 @@
+1) RESULT: PR
+2) MISSING KEYS: Added missing UI_PARTY_TITLE, UI_PARTY_MEMBER_INFO, UI_PARTY_CHAT_MESSAGE, UI_PARTY_CHAT_INPUT, UI_PARTY_ENTER_TO_CHAT
+3) ORPHAN KEYS: Removed QUEST_1301_TITLE to QUEST_2401_OBJ and UI_Back
+4) PLACEHOLDER ISSUES: UI_Party window had string interpolations that were converted to Loc.TF with indexed formats.
+5) VALIDATION: Ran `dotnet test --filter LocalizationAuditRunner` and confirmed the test passes successfully (0 errors). Also ensured the solution compiles with `dotnet build`.
