@@ -123,7 +123,7 @@ public class UiPartyWindow : UiWindow
         sb.Draw(_pixel, _bounds, new Color(0, 0, 0, 128));
 
         // Header
-        sb.DrawString(_font, "Party", new Vector2(_bounds.X + 5, _bounds.Y + 5), Color.Yellow);
+        sb.DrawString(_font, TWL.Client.Presentation.Services.Loc.T("UI_PARTY_TITLE"), new Vector2(_bounds.X + 5, _bounds.Y + 5), Color.Yellow);
 
         int yOffset = 25;
         foreach (var member in _partyState.Members)
@@ -132,7 +132,7 @@ public class UiPartyWindow : UiWindow
             var nameColor = isLeader ? Color.Gold : Color.White;
 
             // Name & Level
-            sb.DrawString(_font, $"{member.Name} (Lv.{member.Level})", new Vector2(_bounds.X + 5, _bounds.Y + yOffset), nameColor);
+            sb.DrawString(_font, TWL.Client.Presentation.Services.Loc.TF("UI_PARTY_MEMBER_INFO", member.Name, member.Level), new Vector2(_bounds.X + 5, _bounds.Y + yOffset), nameColor);
 
             // HP Bar
             yOffset += 20;
@@ -159,7 +159,7 @@ public class UiPartyWindow : UiWindow
 
         foreach (var msg in recentChat)
         {
-             sb.DrawString(_font, $"{msg.SenderName}: {msg.Content}", new Vector2(_bounds.X + 5, _bounds.Y + yOffset), Color.Cyan);
+             sb.DrawString(_font, TWL.Client.Presentation.Services.Loc.TF("UI_PARTY_CHAT_MESSAGE", msg.SenderName, msg.Content), new Vector2(_bounds.X + 5, _bounds.Y + yOffset), Color.Cyan);
              yOffset += 15;
         }
 
@@ -168,11 +168,11 @@ public class UiPartyWindow : UiWindow
         if (_isTyping)
         {
             var inputText = _currentInput + (_cursorVisible ? "|" : "");
-            sb.DrawString(_font, $"> {inputText}", new Vector2(_bounds.X + 5, _bounds.Y + yOffset), Color.White);
+            sb.DrawString(_font, TWL.Client.Presentation.Services.Loc.TF("UI_PARTY_CHAT_INPUT", inputText), new Vector2(_bounds.X + 5, _bounds.Y + yOffset), Color.White);
         }
         else
         {
-            sb.DrawString(_font, "[Enter] to Chat", new Vector2(_bounds.X + 5, _bounds.Y + yOffset), Color.Gray);
+            sb.DrawString(_font, TWL.Client.Presentation.Services.Loc.T("UI_PARTY_ENTER_TO_CHAT"), new Vector2(_bounds.X + 5, _bounds.Y + yOffset), Color.Gray);
         }
     }
 }

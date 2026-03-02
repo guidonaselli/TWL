@@ -100,9 +100,6 @@
   <data name="UI_Password" xml:space="preserve">
     <value>Password: </value>
   </data>
-  <data name="UI_Back" xml:space="preserve">
-    <value>Back</value>
-  </data>
   <data name="UI_Title" xml:space="preserve">
     <value>The Wonderland</value>
   </data>
@@ -481,112 +478,19 @@
   <data name="SKILL_WarCryIII" xml:space="preserve">
     <value>War Cry III</value>
   </data>
-  <data name="QUEST_1301_TITLE" xml:space="preserve">
-    <value>QUEST_1301_TITLE EN Text</value>
+  <data name="UI_PARTY_TITLE" xml:space="preserve">
+    <value>Party</value>
   </data>
-  <data name="QUEST_1301_DESC" xml:space="preserve">
-    <value>QUEST_1301_DESC EN Text</value>
+  <data name="UI_PARTY_MEMBER_INFO" xml:space="preserve">
+    <value>{0} (Lv.{1})</value>
   </data>
-  <data name="QUEST_1301_OBJ" xml:space="preserve">
-    <value>QUEST_1301_OBJ EN Text</value>
+  <data name="UI_PARTY_CHAT_MESSAGE" xml:space="preserve">
+    <value>{0}: {1}</value>
   </data>
-  <data name="QUEST_1302_TITLE" xml:space="preserve">
-    <value>QUEST_1302_TITLE EN Text</value>
+  <data name="UI_PARTY_CHAT_INPUT" xml:space="preserve">
+    <value>&gt; {0}</value>
   </data>
-  <data name="QUEST_1302_DESC" xml:space="preserve">
-    <value>QUEST_1302_DESC EN Text</value>
-  </data>
-  <data name="QUEST_1302_OBJ" xml:space="preserve">
-    <value>QUEST_1302_OBJ EN Text</value>
-  </data>
-  <data name="QUEST_1303_TITLE" xml:space="preserve">
-    <value>QUEST_1303_TITLE EN Text</value>
-  </data>
-  <data name="QUEST_1303_DESC" xml:space="preserve">
-    <value>QUEST_1303_DESC EN Text</value>
-  </data>
-  <data name="QUEST_1303_OBJ" xml:space="preserve">
-    <value>QUEST_1303_OBJ EN Text</value>
-  </data>
-  <data name="QUEST_1304_TITLE" xml:space="preserve">
-    <value>QUEST_1304_TITLE EN Text</value>
-  </data>
-  <data name="QUEST_1304_DESC" xml:space="preserve">
-    <value>QUEST_1304_DESC EN Text</value>
-  </data>
-  <data name="QUEST_1304_OBJ" xml:space="preserve">
-    <value>QUEST_1304_OBJ EN Text</value>
-  </data>
-  <data name="QUEST_1305_TITLE" xml:space="preserve">
-    <value>QUEST_1305_TITLE EN Text</value>
-  </data>
-  <data name="QUEST_1305_DESC" xml:space="preserve">
-    <value>QUEST_1305_DESC EN Text</value>
-  </data>
-  <data name="QUEST_1305_OBJ" xml:space="preserve">
-    <value>QUEST_1305_OBJ EN Text</value>
-  </data>
-  <data name="QUEST_1306_TITLE" xml:space="preserve">
-    <value>QUEST_1306_TITLE EN Text</value>
-  </data>
-  <data name="QUEST_1306_DESC" xml:space="preserve">
-    <value>QUEST_1306_DESC EN Text</value>
-  </data>
-  <data name="QUEST_1306_OBJ" xml:space="preserve">
-    <value>QUEST_1306_OBJ EN Text</value>
-  </data>
-  <data name="QUEST_1307_TITLE" xml:space="preserve">
-    <value>QUEST_1307_TITLE EN Text</value>
-  </data>
-  <data name="QUEST_1307_DESC" xml:space="preserve">
-    <value>QUEST_1307_DESC EN Text</value>
-  </data>
-  <data name="QUEST_1307_OBJ" xml:space="preserve">
-    <value>QUEST_1307_OBJ EN Text</value>
-  </data>
-  <data name="QUEST_1401_TITLE" xml:space="preserve">
-    <value>QUEST_1401_TITLE EN Text</value>
-  </data>
-  <data name="QUEST_1401_DESC" xml:space="preserve">
-    <value>QUEST_1401_DESC EN Text</value>
-  </data>
-  <data name="QUEST_1401_OBJ" xml:space="preserve">
-    <value>QUEST_1401_OBJ EN Text</value>
-  </data>
-  <data name="QUEST_1402_TITLE" xml:space="preserve">
-    <value>QUEST_1402_TITLE EN Text</value>
-  </data>
-  <data name="QUEST_1402_DESC" xml:space="preserve">
-    <value>QUEST_1402_DESC EN Text</value>
-  </data>
-  <data name="QUEST_1402_OBJ" xml:space="preserve">
-    <value>QUEST_1402_OBJ EN Text</value>
-  </data>
-  <data name="QUEST_1403_TITLE" xml:space="preserve">
-    <value>QUEST_1403_TITLE EN Text</value>
-  </data>
-  <data name="QUEST_1403_DESC" xml:space="preserve">
-    <value>QUEST_1403_DESC EN Text</value>
-  </data>
-  <data name="QUEST_1403_OBJ" xml:space="preserve">
-    <value>QUEST_1403_OBJ EN Text</value>
-  </data>
-  <data name="QUEST_1404_TITLE" xml:space="preserve">
-    <value>QUEST_1404_TITLE EN Text</value>
-  </data>
-  <data name="QUEST_1404_DESC" xml:space="preserve">
-    <value>QUEST_1404_DESC EN Text</value>
-  </data>
-  <data name="QUEST_1404_OBJ" xml:space="preserve">
-    <value>QUEST_1404_OBJ EN Text</value>
-  </data>
-  <data name="QUEST_2401_TITLE" xml:space="preserve">
-    <value>QUEST_2401_TITLE EN Text</value>
-  </data>
-  <data name="QUEST_2401_DESC" xml:space="preserve">
-    <value>QUEST_2401_DESC EN Text</value>
-  </data>
-  <data name="QUEST_2401_OBJ" xml:space="preserve">
-    <value>QUEST_2401_OBJ EN Text</value>
+  <data name="UI_PARTY_ENTER_TO_CHAT" xml:space="preserve">
+    <value>[Enter] to Chat</value>
   </data>
 </root>
