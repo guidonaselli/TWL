@@ -4,12 +4,45 @@ using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Interactions;
 using TWL.Shared.Domain.Requests;
 
+using TWL.Server.Services.World;
+
 namespace TWL.Server.Simulation.Managers;
 
 public class InteractionManager
 {
     private static readonly JsonSerializerOptions _jsonOptions = new() { PropertyNameCaseInsensitive = true };
     private readonly Dictionary<string, List<InteractionDefinition>> _interactions = new();
+    private readonly IMapRegistry? _mapRegistry;
+
+    public InteractionManager() { } // For tests
+
+    public InteractionManager(IMapRegistry mapRegistry)
+    {
+        _mapRegistry = mapRegistry;
+    }
+
+    public virtual System.Numerics.Vector2? GetTargetPosition(int mapId, string targetName)
+    {
+        if (_mapRegistry == null) return null;
+
+        var map = _mapRegistry.GetMap(mapId);
+        if (map == null) return null;
+
+        var trigger = map.Triggers.FirstOrDefault(t =>
+            t.Id == targetName ||
+            (t.Properties.TryGetValue("TargetName", out var tn) && tn == targetName));
+
+        if (trigger != null)
+        {
+            // The coordinates in the map file (Tiled) are in pixels.
+            // Using the center of the trigger for distance calculations.
+            var centerX = trigger.X + (trigger.Width / 2f);
+            var centerY = trigger.Y + (trigger.Height / 2f);
+            return new System.Numerics.Vector2(centerX, centerY);
+        }
+
+        return null;
+    }
 
     public void Load(string path)
     {
@@ -37,7 +70,7 @@ public class InteractionManager
         Console.WriteLine($"Loaded interactions for {_interactions.Count} targets from {path}");
     }
 
-    public string? ProcessInteraction(ServerCharacter character, PlayerQuestComponent questComponent, string targetName)
+    public virtual string? ProcessInteraction(ServerCharacter character, PlayerQuestComponent questComponent, string targetName)
     {
         if (character == null)
         {
