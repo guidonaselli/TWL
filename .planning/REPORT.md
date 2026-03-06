@@ -57,6 +57,29 @@ The provided daily task ("Consistency Auditor Report") is missing the mandatory 
 - Riesgo: Desconexión inadvertida del cliente. Mitigación: Centralizar la inyección automática en el método base `NetworkClient.SendNetMessage`.
 8) NEXT: CORE-002: Sesiones + sequence/nonce por cliente para protección anti-replay.
 
+1) TITLE: Implementar validación de proximidad en interacciones (SEC-001)
+2) TYPE: REPORT
+3) SCOPE (IN):
+- TWL.Server/Features/Interactions/InteractHandler.cs
+- TWL.Server/Simulation/Networking/ClientSession.cs
+- TWL.Server/Simulation/Managers/SpawnManager.cs (o equivalentes de búsqueda de entidades)
+- TWL.Tests/Security/SecurityTests.cs
+4) OUT-OF-SCOPE:
+- Implementación o cambios en el protocolo de red (Opcodes).
+- Lógica de quests, items o rewards.
+- Modificación de otros mecanismos anti-cheat (ReplayGuard, RateLimiter).
+5) ACCEPTANCE CRITERIA (DoD):
+- Antes de procesar un `InteractRequest`, el servidor busca la entidad objetivo (ej. NPC/Cofre) en el mundo.
+- Se calcula la distancia euclidiana entre las coordenadas del `Character` y del `Target`.
+- Si la distancia supera `MaxInteractDistance` (ej. 5.0 o el valor configurado), la interacción se rechaza y no se procesa ninguna lógica adicional.
+- Se registra un log de seguridad indicando un posible exploit de interacción global.
+6) REQUIRED TESTS / VALIDATIONS:
+- `SecurityTests.InteractRequest_OutOfRange_ShouldReject`: Comprobar que una interacción a gran distancia es rechazada por el servidor.
+- Verificar el happy path (distancia válida).
+7) RISKS:
+- Riesgo de desincronización (lag) que provoque rechazos legítimos. Mitigación: Definir un `MaxInteractDistance` con un margen de tolerancia adecuado.
+- Problemas de rendimiento si la búsqueda de entidades no está optimizada. Mitigación: Utilizar índices o cachés existentes en el `SpawnManager`.
+8) NEXT: SEC-002: Enforce Strict Replay Protection (Security P1).
 1) RESULT: REPORT
 2) SUMMARY:
 The task "Fix broken item references and logical inconsistencies in Quest rewards" was analyzed. However, since the ticket TYPE explicitly specifies "REPORT", and according to the Anti-Collision Clause and execution rules, only a report should be generated without making direct PR modifications unless specifically authorized to transition the task from 'Audit' to 'Fix'. The required validations and changes have already been observed as either completed or blocked pending explicit PR authorization.
