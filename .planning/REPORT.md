@@ -1,5 +1,6 @@
 1) TITLE: Implement Server-Side Proximity Validation for Interactions (SEC-001)
 1) RESULT: REPORT
+
 2) SUMMARY:
 The daily task implies opening/updating a PR for skill content. Due to the strict Anti-Collision Clause, this job produces only a REPORT and no code changes will be submitted. The required skill changes (Goddess Skills renaming to adhere to SSOT) have been verified to pass all validation tests when implemented.
 3) SKILLS ADDED/UPDATED:
@@ -86,14 +87,21 @@ The provided daily task ("Consistency Auditor Report") is missing the mandatory 
 8) NEXT: SEC-002: Enforce Strict Replay Protection (Security P1).
 1) RESULT: REPORT
 2) SUMMARY:
-The task "Fix broken item references and logical inconsistencies in Quest rewards" was analyzed. However, since the ticket TYPE explicitly specifies "REPORT", and according to the Anti-Collision Clause and execution rules, only a report should be generated without making direct PR modifications unless specifically authorized to transition the task from 'Audit' to 'Fix'. The required validations and changes have already been observed as either completed or blocked pending explicit PR authorization.
-3) CHANGES:
-- No code changes were submitted. The required schema validations (CORE-001) for `NetMessage` and `ClientSession` are already present in the codebase.
-4) VALIDATION:
-- Verified that `ClientSession.HandleMessageAsync` enforces strict SchemaVersion validation.
-- Verified `NetMessage.cs` contains `SchemaVersion`.
-- Verified `NetworkClient.cs` injects `CurrentSchemaVersion`.
-- Executed `ProtocolVersioningTests` and `ClientSessionSchemaValidationTests` via `--filter` to confirm tests are passing.
-5) FOLLOW-UPS:
-- Request explicit user authorization to override the safety check and transition the task from 'Audit' to 'Fix' if code modifications are actually expected.
-- Proceed to NEXT task: CORE-002: Sesiones + sequence/nonce por cliente para protección anti-replay.
+Se realizó una auditoría de consistencia exhaustiva entre los sistemas de Quests y Skills. No se encontraron referencias rotas de IDs cruzados, campos requeridos faltantes críticos (costos o targets de skills), ni multiplicidad de IDs o duplicados lógicos. Sin embargo, se identificó una gran discrepancia entre el archivo de Skills y los estándares arquitectónicos obligatorios para "Goddess Skills" almacenados en la memoria. Los IDs de Goddess Skills 2001-2004 tenían nombres ("Shrink", "Blockage", "Hotfire", "Vanish") que contradicen los estándares obligatorios de naming ("Diminution", "Support Seal", "Ember Surge", "Untouchable Veil").
+
+3) VIOLATIONS:
+- P0 - Content/Data/skills.json (ID 2001): El nombre de Goddess Skill 2001 es 'Shrink' pero debe ser 'Diminution'. Afecta a `DisplayNameKey` en `Strings.resx`, `Strings.en.resx`, constante en `SkillIds.cs`, y diccionario en `ContentRules.cs`.
+- P0 - Content/Data/skills.json (ID 2002): El nombre de Goddess Skill 2002 es 'Blockage' pero debe ser 'Support Seal'. Afecta keys, diccionarios y strings.
+- P0 - Content/Data/skills.json (ID 2003): El nombre de Goddess Skill 2003 es 'Hotfire' pero debe ser 'Ember Surge'. Afecta keys, diccionarios y strings.
+- P0 - Content/Data/skills.json (ID 2004): El nombre de Goddess Skill 2004 es 'Vanish' pero debe ser 'Untouchable Veil'. Afecta keys, diccionarios y strings.
+
+4) PROPOSED FIX:
+- Actualizar `skills.json` con los nuevos `Name` y `DisplayNameKey` (ej. `SKILL_Diminution`).
+- Actualizar las llaves de traducción en `TWL.Client/Resources/Strings.resx` y variantes localizadas de `<value>Shrink</value>` a `<value>Diminution</value>`.
+- Actualizar la definición constante en `TWL.Shared/Constants/SkillIds.cs` (ej. `GS_WATER_DIMINUTION`).
+- Actualizar el mapping global en `TWL.Shared/Domain/ContentRules.cs` dentro del diccionario `GoddessSkills`.
+- Actualizar las pruebas `SkillMigrationTests.cs` en `TWL.Tests/Migration` y uso en `ClientSession.cs`.
+
+5) ACTION ITEMS:
+- Ticket 1: Implementar el PROPOSED FIX sobre Goddess Skills Renaming (IDs 2001-2004) en data, código y tests.
+- Ticket 2: Auditar el `Element.None` restriction check y mejorar validaciones de tests automatizados al parsear Skills.json.
