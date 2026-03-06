@@ -122,7 +122,7 @@ Host.CreateDefaultBuilder(args)
             var mediator = new Mediator();
             // Manual registration of handlers for now
             mediator.Register(new UseSkillHandler(sp.GetRequiredService<CombatManager>()));
-            mediator.Register(new InteractHandler(sp.GetRequiredService<InteractionManager>()));
+            mediator.Register(new InteractHandler(sp.GetRequiredService<InteractionManager>(), sp.GetRequiredService<IMapRegistry>()));
             return mediator;
         });
 
