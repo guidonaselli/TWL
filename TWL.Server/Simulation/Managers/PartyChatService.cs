@@ -1,4 +1,5 @@
 using System;
+using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging;
@@ -56,13 +57,11 @@ public class PartyChatService : IPartyChatService
             JsonPayload = json
         };
 
-        foreach (var memberId in party.MemberIds)
-        {
-            var session = _playerService.GetSession(memberId);
-            if (session != null)
-            {
-                await session.SendAsync(netMsg);
-            }
-        }
+        var sendTasks = party.MemberIds
+            .Select(memberId => _playerService.GetSession(memberId))
+            .Where(session => session != null)
+            .Select(session => session!.SendAsync(netMsg));
+
+        await Task.WhenAll(sendTasks);
     }
 }
