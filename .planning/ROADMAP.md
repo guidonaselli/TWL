@@ -129,7 +129,7 @@ Plans:
 ### Phase 6: Rebirth System
 **Goal**: Characters and pets can rebirth to gain permanent stat bonuses and prestige, creating long-term progression loop
 **Depends on**: Phase 1 (requires atomic transactions for rebirth operation)
-**Requirements**: REB-01, REB-02, REB-03, REB-04, REB-05, REB-06, REB-07, PET-03, PET-04
+**Requirements**: REB-01, REB-02, REB-03, REB-04, REB-05, REB-06, REB-07, REB-08, REB-09, REB-10, PET-03, PET-04
 **Success Criteria** (what must be TRUE):
   1. Character can rebirth at level 100+ resetting to level 1 with permanent stat bonuses (20/15/10/5 diminishing returns)
   2. Character rebirth requires minimum level and optional quest/item requirement
@@ -146,6 +146,8 @@ Plans:
 - [ ] 06-02-PLAN.md -- Character rebirth eligibility gates, build retention, and client prestige display in character info/nameplate/HUD
 - [ ] 06-03-PLAN.md -- Pet rebirth policy completion with quest-vs-capturable differentiation, 10/8/5 diminishing bonuses, and evolution/action routing
 - [ ] 06-04-PLAN.md -- End-to-end and rollback/audit regression suite validating character + pet rebirth integration and quest-gating continuity
+- [ ] 06-05-PLAN.md -- [INSERTED] Character Rebirth multi-round boss gauntlet and Job Artifact primary stat (e.g. STR vs INT) logic
+- [ ] 06-06-PLAN.md -- [INSERTED] Human Pet Rebirth multi-stage death quest sequence and Signature Skill unlocking
 
 ### Phase 7: P2P Market System
 **Goal**: Players can list items for sale, search listings, buy from other players, with centralized ledger and automatic tax/gold transfer
@@ -172,7 +174,7 @@ Plans:
 ### Phase 8: Compound System
 **Goal**: Players can enhance equipment through compound NPC with success/failure mechanics and economy sink
 **Depends on**: Phase 7 (extends market transaction patterns)
-**Requirements**: CMP-01, CMP-02, CMP-03, CMP-04, CMP-05, CMP-06
+**Requirements**: CMP-01, CMP-02, CMP-03, CMP-04, CMP-05, CMP-06, CMP-07
 **Success Criteria** (what must be TRUE):
   1. Player can access compound NPC to enhance equipment
   2. Player can select base item and enhancement materials from inventory
@@ -188,11 +190,12 @@ Plans:
 - [ ] 08-03-PLAN.md -- Success-rate policy and success/failure outcome engine with base-item preservation
 - [ ] 08-04-PLAN.md -- Non-refundable compound fee and operation-id idempotency safeguards
 - [ ] 08-05-PLAN.md -- Client integration rewrite to server-authoritative flow plus phase acceptance coverage
+- [ ] 08-06-PLAN.md -- [INSERTED] Alchemy Rank math (EqLvl/2), base combinations, and Alchemy Book probability modifiers
 
 ### Phase 9: Pet System Completion
 **Goal**: Pet combat AI, amity/bonding mechanics, riding system, and complete starter region pet roster are functional
 **Depends on**: Phase 6 (pet rebirth foundation), Phase 10 (combat flow for AI testing)
-**Requirements**: PET-01, PET-02, PET-05, PET-06, PET-07
+**Requirements**: PET-01, PET-02, PET-05, PET-06, PET-07, PET-08, PET-09, PET-10
 **Success Criteria** (what must be TRUE):
   1. Pet combat AI makes intelligent skill selections based on target HP, party status, elemental advantage (not random)
   2. pets.json is populated with complete starter region pet roster (20+ pets with stats, skills, evolution paths)
@@ -207,11 +210,13 @@ Plans:
 - [ ] 09-03-PLAN.md -- Amity KO and bond-tier reward mechanics completion
 - [ ] 09-04-PLAN.md -- Riding utility routing, mounted movement bonus, and client/server flow integration
 - [ ] 09-05-PLAN.md -- Phase-level PET acceptance and cross-system integration verification
+- [ ] 09-06-PLAN.md -- [INSERTED] Pet attribute RNG logic (Top 3) and stat reallocation scroll system
+- [ ] 09-07-PLAN.md -- [INSERTED] Amity <= 20 permanent desertion (item wiping) and loyalty accessory state lock
 
 ### Phase 10: Combat & Progression Integration
 **Goal**: Death penalty, durability system, instance lockouts, and full combat flow are integrated and functional
 **Depends on**: Phase 4 (party system for combat testing), Phase 9 (pet AI for combat testing)
-**Requirements**: CMB-01, CMB-02, CMB-03, CMB-04, INST-01, INST-02, INST-03
+**Requirements**: CMB-01, CMB-02, CMB-03, CMB-04, CMB-05, CMB-06, CMB-07, INST-01, INST-02, INST-03
 **Success Criteria** (what must be TRUE):
   1. Character death deducts 1% of current level EXP (floor 0%) and 1 durability from all equipped items
   2. Equipment with 0 durability enters "Broken" state (stats disabled until repaired)
@@ -226,6 +231,8 @@ Plans:
 - [ ] 10-03-PLAN.md -- Instance run quotas: per-instance 5/day tracking, UTC-midnight reset, and entry rejection at 5/5
 - [ ] 10-04-PLAN.md -- Full combat-flow integration across death penalties, pet/status systems, and utility/movement seams
 - [ ] 10-05-PLAN.md -- Phase-level CMB/INST acceptance suite and verification artifact for execution handoff
+- [ ] 10-06-PLAN.md -- [INSERTED] Combat Action Phase Priority Queue sorting and Elemental Matrix multipliers
+- [ ] 10-07-PLAN.md -- [INSERTED] Exponential XP mechanics via Overkill pooling and DEF debuff checks
 
 ### Phase 11: Content Foundation (Content Executor)
 **Goal**: Complete item database, expand monster roster, and fill pet roster to 50+ entries with full evolution/skill data

@@ -228,7 +228,16 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 <!-- Lane 3 appends discoveries below this line -->
 
-
+- [DISCOVERED] **CMB-05**: Combat Action Phase uses Priority Queue sorted by Speed. Overkill health threshold forcibly removes entity. (2026-03-06, Base Mechanics Doc)
+- [DISCOVERED] **CMB-06**: Elemental Matrix multipliers with multiplicative stacking logic. (2026-03-06, Base Mechanics Doc)
+- [DISCOVERED] **CMB-07**: Exponential XP system triggered by Overkill damage pool + DEF debuff state on target. (2026-03-06, Base Mechanics Doc)
+- [DISCOVERED] **PET-08**: Creature pets support MountableComponent+Saddles (stat transfer, no combat) vs Human pets strictly non-mountable. (2026-03-06, Base Mechanics Doc)
+- [DISCOVERED] **PET-09**: Pet level-up stats randomly assigned to top 3 attributes; requires reallocation scroll (Level 20+). (2026-03-06, Base Mechanics Doc)
+- [DISCOVERED] **PET-10**: Amity desertion <= 20 permanently deletes equipped items. Rare accessory stops decay at exactly 100. (2026-03-06, Base Mechanics Doc)
+- [DISCOVERED] **REB-08**: Human Pet Rebirth requires multi-stage Death Quest -> Restoration -> Soul Merge to unlock Signature Skills. (2026-03-06, Base Mechanics Doc)
+- [DISCOVERED] **REB-09**: Character Rebirth gated by multi-round gauntlet with specific AI SP-pool wipe checks. (2026-03-06, Base Mechanics Doc)
+- [DISCOVERED] **REB-10**: Post-Rebirth Job unlocked via primary stat comparison check (e.g., STR vs INT); grants Job Artifact. (2026-03-06, Base Mechanics Doc)
+- [DISCOVERED] **CMP-07**: Alchemy Rank calculation (EqLvl/2) + Bases. Success probability depends on skill tier + Book modifiers. (2026-03-06, Base Mechanics Doc)
 
 ---
 
