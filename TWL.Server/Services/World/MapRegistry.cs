@@ -26,6 +26,40 @@ public class MapRegistry : IMapRegistry
         return _maps.Values;
     }
 
+    public (float X, float Y)? GetEntityPosition(int mapId, string targetName)
+    {
+        if (!_maps.TryGetValue(mapId, out var map))
+        {
+            return null;
+        }
+
+        // Search triggers
+        var trigger = map.Triggers.FirstOrDefault(t =>
+            string.Equals(t.Id, targetName, StringComparison.OrdinalIgnoreCase) ||
+            (t.Properties.TryGetValue("TargetName", out var tn) && string.Equals(tn, targetName, StringComparison.OrdinalIgnoreCase)) ||
+            (t.Properties.TryGetValue("Name", out var n) && string.Equals(n, targetName, StringComparison.OrdinalIgnoreCase))
+        );
+
+        if (trigger != null)
+        {
+            return (trigger.X + trigger.Width / 2f, trigger.Y + trigger.Height / 2f); // Return center of trigger
+        }
+
+        // Search spawns
+        var spawn = map.Spawns.FirstOrDefault(s =>
+            string.Equals(s.Id, targetName, StringComparison.OrdinalIgnoreCase) ||
+            (s.Properties.TryGetValue("TargetName", out var tn) && string.Equals(tn, targetName, StringComparison.OrdinalIgnoreCase)) ||
+            (s.Properties.TryGetValue("Name", out var n) && string.Equals(n, targetName, StringComparison.OrdinalIgnoreCase))
+        );
+
+        if (spawn != null)
+        {
+            return (spawn.X, spawn.Y);
+        }
+
+        return null;
+    }
+
     public void Load(string contentPath)
     {
         if (!Directory.Exists(contentPath))
