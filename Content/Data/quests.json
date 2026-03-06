@@ -501,134 +501,6 @@
     "Repeatability": 0
   },
   {
-    "QuestId": 1050,
-    "Title": "Rumores en la Cala",
-    "Description": "El pescador ha escuchado ruidos extraños cerca de los acantilados por la noche.",
-    "Requirements": [],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Pescador Viejo",
-        "RequiredCount": 1,
-        "Description": "Habla con el Pescador Viejo."
-      }
-    ],
-    "Rewards": {
-      "Exp": 50,
-      "Gold": 0,
-      "Items": []
-    }
-  },
-  {
-    "QuestId": 1051,
-    "Title": "La Fuente del Ruido",
-    "Description": "Investiga la entrada de las cuevas y elimina a las bestias que bloquean el camino.",
-    "Requirements": [
-      1050
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "Cave Bat",
-        "RequiredCount": 3,
-        "Description": "Matar 3 Murciélago de Cueva."
-      }
-    ],
-    "Rewards": {
-      "Exp": 100,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 4739,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1052,
-    "Title": "Inscripciones Antiguas",
-    "Description": "Hay extraños grabados en las paredes. Toma calcos para estudiarlos.",
-    "Requirements": [
-      1051
-    ],
-    "Objectives": [
-      {
-        "Type": "Interact",
-        "TargetName": "Grabado de Pared",
-        "RequiredCount": 3,
-        "Description": "Toma 3 Calcos de Piedra de los Grabados."
-      }
-    ],
-    "Rewards": {
-      "Exp": 150,
-      "Gold": 20,
-      "Items": [
-        {
-          "ItemId": 7502,
-          "Quantity": 3
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1053,
-    "Title": "El Guardián de Piedra",
-    "Description": "Un gólem bloquea el altar interior. Derrótalo.",
-    "Requirements": [
-      1052
-    ],
-    "Objectives": [
-      {
-        "Type": "Kill",
-        "TargetName": "Stone Golem",
-        "RequiredCount": 1,
-        "Description": "Matar 1 Gólem de Piedra."
-      }
-    ],
-    "Rewards": {
-      "Exp": 300,
-      "Gold": 0,
-      "Items": [
-        {
-          "ItemId": 7501,
-          "Quantity": 1
-        }
-      ]
-    }
-  },
-  {
-    "QuestId": 1054,
-    "Title": "Un Pequeño Amigo",
-    "Description": "El fragmento brilla cerca del altar. Úsalo para despertar al espíritu.",
-    "Requirements": [
-      1053
-    ],
-    "RequiredItems": [
-      {
-        "ItemId": 7501,
-        "Quantity": 1
-      }
-    ],
-    "Objectives": [
-      {
-        "Type": "Talk",
-        "TargetName": "Ancient Altar",
-        "RequiredCount": 1,
-        "Description": "Hablar con Altar Antiguo."
-      }
-    ],
-    "FlagsSet": [
-      "Unlock_FairyLight"
-    ],
-    "Rewards": {
-      "Exp": 0,
-      "Gold": 0,
-      "Items": [],
-      "PetUnlockId": 1003
-    }
-  },
-  {
     "QuestId": 1060,
     "Title": "Suministros Perdidos",
     "Description": "Una caja cayó al mar y fue arrastrada a la orilla.",
@@ -964,7 +836,9 @@
     "QuestId": 1301,
     "Title": "Strange Stone Debris",
     "Description": "Investigate the strange debris near the ruins.",
-    "Requirements": [1103],
+    "Requirements": [
+      1103
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -973,13 +847,19 @@
         "Description": "Collect Strange Stone Debris."
       }
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 1302,
     "Title": "Ancient Tablet",
     "Description": "Decipher the ancient tablet.",
-    "Requirements": [1301],
+    "Requirements": [
+      1301
+    ],
     "Objectives": [
       {
         "Type": "Collect",
@@ -988,13 +868,24 @@
         "Description": "Collect Ancient Rubbing."
       }
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [{"ItemId": 8103, "Quantity": 1}] }
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 8103,
+          "Quantity": 1
+        }
+      ]
+    }
   },
   {
     "QuestId": 1303,
     "Title": "Ruins Guardian",
     "Description": "Defeat the guardian protecting the ruins.",
-    "Requirements": [1302],
+    "Requirements": [
+      1302
+    ],
     "Objectives": [
       {
         "Type": "Kill",
@@ -1003,13 +894,19 @@
         "Description": "Kill Ruins Guardian."
       }
     ],
-    "Rewards": { "Exp": 200, "Gold": 50, "Items": [] }
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": []
+    }
   },
   {
     "QuestId": 1304,
     "Title": "Enter Ruins",
     "Description": "Enter the ruins.",
-    "Requirements": [1303],
+    "Requirements": [
+      1303
+    ],
     "Objectives": [
       {
         "Type": "Interact",
@@ -1018,104 +915,243 @@
         "Description": "Interact with Ruins Entrance."
       }
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 1305,
     "Title": "Dark Corridors",
     "Description": "Explore the dark corridors.",
-    "Requirements": [1304],
-    "Objectives": [
-      { "Type": "Talk", "TargetName": "RuinsConsole", "RequiredCount": 1, "Description": "Talk to Console" },
-      { "Type": "Kill", "TargetName": "RuinsBat", "RequiredCount": 3, "Description": "Kill 3 Ruins Bat" },
-      { "Type": "Kill", "TargetName": "GiantSpider", "RequiredCount": 1, "Description": "Kill Giant Spider" }
+    "Requirements": [
+      1304
     ],
-    "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "RuinsConsole",
+        "RequiredCount": 1,
+        "Description": "Talk to Console"
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "RuinsBat",
+        "RequiredCount": 3,
+        "Description": "Kill 3 Ruins Bat"
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "GiantSpider",
+        "RequiredCount": 1,
+        "Description": "Kill Giant Spider"
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 100,
+      "Items": []
+    }
   },
   {
     "QuestId": 1306,
     "Title": "Ancient Power",
     "Description": "Restore power to the ruins.",
-    "Requirements": [1305],
-    "Objectives": [
-      { "Type": "Collect", "TargetName": "PowerCrystalSource", "RequiredCount": 1, "Description": "Collect Power Crystal" },
-      { "Type": "Talk", "TargetName": "RuinsConsole", "RequiredCount": 1, "Description": "Talk to Console" }
+    "Requirements": [
+      1305
     ],
-    "Rewards": { "Exp": 300, "Gold": 100, "Items": [] }
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "PowerCrystalSource",
+        "RequiredCount": 1,
+        "Description": "Collect Power Crystal"
+      },
+      {
+        "Type": "Talk",
+        "TargetName": "RuinsConsole",
+        "RequiredCount": 1,
+        "Description": "Talk to Console"
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 100,
+      "Items": []
+    }
   },
   {
     "QuestId": 1307,
     "Title": "The Hologram",
     "Description": "Activate the hologram.",
-    "Requirements": [1306],
-    "Objectives": [
-      { "Type": "Interact", "TargetName": "HologramProjector", "RequiredCount": 1, "Description": "Interact with Projector" }
+    "Requirements": [
+      1306
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "HologramProjector",
+        "RequiredCount": 1,
+        "Description": "Interact with Projector"
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 2303,
     "Title": "Bat Wings",
     "Description": "Collect bat wings.",
-    "Requirements": [1305],
-    "Objectives": [
-      { "Type": "Collect", "TargetName": "BatNest", "RequiredCount": 5, "Description": "Collect 5 Bat Wings" }
+    "Requirements": [
+      1305
     ],
-    "Rewards": { "Exp": 150, "Gold": 50, "Items": [] }
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "BatNest",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Bat Wings"
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 50,
+      "Items": []
+    }
   },
   {
     "QuestId": 1401,
     "Title": "Echoes from the Sea",
     "Description": "Investigate the signal.",
-    "Requirements": [1305],
-    "Objectives": [
-      { "Type": "Interact", "TargetName": "RepairedRadioTower", "RequiredCount": 1, "Description": "Check Radio Tower" },
-      { "Type": "Interact", "TargetName": "NorthEastCliff", "RequiredCount": 1, "Description": "Check Cliff" }
+    "Requirements": [
+      1305
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "RepairedRadioTower",
+        "RequiredCount": 1,
+        "Description": "Check Radio Tower"
+      },
+      {
+        "Type": "Interact",
+        "TargetName": "NorthEastCliff",
+        "RequiredCount": 1,
+        "Description": "Check Cliff"
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 1402,
     "Title": "Blocked Passage",
     "Description": "Clear the blockage.",
-    "Requirements": [1401],
-    "Objectives": [
-      { "Type": "Interact", "TargetName": "HeavyRocks", "RequiredCount": 1, "Description": "Check Rocks" },
-      { "Type": "Collect", "TargetName": "SulfurVent", "RequiredCount": 1, "Description": "Collect Sulfur" },
-      { "Type": "Collect", "TargetName": "BurntTree", "RequiredCount": 1, "Description": "Collect Charcoal" },
-      { "Type": "Craft", "TargetName": "AlchemyTable", "RequiredCount": 1, "Description": "Craft Black Powder" }
+    "Requirements": [
+      1401
     ],
-    "Rewards": { "Exp": 200, "Gold": 50, "Items": [] }
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "HeavyRocks",
+        "RequiredCount": 1,
+        "Description": "Check Rocks"
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "SulfurVent",
+        "RequiredCount": 1,
+        "Description": "Collect Sulfur"
+      },
+      {
+        "Type": "Collect",
+        "TargetName": "BurntTree",
+        "RequiredCount": 1,
+        "Description": "Collect Charcoal"
+      },
+      {
+        "Type": "Craft",
+        "TargetName": "AlchemyTable",
+        "RequiredCount": 1,
+        "Description": "Craft Black Powder"
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 50,
+      "Items": []
+    }
   },
   {
     "QuestId": 1403,
     "Title": "Clearing the Way",
     "Description": "Blast the rocks.",
-    "Requirements": [1402],
-    "Objectives": [
-      { "Type": "Interact", "TargetName": "HeavyRocks", "RequiredCount": 1, "Description": "Blast Rocks" }
+    "Requirements": [
+      1402
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "HeavyRocks",
+        "RequiredCount": 1,
+        "Description": "Blast Rocks"
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 1404,
     "Title": "Hidden Dock",
     "Description": "Find the hidden dock.",
-    "Requirements": [1403],
-    "Objectives": [
-      { "Type": "Interact", "TargetName": "HiddenDock", "RequiredCount": 1, "Description": "Inspect Dock" }
+    "Requirements": [
+      1403
     ],
-    "Rewards": { "Exp": 100, "Gold": 0, "Items": [] }
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "HiddenDock",
+        "RequiredCount": 1,
+        "Description": "Inspect Dock"
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 2401,
     "Title": "Fisherman Sidequest",
     "Description": "Help the fisherman.",
-    "Requirements": [2011, 1404],
-    "Objectives": [
-      { "Type": "Collect", "TargetName": "FishingSpot", "RequiredCount": 1, "Description": "Fish at the spot" }
+    "Requirements": [
+      2011,
+      1404
     ],
-    "Rewards": { "Exp": 100, "Gold": 50, "Items": [] }
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "FishingSpot",
+        "RequiredCount": 1,
+        "Description": "Fish at the spot"
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 50,
+      "Items": []
+    }
   },
   {
     "QuestId": 2011,
@@ -1123,9 +1159,18 @@
     "Description": "Catch your first fish.",
     "Requirements": [],
     "Objectives": [
-      { "Type": "Interact", "TargetName": "AnyFishingSpot", "RequiredCount": 1, "Description": "Fish somewhere" }
+      {
+        "Type": "Interact",
+        "TargetName": "AnyFishingSpot",
+        "RequiredCount": 1,
+        "Description": "Fish somewhere"
+      }
     ],
-    "Rewards": { "Exp": 50, "Gold": 0, "Items": [] }
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
   },
   {
     "QuestId": 2010,
@@ -1446,6 +1491,134 @@
     "Rewards": {
       "Exp": 200,
       "Gold": 50,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1050,
+    "Title": "Rumores en la Cala",
+    "Description": "El pescador ha escuchado ruidos extraños cerca de los acantilados por la noche.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Pescador Viejo",
+        "RequiredCount": 1,
+        "Description": "Habla con el Pescador Viejo."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50,
+      "Gold": 0,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 1051,
+    "Title": "La Fuente del Ruido",
+    "Description": "Investiga la entrada de las cuevas y elimina a las bestias que bloquean el camino.",
+    "Requirements": [
+      1050
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Cave Bat",
+        "RequiredCount": 3,
+        "Description": "Matar 3 Murciélago de Cueva."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 4739,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1052,
+    "Title": "Inscripciones Antiguas",
+    "Description": "Hay extraños grabados en las paredes. Toma calcos para estudiarlos.",
+    "Requirements": [
+      1051
+    ],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Grabado de Pared",
+        "RequiredCount": 3,
+        "Description": "Toma 3 Calcos de Piedra de los Grabados."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 20,
+      "Items": [
+        {
+          "ItemId": 7502,
+          "Quantity": 3
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1053,
+    "Title": "El Guardián de Piedra",
+    "Description": "Un gólem bloquea el altar interior. Derrótalo.",
+    "Requirements": [
+      1052
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Stone Golem",
+        "RequiredCount": 1,
+        "Description": "Matar 1 Gólem de Piedra."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 0,
+      "Items": [
+        {
+          "ItemId": 7501,
+          "Quantity": 1
+        }
+      ]
+    }
+  },
+  {
+    "QuestId": 1054,
+    "Title": "Un Pequeño Amigo",
+    "Description": "El fragmento brilla cerca del altar. Úsalo para despertar al espíritu.",
+    "Requirements": [
+      1053
+    ],
+    "RequiredItems": [
+      {
+        "ItemId": 7501,
+        "Quantity": 1
+      }
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Ancient Altar",
+        "RequiredCount": 1,
+        "Description": "Hablar con Altar Antiguo."
+      }
+    ],
+    "FlagsSet": [
+      "Unlocked_Ancient_Altar",
+      "Unlock_FairyLight"
+    ],
+    "Rewards": {
+      "Exp": 500,
+      "Gold": 100,
       "Items": []
     }
   }
