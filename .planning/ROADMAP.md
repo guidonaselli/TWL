@@ -22,6 +22,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [ ] **Phase 8: Compound System** - Equipment enhancement with success/failure mechanics
 - [ ] **Phase 9: Pet System Completion** - Combat AI, amity, bonding, riding, data population
 - [ ] **Phase 10: Combat & Progression Integration** - Death penalty, durability, instance lockouts, full combat flow
+- [ ] **Phase 11: Content Foundation** *(JULES Lane 2)* - items.json, monster expansion, pet roster completion
+- [ ] **Phase 12: Quest Expansion** *(JULES Lane 2)* - Full quest chains for all 8 regions (tutorial → endgame)
+- [ ] **Phase 13: World Expansion** *(JULES Lane 4)* - Map regions, spawn tables, NPC placement for regions 3-8
 
 ## Phase Details
 
@@ -224,10 +227,66 @@ Plans:
 - [ ] 10-04-PLAN.md -- Full combat-flow integration across death penalties, pet/status systems, and utility/movement seams
 - [ ] 10-05-PLAN.md -- Phase-level CMB/INST acceptance suite and verification artifact for execution handoff
 
+### Phase 11: Content Foundation (Content Executor)
+**Goal**: Complete item database, expand monster roster, and fill pet roster to 50+ entries with full evolution/skill data
+**Depends on**: Nothing (content-only, runs in parallel via Content Executor)
+**Requirements**: CONT-01, CONT-02, CONT-03
+**Success Criteria** (what must be TRUE):
+  1. `items.json` exists with 200+ items across 8 tiers (Lv1-100), covering weapons, armor, accessories, consumables, crafting materials, quest items
+  2. `monsters.json` contains 80+ monsters across 10+ families with 4 elemental variants each, progressive difficulty Lv1-100
+  3. `pets.json` contains 50+ pets with skills, evolution paths, capture rules, and utility assignments
+  4. `equipment.json` exists with weapons/armor/accessories organized by tier with stat scaling
+  5. All JSON files validate and contain no duplicate IDs
+**Plans**: 5 plans
+
+Plans:
+- [ ] 11-01-PLAN.md -- Create items.json with Tier 1-4 consumables, crafting materials, and quest items (Lv1-45)
+- [ ] 11-02-PLAN.md -- Create items.json Tier 5-8 consumables, crafting materials, and quest items (Lv45-100)
+- [ ] 11-03-PLAN.md -- Create equipment.json with full weapon/armor/accessory sets for all 8 tiers
+- [ ] 11-04-PLAN.md -- Expand monsters.json from 15 to 80+ with 10+ families, 4 elements each, boss variants per region
+- [ ] 11-05-PLAN.md -- Expand pets.json to 50+ with skill sets, evolution chains, capture data, and utility coverage
+
+### Phase 12: Quest Expansion (Content Executor)
+**Goal**: Full quest chains from tutorial to endgame across all 8 regions with progressive difficulty and varied objectives
+**Depends on**: Phase 11 (quests reference items, monsters, and pets from Phase 11)
+**Requirements**: CONT-04, CONT-05
+**Success Criteria** (what must be TRUE):
+  1. Each region (Isla Brisa through Resonancia Core) has at least 1 main quest chain (5-10 quests)
+  2. Side quest arcs cover crafting, pet capture, exploration, and NPC relationships
+  3. Special skill quests exist for each skill tree at appropriate level gates
+  4. Quest rewards scale appropriately with region level (EXP, Gold, Items from items.json)
+  5. No quest chain dead-ends — all chains have proper `Requirements` linking
+**Plans**: 4 plans
+
+Plans:
+- [ ] 12-01-PLAN.md -- Main story quest chains for Selva Esmeralda and Arrecife Hundido (Lv20-45)
+- [ ] 12-02-PLAN.md -- Main story quest chains for Isla Volcana and Cascada Eterna (Lv45-75)
+- [ ] 12-03-PLAN.md -- Main story quest chains for Cumbre Ancestral and Resonancia Core (Lv75-100)
+- [ ] 12-04-PLAN.md -- Side quest arcs: crafting, pet capture, exploration, and special skill trials across all regions
+
+### Phase 13: World Expansion (Content Executor)
+**Goal**: Map regions, spawn tables, and NPC placement for all 8 game regions
+**Depends on**: Phase 11 (spawns reference MonsterIds from expanded monsters.json)
+**Requirements**: CONT-06, CONT-07
+**Success Criteria** (what must be TRUE):
+  1. Spawn tables exist for all regions (Content/Data/spawns/{region}.json) with 3-5 mobs per map
+  2. Boss spawns placed in dungeon/cave maps with respawn timers
+  3. Map region directories exist in Content/Maps/ for regions 3-8 (Selva Esmeralda through Resonancia Core)
+  4. NPC placement data references existing NPCs from npcs.json or proposes new NPC entries
+  5. Elemental variety in spawns matches the region theme
+**Plans**: 4 plans
+
+Plans:
+- [ ] 13-01-PLAN.md -- Spawn tables for Isla Brisa and Puerto Roca (validate existing + fill gaps)
+- [ ] 13-02-PLAN.md -- Spawn tables and map stubs for Selva Esmeralda and Arrecife Hundido
+- [ ] 13-03-PLAN.md -- Spawn tables and map stubs for Isla Volcana and Cascada Eterna
+- [ ] 13-04-PLAN.md -- Spawn tables and map stubs for Cumbre Ancestral and Resonancia Core
+
 ## Progress
 
 **Execution Order:**
-Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10
+Code phases execute sequentially: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 → 9 → 10
+Content phases run in parallel via JULES: 11 (Content) | 12 (Content) | 13 (Content)
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
@@ -241,7 +300,10 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5 → 6 → 7 → 8 →
 | 8. Compound System | 0/5 | Not started | - |
 | 9. Pet System Completion | 0/5 | Not started | - |
 | 10. Combat & Progression Integration | 0/5 | Not started | - |
+| 11. Content Foundation (Content Executor) | 0/5 | Not started | - |
+| 12. Quest Expansion (Content Executor) | 0/4 | Not started | - |
+| 13. World Expansion (Content Executor) | 0/4 | Not started | - |
 
 ---
 *Roadmap created: 2026-02-15*
-*Last updated: 2026-02-23*
+*Last updated: 2026-03-06 — Added content expansion phases 11-13 for JULES automation*

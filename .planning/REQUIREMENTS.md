@@ -209,7 +209,26 @@ Which phases cover which requirements. Updated during roadmap creation.
 
 ---
 *Requirements defined: 2026-02-15*
-*Last updated: 2026-02-15 after roadmap creation*
+*Last updated: 2026-03-06 — Added content expansion requirements CONT-01 through CONT-07*
+
+### Content Expansion
+
+- [ ] **CONT-01**: `items.json` contains 200+ items across 8 tiers (Lv1-100) covering consumables, crafting materials, quest items
+- [ ] **CONT-02**: `monsters.json` contains 80+ monsters across 10+ families with Earth/Water/Fire/Wind variants per family
+- [ ] **CONT-03**: `pets.json` contains 50+ pets with skills, evolution paths, capture rules, and utility roles
+- [ ] **CONT-04**: Quest chains exist for all 8 regions with proper Requirements linking (no dead-ends)
+- [ ] **CONT-05**: Side quest arcs cover crafting, pet capture, exploration, and special skill trials
+- [ ] **CONT-06**: Spawn tables exist for all regions with 3-5 mobs per map and boss spawns in dungeons
+- [ ] **CONT-07**: Map region directories and metadata exist for regions 3-8 (Selva Esmeralda through Resonancia Core)
+
+## v1.1 Discovered Requirements
+
+*This section is maintained by JULES Lane 3 (Gap Analysis). Entries are appended automatically.*
+*Do NOT manually reorder or delete entries. Each entry includes discovery date and evidence.*
+
+<!-- Lane 3 appends discoveries below this line -->
+
+
 
 ---
 
