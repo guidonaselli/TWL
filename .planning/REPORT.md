@@ -1,3 +1,4 @@
+1) TITLE: Implement Server-Side Proximity Validation for Interactions (SEC-001)
 1) RESULT: REPORT
 2) SUMMARY:
 The daily task implies opening/updating a PR for skill content. Due to the strict Anti-Collision Clause, this job produces only a REPORT and no code changes will be submitted. The required skill changes (Goddess Skills renaming to adhere to SSOT) have been verified to pass all validation tests when implemented.
@@ -35,24 +36,27 @@ The provided daily task ("Consistency Auditor Report") is missing the mandatory 
 1) TITLE: Fix broken item references and logical inconsistencies in Quest rewards
 2) TYPE: REPORT
 3) SCOPE (IN):
-- TWL.Shared/Constants/ProtocolConstants.cs
-- TWL.Shared/Net/Network/NetMessage.cs
+- TWL.Server/Features/Interactions/InteractCommand.cs
+- TWL.Server/Features/Interactions/InteractHandler.cs
 - TWL.Server/Simulation/Networking/ClientSession.cs
-- TWL.Client/Net/NetworkClient.cs
-- TWL.Tests/Security/SecurityTests.cs y actualizaciones en otros tests
+- TWL.Server/Services/World/IWorldTriggerService.cs (o similar, para resolver coordenadas por nombre)
+- TWL.Tests/Security/SecurityTests.cs (o nuevos tests de interacción)
 4) OUT-OF-SCOPE:
-- Modificaciones en la lógica interna de ReplayGuard o RateLimiter.
-- Modificaciones en los handlers específicos de Opcodes.
-- Sistemas de gameplay o contenido (quests, pets, etc.).
+- Modificaciones a otros opcodes que no sean InteractRequest.
+- Implementación de ReplayGuard Strict Mode (eso pertenece a SEC-002).
+- Cambios a la lógica interna de recompensas de quest/interacciones.
 5) ACCEPTANCE CRITERIA (DoD):
-- `NetMessage` incluye una propiedad `int? SchemaVersion`.
-- `ClientSession.HandleMessageAsync` valida `SchemaVersion` en orden estricto: 1) ReplayGuard, 2) RateLimiter, 3) SchemaVersion, 4) Opcode Dispatch.
-- Si `SchemaVersion` es null o distinto a `ProtocolConstants.CurrentSchemaVersion`, se desconecta la sesión inmediatamente (Fail-Closed).
-- `NetworkClient` inyecta automáticamente `CurrentSchemaVersion` en los paquetes salientes antes de su envío.
+- El comando `InteractCommand` (o `InteractHandler`) debe resolver las coordenadas (X,Y) de la entidad objetivo (`TargetName`) usando el mapa actual del jugador.
+- Se verifica la distancia euclidiana entre el jugador y el objetivo.
+- Si la distancia es mayor a `MaxInteractDistance` (ej. 5.0 unidades), se rechaza la interacción y no se procesan reglas ni recompensas.
+- Se emite un log de seguridad mediante `SecurityLogger` cuando se detecta un intento de interacción fuera de rango.
 6) REQUIRED TESTS / VALIDATIONS:
-- Implementar `SecurityTests.Connect_WithInvalidSchema_ShouldDisconnect` y verificar que pase.
-- Todos los tests existentes que instancian `NetMessage` deben ser actualizados asignando explícitamente `SchemaVersion = ProtocolConstants.CurrentSchemaVersion`.
+- Implementar y asegurar que pase el test `SecurityTests.InteractRequest_OutOfRange_ShouldReject`.
+- Validar que interacciones dentro de rango sigan funcionando correctamente.
 7) RISKS:
+- Riesgo: Dificultad para resolver coordenadas de todas las entidades posibles por `TargetName` (ej. triggers vs NPCs móviles). Mitigación: Exponer un método centralizado en `IWorldTriggerService` o `SpawnManager` que busque entidades en el mapa activo.
+- Riesgo: Romper interacciones legítimas si `MaxInteractDistance` es muy estricto. Mitigación: Considerar un margen de gracia (ej. 5.0 a 10.0 unidades lógicas).
+8) NEXT: Implementar Protocol Schema Validation (CORE-001).
 - Riesgo: Fallo generalizado en la suite de tests por rechazos en ClientSession. Mitigación: Revisar y actualizar todas las instancias manuales de NetMessage en TWL.Tests.
 - Riesgo: Desconexión inadvertida del cliente. Mitigación: Centralizar la inyección automática en el método base `NetworkClient.SendNetMessage`.
 8) NEXT: CORE-002: Sesiones + sequence/nonce por cliente para protección anti-replay.
