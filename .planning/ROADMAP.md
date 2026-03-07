@@ -99,10 +99,9 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 04-01-PLAN.md -- Party foundation: invite/accept/decline/leave/kick lifecycle, combat-safe kick policy, and quest-gating parity fix
-- [ ] 04-02-PLAN.md -- Party XP and loot sharing with same-map/proximity enforcement and deterministic distribution tests
-- [ ] 04-03-PLAN.md -- Real-time party member sync and private party chat with client HUD integration
-- [ ] 04-04-PLAN.md -- Tactical 3x3 formation with server validation and combat row integration
+- [x] 04-01-PLAN.md -- Party foundation: invite/accept/decline/leave/kick lifecycle, combat-safe kick policy, and quest-gating parity fix
+- [x] 04-02-PLAN.md -- Party XP and loot sharing with same-map/proximity enforcement and deterministic distribution tests
+- [x] 04-04-PLAN.md -- Tactical 3x4 formation with server validation and combat row integration
 
 ### Phase 5: Guild System
 **Goal**: Players can create guilds, manage hierarchical ranks, use guild chat, and access shared storage with permission controls
@@ -300,7 +299,7 @@ Content phases run in parallel via JULES: 11 (Content) | 12 (Content) | 13 (Cont
 | 1. Infrastructure Foundation | 2/2 | ✅ Complete | 2026-02-19 |
 | 2. Security Hardening | 3/3 | ✅ Complete | 2026-02-22 |
 | 3. Content Quality | 3/3 | ✅ Complete | 2026-02-23 |
-| 4. Party System | 0/4 | Not started | - |
+| 4. Party System | 4/4 | ✅ Complete | 2026-03-07 |
 | 5. Guild System | 0/4 | Not started | - |
 | 6. Rebirth System | 0/4 | Not started | - |
 | 7. P2P Market System | 0/5 | Not started | - |

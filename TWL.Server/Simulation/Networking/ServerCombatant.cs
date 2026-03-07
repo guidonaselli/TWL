@@ -29,6 +29,7 @@ public abstract class ServerCombatant : ICombatant
     public string Name { get; set; } = string.Empty;
     public Element CharacterElement { get; set; }
     public Team Team { get; set; }
+    public TWL.Shared.Domain.Party.GridPosition GridPosition { get; set; } = new(1, 0);
 
     public virtual int Hp
     {

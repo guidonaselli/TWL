@@ -340,6 +340,9 @@ public class ClientSession
             case Opcode.PartyChatRequest:
                 await HandlePartyChatAsync(msg.JsonPayload, traceId);
                 break;
+            case Opcode.PartyUpdateFormationRequest:
+                await HandlePartyUpdateFormationAsync(msg.JsonPayload, traceId);
+                break;
             // etc.
         }
 
@@ -1091,12 +1094,35 @@ public class ClientSession
         await _partyChatService.SendPartyMessageAsync(Character.PartyId.Value, UserId, Character.Name, request.Content);
     }
 
+    private async Task HandlePartyUpdateFormationAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null || Character.PartyId == null) return;
+        var request = JsonSerializer.Deserialize<PartyUpdateFormationRequest>(payload, _jsonOptions);
+        if (request == null) return;
+
+        var result = _partyService.UpdateMemberPosition(Character.PartyId.Value, UserId, request.TargetX, request.TargetY);
+
+        if (result.Success)
+        {
+            var party = _partyService.GetParty(Character.PartyId.Value);
+            if (party != null)
+            {
+                await BroadcastPartyUpdateAsync(party);
+            }
+        }
+        else
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = result.Message }, _jsonOptions) });
+        }
+    }
+
     private async Task BroadcastPartyUpdateAsync(Party party)
     {
         var broadcast = new PartyUpdateBroadcast
         {
             PartyId = party.PartyId,
-            LeaderId = party.LeaderId
+            LeaderId = party.LeaderId,
+            Formation = party.Formation.Clone()
         };
 
         foreach (var memberId in party.MemberIds)

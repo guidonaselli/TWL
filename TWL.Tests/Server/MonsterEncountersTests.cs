@@ -33,7 +33,7 @@ public class MonsterEncountersTests
         _mockSkillCatalog = new Mock<ISkillCatalog>();
         _mockStatusEngine = new Mock<IStatusEngine>();
 
-        _mockCombatManager = new Mock<CombatManager>(_mockCombatResolver.Object, _mockRandom.Object, _mockSkillCatalog.Object, _mockStatusEngine.Object);
+        _mockCombatManager = new Mock<CombatManager>(_mockCombatResolver.Object, _mockRandom.Object, _mockSkillCatalog.Object, _mockStatusEngine.Object, null);
     }
 
     [Fact]
@@ -68,7 +68,7 @@ public class MonsterEncountersTests
     public void StartEncounter_ShouldFail_WhenPlayerHasElementNone()
     {
         // Arrange
-        var spawnManager = new SpawnManager(_mockMonsterManager.Object, _mockCombatManager.Object, _mockRandom.Object, _mockPlayerService.Object);
+        var spawnManager = new SpawnManager(_mockMonsterManager.Object, _mockCombatManager.Object, _mockRandom.Object, _mockPlayerService.Object, new Mock<TWL.Server.Simulation.Managers.IPartyService>().Object);
         var session = new Mock<ClientSession>(); // Need a way to mock ClientSession or use a testable subclass if available.
         // ClientSession is hard to mock due to TcpClient dependency.
         // Let's create a partial mock or a fake character directly passed to a testable method if possible.
@@ -104,7 +104,7 @@ public class MonsterEncountersTests
     public void StartEncounter_ShouldSucceed_WhenParticipantsAreValid()
     {
         // Arrange
-        var spawnManager = new SpawnManager(_mockMonsterManager.Object, _mockCombatManager.Object, _mockRandom.Object, _mockPlayerService.Object);
+        var spawnManager = new SpawnManager(_mockMonsterManager.Object, _mockCombatManager.Object, _mockRandom.Object, _mockPlayerService.Object, new Mock<TWL.Server.Simulation.Managers.IPartyService>().Object);
         var testSession = new TestClientSession();
         var character = new ServerCharacter { Id = 1, Name = "TestPlayer", CharacterElement = Element.Fire };
         testSession.SetCharacter(character);
@@ -128,7 +128,7 @@ public class MonsterEncountersTests
     public void StartEncounter_ShouldBeIdempotent()
     {
         // Arrange
-        var spawnManager = new SpawnManager(_mockMonsterManager.Object, _mockCombatManager.Object, _mockRandom.Object, _mockPlayerService.Object);
+        var spawnManager = new SpawnManager(_mockMonsterManager.Object, _mockCombatManager.Object, _mockRandom.Object, _mockPlayerService.Object, new Mock<TWL.Server.Simulation.Managers.IPartyService>().Object);
         var testSession = new TestClientSession();
         var character = new ServerCharacter { Id = 1, Name = "TestPlayer", CharacterElement = Element.Fire };
         testSession.SetCharacter(character);
@@ -168,3 +168,4 @@ public class MonsterEncountersTests
         }
     }
 }
+

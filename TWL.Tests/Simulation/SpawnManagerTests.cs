@@ -55,11 +55,11 @@ public class SpawnManagerTests
         File.WriteAllText(configFile, JsonSerializer.Serialize(config));
 
         var mockMonsters = new Mock<MonsterManager>();
-        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat = new Mock<CombatManager>(null, null, null, null, null);
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
-        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService, new Mock<IPartyService>().Object);
 
         // Act
         manager.Load(tempDir);
@@ -73,11 +73,11 @@ public class SpawnManagerTests
     {
         // Arrange
         var mockMonsters = new Mock<MonsterManager>();
-        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat = new Mock<CombatManager>(null, null, null, null, null);
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
-        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService, new Mock<IPartyService>().Object);
 
         var player = new ServerCharacter { Id = 1, CharacterElement = Element.Earth };
         var session = new TestClientSession(player);
@@ -100,14 +100,14 @@ public class SpawnManagerTests
         mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
             { MonsterId = 1, Name = "TestMob", BaseHp = 10, Element = Element.Earth });
 
-        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat = new Mock<CombatManager>(null, null, null, null, null);
         mockCombat.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()))
             .Verifiable();
 
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
-        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService, new Mock<IPartyService>().Object);
 
         // Inject Config via file
         var config = new ZoneSpawnConfig
@@ -150,12 +150,12 @@ public class SpawnManagerTests
         mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
             { MonsterId = 1, Name = "TestMob", BaseHp = 10, Element = Element.Earth });
 
-        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat = new Mock<CombatManager>(null, null, null, null, null);
 
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
-        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService, new Mock<IPartyService>().Object);
 
         var config = new ZoneSpawnConfig
         {
@@ -196,7 +196,7 @@ public class SpawnManagerTests
         mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
             { MonsterId = 1, Name = "TestMob", BaseHp = 10, Element = Element.Earth });
 
-        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat = new Mock<CombatManager>(null, null, null, null, null);
         mockCombat.Setup(c => c.GetCombatant(It.IsAny<int>()))
             .Returns(new ServerCharacter()); // Simulate existing combatant
 
@@ -205,7 +205,7 @@ public class SpawnManagerTests
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
-        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService, new Mock<IPartyService>().Object);
 
         var config = new ZoneSpawnConfig
         {
@@ -251,7 +251,7 @@ public class SpawnManagerTests
         List<ServerCombatant> participants1 = null;
         List<ServerCombatant> participants2 = null;
 
-        var mockCombat1 = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat1 = new Mock<CombatManager>(null, null, null, null, null);
         mockCombat1.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()))
             .Callback<int, IEnumerable<ServerCombatant>, int>((id, parts, seed) =>
             {
@@ -259,7 +259,7 @@ public class SpawnManagerTests
                 participants1 = parts.ToList();
             });
 
-        var mockCombat2 = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat2 = new Mock<CombatManager>(null, null, null, null, null);
         mockCombat2.Setup(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()))
              .Callback<int, IEnumerable<ServerCombatant>, int>((id, parts, seed) =>
              {
@@ -276,8 +276,8 @@ public class SpawnManagerTests
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
 
-        var manager1 = new SpawnManager(mockMonsters.Object, mockCombat1.Object, rng1, playerService);
-        var manager2 = new SpawnManager(mockMonsters.Object, mockCombat2.Object, rng2, playerService);
+        var manager1 = new SpawnManager(mockMonsters.Object, mockCombat1.Object, rng1, playerService, new Mock<IPartyService>().Object);
+        var manager2 = new SpawnManager(mockMonsters.Object, mockCombat2.Object, rng2, playerService, new Mock<IPartyService>().Object);
 
         // Config
         var config = new ZoneSpawnConfig
@@ -326,7 +326,7 @@ public class SpawnManagerTests
     {
         // Arrange
         var mockMonsters = new Mock<MonsterManager>();
-        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat = new Mock<CombatManager>(null, null, null, null, null);
         var existingId = 999;
 
         mockCombat.Setup(c => c.GetCombatant(It.IsAny<int>()))
@@ -340,7 +340,7 @@ public class SpawnManagerTests
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
-        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService, new Mock<IPartyService>().Object);
 
         var player = new ServerCharacter { Id = 1, Name = "TestPlayer", CharacterElement = Element.Earth };
         var session = new TestClientSession(player);
@@ -361,11 +361,11 @@ public class SpawnManagerTests
     {
         // Arrange
         var mockMonsters = new Mock<MonsterManager>();
-        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat = new Mock<CombatManager>(null, null, null, null, null);
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
-        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService, new Mock<IPartyService>().Object);
 
         var player = new ServerCharacter { Id = 1, CharacterElement = Element.None };
         var session = new TestClientSession(player);
@@ -393,11 +393,11 @@ public class SpawnManagerTests
             Behavior = new BehaviorProfile { PatrolSpeed = 0 } // Static mob
         });
 
-        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat = new Mock<CombatManager>(null, null, null, null, null);
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
-        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService, new Mock<IPartyService>().Object);
 
         // Force spawn via config
         var config = new ZoneSpawnConfig
@@ -450,11 +450,11 @@ public class SpawnManagerTests
             new() { MonsterId = 2, FamilyId = 20, EncounterWeight = 10, Name = "FamMob2", BaseHp = 10, Element = Element.Earth }
         });
 
-        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat = new Mock<CombatManager>(null, null, null, null, null);
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
-        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService, new Mock<IPartyService>().Object);
 
         var config = new ZoneSpawnConfig
         {
@@ -493,12 +493,12 @@ public class SpawnManagerTests
         mockMonsters.Setup(m => m.GetDefinition(It.IsAny<int>())).Returns(new MonsterDefinition
             { MonsterId = 1, Name = "TestMob", BaseHp = 10, Element = Element.Earth });
 
-        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat = new Mock<CombatManager>(null, null, null, null, null);
 
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
-        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService, new Mock<IPartyService>().Object);
 
         var config = new ZoneSpawnConfig
         {
@@ -539,11 +539,11 @@ public class SpawnManagerTests
     {
         // Arrange
         var mockMonsters = new Mock<MonsterManager>();
-        var mockCombat = new Mock<CombatManager>(null, null, null, null);
+        var mockCombat = new Mock<CombatManager>(null, null, null, null, null);
         var mockRepo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         var playerService = new PlayerService(mockRepo.Object, metrics);
-        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService);
+        var manager = new SpawnManager(mockMonsters.Object, mockCombat.Object, _random, playerService, new Mock<IPartyService>().Object);
 
         var player = new ServerCharacter { Id = 1, MapId = 1001, CharacterElement = Element.Earth };
         var session = new TestClientSession(player);
@@ -562,3 +562,4 @@ public class SpawnManagerTests
         mockCombat.Verify(c => c.StartEncounter(It.IsAny<int>(), It.IsAny<IEnumerable<ServerCombatant>>(), It.IsAny<int>()), Times.Never);
     }
 }
+

@@ -50,6 +50,8 @@ public enum Opcode
     PartyKickResponse,
     PartyUpdateBroadcast,
 
+    PartyUpdateFormationRequest,
+
     PartyChatRequest,
     PartyChatBroadcast,
 

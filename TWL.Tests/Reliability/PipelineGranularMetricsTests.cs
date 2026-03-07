@@ -45,7 +45,7 @@ public class PipelineGranularMetricsTests
         var monsterManager = new MonsterManager();
         var petService = new PetService(playerService, mockPet.Object, monsterManager, combatManager, mockRandom.Object, new Moq.Mock<Microsoft.Extensions.Logging.ILogger<PetService>>().Object);
         var mockWorldTrigger = new Mock<IWorldTriggerService>();
-        var spawnManager = new SpawnManager(monsterManager, combatManager, mockRandom.Object, playerService);
+        var spawnManager = new SpawnManager(monsterManager, combatManager, mockRandom.Object, playerService, new Mock<TWL.Server.Simulation.Managers.IPartyService>().Object);
         var mockMediator = new Mock<IMediator>();
 
         // Dynamic port assignment: use port 0 to let OS assign a free port

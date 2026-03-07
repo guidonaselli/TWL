@@ -210,9 +210,10 @@ public class AutoBattleService
         }
 
         // 6. Attack
-        // Target selection: Elemental Advantage > Weakest HP
+        // Target selection: Front Row > Elemental Advantage > Weakest HP
         var target = enemies
-            .OrderByDescending(e => GetElementAdvantage(actor.CharacterElement, e.CharacterElement)) // Prefer 1.5x targets
+            .OrderBy(e => e.GridPosition.X) // Front row (0) before Mid (1) before Back (2)
+            .ThenByDescending(e => GetElementAdvantage(actor.CharacterElement, e.CharacterElement)) // Prefer 1.5x targets
             .ThenBy(e => e.Hp) // Then pick the weakest among them
             .ThenBy(e => e.Id) // Deterministic tie-break
             .First();

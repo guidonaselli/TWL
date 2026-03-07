@@ -25,6 +25,7 @@ public class SpawnManager
     private readonly ConcurrentDictionary<int, float> _playerSteps = new(); // PlayerId -> Accumulated Distance (Pixels)
     private readonly IRandomService _random;
     private readonly PlayerService _playerService;
+    private readonly IPartyService _partyService;
 
     private const float TileSize = 32.0f;
     private int _nextEncounterId = 1;
@@ -36,12 +37,13 @@ public class SpawnManager
     private const float RespawnCheckInterval = 5.0f;
 
     public SpawnManager(MonsterManager monsterManager, CombatManager combatManager, IRandomService random,
-        PlayerService playerService)
+        PlayerService playerService, IPartyService partyService)
     {
         _monsterManager = monsterManager;
         _combatManager = combatManager;
         _random = random;
         _playerService = playerService;
+        _partyService = partyService;
     }
 
     public void Load(string path)
@@ -198,16 +200,59 @@ public class SpawnManager
             return 0;
         }
 
-        // Build Participants List (including active Pet)
-        var participants = new List<ServerCombatant> { session.Character };
+        // Build Participants List (including active Pet and Party Members)
+        var participants = new List<ServerCombatant>();
+        var party = _partyService.GetPartyByMember(session.Character.Id);
 
-        var pet = session.Character.GetActivePet();
-        if (pet != null && !pet.IsDead && !pet.IsExpired)
+        if (party != null)
         {
-            participants.Add(pet);
+            // Add all party members who are on the same map
+            foreach (var memberId in party.MemberIds)
+            {
+                var pSess = _playerService.GetSession(memberId);
+                if (pSess?.Character != null && pSess.Character.MapId == session.Character.MapId)
+                {
+                    // Assign formation position
+                    if (party.Formation.MemberPositions.TryGetValue(memberId, out var playerPos))
+                    {
+                        pSess.Character.GridPosition = playerPos;
+                    }
+                    else
+                    {
+                        pSess.Character.GridPosition = new TWL.Shared.Domain.Party.GridPosition(1, participants.Count % 4);
+                    }
+                    participants.Add(pSess.Character);
+
+                    var pPet = pSess.Character.GetActivePet();
+                    if (pPet != null && !pPet.IsDead && !pPet.IsExpired)
+                    {
+                        pPet.GridPosition = new TWL.Shared.Domain.Party.GridPosition(0, pSess.Character.GridPosition.Y);
+                        participants.Add(pPet);
+                    }
+                }
+            }
+        }
+        else
+        {
+            session.Character.GridPosition = new TWL.Shared.Domain.Party.GridPosition(1, 0);
+            participants.Add(session.Character);
+
+            var pet = session.Character.GetActivePet();
+            if (pet != null && !pet.IsDead && !pet.IsExpired)
+            {
+                pet.GridPosition = new TWL.Shared.Domain.Party.GridPosition(0, 0); // Front row, same col
+                participants.Add(pet);
+            }
         }
 
-        participants.AddRange(enemies);
+        // Enemies default positions (Front row, spaced out)
+        int enemyCol = 0;
+        foreach (var p in enemies)
+        {
+            p.GridPosition = new TWL.Shared.Domain.Party.GridPosition(0, enemyCol % 4);
+            enemyCol++;
+            participants.Add(p);
+        }
 
         // Strict Validation (Element.None allowed ONLY for QuestOnly Monsters)
         foreach (var p in participants)

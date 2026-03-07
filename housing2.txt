@@ -1,0 +1,21 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  TWL.Shared -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Shared\bin\Debug\net10.0\TWL.Shared.dll
+  TWL.Server -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Server\bin\Debug\net10.0\TWL.Server.dll
+  TWL.Tests -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll
+Test run for D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+  Failed TWL.Tests.Quests.HousingQuestTests.HousingChain_Should_Progress_Correctly [49 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at TWL.Tests.Quests.HousingQuestTests.HousingChain_Should_Progress_Correctly() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\Quests\HousingQuestTests.cs:line 97
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+
+Failed!  - Failed:     1, Passed:     0, Skipped:     0, Total:     1, Duration: 57 ms - TWL.Tests.dll (net10.0)

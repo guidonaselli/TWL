@@ -56,7 +56,7 @@ public class TriggerActionTests
     public void SpawnAction_ShouldStartScriptedEncounter()
     {
         var mockPlayerService = new Mock<PlayerService>(null, null);
-        var mockSpawnManager = new Mock<SpawnManager>(null, null, null, null);
+        var mockSpawnManager = new Mock<SpawnManager>(null, null, null, null, null);
         var mockSession = new Mock<ClientSession>();
 
         mockPlayerService.Setup(s => s.GetSession(It.IsAny<int>())).Returns(mockSession.Object);

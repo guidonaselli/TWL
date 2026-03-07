@@ -31,7 +31,7 @@ public class InteractionSecurityTests
             X = 0f,
             Y = 0f
         };
-        var questComponent = new PlayerQuestComponent(character);
+        var questComponent = new PlayerQuestComponent(new ServerQuestManager()) { Character = character };
 
         var command = new InteractCommand(character, questComponent, "TestNPC");
 
@@ -63,7 +63,7 @@ public class InteractionSecurityTests
             X = 40f,
             Y = 40f
         };
-        var questComponent = new PlayerQuestComponent(character);
+        var questComponent = new PlayerQuestComponent(new ServerQuestManager()) { Character = character };
 
         var command = new InteractCommand(character, questComponent, "TestNPC");
 

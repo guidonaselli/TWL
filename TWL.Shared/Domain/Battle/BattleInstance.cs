@@ -123,8 +123,11 @@ public class BattleInstance
                         dmgVal = (int)(dmgVal * 1.5);
                     }
 
+                    float outMod = actor.GridPosition.X == 1 ? 0.8f : (actor.GridPosition.X == 2 ? 0.5f : 1.0f);
+                    float inMod = targetCombatant.GridPosition.X == 1 ? 0.8f : (targetCombatant.GridPosition.X == 2 ? 0.5f : 1.0f);
+
                     var defense = GetEffectiveStat(targetCombatant, StatType.Def);
-                    var damage = Math.Max(1, dmgVal - defense);
+                    var damage = Math.Max(1, (int)(dmgVal * outMod * inMod) - defense);
                     if (targetCombatant.IsDefending)
                     {
                         damage /= 2;
@@ -212,10 +215,7 @@ public class BattleInstance
 
         if (skill.TargetType == SkillTargetType.RowEnemies && target != null)
         {
-            // Simple logic: hit all enemies for now, or we would need row logic
-            // Assuming "Row" implies multiple targets. For simplicity in this thin slice, we hit all enemies if Row.
-            // A proper implementation would check Grid position.
-            targets.AddRange(Enemies.Where(e => e.Character.IsAlive()));
+            targets.AddRange(Enemies.Where(e => e.Character.IsAlive() && e.GridPosition.X == target.GridPosition.X));
         }
         else if (target != null)
         {
@@ -245,6 +245,12 @@ public class BattleInstance
             totalValue *= 1.5f;
         }
 
+        if (skill.Branch == SkillBranch.Physical)
+        {
+            float outMod = actor.GridPosition.X == 1 ? 0.8f : (actor.GridPosition.X == 2 ? 0.5f : 1.0f);
+            totalValue *= outMod;
+        }
+
         // Apply Effects to All Targets
         foreach (var currentTarget in targets)
         {
@@ -254,6 +260,12 @@ public class BattleInstance
                 {
                     var elemMult = GetElementalMultiplier(skill.Element, currentTarget.Character.CharacterElement);
                     var adjustedValue = totalValue * elemMult;
+
+                    if (skill.Branch == SkillBranch.Physical)
+                    {
+                        float inMod = currentTarget.GridPosition.X == 1 ? 0.8f : (currentTarget.GridPosition.X == 2 ? 0.5f : 1.0f);
+                        adjustedValue *= inMod;
+                    }
 
                     var defense = skill.Branch == SkillBranch.Magical
                         ? GetEffectiveStat(currentTarget, StatType.Mdf)

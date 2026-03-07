@@ -21,6 +21,7 @@ public interface ICombatant
 
     Element CharacterElement { get; }
     Team Team { get; }
+    TWL.Shared.Domain.Party.GridPosition GridPosition { get; }
 
     IEnumerable<StatusEffectInstance> StatusEffects { get; }
 

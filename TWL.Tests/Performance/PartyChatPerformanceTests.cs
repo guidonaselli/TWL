@@ -35,7 +35,7 @@ public class PartyChatPerformanceTests
         var playerServiceMock = new Mock<PlayerService>(null, null);
         var loggerMock = new Mock<ILogger<PartyChatService>>();
 
-        var party = new Party { PartyId = partyId, LeaderId = senderId };
+        var party = new TWL.Server.Simulation.Managers.Party { PartyId = partyId, LeaderId = senderId };
         for (int i = 1; i <= memberCount; i++)
         {
             party.MemberIds.Add(i);

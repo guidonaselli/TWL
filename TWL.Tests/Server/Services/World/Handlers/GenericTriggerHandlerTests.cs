@@ -36,9 +36,9 @@ public class GenericTriggerHandlerTests
         var random = new Mock<IRandomService>();
         var skills = new Mock<ISkillCatalog>();
         var status = new Mock<IStatusEngine>();
-        _combatManagerMock = new Mock<CombatManager>(resolver.Object, random.Object, skills.Object, status.Object);
+        _combatManagerMock = new Mock<CombatManager>(resolver.Object, random.Object, skills.Object, status.Object, null);
 
-        _spawnManagerMock = new Mock<SpawnManager>(_monsterManagerMock.Object, _combatManagerMock.Object, random.Object, _playerServiceMock.Object);
+        _spawnManagerMock = new Mock<SpawnManager>(_monsterManagerMock.Object, _combatManagerMock.Object, random.Object, _playerServiceMock.Object, new Mock<TWL.Server.Simulation.Managers.IPartyService>().Object);
 
         _instanceServiceMock = new Mock<InstanceService>(metrics);
 
@@ -195,3 +195,4 @@ public class GenericTriggerHandlerTests
         _spawnManagerMock.Verify(s => s.StartScriptedEncounter(sessionMock.Object, 999, 2), Times.Once);
     }
 }
+

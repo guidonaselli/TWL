@@ -29,14 +29,14 @@ public class SpawnManagerTests
         var status = new Mock<IStatusEngine>();
         var skills = new Mock<ISkillCatalog>();
 
-        _combatManager = new Mock<CombatManager>(resolver.Object, new Mock<IRandomService>().Object, skills.Object, status.Object);
+        _combatManager = new Mock<CombatManager>(resolver.Object, new Mock<IRandomService>().Object, skills.Object, status.Object, null);
         _random = new Mock<IRandomService>();
 
         var repo = new Mock<IPlayerRepository>();
         var metrics = new ServerMetrics();
         _playerService = new Mock<PlayerService>(repo.Object, metrics);
 
-        _spawnManager = new SpawnManager(_monsterManager.Object, _combatManager.Object, _random.Object, _playerService.Object);
+        _spawnManager = new SpawnManager(_monsterManager.Object, _combatManager.Object, _random.Object, _playerService.Object, new Mock<TWL.Server.Simulation.Managers.IPartyService>().Object);
     }
 
     [Fact]
@@ -224,3 +224,4 @@ public sealed class TestClientSession : ClientSession
         return Task.CompletedTask;
     }
 }
+

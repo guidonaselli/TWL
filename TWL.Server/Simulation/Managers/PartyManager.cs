@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using TWL.Shared.Domain.Party;
 
 namespace TWL.Server.Simulation.Managers;
 
@@ -113,6 +114,7 @@ public class PartyManager : IPartyService
                 LeaderId = inviterId,
             };
             party.MemberIds.Add(inviterId);
+            party.Formation.MemberPositions[inviterId] = new GridPosition(1, 0); // Leader defaults to Mid row, Col 0
             _parties[party.PartyId] = party;
             _playerPartyMap[inviterId] = party.PartyId;
         }
@@ -129,6 +131,18 @@ public class PartyManager : IPartyService
             {
                 party.MemberIds.Add(targetId);
                 _playerPartyMap[targetId] = party.PartyId;
+                
+                // Assign first available column for the new member
+                int assignedCol = 0;
+                for (int c = 0; c < 4; c++)
+                {
+                    if (!party.Formation.MemberPositions.Values.Any(p => p.Y == c))
+                    {
+                        assignedCol = c;
+                        break;
+                    }
+                }
+                party.Formation.MemberPositions[targetId] = new GridPosition(1, assignedCol); // Mid row, available col
             }
         }
 
@@ -189,10 +203,38 @@ public class PartyManager : IPartyService
         lock (party)
         {
             party.MemberIds.Remove(targetId);
+            party.Formation.MemberPositions.Remove(targetId);
             _playerPartyMap.TryRemove(targetId, out _);
         }
 
         return (true, "Kicked member successfully.");
+    }
+
+    public (bool Success, string Message) UpdateMemberPosition(int partyId, int characterId, int targetX, int targetY)
+    {
+        var party = GetParty(partyId);
+        if (party == null) return (false, "Party not found.");
+
+        if (!party.MemberIds.Contains(characterId))
+            return (false, "You are not in this party.");
+
+        // Validation: X must be 0-2 (Rows), Y must be 0-3 (Columns)
+        if (targetX < 0 || targetX > 2 || targetY < 0 || targetY > 3)
+            return (false, "Invalid formation position.");
+
+        lock (party)
+        {
+            // Check if position is occupied by another member
+            var occupant = party.Formation.MemberPositions.FirstOrDefault(kp => kp.Value.X == targetX && kp.Value.Y == targetY);
+            if (occupant.Key != 0 && occupant.Key != characterId)
+            {
+                return (false, "Position is already occupied by a party member.");
+            }
+
+            party.Formation.MemberPositions[characterId] = new GridPosition(targetX, targetY);
+        }
+
+        return (true, "Position updated.");
     }
 
     private class PartyInvite

@@ -1,0 +1,18 @@
+
+  Failed TWL.Tests.Combat.SkillLoadingTests.BattleInstance_ShouldUseLoadedSkill [11 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_1401", description: "Ruins Expansion Intro") [3 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_1305", description: "Hidden Ruins Riddle") [1 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_1404", description: "Ruins Expansion Return") [1 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_1306", description: "Hidden Ruins Guardian") [1 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_1307", description: "Hidden Ruins Completion") [2 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_1304", description: "Hidden Ruins Artifact") [1 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_1403", description: "Ruins Expansion Threat") [1 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_1302", description: "Hidden Ruins Core") [1 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_2401", description: "Hidden Cove Discovery") [4 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_1301", description: "Hidden Ruins Intro") [19 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_1303", description: "Hidden Ruins Depth") [1 ms]
+  Failed TWL.Tests.Localization.LocalizationArcCoverageTests.Phase3Arcs_HaveCompleteLocalization(baseKey: "QUEST_1402", description: "Ruins Expansion Mapping") [1 ms]
+  Failed TWL.Tests.Quests.HousingQuestTests.HousingChain_Should_Progress_Correctly [1 ms]
+  Failed TWL.Tests.Services.WorldSchedulerTests.Tasks_Run_In_FIFO_Order [1 s]
+  Failed TWL.Tests.Server.Services.WorldSchedulerTests.ScheduleRepeating_ExecutesRepeatedly [1 s]
+

@@ -52,7 +52,7 @@ public class EncounterTests
         var statusEngine = new StatusEngine();
 
         _combatManager = new CombatManager(resolver, _randomMock.Object, skills.Object, statusEngine);
-        _spawnManager = new SpawnManager(_monsterManager, _combatManager, _randomMock.Object, _playerService);
+        _spawnManager = new SpawnManager(_monsterManager, _combatManager, _randomMock.Object, _playerService, new Mock<TWL.Server.Simulation.Managers.IPartyService>().Object);
     }
 
     private ServerCharacter CreatePlayer(Element element = Element.Earth)

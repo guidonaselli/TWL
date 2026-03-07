@@ -2,6 +2,7 @@ namespace TWL.Shared.Domain.DTO;
 
 using System;
 using System.Collections.Generic;
+using TWL.Shared.Domain.Party;
 
 public class PartyInviteRequest
 {
@@ -63,4 +64,5 @@ public class PartyUpdateBroadcast
     public int PartyId { get; set; }
     public int LeaderId { get; set; }
     public List<PartyMemberDto> Members { get; set; } = new();
+    public TacticalFormation Formation { get; set; } = new();
 }

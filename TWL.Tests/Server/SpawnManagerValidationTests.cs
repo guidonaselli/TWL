@@ -31,7 +31,7 @@ public class SpawnManagerValidationTests
         var mockStatusEngine = new Mock<IStatusEngine>();
 
         // Mock CombatManager virtual methods
-        _mockCombatManager = new Mock<CombatManager>(mockCombatResolver.Object, new Mock<IRandomService>().Object, mockSkillCatalog.Object, mockStatusEngine.Object);
+        _mockCombatManager = new Mock<CombatManager>(mockCombatResolver.Object, new Mock<IRandomService>().Object, mockSkillCatalog.Object, mockStatusEngine.Object, null);
 
         _mockRandom = new Mock<IRandomService>();
 
@@ -39,7 +39,7 @@ public class SpawnManagerValidationTests
         var metrics = new ServerMetrics();
         _mockPlayerService = new Mock<PlayerService>(mockRepo.Object, metrics);
 
-        _spawnManager = new SpawnManager(_mockMonsterManager.Object, _mockCombatManager.Object, _mockRandom.Object, _mockPlayerService.Object);
+        _spawnManager = new SpawnManager(_mockMonsterManager.Object, _mockCombatManager.Object, _mockRandom.Object, _mockPlayerService.Object, new Mock<TWL.Server.Simulation.Managers.IPartyService>().Object);
     }
 
     [Fact]
@@ -126,3 +126,4 @@ public class TestClientSession : ClientSession
         return Task.CompletedTask;
     }
 }
+

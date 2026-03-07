@@ -38,20 +38,18 @@ public class GracefulShutdownTests
         var mockMonsterManager = new Mock<MonsterManager>();
 
         var mockCombatManager = new Mock<CombatManager>(
-            new Mock<ICombatResolver>().Object,
-            new Mock<IRandomService>().Object,
-            new Mock<ISkillCatalog>().Object,
-            new Mock<IStatusEngine>().Object,
+            new Mock<ICombatResolver>().Object, new Mock<IRandomService>().Object, new Mock<ISkillCatalog>().Object, new Mock<IStatusEngine>().Object,
             (PartyRewardDistributor)null // Pass null for PartyRewardDistributor to match the second constructor
         );
         var mockRandom = new Mock<IRandomService>();
 
-        // SpawnManager constructor: MonsterManager, CombatManager, IRandomService, PlayerService
+        // SpawnManager constructor: MonsterManager, CombatManager, IRandomService, PlayerService, IPartyService
         var mockSpawnManager = new Mock<SpawnManager>(
             mockMonsterManager.Object,
             mockCombatManager.Object,
             mockRandom.Object,
-            mockPlayerService.Object
+            mockPlayerService.Object,
+            new Mock<TWL.Server.Simulation.Managers.IPartyService>().Object
         );
 
         var mockLoggerFactory = new Mock<ILoggerFactory>();
@@ -108,3 +106,4 @@ public class GracefulShutdownTests
         Assert.True(snapshot.ShutdownDurationMs >= 0);
     }
 }
+

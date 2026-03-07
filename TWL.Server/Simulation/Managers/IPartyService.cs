@@ -2,6 +2,8 @@ using System.Collections.Generic;
 
 namespace TWL.Server.Simulation.Managers;
 
+using TWL.Shared.Domain.Party;
+
 public interface IPartyService
 {
     // Queries
@@ -15,6 +17,7 @@ public interface IPartyService
     bool DeclineInvite(int targetId, int inviterId);
     bool LeaveParty(int characterId);
     (bool Success, string Message) KickMember(int leaderId, int targetId, bool isLeaderInCombat, bool isTargetInCombat);
+    (bool Success, string Message) UpdateMemberPosition(int partyId, int characterId, int targetX, int targetY);
 }
 
 public class Party
@@ -23,4 +26,5 @@ public class Party
     public int LeaderId { get; set; }
     public List<int> MemberIds { get; set; } = new();
     public int NextLootMemberIndex { get; set; }
+    public TacticalFormation Formation { get; set; } = new();
 }

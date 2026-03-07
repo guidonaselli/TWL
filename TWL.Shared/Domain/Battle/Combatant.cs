@@ -14,6 +14,7 @@ public class Combatant : ICombatant
 
     public int BattleId { get; set; } // Unique ID within the battle
     public Character Character { get; private set; }
+    public TWL.Shared.Domain.Party.GridPosition GridPosition { get; set; }
 
     // ICombatant implementation
     public int Id => Character.Id;
