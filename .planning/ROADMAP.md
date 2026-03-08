@@ -246,7 +246,7 @@ Plans:
 **Plans**: 5 plans
 
 Plans:
-- [ ] 11-01-PLAN.md -- Create items.json with Tier 1-4 consumables, crafting materials, and quest items (Lv1-45)
+- [x] 11-01-PLAN.md -- Create items.json with Tier 1-4 consumables, crafting materials, and quest items (Lv1-45)
 - [ ] 11-02-PLAN.md -- Create items.json Tier 5-8 consumables, crafting materials, and quest items (Lv45-100)
 - [ ] 11-03-PLAN.md -- Create equipment.json with full weapon/armor/accessory sets for all 8 tiers
 - [ ] 11-04-PLAN.md -- Expand monsters.json from 15 to 80+ with 10+ families, 4 elements each, boss variants per region
