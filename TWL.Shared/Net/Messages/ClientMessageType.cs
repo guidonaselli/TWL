@@ -36,5 +36,13 @@ public enum ClientMessageType
     DeclinePartyInvite,
     LeaveParty,
     InviteToParty,
-    KickFromParty
+    KickFromParty,
+
+    // Guild
+    CreateGuild,
+    RequestGuildInvite,
+    AcceptGuildInvite,
+    DeclineGuildInvite,
+    LeaveGuild,
+    KickFromGuild
 }
