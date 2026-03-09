@@ -45,6 +45,7 @@ public class ClientSession
     private readonly MovementValidator _movementValidator;
     private readonly IPartyService _partyService;
     private readonly IPartyChatService _partyChatService;
+    private readonly IGuildService _guildService;
     private readonly SpawnManager _spawnManager;
     private readonly NetworkStream _stream;
     private readonly IWorldTriggerService _worldTriggerService;
@@ -64,7 +65,7 @@ public class ClientSession
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
         IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard,
         MovementValidator movementValidator, IPartyService partyService, IPartyChatService partyChatService,
-        RateLimiterOptions rateLimiterOptions)
+        IGuildService guildService, RateLimiterOptions rateLimiterOptions)
     {
         _client = client;
         _stream = client.GetStream();
@@ -88,6 +89,7 @@ public class ClientSession
         _movementValidator = movementValidator;
         _partyService = partyService;
         _partyChatService = partyChatService;
+        _guildService = guildService;
 
         if (_combatManager != null)
         {
@@ -342,6 +344,24 @@ public class ClientSession
                 break;
             case Opcode.PartyUpdateFormationRequest:
                 await HandlePartyUpdateFormationAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.GuildCreateRequest:
+                await HandleGuildCreateAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.GuildInviteRequest:
+                await HandleGuildInviteAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.GuildAcceptInvite:
+                await HandleGuildAcceptAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.GuildDeclineInvite:
+                await HandleGuildDeclineAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.GuildLeaveRequest:
+                await HandleGuildLeaveAsync(traceId);
+                break;
+            case Opcode.GuildKickRequest:
+                await HandleGuildKickAsync(msg.JsonPayload, traceId);
                 break;
             // etc.
         }
@@ -1152,6 +1172,178 @@ public class ClientSession
             if (memberSession != null)
             {
                 await memberSession.SendAsync(new NetMessage { Op = Opcode.PartyUpdateBroadcast, JsonPayload = json });
+            }
+        }
+    }
+
+    // ---------------------------------------------------------------------
+    // GUILD SYSTEM
+    // ---------------------------------------------------------------------
+
+    private async Task HandleGuildCreateAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        var request = JsonSerializer.Deserialize<CreateGuildRequest>(payload, _jsonOptions);
+        if (request == null) return;
+
+        if (Character.Gold < GuildManager.CreationFee)
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "Not enough gold to create a guild." }, _jsonOptions) });
+            return;
+        }
+
+        var result = _guildService.CreateGuild(UserId, Character.Name, request.GuildName);
+
+        if (result.Success)
+        {
+            Character.TryConsumeGold(GuildManager.CreationFee);
+            Character.GuildId = _guildService.GetGuildByMember(UserId)?.GuildId;
+            QuestComponent.HandleGuildAction("Create");
+            if (Character.GuildId.HasValue)
+            {
+                await BroadcastGuildUpdateAsync(Character.GuildId.Value, traceId);
+            }
+        }
+        else
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = result.Message }, _jsonOptions) });
+        }
+    }
+
+    private async Task HandleGuildInviteAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null || Character.GuildId == null) return;
+        var request = JsonSerializer.Deserialize<GuildInviteRequest>(payload, _jsonOptions);
+        if (request == null) return;
+
+        var targetSession = _playerService.GetSessionByName(request.TargetName);
+        if (targetSession == null || targetSession.Character == null)
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = $"Player {request.TargetName} not found." }, _jsonOptions) });
+            return;
+        }
+
+        var result = _guildService.InviteMember(UserId, Character.Name, targetSession.UserId, targetSession.Character.Name);
+        if (result.Success)
+        {
+            var guild = _guildService.GetGuild(Character.GuildId.Value);
+            var inviteMsg = new NetMessage
+            {
+                Op = Opcode.GuildInviteReceived,
+                JsonPayload = JsonSerializer.Serialize(new GuildInviteRequest { TargetName = Character.Name }, _jsonOptions)
+            };
+            await targetSession.SendAsync(inviteMsg);
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = $"Invited {targetSession.Character.Name} to guild." }, _jsonOptions) });
+        }
+        else
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = result.Message }, _jsonOptions) });
+        }
+    }
+
+    private async Task HandleGuildAcceptAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        var request = JsonSerializer.Deserialize<GuildAcceptRequest>(payload, _jsonOptions);
+        if (request == null) return;
+
+        var result = _guildService.AcceptInvite(UserId, request.GuildId);
+        if (result.Success)
+        {
+            Character.GuildId = request.GuildId;
+            QuestComponent.HandleGuildAction("Join");
+            await BroadcastGuildUpdateAsync(request.GuildId, traceId);
+        }
+        else
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = result.Message }, _jsonOptions) });
+        }
+    }
+
+    private async Task HandleGuildDeclineAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        var request = JsonSerializer.Deserialize<GuildDeclineRequest>(payload, _jsonOptions);
+        if (request == null) return;
+
+        var result = _guildService.DeclineInvite(UserId, request.GuildId);
+        if (result)
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "Guild invite declined." }, _jsonOptions) });
+        }
+    }
+
+    private async Task HandleGuildLeaveAsync(string traceId)
+    {
+        if (UserId <= 0 || Character == null || Character.GuildId == null) return;
+        var guildId = Character.GuildId.Value;
+
+        if (_guildService.LeaveGuild(UserId))
+        {
+            Character.GuildId = null;
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "You left the guild." }, _jsonOptions) });
+            await BroadcastGuildUpdateAsync(guildId, traceId);
+        }
+    }
+
+    private async Task HandleGuildKickAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null || Character.GuildId == null) return;
+        var request = JsonSerializer.Deserialize<GuildKickRequest>(payload, _jsonOptions);
+        if (request == null) return;
+
+        var guildId = Character.GuildId.Value;
+        var result = _guildService.KickMember(UserId, request.TargetId);
+
+        if (result.Success)
+        {
+            var targetSession = _playerService.GetSession(request.TargetId);
+            if (targetSession != null && targetSession.Character != null)
+            {
+                targetSession.Character.GuildId = null;
+                await targetSession.SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "You were kicked from the guild." }, _jsonOptions) });
+            }
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "Player kicked from guild." }, _jsonOptions) });
+            await BroadcastGuildUpdateAsync(guildId, traceId);
+        }
+        else
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = result.Message }, _jsonOptions) });
+        }
+    }
+
+    private async Task BroadcastGuildUpdateAsync(int guildId, string traceId)
+    {
+        var guild = _guildService.GetGuild(guildId);
+        if (guild == null) return; // Guild disbanded
+
+        var updateMsg = new GuildUpdateBroadcast
+        {
+            GuildId = guild.GuildId,
+            GuildName = guild.GuildName
+        };
+
+        foreach (var memberId in guild.MemberIds)
+        {
+            var session = _playerService.GetSession(memberId);
+            updateMsg.Members.Add(new GuildMemberDto
+            {
+                CharacterId = memberId,
+                Name = session?.Character?.Name ?? "Unknown",
+                Level = session?.Character?.Level ?? 1,
+                IsOnline = session != null
+            });
+        }
+
+        var json = JsonSerializer.Serialize(updateMsg, _jsonOptions);
+        var msg = new NetMessage { Op = Opcode.GuildUpdateBroadcast, JsonPayload = json };
+
+        foreach (var memberId in guild.MemberIds)
+        {
+            var session = _playerService.GetSession(memberId);
+            if (session != null)
+            {
+                await session.SendAsync(msg);
             }
         }
     }
