@@ -55,6 +55,19 @@ public enum Opcode
     PartyChatRequest,
     PartyChatBroadcast,
 
+    // Guild
+    GuildCreateRequest,
+    GuildCreateResponse,
+    GuildInviteRequest,
+    GuildInviteResponse,
+    GuildInviteReceived,
+    GuildAcceptInvite,
+    GuildDeclineInvite,
+    GuildLeaveRequest,
+    GuildKickRequest,
+    GuildKickResponse,
+    GuildUpdateBroadcast,
+
     // Status
     StatsUpdate,
 
