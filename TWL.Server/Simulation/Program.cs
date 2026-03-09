@@ -155,6 +155,7 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<MovementValidator>(),
                 sp.GetRequiredService<IPartyService>(),
                 sp.GetRequiredService<IPartyChatService>(),
+                sp.GetRequiredService<IGuildService>(),
                 sp.GetRequiredService<IOptions<RateLimiterOptions>>()
             );
         });

@@ -9,12 +9,12 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 ## Current Position
 
-Phase: 4 of 10 (Party System)
-Plan: 04-04 (Completed), Next: 05-01
+Phase: 5 of 10 (Guild System)
+Plan: 05-01 (Completed), Next: 05-02
 Status: Active
-Last activity: 2026-03-07 — Plan 04-04-PLAN.md completed: Tactical 3x4 Formation and combat row integration successfully completed.
+Last activity: 2026-03-07 — Plan 05-01-PLAN.md completed: Guild lifecycle foundation: create/invite/accept/decline/leave/kick implemented successfully.
 
-Progress: [████████▒▒] 80%
+Progress: [██▒▒▒▒▒▒▒▒] 25%
 
 ## Performance Metrics
 
