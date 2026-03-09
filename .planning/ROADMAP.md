@@ -120,7 +120,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [x] 05-01-PLAN.md -- Guild lifecycle foundation: create/invite/accept/decline/leave/kick with unique-name and creation-fee enforcement
+- [ ] 05-01-PLAN.md -- Guild lifecycle foundation: create/invite/accept/decline/leave/kick with unique-name and creation-fee enforcement
 - [ ] 05-02-PLAN.md -- Rank hierarchy and centralized permission enforcement for invite/promote/kick/withdraw actions
 - [ ] 05-03-PLAN.md -- Guild chat with offline persistence plus roster sync (rank, online status, last login) and client guild UI
 - [ ] 05-04-PLAN.md -- Guild shared storage with permission + tenure-gated withdrawals and append-only audit logging
@@ -312,4 +312,4 @@ Content phases run in parallel via JULES: 11 (Content) | 12 (Content) | 13 (Cont
 
 ---
 *Roadmap created: 2026-02-15*
-*Last updated: 2026-03-06 — Added content expansion phases 11-13 for JULES automation*
+*Last updated: 2026-03-07 — Generated execution plans for Phases 11, 12, and 13*

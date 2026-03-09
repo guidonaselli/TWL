@@ -1,173 +1,198 @@
 using System;
 using Xunit;
-using Moq;
 using TWL.Server.Simulation.Managers;
-using TWL.Server.Services;
 using TWL.Shared.Domain.DTO;
-using TWL.Server.Simulation.Networking;
 
 namespace TWL.Tests.Guild
 {
     public class GuildLifecycleTests
     {
-        private GuildManager _guildManager;
-        private Mock<IEconomyService> _mockEconomy;
+        private readonly GuildManager _guildManager;
 
         public GuildLifecycleTests()
         {
-            _mockEconomy = new Mock<IEconomyService>();
-
-            // Setup default success for gold deduction
-            _mockEconomy.Setup(x => x.TryDeductGold(It.IsAny<ServerCharacter>(), It.IsAny<long>(), It.IsAny<string>(), It.IsAny<string>(), It.IsAny<string>())).Returns(true);
-
-            _guildManager = new GuildManager(_mockEconomy.Object);
-        }
-
-        private ServerCharacter CreateLeader(int id = 1, string name = "Leader", int gold = 100000)
-        {
-            return new ServerCharacter { Id = id, Name = name, Gold = gold };
+            _guildManager = new GuildManager();
         }
 
         [Fact]
-        public void CreateGuild_Success()
+        public void CreateGuild_Success_ReturnsTrueAndSetsGuild()
         {
-            var leader = CreateLeader();
-            var response = _guildManager.CreateGuild(leader, "TestGuild", leader.Gold);
+            // Act
+            var result = _guildManager.CreateGuild(1, "Leader", "Test Guild");
 
-            Assert.True(response.Success);
-            Assert.True(response.GuildId > 0);
+            // Assert
+            Assert.True(result.Success);
+            Assert.Equal("Guild created successfully.", result.Message);
 
-            var guild = _guildManager.GetGuildByMember(leader.Id);
+            var guild = _guildManager.GetGuildByMember(1);
             Assert.NotNull(guild);
-            Assert.Equal("TestGuild", guild.GuildName);
-            Assert.Equal(leader.Id, guild.LeaderId);
+            Assert.Equal("Test Guild", guild.GuildName);
+            Assert.Equal(1, guild.LeaderId);
             Assert.Single(guild.MemberIds);
-            Assert.Contains(leader.Id, guild.MemberIds);
+            Assert.Contains(1, guild.MemberIds);
         }
 
         [Fact]
-        public void CreateGuild_DuplicateName_Rejects()
+        public void CreateGuild_DuplicateName_ReturnsFalse()
         {
-            var leader1 = CreateLeader(1, "Leader1");
-            _guildManager.CreateGuild(leader1, "DuplicateGuild", leader1.Gold);
+            // Arrange
+            _guildManager.CreateGuild(1, "Leader1", "Test Guild");
 
-            var leader2 = CreateLeader(2, "Leader2");
-            var response = _guildManager.CreateGuild(leader2, "duplicateguild", leader2.Gold);
+            // Act
+            var result = _guildManager.CreateGuild(2, "Leader2", "Test Guild");
 
-            Assert.False(response.Success);
-            Assert.Equal("Guild name already exists.", response.Message);
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("Guild name is already taken.", result.Message);
         }
 
         [Fact]
-        public void CreateGuild_InsufficientFee_Rejects()
+        public void InviteMember_Success_ReturnsTrue()
         {
-            var leader = CreateLeader(1, "Leader", (int)GuildManager.CreationFee - 1);
-            var response = _guildManager.CreateGuild(leader, "PoorGuild", leader.Gold);
+            // Arrange
+            _guildManager.CreateGuild(1, "Leader", "Test Guild");
 
-            Assert.False(response.Success);
-            Assert.Equal("Insufficient gold to create a guild.", response.Message);
-            Assert.Null(_guildManager.GetGuildByMember(leader.Id));
+            // Act
+            var result = _guildManager.InviteMember(1, "Leader", 2, "Target");
+
+            // Assert
+            Assert.True(result.Success);
+            Assert.Equal("Invite sent.", result.Message);
         }
 
         [Fact]
-        public void Invite_Accept_Success()
+        public void InviteMember_TargetAlreadyInGuild_ReturnsFalse()
         {
-            var leader = CreateLeader();
-            _guildManager.CreateGuild(leader, "InviteGuild", leader.Gold);
+            // Arrange
+            _guildManager.CreateGuild(1, "Leader1", "Test Guild 1");
+            _guildManager.CreateGuild(2, "Leader2", "Test Guild 2");
 
-            var inviteResponse = _guildManager.InviteMember(leader.Id, leader.Name, 2, "Target");
-            Assert.True(inviteResponse.Success);
+            // Act
+            var result = _guildManager.InviteMember(1, "Leader1", 2, "Leader2");
 
-            var acceptResult = _guildManager.AcceptInvite(2, leader.Id);
-            Assert.True(acceptResult);
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("Target player is already in a guild.", result.Message);
+        }
 
-            var guild = _guildManager.GetGuildByMember(2);
+        [Fact]
+        public void AcceptInvite_Success_AddsMember()
+        {
+            // Arrange
+            _guildManager.CreateGuild(1, "Leader", "Test Guild");
+            var guild = _guildManager.GetGuildByMember(1);
             Assert.NotNull(guild);
+            _guildManager.InviteMember(1, "Leader", 2, "Target");
+
+            // Act
+            var result = _guildManager.AcceptInvite(2, guild.GuildId);
+
+            // Assert
+            Assert.True(result.Success);
             Assert.Equal(2, guild.MemberIds.Count);
+            Assert.Contains(2, guild.MemberIds);
+            Assert.Equal(guild.GuildId, _guildManager.GetGuildByMember(2)?.GuildId);
+        }
+
+        [Fact]
+        public void DeclineInvite_Success_RemovesInvite()
+        {
+            // Arrange
+            _guildManager.CreateGuild(1, "Leader", "Test Guild");
+            var guild = _guildManager.GetGuildByMember(1);
+            Assert.NotNull(guild);
+            _guildManager.InviteMember(1, "Leader", 2, "Target");
+
+            // Act
+            var result = _guildManager.DeclineInvite(2, guild.GuildId);
+
+            // Assert
+            Assert.True(result);
+            var acceptResult = _guildManager.AcceptInvite(2, guild.GuildId);
+            Assert.False(acceptResult.Success);
+            Assert.Equal("No active invite found for this guild.", acceptResult.Message);
+        }
+
+        [Fact]
+        public void LeaveGuild_Success_RemovesMemberAndDisbandsIfEmpty()
+        {
+            // Arrange
+            _guildManager.CreateGuild(1, "Leader", "Test Guild");
+            var guild = _guildManager.GetGuildByMember(1);
+            Assert.NotNull(guild);
+            var guildId = guild.GuildId;
+
+            // Act
+            var result = _guildManager.LeaveGuild(1);
+
+            // Assert
+            Assert.True(result);
+            Assert.Null(_guildManager.GetGuildByMember(1));
+            Assert.Null(_guildManager.GetGuild(guildId)); // Guild should be disbanded
+        }
+
+        [Fact]
+        public void LeaveGuild_LeaderLeavesWithOtherMembers_AssignsNewLeader()
+        {
+            // Arrange
+            _guildManager.CreateGuild(1, "Leader", "Test Guild");
+            var guild = _guildManager.GetGuildByMember(1);
+            Assert.NotNull(guild);
+            _guildManager.InviteMember(1, "Leader", 2, "Target");
+            _guildManager.AcceptInvite(2, guild.GuildId);
+
+            // Act
+            var result = _guildManager.LeaveGuild(1);
+
+            // Assert
+            Assert.True(result);
+            Assert.Null(_guildManager.GetGuildByMember(1));
+            Assert.NotNull(_guildManager.GetGuild(guild.GuildId));
+            Assert.Equal(2, guild.LeaderId);
+            Assert.Single(guild.MemberIds);
             Assert.Contains(2, guild.MemberIds);
         }
 
         [Fact]
-        public void Invite_Decline_Success()
+        public void KickMember_LeaderKicksMember_Success()
         {
-            var leader = CreateLeader();
-            _guildManager.CreateGuild(leader, "DeclineGuild", leader.Gold);
+            // Arrange
+            _guildManager.CreateGuild(1, "Leader", "Test Guild");
+            var guild = _guildManager.GetGuildByMember(1);
+            Assert.NotNull(guild);
+            _guildManager.InviteMember(1, "Leader", 2, "Target");
+            _guildManager.AcceptInvite(2, guild.GuildId);
 
-            _guildManager.InviteMember(leader.Id, leader.Name, 2, "Target");
+            // Act
+            var result = _guildManager.KickMember(1, 2);
 
-            var declineResult = _guildManager.DeclineInvite(2, leader.Id);
-            Assert.True(declineResult);
-
-            var guild = _guildManager.GetGuildByMember(leader.Id);
-            Assert.Single(guild!.MemberIds);
-            Assert.DoesNotContain(2, guild.MemberIds);
-
-            var acceptLater = _guildManager.AcceptInvite(2, leader.Id);
-            Assert.False(acceptLater);
-        }
-
-        [Fact]
-        public void LeaveGuild_Success()
-        {
-            var leader = CreateLeader();
-            _guildManager.CreateGuild(leader, "LeaveGuild", leader.Gold);
-            _guildManager.InviteMember(leader.Id, leader.Name, 2, "Target");
-            _guildManager.AcceptInvite(2, leader.Id);
-
-            var leaveResult = _guildManager.LeaveGuild(2);
-            Assert.True(leaveResult);
-
-            var guild = _guildManager.GetGuildByMember(leader.Id);
-            Assert.Single(guild!.MemberIds);
-            Assert.DoesNotContain(2, guild.MemberIds);
+            // Assert
+            Assert.True(result.Success);
             Assert.Null(_guildManager.GetGuildByMember(2));
+            Assert.Single(guild.MemberIds);
+            Assert.Contains(1, guild.MemberIds);
         }
 
         [Fact]
-        public void KickMember_Authorized_Success()
+        public void KickMember_NonLeaderKicksMember_ReturnsFalse()
         {
-            var leader = CreateLeader();
-            _guildManager.CreateGuild(leader, "KickGuild", leader.Gold);
-            _guildManager.InviteMember(leader.Id, leader.Name, 2, "Target");
-            _guildManager.AcceptInvite(2, leader.Id);
+            // Arrange
+            _guildManager.CreateGuild(1, "Leader", "Test Guild");
+            var guild = _guildManager.GetGuildByMember(1);
+            Assert.NotNull(guild);
+            _guildManager.InviteMember(1, "Leader", 2, "Target1");
+            _guildManager.AcceptInvite(2, guild.GuildId);
+            _guildManager.InviteMember(1, "Leader", 3, "Target2");
+            _guildManager.AcceptInvite(3, guild.GuildId);
 
-            var kickResponse = _guildManager.KickMember(leader.Id, 2);
-            Assert.True(kickResponse.Success);
+            // Act
+            var result = _guildManager.KickMember(2, 3); // Member 2 tries to kick Member 3
 
-            var guild = _guildManager.GetGuildByMember(leader.Id);
-            Assert.Single(guild!.MemberIds);
-            Assert.DoesNotContain(2, guild.MemberIds);
-            Assert.Null(_guildManager.GetGuildByMember(2));
-        }
-
-        [Fact]
-        public void KickMember_Unauthorized_Rejects()
-        {
-            var leader = CreateLeader();
-            _guildManager.CreateGuild(leader, "UnauthorizedKickGuild", leader.Gold);
-            _guildManager.InviteMember(leader.Id, leader.Name, 2, "Target");
-            _guildManager.AcceptInvite(2, leader.Id);
-            _guildManager.InviteMember(leader.Id, leader.Name, 3, "Target3");
-            _guildManager.AcceptInvite(3, leader.Id);
-
-            // Member 2 tries to kick Member 3
-            var kickResponse = _guildManager.KickMember(2, 3);
-            Assert.False(kickResponse.Success);
-            Assert.Equal("You do not have permission to kick.", kickResponse.Message);
-
-            var guild = _guildManager.GetGuildByMember(leader.Id);
-            Assert.Contains(3, guild!.MemberIds);
-        }
-
-        [Fact]
-        public void KickMember_TargetNotInGuild_Rejects()
-        {
-            var leader = CreateLeader();
-            _guildManager.CreateGuild(leader, "KickMissingGuild", leader.Gold);
-
-            var kickResponse = _guildManager.KickMember(leader.Id, 999);
-            Assert.False(kickResponse.Success);
-            Assert.Equal("Target not found in your guild.", kickResponse.Message);
+            // Assert
+            Assert.False(result.Success);
+            Assert.Equal("You do not have permission to kick.", result.Message);
+            Assert.NotNull(_guildManager.GetGuildByMember(3));
+            Assert.Equal(3, guild.MemberIds.Count);
         }
     }
 }

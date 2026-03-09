@@ -64,6 +64,7 @@ public enum Opcode
     GuildAcceptInvite,
     GuildDeclineInvite,
     GuildLeaveRequest,
+    GuildLeaveResponse,
     GuildKickRequest,
     GuildKickResponse,
     GuildUpdateBroadcast,
