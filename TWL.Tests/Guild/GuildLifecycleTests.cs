@@ -4,6 +4,7 @@ using TWL.Server.Simulation.Managers;
 using TWL.Server.Architecture.Observability;
 using TWL.Server.Persistence;
 using Xunit;
+using System.Collections.Generic;
 
 namespace TWL.Tests.GuildTests;
 
@@ -15,7 +16,7 @@ public class GuildLifecycleTests
     public GuildLifecycleTests()
     {
         var mockRepo = new Mock<IPlayerRepository>();
-        var mockMetrics = new ServerMetrics(new Microsoft.Extensions.Logging.Abstractions.NullLogger<ServerMetrics>());
+        var mockMetrics = new ServerMetrics();
         _mockPlayerService = new Mock<PlayerService>(mockRepo.Object, mockMetrics);
         _guildManager = new GuildManager(_mockPlayerService.Object);
     }

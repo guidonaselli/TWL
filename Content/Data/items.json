@@ -1,0 +1,202 @@
+[
+  {
+    "Id": 100,
+    "Name": "Minor HP Potion",
+    "Description": "Restores a small amount of HP.",
+    "Type": "Consumable",
+    "Price": 10,
+    "MaxStack": 99,
+    "RequiredLevel": 1,
+    "Tier": 1
+  },
+  {
+    "Id": 101,
+    "Name": "Minor SP Potion",
+    "Description": "Restores a small amount of SP.",
+    "Type": "Consumable",
+    "Price": 10,
+    "MaxStack": 99,
+    "RequiredLevel": 1,
+    "Tier": 1
+  },
+  {
+    "Id": 200,
+    "Name": "Light HP Potion",
+    "Description": "Restores a light amount of HP.",
+    "Type": "Consumable",
+    "Price": 30,
+    "MaxStack": 99,
+    "RequiredLevel": 15,
+    "Tier": 2
+  },
+  {
+    "Id": 201,
+    "Name": "Light SP Potion",
+    "Description": "Restores a light amount of SP.",
+    "Type": "Consumable",
+    "Price": 30,
+    "MaxStack": 99,
+    "RequiredLevel": 15,
+    "Tier": 2
+  },
+  {
+    "Id": 300,
+    "Name": "Standard HP Potion",
+    "Description": "Restores a moderate amount of HP.",
+    "Type": "Consumable",
+    "Price": 100,
+    "MaxStack": 99,
+    "RequiredLevel": 30,
+    "Tier": 3
+  },
+  {
+    "Id": 301,
+    "Name": "Standard SP Potion",
+    "Description": "Restores a moderate amount of SP.",
+    "Type": "Consumable",
+    "Price": 100,
+    "MaxStack": 99,
+    "RequiredLevel": 30,
+    "Tier": 3
+  },
+  {
+    "Id": 400,
+    "Name": "Strong HP Potion",
+    "Description": "Restores a large amount of HP.",
+    "Type": "Consumable",
+    "Price": 300,
+    "MaxStack": 99,
+    "RequiredLevel": 45,
+    "Tier": 4
+  },
+  {
+    "Id": 401,
+    "Name": "Strong SP Potion",
+    "Description": "Restores a large amount of SP.",
+    "Type": "Consumable",
+    "Price": 300,
+    "MaxStack": 99,
+    "RequiredLevel": 45,
+    "Tier": 4
+  },
+  {
+    "Id": 1000,
+    "Name": "Copper Ore",
+    "Description": "A basic crafting material.",
+    "Type": "Material",
+    "Price": 5,
+    "MaxStack": 99,
+    "RequiredLevel": 1,
+    "Tier": 1
+  },
+  {
+    "Id": 2000,
+    "Name": "Iron Ore",
+    "Description": "A sturdy crafting material.",
+    "Type": "Material",
+    "Price": 15,
+    "MaxStack": 99,
+    "RequiredLevel": 15,
+    "Tier": 2
+  },
+  {
+    "Id": 3000,
+    "Name": "Silver Ore",
+    "Description": "A valuable crafting material.",
+    "Type": "Material",
+    "Price": 50,
+    "MaxStack": 99,
+    "RequiredLevel": 30,
+    "Tier": 3
+  },
+  {
+    "Id": 4000,
+    "Name": "Gold Ore",
+    "Description": "A highly valuable crafting material.",
+    "Type": "Material",
+    "Price": 150,
+    "MaxStack": 99,
+    "RequiredLevel": 45,
+    "Tier": 4
+  },
+  {
+    "Id": 1001,
+    "Name": "Cotton Cloth",
+    "Description": "A soft crafting material.",
+    "Type": "Material",
+    "Price": 5,
+    "MaxStack": 99,
+    "RequiredLevel": 1,
+    "Tier": 1
+  },
+  {
+    "Id": 2001,
+    "Name": "Linen Cloth",
+    "Description": "A durable crafting material.",
+    "Type": "Material",
+    "Price": 15,
+    "MaxStack": 99,
+    "RequiredLevel": 15,
+    "Tier": 2
+  },
+  {
+    "Id": 3001,
+    "Name": "Silk Cloth",
+    "Description": "A fine crafting material.",
+    "Type": "Material",
+    "Price": 50,
+    "MaxStack": 99,
+    "RequiredLevel": 30,
+    "Tier": 3
+  },
+  {
+    "Id": 4001,
+    "Name": "Magic Cloth",
+    "Description": "An enchanted crafting material.",
+    "Type": "Material",
+    "Price": 150,
+    "MaxStack": 99,
+    "RequiredLevel": 45,
+    "Tier": 4
+  },
+  {
+    "Id": 9000,
+    "Name": "Mysterious Letter",
+    "Description": "A sealed letter with unknown contents.",
+    "Type": "KeyItem",
+    "Price": 0,
+    "MaxStack": 1,
+    "RequiredLevel": 1,
+    "Tier": 1
+  },
+  {
+    "Id": 9001,
+    "Name": "Bandit Leader Insignia",
+    "Description": "Proof of defeating a bandit leader.",
+    "Type": "KeyItem",
+    "Price": 0,
+    "MaxStack": 1,
+    "RequiredLevel": 15,
+    "Tier": 2
+  },
+  {
+    "Id": 9002,
+    "Name": "Glowing Crystal",
+    "Description": "A crystal pulsating with magical energy.",
+    "Type": "KeyItem",
+    "Price": 0,
+    "MaxStack": 1,
+    "RequiredLevel": 30,
+    "Tier": 3
+  },
+  {
+    "Id": 9003,
+    "Name": "Ancient Tablet Fragment",
+    "Description": "A piece of an ancient stone tablet.",
+    "Type": "KeyItem",
+    "Price": 0,
+    "MaxStack": 1,
+    "RequiredLevel": 45,
+    "Tier": 4
+  }
+]

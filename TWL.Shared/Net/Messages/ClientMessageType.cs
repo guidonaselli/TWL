@@ -40,6 +40,7 @@ public enum ClientMessageType
 
     // Guild
     CreateGuild,
+    InviteToGuild,
     RequestGuildInvite,
     AcceptGuildInvite,
     DeclineGuildInvite,

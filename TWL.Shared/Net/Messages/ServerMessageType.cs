@@ -40,10 +40,15 @@ public enum ServerMessageType
     PlayerPartyMemberUpdated,
 
     // Guild
+    PlayerGuildCreated,
     PlayerGuildUpdated,
     PlayerGuildInvite,
+    PlayerGuildJoined,
     PlayerGuildAccepted,
     PlayerGuildDeclined,
     PlayerGuildLeft,
-    PlayerGuildKicked
+    PlayerGuildKicked,
+    PlayerGuildMemberAdded,
+    PlayerGuildMemberRemoved,
+    PlayerGuildMemberUpdated
 }

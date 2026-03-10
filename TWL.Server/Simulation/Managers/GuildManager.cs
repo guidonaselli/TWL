@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using TWL.Server.Persistence.Services;
 
@@ -39,6 +40,13 @@ public class GuildManager : IGuildService
             return GetGuild(guildId);
         }
         return null;
+    }
+
+    public bool IsAuthorizedToKick(int guildId, int characterId)
+    {
+        var guild = GetGuild(guildId);
+        // For now, only the leader can kick. Will be expanded in Rank system.
+        return guild != null && guild.LeaderId == characterId;
     }
 
     public (bool Success, string Message, int GuildId) CreateGuild(int leaderId, string leaderName, string guildName)
@@ -103,7 +111,7 @@ public class GuildManager : IGuildService
         // Clear expired invites
         if (_pendingInvites.TryGetValue(targetId, out var existingInvite))
         {
-            if (existingInvite.ExpiresAt > DateTime.UtcNow)
+            if (existingInvite.IsActive())
                 return (false, "Player already has a pending invite.");
             _pendingInvites.TryRemove(targetId, out _);
         }
@@ -128,7 +136,7 @@ public class GuildManager : IGuildService
 
         _pendingInvites.TryRemove(targetId, out _);
 
-        if (invite.ExpiresAt < DateTime.UtcNow)
+        if (!invite.IsActive())
             return (false, "Invite has expired.");
 
         if (_playerGuildMap.ContainsKey(targetId))

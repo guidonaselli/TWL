@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 
 namespace TWL.Shared.Domain.DTO;
@@ -35,11 +36,13 @@ public class GuildInviteReceived
 public class GuildAcceptInviteRequest
 {
     public int InviterId { get; set; }
+    public int GuildId { get; set; }
 }
 
 public class GuildDeclineInviteRequest
 {
     public int InviterId { get; set; }
+    public int GuildId { get; set; }
 }
 
 public class GuildLeaveRequest
@@ -61,4 +64,13 @@ public class GuildUpdateBroadcast
 {
     public int GuildId { get; set; }
     public string GuildName { get; set; } = string.Empty;
+    public List<GuildMemberDto> Members { get; set; } = new();
+}
+
+public class GuildMemberDto
+{
+    public int CharacterId { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public int Level { get; set; }
+    public bool IsOnline { get; set; }
 }

@@ -129,7 +129,7 @@ public class ClientSession
         }
     }
 
-    public ServerCharacter? Character { get; protected set; }
+    public virtual ServerCharacter? Character { get; protected set; }
 
     private void OnCombatantDeath(ServerCombatant victim)
     {
@@ -345,8 +345,6 @@ public class ClientSession
             case Opcode.PartyUpdateFormationRequest:
                 await HandlePartyUpdateFormationAsync(msg.JsonPayload, traceId);
                 break;
-
-            // Guild
             case Opcode.GuildCreateRequest:
                 await HandleGuildCreateAsync(msg.JsonPayload, traceId);
                 break;
@@ -365,8 +363,6 @@ public class ClientSession
             case Opcode.GuildKickRequest:
                 await HandleGuildKickAsync(msg.JsonPayload, traceId);
                 break;
-
-            // etc.
         }
 
         swResolve.Stop();
