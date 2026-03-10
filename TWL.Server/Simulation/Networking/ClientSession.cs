@@ -1323,7 +1323,13 @@ public class ClientSession
             GuildName = guild.GuildName
         };
 
-        foreach (var memberId in guild.MemberIds)
+        List<int> currentMembers;
+        lock (guild.MemberIds)
+        {
+             currentMembers = guild.MemberIds.ToList();
+        }
+
+        foreach (var memberId in currentMembers)
         {
             var session = _playerService.GetSession(memberId);
             updateMsg.Members.Add(new GuildMemberDto
@@ -1338,7 +1344,7 @@ public class ClientSession
         var json = JsonSerializer.Serialize(updateMsg, _jsonOptions);
         var msg = new NetMessage { Op = Opcode.GuildUpdateBroadcast, JsonPayload = json };
 
-        foreach (var memberId in guild.MemberIds)
+        foreach (var memberId in currentMembers)
         {
             var session = _playerService.GetSession(memberId);
             if (session != null)
