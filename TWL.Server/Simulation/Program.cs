@@ -107,6 +107,7 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<CombatManager>();
         svcs.AddSingleton<IPartyService, PartyManager>();
         svcs.AddSingleton<IPartyChatService, PartyChatService>();
+        svcs.AddSingleton<IGuildService, GuildManager>();
 
         svcs.AddSingleton<IPlayerRepository>(sp =>
             new DbPlayerRepository(

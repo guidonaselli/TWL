@@ -51,7 +51,7 @@ public class PipelineGranularMetricsTests
         // Dynamic port assignment: use port 0 to let OS assign a free port
         var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
             playerService, mockEconomy.Object, metrics, petService, new Mock<IMediator>().Object, mockWorldTrigger.Object, spawnManager,
-            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager(), new TWL.Server.Simulation.Managers.PartyChatService(new PartyManager(), playerService, new Microsoft.Extensions.Logging.Abstractions.NullLogger<TWL.Server.Simulation.Managers.PartyChatService>()), new GuildManager(), Options.Create(new RateLimiterOptions()));
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager(), new TWL.Server.Simulation.Managers.PartyChatService(new PartyManager(), playerService, new Microsoft.Extensions.Logging.Abstractions.NullLogger<TWL.Server.Simulation.Managers.PartyChatService>()), new GuildManager(playerService), Options.Create(new RateLimiterOptions()));
 
         server.Start();
         var port = server.Port;

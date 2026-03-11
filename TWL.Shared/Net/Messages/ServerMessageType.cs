@@ -38,9 +38,14 @@ public enum ServerMessageType
     PlayerPartyMemberAdded,
     PlayerPartyMemberRemoved,
     PlayerPartyMemberUpdated,
+
+    // Guild
     PlayerGuildCreated,
+    PlayerGuildUpdated,
     PlayerGuildInvite,
     PlayerGuildJoined,
+    PlayerGuildAccepted,
+    PlayerGuildDeclined,
     PlayerGuildLeft,
     PlayerGuildKicked,
     PlayerGuildMemberAdded,

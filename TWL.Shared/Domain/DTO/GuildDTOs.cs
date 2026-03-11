@@ -8,18 +8,40 @@ public class CreateGuildRequest
     public string GuildName { get; set; } = string.Empty;
 }
 
-public class GuildInviteRequest
+public class CreateGuildResponse
 {
-    public string TargetName { get; set; } = string.Empty;
-}
-
-public class GuildAcceptRequest
-{
+    public bool Success { get; set; }
+    public string Message { get; set; } = string.Empty;
     public int GuildId { get; set; }
 }
 
-public class GuildDeclineRequest
+public class GuildInviteRequest
 {
+    public string TargetCharacterName { get; set; } = string.Empty;
+}
+
+public class GuildInviteResponse
+{
+    public bool Success { get; set; }
+    public string Message { get; set; } = string.Empty;
+}
+
+public class GuildInviteReceived
+{
+    public int InviterId { get; set; }
+    public string InviterName { get; set; } = string.Empty;
+    public string GuildName { get; set; } = string.Empty;
+}
+
+public class GuildAcceptInviteRequest
+{
+    public int InviterId { get; set; }
+    public int GuildId { get; set; }
+}
+
+public class GuildDeclineInviteRequest
+{
+    public int InviterId { get; set; }
     public int GuildId { get; set; }
 }
 
@@ -29,7 +51,13 @@ public class GuildLeaveRequest
 
 public class GuildKickRequest
 {
-    public int TargetId { get; set; }
+    public int TargetMemberId { get; set; }
+}
+
+public class GuildKickResponse
+{
+    public bool Success { get; set; }
+    public string Message { get; set; } = string.Empty;
 }
 
 public class GuildUpdateBroadcast
@@ -45,5 +73,4 @@ public class GuildMemberDto
     public string Name { get; set; } = string.Empty;
     public int Level { get; set; }
     public bool IsOnline { get; set; }
-    // More fields for ranks to be added in next plan
 }
