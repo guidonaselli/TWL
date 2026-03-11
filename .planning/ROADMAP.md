@@ -16,7 +16,7 @@ Decimal phases appear between their surrounding integers in numeric order.
 - [x] **Phase 2: Security Hardening** - Anti-cheat, anti-replay, and transaction safety
 - [ ] **Phase 3: Content Quality** - Fix broken quest chains and localization
 - [ ] **Phase 4: Party System** - Invite, join, XP/loot sharing, tactical formation
-- [ ] **Phase 5: Guild System** - Create, join, chat, permissions, shared storage
+- [x] **Phase 5: Guild System** - Create, join, chat, permissions, shared storage
 - [ ] **Phase 6: Rebirth System** - Character and pet prestige progression
 - [ ] **Phase 7: P2P Market System** - Item listings, search, purchases, price history
 - [ ] **Phase 8: Compound System** - Equipment enhancement with success/failure mechanics
@@ -43,6 +43,19 @@ Decimal phases appear between their surrounding integers in numeric order.
 Plans:
 - [x] 01-01-PLAN.md -- EF Core infrastructure: GameDbContext, entity configurations, NpgsqlDataSource pooling, initial migration
 - [x] 01-02-PLAN.md -- DbPlayerRepository (hybrid EF Core + Dapper), DI swap, FilePlayerRepository removal
+
+### Phase 1.1: [INSERTED] Guild Persistence
+**Goal**: Migrate in-memory guild state to PostgreSQL for production-grade reliability
+**Depends on**: Phase 1, Phase 5
+**Requirements**: GLD-INFRA
+**Success Criteria**:
+  1. Guild rosters, ranks, join dates, and storage persist in PostgreSQL
+  2. Server restarts do not lose guild membership or shared bank items
+  3. `DbGuildRepository` implemented using EF Core + Dapper hybrid pattern
+**Plans**: 1 plan
+
+Plans:
+- [ ] 01-03-PLAN.md -- PostgreSQL migration for GuildManager and GuildStorageService
 
 ### Phase 2: Security Hardening
 *Status: Completed*
@@ -123,7 +136,7 @@ Plans:
 - [x] 05-01-PLAN.md -- Guild lifecycle foundation: create/invite/accept/decline/leave/kick with unique-name and creation-fee enforcement
 - [x] 05-02-PLAN.md -- Rank hierarchy and centralized permission enforcement for invite/promote/kick/withdraw actions
 - [x] 05-03-PLAN.md -- Guild chat with offline persistence plus roster sync (rank, online status, last login) and client guild UI
-- [ ] 05-04-PLAN.md -- Guild shared storage with permission + tenure-gated withdrawals and append-only audit logging
+- [x] 05-04-PLAN.md -- Guild shared storage with permission + tenure-gated withdrawals and append-only audit logging
 
 ### Phase 6: Rebirth System
 **Goal**: Characters and pets can rebirth to gain permanent stat bonuses and prestige, creating long-term progression loop
@@ -297,10 +310,11 @@ Content phases run in parallel via JULES: 11 (Content) | 12 (Content) | 13 (Cont
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Infrastructure Foundation | 2/2 | ✅ Complete | 2026-02-19 |
+| 1.1 [INSERTED] Guild Persistence | 0/1 | ⏳ Pending | - |
 | 2. Security Hardening | 3/3 | ✅ Complete | 2026-02-22 |
 | 3. Content Quality | 3/3 | ✅ Complete | 2026-02-23 |
 | 4. Party System | 4/4 | ✅ Complete | 2026-03-07 |
-| 5. Guild System | 0/4 | Not started | - |
+| 5. Guild System | 4/4 | ✅ Complete | 2026-03-10 |
 | 6. Rebirth System | 0/4 | Not started | - |
 | 7. P2P Market System | 0/5 | Not started | - |
 | 8. Compound System | 0/5 | Not started | - |

@@ -51,11 +51,13 @@ public class PipelineGranularMetricsTests
         var guildManager = new GuildManager();
         var guildChatService = new GuildChatService(guildManager, playerService);
         var guildRosterService = new GuildRosterService(guildManager, playerService);
+        var guildAuditLogService = new GuildAuditLogService();
+        var guildStorageService = new GuildStorageService(guildManager, guildAuditLogService, new Microsoft.Extensions.Logging.Abstractions.NullLogger<GuildStorageService>());
 
         // Dynamic port assignment: use port 0 to let OS assign a free port
         var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
             playerService, mockEconomy.Object, metrics, petService, new Mock<IMediator>().Object, mockWorldTrigger.Object, spawnManager,
-            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager(), new TWL.Server.Simulation.Managers.PartyChatService(new PartyManager(), playerService, new Microsoft.Extensions.Logging.Abstractions.NullLogger<TWL.Server.Simulation.Managers.PartyChatService>()), guildManager, guildChatService, guildRosterService, Options.Create(new RateLimiterOptions()));
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager(), new TWL.Server.Simulation.Managers.PartyChatService(new PartyManager(), playerService, new Microsoft.Extensions.Logging.Abstractions.NullLogger<TWL.Server.Simulation.Managers.PartyChatService>()), guildManager, guildChatService, guildRosterService, guildStorageService, Options.Create(new RateLimiterOptions()));
 
         server.Start();
         var port = server.Port;
