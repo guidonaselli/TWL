@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using TWL.Shared.Domain.Guilds;
 
 namespace TWL.Server.Simulation.Managers;
 
@@ -16,12 +17,6 @@ public interface IGuildService
     bool DeclineInvite(int targetId, int inviterId);
     bool LeaveGuild(int characterId);
     (bool Success, string Message) KickMember(int kickerId, int targetId);
-}
-
-public class Guild
-{
-    public int GuildId { get; set; }
-    public string GuildName { get; set; } = string.Empty;
-    public int LeaderId { get; set; }
-    public List<int> MemberIds { get; set; } = new();
+    (bool Success, string Message) PromoteMember(int actorId, int targetId);
+    (bool Success, string Message) DemoteMember(int actorId, int targetId);
 }

@@ -49,6 +49,7 @@ public class NetworkClient
     }
 
     public bool IsConnected => _tcp?.Connected ?? false;
+    public GameClientManager GameClientManager => _gameClientManager;
 
     public void Connect()
     {
@@ -143,6 +144,22 @@ public class NetworkClient
                 {
                     _gameClientManager.Party.AddMessage(chat);
                 }
+                break;
+            case Opcode.GuildRosterSync:
+                var rosterSync = JsonSerializer.Deserialize<GuildRosterSyncEvent>(serverMsg.JsonPayload, _jsonOptions);
+                if (rosterSync != null) _gameClientManager.HandleGuildRosterSync(rosterSync);
+                break;
+            case Opcode.GuildRosterUpdate:
+                var rosterUpdate = JsonSerializer.Deserialize<GuildRosterUpdateEvent>(serverMsg.JsonPayload, _jsonOptions);
+                if (rosterUpdate != null) _gameClientManager.HandleGuildRosterUpdate(rosterUpdate);
+                break;
+            case Opcode.GuildChatBroadcast:
+                var guildChat = JsonSerializer.Deserialize<GuildChatEvent>(serverMsg.JsonPayload, _jsonOptions);
+                if (guildChat != null) _gameClientManager.HandleGuildChatEvent(guildChat);
+                break;
+            case Opcode.GuildChatBacklog:
+                var chatBacklog = JsonSerializer.Deserialize<GuildChatBacklog>(serverMsg.JsonPayload, _jsonOptions);
+                if (chatBacklog != null) _gameClientManager.HandleGuildChatBacklog(chatBacklog);
                 break;
         }
 

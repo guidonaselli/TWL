@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using TWL.Shared.Domain.Guilds;
 
 namespace TWL.Shared.Domain.DTO;
 
@@ -45,5 +46,11 @@ public class GuildMemberDto
     public string Name { get; set; } = string.Empty;
     public int Level { get; set; }
     public bool IsOnline { get; set; }
-    // More fields for ranks to be added in next plan
+    public GuildRank Rank { get; set; }
+    public DateTime LastLoginUtc { get; set; }
+}
+
+public class GuildSetRankRequestDto
+{
+    public int TargetMemberId { get; set; }
 }

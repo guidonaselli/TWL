@@ -31,6 +31,9 @@ public class NetworkServer : INetworkServer
     private readonly IPartyService _partyService;
     private readonly IPartyChatService _partyChatService;
     private readonly IGuildService _guildService;
+    private readonly GuildChatService _guildChatService;
+    private readonly GuildRosterService _guildRosterService;
+    private readonly GuildStorageService _guildStorageService;
     private readonly IOptions<RateLimiterOptions> _rateLimiterOptions;
     private CancellationTokenSource _cts;
     private bool _running;
@@ -42,7 +45,7 @@ public class NetworkServer : INetworkServer
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
         IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard,
         MovementValidator movementValidator, IPartyService partyService, IPartyChatService partyChatService,
-        IGuildService guildService, IOptions<RateLimiterOptions> rateLimiterOptions)
+        IGuildService guildService, GuildChatService guildChatService, GuildRosterService guildRosterService, GuildStorageService guildStorageService, IOptions<RateLimiterOptions> rateLimiterOptions)
     {
         _listener = new TcpListener(IPAddress.Any, port);
         _dbService = dbService;
@@ -62,6 +65,9 @@ public class NetworkServer : INetworkServer
         _partyService = partyService;
         _partyChatService = partyChatService;
         _guildService = guildService;
+        _guildChatService = guildChatService;
+        _guildRosterService = guildRosterService;
+        _guildStorageService = guildStorageService;
         _rateLimiterOptions = rateLimiterOptions;
     }
 
@@ -89,11 +95,11 @@ public class NetworkServer : INetworkServer
             {
                 var client = await _listener.AcceptTcpClientAsync(token);
                 Console.WriteLine("New client connected!");
-                var session = new ClientSession(client, _dbService, _petManager, _questManager, _combatManager,
-                    _interactionManager, _playerService, _economyManager, _metrics, _petService, _mediator,
+                var session = new ClientSession(client, _dbService, _petManager, _questManager,
+                    _combatManager, _interactionManager, _playerService, _economyManager, _metrics, _petService, _mediator,
                     _worldTriggerService,
                     _spawnManager, _replayGuard, _movementValidator, _partyService, _partyChatService,
-                    _guildService, _rateLimiterOptions.Value);
+                    _guildService, _guildChatService, _guildRosterService, _guildStorageService, _rateLimiterOptions.Value);
                 session.StartHandling();
             }
         }

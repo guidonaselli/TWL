@@ -16,6 +16,7 @@ using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Constants;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.DTO;
+using TWL.Shared.Domain.Guilds;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Net.Network;
 using TWL.Shared.Net.Payloads;
@@ -46,6 +47,9 @@ public class ClientSession
     private readonly IPartyService _partyService;
     private readonly IPartyChatService _partyChatService;
     private readonly IGuildService _guildService;
+    private readonly GuildChatService _guildChatService;
+    private readonly GuildRosterService _guildRosterService;
+    private readonly GuildStorageService _guildStorageService;
     private readonly SpawnManager _spawnManager;
     private readonly NetworkStream _stream;
     private readonly IWorldTriggerService _worldTriggerService;
@@ -65,7 +69,7 @@ public class ClientSession
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
         IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard,
         MovementValidator movementValidator, IPartyService partyService, IPartyChatService partyChatService,
-        IGuildService guildService, RateLimiterOptions rateLimiterOptions)
+        IGuildService guildService, GuildChatService guildChatService, GuildRosterService guildRosterService, GuildStorageService guildStorageService, RateLimiterOptions rateLimiterOptions)
     {
         _client = client;
         _stream = client.GetStream();
@@ -90,6 +94,9 @@ public class ClientSession
         _partyService = partyService;
         _partyChatService = partyChatService;
         _guildService = guildService;
+        _guildChatService = guildChatService;
+        _guildRosterService = guildRosterService;
+        _guildStorageService = guildStorageService;
 
         if (_combatManager != null)
         {
@@ -231,6 +238,12 @@ public class ClientSession
 
             if (UserId > 0)
             {
+                var guild = _guildService.GetGuildByMember(UserId);
+                if (guild != null)
+                {
+                    _guildRosterService.BroadcastMemberPresenceUpdate(UserId, false);
+                }
+
                 await _playerService.SaveSessionAsync(this);
                 _playerService.UnregisterSession(UserId);
                 _replayGuard.RemoveSession(UserId);
@@ -362,6 +375,24 @@ public class ClientSession
                 break;
             case Opcode.GuildKickRequest:
                 await HandleGuildKickAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.GuildPromoteRequest:
+                await HandleGuildPromoteAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.GuildDemoteRequest:
+                await HandleGuildDemoteAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.GuildChatRequest:
+                await HandleGuildChatAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.GuildStorageViewRequest:
+                await HandleGuildStorageViewAsync(traceId);
+                break;
+            case Opcode.GuildStorageDepositRequest:
+                await HandleGuildStorageDepositAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.GuildStorageWithdrawRequest:
+                await HandleGuildStorageWithdrawAsync(msg.JsonPayload, traceId);
                 break;
             // etc.
         }
@@ -871,6 +902,15 @@ public class ClientSession
             {
                 await BroadcastPartyUpdateAsync(party);
             }
+
+            // Sync Guild State
+            var guild = _guildService.GetGuildByMember(UserId);
+            if (guild != null)
+            {
+                _guildRosterService.SendFullRoster(UserId);
+                _guildChatService.SendBacklog(UserId);
+                _guildRosterService.BroadcastMemberPresenceUpdate(UserId, true);
+            }
         }
     }
 
@@ -1312,6 +1352,46 @@ public class ClientSession
         }
     }
 
+    private async Task HandleGuildPromoteAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null || Character.GuildId == null) return;
+        var request = JsonSerializer.Deserialize<GuildSetRankRequestDto>(payload, _jsonOptions);
+        if (request == null) return;
+
+        var guildId = Character.GuildId.Value;
+        var result = _guildService.PromoteMember(UserId, request.TargetMemberId);
+
+        if (result.Success)
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "Player promoted." }, _jsonOptions) });
+            await BroadcastGuildUpdateAsync(guildId, traceId);
+        }
+        else
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = result.Message }, _jsonOptions) });
+        }
+    }
+
+    private async Task HandleGuildDemoteAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null || Character.GuildId == null) return;
+        var request = JsonSerializer.Deserialize<GuildSetRankRequestDto>(payload, _jsonOptions);
+        if (request == null) return;
+
+        var guildId = Character.GuildId.Value;
+        var result = _guildService.DemoteMember(UserId, request.TargetMemberId);
+
+        if (result.Success)
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "Player demoted." }, _jsonOptions) });
+            await BroadcastGuildUpdateAsync(guildId, traceId);
+        }
+        else
+        {
+            await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = result.Message }, _jsonOptions) });
+        }
+    }
+
     private async Task BroadcastGuildUpdateAsync(int guildId, string traceId)
     {
         var guild = _guildService.GetGuild(guildId);
@@ -1320,7 +1400,7 @@ public class ClientSession
         var updateMsg = new GuildUpdateBroadcast
         {
             GuildId = guild.GuildId,
-            GuildName = guild.GuildName
+            GuildName = guild.Name
         };
 
         List<int> currentMembers;
@@ -1337,7 +1417,8 @@ public class ClientSession
                 CharacterId = memberId,
                 Name = session?.Character?.Name ?? "Unknown",
                 Level = session?.Character?.Level ?? 1,
-                IsOnline = session != null
+                IsOnline = session != null,
+                Rank = guild.MemberRanks.GetValueOrDefault(memberId, GuildRank.Recruit)
             });
         }
 
@@ -1352,6 +1433,81 @@ public class ClientSession
                 await session.SendAsync(msg);
             }
         }
+    }
+
+    private async Task HandleGuildChatAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null || Character.GuildId == null) return;
+        var request = JsonSerializer.Deserialize<GuildChatSendRequest>(payload, _jsonOptions);
+        if (request == null || string.IsNullOrWhiteSpace(request.Message)) return;
+
+        _guildChatService.BroadcastMessage(UserId, Character.Name, request.Message);
+        await Task.CompletedTask;
+    }
+
+    private async Task HandleGuildStorageViewAsync(string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+
+        var viewEvent = _guildStorageService.ViewStorage(Character);
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.GuildStorageViewEvent,
+            JsonPayload = JsonSerializer.Serialize(viewEvent, _jsonOptions)
+        });
+    }
+
+    private async Task HandleGuildStorageDepositAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+
+        try
+        {
+            var req = JsonSerializer.Deserialize<GuildStorageDepositRequest>(payload, _jsonOptions);
+            if (req == null) return;
+
+            // In a real scenario, we'd deduct from character inventory here.
+            // But since GuildStorageService just adds to the dict, we do it directly:
+            var result = _guildStorageService.DepositItem(Character, req.ItemId, req.Quantity, req.OperationId);
+            
+            await SendAsync(new NetMessage
+            {
+                Op = Opcode.GuildStorageOperationResultEvent,
+                JsonPayload = JsonSerializer.Serialize(result, _jsonOptions)
+            });
+
+            if (result.Success)
+            {
+                // Optionally broadcast update to all guild members viewing storage
+            }
+        }
+        catch (JsonException) { }
+    }
+
+    private async Task HandleGuildStorageWithdrawAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+
+        try
+        {
+            var req = JsonSerializer.Deserialize<GuildStorageWithdrawRequest>(payload, _jsonOptions);
+            if (req == null) return;
+
+            var result = _guildStorageService.WithdrawItem(Character, req.ItemId, req.Quantity, req.OperationId);
+
+            await SendAsync(new NetMessage
+            {
+                Op = Opcode.GuildStorageOperationResultEvent,
+                JsonPayload = JsonSerializer.Serialize(result, _jsonOptions)
+            });
+
+            if (result.Success)
+            {
+                // In a real scenario, we'd add the item to the character's inventory
+                // Optionally broadcast update to all guild members viewing storage
+            }
+        }
+        catch (JsonException) { }
     }
 
     public virtual async Task DisconnectAsync(string reason)

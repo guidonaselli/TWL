@@ -198,6 +198,7 @@ public class ServerCharacter : ServerCombatant
     // Security / Anti-Fraud
     public long DailyGiftAccumulator { get; private set; }
     public DateTime LastGiftResetDate { get; private set; }
+    public DateTime LastLoginUtc { get; set; }
 
     // World Position
     private int _mapId;
@@ -984,6 +985,7 @@ public class ServerCharacter : ServerCombatant
             PremiumCurrency = _premiumCurrency,
             DailyGiftAccumulator = DailyGiftAccumulator,
             LastGiftResetDate = LastGiftResetDate,
+            LastLoginUtc = LastLoginUtc,
             ActivePetInstanceId = ActivePetInstanceId,
             InstanceLockouts = new Dictionary<string, DateTime>(InstanceLockouts),
             MapId = MapId,
@@ -1100,6 +1102,7 @@ public class ServerCharacter : ServerCombatant
         _premiumCurrency = data.PremiumCurrency;
         DailyGiftAccumulator = data.DailyGiftAccumulator;
         LastGiftResetDate = data.LastGiftResetDate;
+        LastLoginUtc = data.LastLoginUtc;
         ActivePetInstanceId = data.ActivePetInstanceId;
         InstanceLockouts.Clear();
         if (data.InstanceLockouts != null)

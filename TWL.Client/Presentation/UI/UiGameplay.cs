@@ -23,6 +23,7 @@ public class UiGameplay : UiManager
 {
     private readonly UiInventoryWindow _invWindow;
     private readonly UiPartyWindow _partyWindow;
+    private readonly UiGuildWindow _guildWindow;
     private readonly PlayerCharacter _player;
 
     // recursos HUD
@@ -42,6 +43,9 @@ public class UiGameplay : UiManager
 
         _partyWindow = new UiPartyWindow(partyState, networkClient);
         AddWindow(_partyWindow);
+
+        _guildWindow = new UiGuildWindow(networkClient.GameClientManager, networkClient);
+        AddWindow(_guildWindow);
     }
 
     public bool IsInventoryVisible => _invWindow.Visible;
@@ -73,6 +77,7 @@ public class UiGameplay : UiManager
 
         _invWindow.LoadContent(content);
         _partyWindow.LoadContent(content, gd);
+        _guildWindow.LoadContent(content, gd);
     }
 
     public void ToggleInventory()

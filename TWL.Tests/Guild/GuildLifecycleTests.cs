@@ -26,7 +26,7 @@ namespace TWL.Tests.Guild
 
             var guild = _guildManager.GetGuildByMember(1);
             Assert.NotNull(guild);
-            Assert.Equal("Test Guild", guild.GuildName);
+            Assert.Equal("Test Guild", guild.Name);
             Assert.Equal(1, guild.LeaderId);
             Assert.Single(guild.MemberIds);
             Assert.Contains(1, guild.MemberIds);
@@ -190,7 +190,7 @@ namespace TWL.Tests.Guild
 
             // Assert
             Assert.False(result.Success);
-            Assert.Equal("You do not have permission to kick.", result.Message);
+            Assert.Equal("You do not have permission to kick this member.", result.Message);
             Assert.NotNull(_guildManager.GetGuildByMember(3));
             Assert.Equal(3, guild.MemberIds.Count);
         }

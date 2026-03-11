@@ -42,5 +42,8 @@ public enum ClientMessageType
     AcceptGuildInvite,
     DeclineGuildInvite,
     LeaveGuild,
-    KickFromGuild
+    KickFromGuild,
+    PromoteGuildMember,
+    DemoteGuildMember,
+    SendGuildChatMessage
 }

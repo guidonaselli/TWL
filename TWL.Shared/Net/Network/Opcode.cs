@@ -67,7 +67,23 @@ public enum Opcode
     GuildLeaveResponse,
     GuildKickRequest,
     GuildKickResponse,
+    GuildPromoteRequest,
+    GuildPromoteResponse,
+    GuildDemoteRequest,
+    GuildDemoteResponse,
     GuildUpdateBroadcast,
+    GuildChatRequest,
+    GuildChatBroadcast,
+    GuildChatBacklog,
+    GuildRosterSync,
+    GuildRosterUpdate,
+
+    GuildStorageViewRequest,
+    GuildStorageViewEvent,
+    GuildStorageDepositRequest,
+    GuildStorageWithdrawRequest,
+    GuildStorageUpdateEvent,
+    GuildStorageOperationResultEvent,
 
     // Status
     StatsUpdate,

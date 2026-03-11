@@ -120,9 +120,9 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 05-01-PLAN.md -- Guild lifecycle foundation: create/invite/accept/decline/leave/kick with unique-name and creation-fee enforcement
-- [ ] 05-02-PLAN.md -- Rank hierarchy and centralized permission enforcement for invite/promote/kick/withdraw actions
-- [ ] 05-03-PLAN.md -- Guild chat with offline persistence plus roster sync (rank, online status, last login) and client guild UI
+- [x] 05-01-PLAN.md -- Guild lifecycle foundation: create/invite/accept/decline/leave/kick with unique-name and creation-fee enforcement
+- [x] 05-02-PLAN.md -- Rank hierarchy and centralized permission enforcement for invite/promote/kick/withdraw actions
+- [x] 05-03-PLAN.md -- Guild chat with offline persistence plus roster sync (rank, online status, last login) and client guild UI
 - [ ] 05-04-PLAN.md -- Guild shared storage with permission + tenure-gated withdrawals and append-only audit logging
 
 ### Phase 6: Rebirth System
