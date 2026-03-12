@@ -1,5 +1,7 @@
 using System;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
 using System.Collections.Concurrent;
 using Microsoft.Extensions.Logging;
 using TWL.Shared.Domain.Models;
@@ -12,26 +14,30 @@ namespace TWL.Server.Simulation.Managers;
 public class GuildStorageService
 {
     private readonly GuildManager _guildManager;
+    private readonly IGuildRepository _guildRepository;
     private readonly ILogger<GuildStorageService> _logger;
     private readonly GuildAuditLogService _auditLogService;
 
     // Default tenure to 14 days
     public TimeSpan WithdrawalTenureGate { get; set; } = TimeSpan.FromDays(14);
 
-    public GuildStorageService(GuildManager guildManager, GuildAuditLogService auditLogService, ILogger<GuildStorageService> logger)
+    public GuildStorageService(GuildManager guildManager, IGuildRepository guildRepository, GuildAuditLogService auditLogService, ILogger<GuildStorageService> logger)
     {
         _guildManager = guildManager;
+        _guildRepository = guildRepository;
         _auditLogService = auditLogService;
         _logger = logger;
     }
 
-    public GuildStorageViewEvent ViewStorage(ServerCharacter character)
+    public async Task<GuildStorageViewEvent> ViewStorage(ServerCharacter character)
     {
         var guild = _guildManager.GetGuildByMember(character.Id);
         if (guild == null)
             return new GuildStorageViewEvent();
 
-        lock (guild)
+        var semaphore = _guildLocks.GetOrAdd(guild.GuildId, _ => new SemaphoreSlim(1, 1));
+        await semaphore.WaitAsync();
+        try
         {
             return new GuildStorageViewEvent
             {
@@ -42,9 +48,13 @@ public class GuildStorageService
                 }).ToList()
             };
         }
+        finally
+        {
+            semaphore.Release();
+        }
     }
 
-    public GuildStorageOperationResultEvent DepositItem(ServerCharacter character, int itemId, int quantity, string operationId)
+    public async Task<GuildStorageOperationResultEvent> DepositItem(ServerCharacter character, int itemId, int quantity, string operationId)
     {
         if (!string.IsNullOrEmpty(operationId) && _processedOperations.TryGetValue(operationId, out var existingResult))
         {
@@ -62,7 +72,9 @@ public class GuildStorageService
             return RecordResult(operationId, new GuildStorageOperationResultEvent { OperationId = operationId, Success = false, Message = "You are not in a guild." });
         }
 
-        lock (guild)
+        var semaphore = _guildLocks.GetOrAdd(guild.GuildId, _ => new SemaphoreSlim(1, 1));
+        await semaphore.WaitAsync();
+        try
         {
             // Atomically remove from player inventory first
             // We assume Unbound for simplicity in guild storage, or we'd need DTO to specify policy
@@ -77,14 +89,20 @@ public class GuildStorageService
             else
                 guild.StorageItems[itemId] = quantity;
 
+            await _guildRepository.SaveAsync(guild);
             return RecordResult(operationId, new GuildStorageOperationResultEvent { OperationId = operationId, Success = true });
+        }
+        finally
+        {
+            semaphore.Release();
         }
     }
 
     // Track processed operations for idempotency
     private readonly ConcurrentDictionary<string, GuildStorageOperationResultEvent> _processedOperations = new();
+    private readonly ConcurrentDictionary<int, SemaphoreSlim> _guildLocks = new();
 
-    public GuildStorageOperationResultEvent WithdrawItem(ServerCharacter character, int itemId, int quantity, string operationId)
+    public async Task<GuildStorageOperationResultEvent> WithdrawItem(ServerCharacter character, int itemId, int quantity, string operationId)
     {
         if (!string.IsNullOrEmpty(operationId) && _processedOperations.TryGetValue(operationId, out var existingResult))
         {
@@ -117,7 +135,9 @@ public class GuildStorageService
             }
         }
 
-        lock (guild)
+        var semaphore = _guildLocks.GetOrAdd(guild.GuildId, _ => new SemaphoreSlim(1, 1));
+        await semaphore.WaitAsync();
+        try
         {
             if (!guild.StorageItems.TryGetValue(itemId, out int currentQuantity) || currentQuantity < quantity)
             {
@@ -143,8 +163,13 @@ public class GuildStorageService
             character.AddItem(itemId, quantity, BindPolicy.Unbound);
 
             _auditLogService.AppendWithdrawalEntry(guild.GuildId, character.Id, itemId, quantity, true, "Success");
+            await _guildRepository.SaveAsync(guild);
 
             return RecordResult(operationId, new GuildStorageOperationResultEvent { OperationId = operationId, Success = true });
+        }
+        finally
+        {
+            semaphore.Release();
         }
     }
 

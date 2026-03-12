@@ -1,3 +1,5 @@
+using System.Threading.Tasks;
+using Moq;
 using System;
 using Xunit;
 using TWL.Server.Simulation.Managers;
@@ -11,14 +13,14 @@ namespace TWL.Tests.Guild
 
         public GuildLifecycleTests()
         {
-            _guildManager = new GuildManager();
+            _guildManager = new GuildManager(new Mock<TWL.Shared.Domain.Guilds.IGuildRepository>().Object);
         }
 
         [Fact]
-        public void CreateGuild_Success_ReturnsTrueAndSetsGuild()
+        public async Task CreateGuild_Success_ReturnsTrueAndSetsGuild()
         {
             // Act
-            var result = _guildManager.CreateGuild(1, "Leader", "Test Guild");
+            var result = await _guildManager.CreateGuild(1, "Leader", "Test Guild");
 
             // Assert
             Assert.True(result.Success);
@@ -33,13 +35,13 @@ namespace TWL.Tests.Guild
         }
 
         [Fact]
-        public void CreateGuild_DuplicateName_ReturnsFalse()
+        public async Task CreateGuild_DuplicateName_ReturnsFalse()
         {
             // Arrange
             _guildManager.CreateGuild(1, "Leader1", "Test Guild");
 
             // Act
-            var result = _guildManager.CreateGuild(2, "Leader2", "Test Guild");
+            var result = await _guildManager.CreateGuild(2, "Leader2", "Test Guild");
 
             // Assert
             Assert.False(result.Success);
@@ -47,7 +49,7 @@ namespace TWL.Tests.Guild
         }
 
         [Fact]
-        public void InviteMember_Success_ReturnsTrue()
+        public async Task InviteMember_Success_ReturnsTrue()
         {
             // Arrange
             _guildManager.CreateGuild(1, "Leader", "Test Guild");
@@ -61,7 +63,7 @@ namespace TWL.Tests.Guild
         }
 
         [Fact]
-        public void InviteMember_TargetAlreadyInGuild_ReturnsFalse()
+        public async Task InviteMember_TargetAlreadyInGuild_ReturnsFalse()
         {
             // Arrange
             _guildManager.CreateGuild(1, "Leader1", "Test Guild 1");
@@ -76,7 +78,7 @@ namespace TWL.Tests.Guild
         }
 
         [Fact]
-        public void AcceptInvite_Success_AddsMember()
+        public async Task AcceptInvite_Success_AddsMember()
         {
             // Arrange
             _guildManager.CreateGuild(1, "Leader", "Test Guild");
@@ -85,7 +87,7 @@ namespace TWL.Tests.Guild
             _guildManager.InviteMember(1, "Leader", 2, "Target");
 
             // Act
-            var result = _guildManager.AcceptInvite(2, guild.GuildId);
+            var result = await _guildManager.AcceptInvite(2, guild.GuildId);
 
             // Assert
             Assert.True(result.Success);
@@ -95,7 +97,7 @@ namespace TWL.Tests.Guild
         }
 
         [Fact]
-        public void DeclineInvite_Success_RemovesInvite()
+        public async Task DeclineInvite_Success_RemovesInvite()
         {
             // Arrange
             _guildManager.CreateGuild(1, "Leader", "Test Guild");
@@ -108,13 +110,13 @@ namespace TWL.Tests.Guild
 
             // Assert
             Assert.True(result);
-            var acceptResult = _guildManager.AcceptInvite(2, guild.GuildId);
+            var acceptResult = await _guildManager.AcceptInvite(2, guild.GuildId);
             Assert.False(acceptResult.Success);
             Assert.Equal("No active invite found for this guild.", acceptResult.Message);
         }
 
         [Fact]
-        public void LeaveGuild_Success_RemovesMemberAndDisbandsIfEmpty()
+        public async Task LeaveGuild_Success_RemovesMemberAndDisbandsIfEmpty()
         {
             // Arrange
             _guildManager.CreateGuild(1, "Leader", "Test Guild");
@@ -123,7 +125,7 @@ namespace TWL.Tests.Guild
             var guildId = guild.GuildId;
 
             // Act
-            var result = _guildManager.LeaveGuild(1);
+            var result = await _guildManager.LeaveGuild(1);
 
             // Assert
             Assert.True(result);
@@ -132,7 +134,7 @@ namespace TWL.Tests.Guild
         }
 
         [Fact]
-        public void LeaveGuild_LeaderLeavesWithOtherMembers_AssignsNewLeader()
+        public async Task LeaveGuild_LeaderLeavesWithOtherMembers_AssignsNewLeader()
         {
             // Arrange
             _guildManager.CreateGuild(1, "Leader", "Test Guild");
@@ -142,7 +144,7 @@ namespace TWL.Tests.Guild
             _guildManager.AcceptInvite(2, guild.GuildId);
 
             // Act
-            var result = _guildManager.LeaveGuild(1);
+            var result = await _guildManager.LeaveGuild(1);
 
             // Assert
             Assert.True(result);
@@ -154,7 +156,7 @@ namespace TWL.Tests.Guild
         }
 
         [Fact]
-        public void KickMember_LeaderKicksMember_Success()
+        public async Task KickMember_LeaderKicksMember_Success()
         {
             // Arrange
             _guildManager.CreateGuild(1, "Leader", "Test Guild");
@@ -164,7 +166,7 @@ namespace TWL.Tests.Guild
             _guildManager.AcceptInvite(2, guild.GuildId);
 
             // Act
-            var result = _guildManager.KickMember(1, 2);
+            var result = await _guildManager.KickMember(1, 2);
 
             // Assert
             Assert.True(result.Success);
@@ -174,7 +176,7 @@ namespace TWL.Tests.Guild
         }
 
         [Fact]
-        public void KickMember_NonLeaderKicksMember_ReturnsFalse()
+        public async Task KickMember_NonLeaderKicksMember_ReturnsFalse()
         {
             // Arrange
             _guildManager.CreateGuild(1, "Leader", "Test Guild");
@@ -186,7 +188,7 @@ namespace TWL.Tests.Guild
             _guildManager.AcceptInvite(3, guild.GuildId);
 
             // Act
-            var result = _guildManager.KickMember(2, 3); // Member 2 tries to kick Member 3
+            var result = await _guildManager.KickMember(2, 3); // Member 2 tries to kick Member 3
 
             // Assert
             Assert.False(result.Success);

@@ -238,6 +238,7 @@ Which phases cover which requirements. Updated during roadmap creation.
 - [DISCOVERED] **REB-09**: Character Rebirth gated by multi-round gauntlet with specific AI SP-pool wipe checks. (2026-03-06, Base Mechanics Doc)
 - [DISCOVERED] **REB-10**: Post-Rebirth Job unlocked via primary stat comparison check (e.g., STR vs INT); grants Job Artifact. (2026-03-06, Base Mechanics Doc)
 - [DISCOVERED] **CMP-07**: Alchemy Rank calculation (EqLvl/2) + Bases. Success probability depends on skill tier + Book modifiers. (2026-03-06, Base Mechanics Doc)
+- [DISCOVERED] **GLD-INFRA**: Migrate in-memory guild state (rosters, storage) to PostgreSQL for production-grade reliability across server restarts. (2026-03-11, Infrastructure Gap)
 
 ---
 
