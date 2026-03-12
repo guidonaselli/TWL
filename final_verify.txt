@@ -1,0 +1,22 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  TWL.Shared -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Shared\bin\Debug\net10.0\TWL.Shared.dll
+  TWL.Server -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Server\bin\Debug\net10.0\TWL.Server.dll
+  TWL.Tests -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll
+Test run for D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.17]     TWL.Tests.JungleQuestTests.VerifyJungleQuestsExistAndAreValid [SKIP]
+  Skipped TWL.Tests.JungleQuestTests.VerifyJungleQuestsExistAndAreValid [1 ms]
+[xUnit.net 00:00:00.21]     TWL.Tests.QuestFlagsTests.RepeatableQuest_ShouldAllowRestart [SKIP]
+  Skipped TWL.Tests.QuestFlagsTests.RepeatableQuest_ShouldAllowRestart [1 ms]
+[xUnit.net 00:00:00.24]     TWL.Tests.QuestFlagsTests.FlagFlow_ShouldWork [SKIP]
+[xUnit.net 00:00:00.24]     TWL.Tests.QuestFlagsTests.StartQuest_ShouldFail_WhenMissingRequiredFlag [SKIP]
+  Skipped TWL.Tests.QuestFlagsTests.FlagFlow_ShouldWork [1 ms]
+  Skipped TWL.Tests.QuestFlagsTests.StartQuest_ShouldFail_WhenMissingRequiredFlag [1 ms]
+[xUnit.net 00:00:03.26]     TWL.Tests.Economy.EconomyDoubleSpendTests.Should_Prevent_Double_Spend_When_Ledger_Is_Pending_But_Char_Processed [SKIP]
+  Skipped TWL.Tests.Economy.EconomyDoubleSpendTests.Should_Prevent_Double_Spend_When_Ledger_Is_Pending_But_Char_Processed [1 ms]
+
+Passed!  - Failed:     0, Passed:   678, Skipped:     5, Total:   683, Duration: 1 m 24 s - TWL.Tests.dll (net10.0)

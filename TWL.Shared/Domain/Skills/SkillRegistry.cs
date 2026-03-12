@@ -1,3 +1,4 @@
+using System.Linq;
 using System.Text.Json;
 using System.Text.Json.Serialization;
 using TWL.Shared.Domain.Characters;
@@ -17,11 +18,20 @@ public class SkillRegistry : ISkillCatalog
 
     public Skill? GetSkillById(int id)
     {
-        _skills.TryGetValue(id, out var skill);
-        return skill;
+        lock (_lock)
+        {
+            _skills.TryGetValue(id, out var skill);
+            return skill;
+        }
     }
 
-    public IEnumerable<int> GetAllSkillIds() => _skills.Keys;
+    public IEnumerable<int> GetAllSkillIds()
+    {
+        lock (_lock)
+        {
+            return _skills.Keys.ToList(); // Return a copy to be safe
+        }
+    }
 
     public void LoadSkills(string jsonContent)
     {

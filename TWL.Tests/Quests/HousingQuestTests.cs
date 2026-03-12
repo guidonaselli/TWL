@@ -94,6 +94,6 @@ public class HousingQuestTests
 
         // Verify Final Rewards
         Assert.Contains("HOUSING_UNLOCKED", _playerQuests.Flags);
-        Assert.True(_character.HasItem(800, 1));
+        Assert.True(_character.HasItem(7373, 1));
     }
 }
