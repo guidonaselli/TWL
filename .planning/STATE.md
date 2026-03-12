@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 ## Session Handoff (Ralph Loop)
 
-**Last session:** 2026-03-11 (Phase 1.1 Completed)
-**last_completed_task:** 01-03-PLAN.md (PostgreSQL migration for GuildManager and GuildStorageService)
-**Stopped at:** Completed Phase 1.1 Guild Persistence infrastructure update.
-**Resume file:** .planning/phases/06-rebirth-system/06-01-PLAN.md (Next Phase)
+**Last session:** 2026-03-11 (Phase 6, Plan 06-01)
+**last_completed_task:** Plan 06-01 (Character rebirth transactional foundation)
+**Stopped at:** Completed character rebirth state mutations, diminishing returns formula, and persistent history with security fixes.
+**Resume file:** .planning/phases/06-rebirth-system/06-02-PLAN.md (Next Plan)
 
 ---
-*Next step: Start Phase 6 (Rebirth System)*
+*Next step: Start 06-02 (Character rebirth eligibility gates and build retention)*

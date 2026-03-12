@@ -88,6 +88,10 @@ public enum Opcode
     // Status
     StatsUpdate,
 
+    // Rebirth
+    CharacterRebirthRequest,
+    CharacterRebirthResponse,
+
     // System
     Disconnect,
     SystemMessage

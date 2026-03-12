@@ -154,7 +154,7 @@ Plans:
 **Plans**: 4 plans
 
 Plans:
-- [ ] 06-01-PLAN.md -- Character rebirth transactional foundation with 20/15/10/5 formula, atomic mutation, and auditable history records
+- [x] 06-01-PLAN.md -- Character rebirth transactional foundation with 20/15/10/5 formula, atomic mutation, and auditable history records
 - [ ] 06-02-PLAN.md -- Character rebirth eligibility gates, build retention, and client prestige display in character info/nameplate/HUD
 - [ ] 06-03-PLAN.md -- Pet rebirth policy completion with quest-vs-capturable differentiation, 10/8/5 diminishing bonuses, and evolution/action routing
 - [ ] 06-04-PLAN.md -- End-to-end and rollback/audit regression suite validating character + pet rebirth integration and quest-gating continuity

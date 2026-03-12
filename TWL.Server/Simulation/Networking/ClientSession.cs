@@ -50,6 +50,7 @@ public class ClientSession
     private readonly GuildChatService _guildChatService;
     private readonly GuildRosterService _guildRosterService;
     private readonly GuildStorageService _guildStorageService;
+    private readonly IRebirthService _rebirthService;
     private readonly SpawnManager _spawnManager;
     private readonly NetworkStream _stream;
     private readonly IWorldTriggerService _worldTriggerService;
@@ -69,7 +70,7 @@ public class ClientSession
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
         IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard,
         MovementValidator movementValidator, IPartyService partyService, IPartyChatService partyChatService,
-        IGuildService guildService, GuildChatService guildChatService, GuildRosterService guildRosterService, GuildStorageService guildStorageService, RateLimiterOptions rateLimiterOptions)
+        IGuildService guildService, GuildChatService guildChatService, GuildRosterService guildRosterService, GuildStorageService guildStorageService, IRebirthService rebirthService, RateLimiterOptions rateLimiterOptions)
     {
         _client = client;
         _stream = client.GetStream();
@@ -97,6 +98,7 @@ public class ClientSession
         _guildChatService = guildChatService;
         _guildRosterService = guildRosterService;
         _guildStorageService = guildStorageService;
+        _rebirthService = rebirthService;
 
         if (_combatManager != null)
         {
@@ -393,6 +395,9 @@ public class ClientSession
                 break;
             case Opcode.GuildStorageWithdrawRequest:
                 await HandleGuildStorageWithdrawAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.CharacterRebirthRequest:
+                await HandleCharacterRebirthAsync(msg.JsonPayload, traceId);
                 break;
             // etc.
         }
@@ -1508,6 +1513,41 @@ public class ClientSession
             }
         }
         catch (JsonException) { }
+    }
+
+    private async Task HandleCharacterRebirthAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+
+        try
+        {
+            var request = JsonSerializer.Deserialize<CharacterRebirthRequest>(payload, _jsonOptions);
+            if (request == null) return;
+
+            var (success, message, statPointsGained) = _rebirthService.TryRebirthCharacter(Character, request.OperationId);
+
+            var response = new CharacterRebirthResponse
+            {
+                Success = success,
+                Message = message,
+                NewRebirthLevel = Character.RebirthLevel,
+                StatPointsGained = statPointsGained
+            };
+
+            await SendAsync(new NetMessage
+            {
+                Op = Opcode.CharacterRebirthResponse,
+                JsonPayload = JsonSerializer.Serialize(response, _jsonOptions)
+            });
+
+            if (success)
+            {
+                Character.IsDirty = true;
+            }
+        }
+        catch (JsonException)
+        {
+        }
     }
 
     public virtual async Task DisconnectAsync(string reason)

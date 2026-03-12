@@ -482,6 +482,7 @@ fabric.properties
 # Claude Code / AI Assistants
 # ============================================
 .claude
+.codex/
 .cursor
 .aider*
 .github/copilot
@@ -490,6 +491,7 @@ fabric.properties
 _agents/
 _agent/
 .gemini/
+.opencode/
 AGENTS.md
 CLAUDE.md
 

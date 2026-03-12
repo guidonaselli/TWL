@@ -57,16 +57,17 @@ public class PipelineMetricsTests
         var spawnManager = new SpawnManager(monsterManager, combatManager, mockRandom.Object, playerService, new Mock<TWL.Server.Simulation.Managers.IPartyService>().Object);
         var mockMediator = new Mock<IMediator>();
 
-        var guildManager = new GuildManager(new Mock<TWL.Shared.Domain.Guilds.IGuildRepository>().Object);
+        var guildRepository = new Mock<TWL.Shared.Domain.Guilds.IGuildRepository>();
+        var guildManager = new GuildManager(guildRepository.Object);
         var guildChatService = new GuildChatService(guildManager, playerService);
         var guildRosterService = new GuildRosterService(guildManager, playerService);
         var guildAuditLogService = new GuildAuditLogService();
-        var guildStorageService = new GuildStorageService(guildManager, new Mock<TWL.Shared.Domain.Guilds.IGuildRepository>().Object, guildAuditLogService, NullLogger<GuildStorageService>.Instance);
+        var guildStorageService = new GuildStorageService(guildManager, guildRepository.Object, guildAuditLogService, NullLogger<GuildStorageService>.Instance);
 
         // Dynamic port assignment: use port 0 to let OS assign a free port
         var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
             playerService, mockEconomy.Object, metrics, petService, new Mock<IMediator>().Object, mockWorldTrigger.Object, spawnManager,
-            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager(), new TWL.Server.Simulation.Managers.PartyChatService(new PartyManager(), playerService, new Microsoft.Extensions.Logging.Abstractions.NullLogger<TWL.Server.Simulation.Managers.PartyChatService>()), guildManager, guildChatService, guildRosterService, guildStorageService, Options.Create(new RateLimiterOptions()));
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager(), new TWL.Server.Simulation.Managers.PartyChatService(new PartyManager(), playerService, new Microsoft.Extensions.Logging.Abstractions.NullLogger<TWL.Server.Simulation.Managers.PartyChatService>()), guildManager, guildChatService, guildRosterService, guildStorageService, new RebirthManager(new Microsoft.Extensions.Logging.Abstractions.NullLogger<RebirthManager>()), Options.Create(new RateLimiterOptions()));
 
         server.Start();
         var port = server.Port;

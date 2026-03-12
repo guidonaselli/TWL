@@ -45,6 +45,8 @@ public class ServerCharacterData
     public List<SkillMasteryData> Skills { get; set; } = new();
     public string ActivePetInstanceId { get; set; }
     public Dictionary<string, DateTime> InstanceLockouts { get; set; } = new();
+
+    public List<TWL.Shared.Domain.DTO.RebirthHistoryRecord> RebirthHistory { get; set; } = new();
 }
 
 public class SkillMasteryData

@@ -114,6 +114,7 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<GuildRosterService>();
         svcs.AddSingleton<GuildAuditLogService>();
         svcs.AddSingleton<GuildStorageService>();
+        svcs.AddSingleton<IRebirthService, RebirthManager>();
 
         svcs.AddSingleton<IPlayerRepository>(sp =>
             new DbPlayerRepository(
@@ -172,6 +173,7 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<GuildChatService>(),
                 sp.GetRequiredService<GuildRosterService>(),
                 sp.GetRequiredService<GuildStorageService>(),
+                sp.GetRequiredService<IRebirthService>(),
                 sp.GetRequiredService<IOptions<RateLimiterOptions>>()
             );
         });
