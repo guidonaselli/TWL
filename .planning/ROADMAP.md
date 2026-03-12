@@ -55,7 +55,7 @@ Plans:
 **Plans**: 1 plan
 
 Plans:
-- [ ] 01-03-PLAN.md -- PostgreSQL migration for GuildManager and GuildStorageService
+- [x] 01-03-PLAN.md -- PostgreSQL migration for GuildManager and GuildStorageService
 
 ### Phase 2: Security Hardening
 *Status: Completed*

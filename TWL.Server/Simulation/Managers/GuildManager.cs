@@ -1,12 +1,14 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using System.Threading.Tasks;
 using TWL.Shared.Domain.Guilds;
 
 namespace TWL.Server.Simulation.Managers;
 
 public class GuildManager : IGuildService
 {
+    private readonly IGuildRepository _guildRepository;
     private readonly ConcurrentDictionary<int, Guild> _guilds = new();
     // CharacterId -> GuildId
     private readonly ConcurrentDictionary<int, int> _playerGuildMap = new();
@@ -17,6 +19,29 @@ public class GuildManager : IGuildService
     private readonly GuildPermissionService _permissionService = new();
 
     private int _nextGuildId = 1;
+
+    public GuildManager(IGuildRepository guildRepository)
+    {
+        _guildRepository = guildRepository;
+    }
+
+    public async Task InitializeAsync()
+    {
+        var guilds = await _guildRepository.LoadAllAsync();
+        foreach (var guild in guilds)
+        {
+            _guilds[guild.GuildId] = guild;
+            if (guild.GuildId >= _nextGuildId)
+            {
+                _nextGuildId = guild.GuildId + 1;
+            }
+
+            foreach (var memberId in guild.MemberIds)
+            {
+                _playerGuildMap[memberId] = guild.GuildId;
+            }
+        }
+    }
 
     public const int MaxGuildSize = 50;
     public const int CreationFee = 5000;
@@ -54,7 +79,7 @@ public class GuildManager : IGuildService
         return _permissionService.HasPermission(rank, permission);
     }
 
-    public (bool Success, string Message) CreateGuild(int leaderId, string leaderName, string guildName)
+    public async Task<(bool Success, string Message)> CreateGuild(int leaderId, string leaderName, string guildName)
     {
         if (string.IsNullOrWhiteSpace(guildName))
         {
@@ -86,6 +111,7 @@ public class GuildManager : IGuildService
         if (_guilds.TryAdd(guildId, guild))
         {
             _playerGuildMap.TryAdd(leaderId, guildId);
+            await _guildRepository.SaveAsync(guild);
             return (true, "Guild created successfully.");
         }
 
@@ -142,7 +168,7 @@ public class GuildManager : IGuildService
         return (true, "Invite sent.");
     }
 
-    public (bool Success, string Message) AcceptInvite(int targetId, int guildId)
+    public async Task<(bool Success, string Message)> AcceptInvite(int targetId, int guildId)
     {
         if (!_pendingInvites.TryGetValue(targetId, out var invite) || invite.GuildId != guildId)
         {
@@ -185,6 +211,8 @@ public class GuildManager : IGuildService
 
         _playerGuildMap[targetId] = guildId;
 
+        await _guildRepository.SaveAsync(guild);
+
         return (true, "Joined the guild.");
     }
 
@@ -197,13 +225,14 @@ public class GuildManager : IGuildService
         return false;
     }
 
-    public bool LeaveGuild(int characterId)
+    public async Task<bool> LeaveGuild(int characterId)
     {
         var guild = GetGuildByMember(characterId);
         if (guild == null) return false;
 
         _playerGuildMap.TryRemove(characterId, out _);
 
+        bool disbanded = false;
         lock (guild.MemberIds)
         {
             guild.MemberIds.Remove(characterId);
@@ -213,6 +242,7 @@ public class GuildManager : IGuildService
             {
                 // Last member left, disband guild
                 _guilds.TryRemove(guild.GuildId, out _);
+                disbanded = true;
             }
             else if (guild.LeaderId == characterId)
             {
@@ -223,10 +253,19 @@ public class GuildManager : IGuildService
             }
         }
 
+        if (disbanded)
+        {
+            await _guildRepository.DeleteAsync(guild.GuildId);
+        }
+        else
+        {
+            await _guildRepository.SaveAsync(guild);
+        }
+
         return true;
     }
 
-    public (bool Success, string Message) KickMember(int kickerId, int targetId)
+    public async Task<(bool Success, string Message)> KickMember(int kickerId, int targetId)
     {
         var guild = GetGuildByMember(kickerId);
         if (guild == null)
@@ -255,10 +294,12 @@ public class GuildManager : IGuildService
             guild.MemberRanks.Remove(targetId);
         }
 
+        await _guildRepository.SaveAsync(guild);
+
         return (true, "Player kicked.");
     }
 
-    public (bool Success, string Message) PromoteMember(int actorId, int targetId)
+    public async Task<(bool Success, string Message)> PromoteMember(int actorId, int targetId)
     {
         var guild = GetGuildByMember(actorId);
         if (guild == null) return (false, "You are not in a guild.");
@@ -276,10 +317,11 @@ public class GuildManager : IGuildService
             return (false, "You do not have permission to promote this member.");
             
         guild.MemberRanks[targetId] = newRank;
+        await _guildRepository.SaveAsync(guild);
         return (true, "Member promoted.");
     }
 
-    public (bool Success, string Message) DemoteMember(int actorId, int targetId)
+    public async Task<(bool Success, string Message)> DemoteMember(int actorId, int targetId)
     {
         var guild = GetGuildByMember(actorId);
         if (guild == null) return (false, "You are not in a guild.");
@@ -297,6 +339,7 @@ public class GuildManager : IGuildService
             return (false, "You do not have permission to demote this member.");
             
         guild.MemberRanks[targetId] = newRank;
+        await _guildRepository.SaveAsync(guild);
         return (true, "Member demoted.");
     }
 

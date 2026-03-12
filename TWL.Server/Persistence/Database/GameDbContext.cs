@@ -7,6 +7,7 @@ public class GameDbContext : DbContext
 {
     public DbSet<PlayerEntity> Players { get; set; } = null!;
     public DbSet<AccountEntity> Accounts { get; set; } = null!;
+    public DbSet<GuildEntity> Guilds { get; set; } = null!;
 
     public GameDbContext(DbContextOptions<GameDbContext> options) : base(options)
     {

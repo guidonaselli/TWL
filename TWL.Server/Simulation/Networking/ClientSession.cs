@@ -1232,7 +1232,7 @@ public class ClientSession
             return;
         }
 
-        var result = _guildService.CreateGuild(UserId, Character.Name, request.GuildName);
+        var result = await _guildService.CreateGuild(UserId, Character.Name, request.GuildName);
 
         if (result.Success)
         {
@@ -1287,7 +1287,7 @@ public class ClientSession
         var request = JsonSerializer.Deserialize<GuildAcceptRequest>(payload, _jsonOptions);
         if (request == null) return;
 
-        var result = _guildService.AcceptInvite(UserId, request.GuildId);
+        var result = await _guildService.AcceptInvite(UserId, request.GuildId);
         if (result.Success)
         {
             Character.GuildId = request.GuildId;
@@ -1318,7 +1318,7 @@ public class ClientSession
         if (UserId <= 0 || Character == null || Character.GuildId == null) return;
         var guildId = Character.GuildId.Value;
 
-        if (_guildService.LeaveGuild(UserId))
+        if (await _guildService.LeaveGuild(UserId))
         {
             Character.GuildId = null;
             await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "You left the guild." }, _jsonOptions) });
@@ -1333,7 +1333,7 @@ public class ClientSession
         if (request == null) return;
 
         var guildId = Character.GuildId.Value;
-        var result = _guildService.KickMember(UserId, request.TargetId);
+        var result = await _guildService.KickMember(UserId, request.TargetId);
 
         if (result.Success)
         {
@@ -1359,7 +1359,7 @@ public class ClientSession
         if (request == null) return;
 
         var guildId = Character.GuildId.Value;
-        var result = _guildService.PromoteMember(UserId, request.TargetMemberId);
+        var result = await _guildService.PromoteMember(UserId, request.TargetMemberId);
 
         if (result.Success)
         {
@@ -1379,7 +1379,7 @@ public class ClientSession
         if (request == null) return;
 
         var guildId = Character.GuildId.Value;
-        var result = _guildService.DemoteMember(UserId, request.TargetMemberId);
+        var result = await _guildService.DemoteMember(UserId, request.TargetMemberId);
 
         if (result.Success)
         {
@@ -1449,7 +1449,7 @@ public class ClientSession
     {
         if (UserId <= 0 || Character == null) return;
 
-        var viewEvent = _guildStorageService.ViewStorage(Character);
+        var viewEvent = await _guildStorageService.ViewStorage(Character);
         await SendAsync(new NetMessage
         {
             Op = Opcode.GuildStorageViewEvent,
@@ -1468,7 +1468,7 @@ public class ClientSession
 
             // In a real scenario, we'd deduct from character inventory here.
             // But since GuildStorageService just adds to the dict, we do it directly:
-            var result = _guildStorageService.DepositItem(Character, req.ItemId, req.Quantity, req.OperationId);
+            var result = await _guildStorageService.DepositItem(Character, req.ItemId, req.Quantity, req.OperationId);
             
             await SendAsync(new NetMessage
             {
@@ -1493,7 +1493,7 @@ public class ClientSession
             var req = JsonSerializer.Deserialize<GuildStorageWithdrawRequest>(payload, _jsonOptions);
             if (req == null) return;
 
-            var result = _guildStorageService.WithdrawItem(Character, req.ItemId, req.Quantity, req.OperationId);
+            var result = await _guildStorageService.WithdrawItem(Character, req.ItemId, req.Quantity, req.OperationId);
 
             await SendAsync(new NetMessage
             {
