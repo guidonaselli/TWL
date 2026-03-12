@@ -22,12 +22,28 @@ public class JsonReporter
             HardcodedCandidates = results.HardcodedStrings
         };
 
-        File.WriteAllText(
+        WriteWithRetry(
             Path.Combine(_artifactsPath, "localization-index.json"),
             JsonSerializer.Serialize(indexData, options));
 
-        File.WriteAllText(
+        WriteWithRetry(
             Path.Combine(_artifactsPath, "localization-report.json"),
             JsonSerializer.Serialize(results.Findings, options));
+    }
+
+    private void WriteWithRetry(string path, string content)
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            try
+            {
+                File.WriteAllText(path, content);
+                return;
+            }
+            catch (IOException)
+            {
+                Thread.Sleep(500);
+            }
+        }
     }
 }

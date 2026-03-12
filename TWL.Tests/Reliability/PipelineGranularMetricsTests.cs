@@ -54,7 +54,7 @@ public class PipelineGranularMetricsTests
         var guildChatService = new GuildChatService(guildManager, playerService);
         var guildRosterService = new GuildRosterService(guildManager, playerService);
         var guildAuditLogService = new GuildAuditLogService();
-        var guildStorageService = new GuildStorageService(guildManager, guildAuditLogService, NullLogger<GuildStorageService>.Instance);
+        var guildStorageService = new GuildStorageService(guildManager, new Mock<TWL.Shared.Domain.Guilds.IGuildRepository>().Object, guildAuditLogService, NullLogger<GuildStorageService>.Instance);
 
         // Dynamic port assignment: use port 0 to let OS assign a free port
         var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,

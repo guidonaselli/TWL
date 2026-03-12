@@ -36,15 +36,11 @@ public class ShutdownTests
         mockPlayerService.Setup(s => s.StopAsync()).Returns(Task.CompletedTask).Verifiable();
 
         var worker = new ServerWorker(
-                null, // INetworkServer
-                null, // IDbService
-                null, // ILogger
-                null, null, // PetManager + GuildService
-
             mockNet.Object,
             mockDb.Object,
             mockLog.Object,
             null!, // PetManager
+            null!, // GuildService
             null!, // ServerQuestManager
             null!, // InteractionManager
             mockPlayerService.Object,

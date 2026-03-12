@@ -1,0 +1,53 @@
+  Determining projects to restore...
+  All projects are up-to-date for restore.
+  TWL.Shared -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Shared\bin\Debug\net10.0\TWL.Shared.dll
+  TWL.Server -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Server\bin\Debug\net10.0\TWL.Server.dll
+  TWL.Tests -> D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll
+Test run for D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\bin\Debug\net10.0\TWL.Tests.dll (.NETCoreApp,Version=v10.0)
+VSTest version 18.0.1 (x64)
+
+Starting test execution, please wait...
+A total of 1 test files matched the specified pattern.
+[xUnit.net 00:00:00.38]     TWL.Tests.Economy.EconomyDoubleSpendTests.Should_Prevent_Double_Spend_When_Ledger_Is_Pending_But_Char_Processed [SKIP]
+  Skipped TWL.Tests.Economy.EconomyDoubleSpendTests.Should_Prevent_Double_Spend_When_Ledger_Is_Pending_But_Char_Processed [1 ms]
+[xUnit.net 00:00:00.43]     TWL.Tests.JungleQuestTests.VerifyJungleQuestsExistAndAreValid [SKIP]
+  Skipped TWL.Tests.JungleQuestTests.VerifyJungleQuestsExistAndAreValid [1 ms]
+[xUnit.net 00:00:00.56]     TWL.Tests.QuestFlagsTests.RepeatableQuest_ShouldAllowRestart [SKIP]
+  Skipped TWL.Tests.QuestFlagsTests.RepeatableQuest_ShouldAllowRestart [1 ms]
+[xUnit.net 00:00:00.56]     TWL.Tests.QuestFlagsTests.FlagFlow_ShouldWork [SKIP]
+[xUnit.net 00:00:00.56]     TWL.Tests.QuestFlagsTests.StartQuest_ShouldFail_WhenMissingRequiredFlag [SKIP]
+  Skipped TWL.Tests.QuestFlagsTests.FlagFlow_ShouldWork [1 ms]
+  Skipped TWL.Tests.QuestFlagsTests.StartQuest_ShouldFail_WhenMissingRequiredFlag [1 ms]
+  Failed TWL.Tests.Quests.HousingQuestTests.HousingChain_Should_Progress_Correctly [2 ms]
+  Error Message:
+   Assert.True() Failure
+Expected: True
+Actual:   False
+  Stack Trace:
+     at TWL.Tests.Quests.HousingQuestTests.HousingChain_Should_Progress_Correctly() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\Quests\HousingQuestTests.cs:line 97
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Failed TWL.Tests.CombatManagerConcurrencyTests.CombatManager_ConcurrentAccess_ShouldNotCrash [3 s]
+  Error Message:
+   Assert.Empty() Failure: Collection was not empty
+Collection: [System.NullReferenceException: Object reference not set to an instance of an object.
+   at System.Collections.Generic.Dictionary`2.FindValue(TKey key)
+   at System.Collections.Generic.Dictionary`2.TryGetValue(TKey key, TValue& value)
+   at TWL.Shared.Domain.Skills.SkillRegistry.GetSkillById(Int32 id) in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Shared\Domain\Skills\SkillRegistry.cs:line 20
+   at TWL.Server.Simulation.Managers.CombatManager.UseSkill(UseSkillRequest request) in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Server\Simulation\Managers\CombatManager.cs:line 102
+   at TWL.Tests.CombatManagerConcurrencyTests.<>c__DisplayClass2_0.<CombatManager_ConcurrentAccess_ShouldNotCrash>b__1() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\CombatManagerConcurrencyTests.cs:line 44]
+  Stack Trace:
+     at TWL.Tests.CombatManagerConcurrencyTests.CombatManager_ConcurrentAccess_ShouldNotCrash() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\CombatManagerConcurrencyTests.cs:line 118
+   at System.Reflection.MethodBaseInvoker.InterpretedInvoke_Method(Object obj, IntPtr* args)
+   at System.Reflection.MethodBaseInvoker.InvokeWithNoArgs(Object obj, BindingFlags invokeAttr)
+  Standard Output Messages:
+ System.NullReferenceException: Object reference not set to an instance of an object.
+    at System.Collections.Generic.Dictionary`2.FindValue(TKey key)
+    at System.Collections.Generic.Dictionary`2.TryGetValue(TKey key, TValue& value)
+    at TWL.Shared.Domain.Skills.SkillRegistry.GetSkillById(Int32 id) in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Shared\Domain\Skills\SkillRegistry.cs:line 20
+    at TWL.Server.Simulation.Managers.CombatManager.UseSkill(UseSkillRequest request) in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Server\Simulation\Managers\CombatManager.cs:line 102
+    at TWL.Tests.CombatManagerConcurrencyTests.<>c__DisplayClass2_0.<CombatManager_ConcurrentAccess_ShouldNotCrash>b__1() in D:\IT\Projects\Rider\TheWonderlandSolution\TWL.Tests\CombatManagerConcurrencyTests.cs:line 44
+
+
+
+Failed!  - Failed:     2, Passed:   676, Skipped:     5, Total:   683, Duration: 1 m 37 s - TWL.Tests.dll (net10.0)

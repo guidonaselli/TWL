@@ -7,6 +7,7 @@ namespace TWL.Shared.Domain.Skills;
 public class SkillRegistry : ISkillCatalog
 {
     private readonly Dictionary<int, Skill> _skills = new();
+    private readonly object _lock = new();
 
     private SkillRegistry()
     {
@@ -24,11 +25,13 @@ public class SkillRegistry : ISkillCatalog
 
     public void LoadSkills(string jsonContent)
     {
-        var options = new JsonSerializerOptions
+        lock (_lock)
         {
-            PropertyNameCaseInsensitive = true,
-            Converters = { new JsonStringEnumConverter() }
-        };
+            var options = new JsonSerializerOptions
+            {
+                PropertyNameCaseInsensitive = true,
+                Converters = { new JsonStringEnumConverter() }
+            };
 
         var definitions = JsonSerializer.Deserialize<List<SkillDataDto>>(jsonContent, options);
 
@@ -90,9 +93,10 @@ public class SkillRegistry : ISkillCatalog
             _skills[skill.SkillId] = skill;
         }
 
-        // Post-Load: Enforce Stage Upgrade Consistency (Anti-Snowball)
-        // We auto-populate this to ensure runtime integrity without redundant JSON data.
-        ApplyStageUpgradeConsistency(_skills.Values);
+            // Post-Load: Enforce Stage Upgrade Consistency (Anti-Snowball)
+            // We auto-populate this to ensure runtime integrity without redundant JSON data.
+            ApplyStageUpgradeConsistency(_skills.Values);
+        }
     }
 
     /// <summary>

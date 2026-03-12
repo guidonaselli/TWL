@@ -66,15 +66,11 @@ public class GracefulShutdownTests
         mockHealthCheck.InSequence(sequence).Setup(x => x.SetStatus(ServerStatus.Stopped));
 
         var worker = new ServerWorker(
-                null, // INetworkServer
-                null, // IDbService
-                null, // ILogger
-                null, null, // PetManager + GuildService
-
             mockNet.Object,
             mockDb.Object,
             mockLog.Object,
             mockPetManager.Object,
+            null!, // GuildService
             mockQuestManager.Object,
             mockInteractionManager.Object,
             mockPlayerService.Object,
@@ -86,7 +82,8 @@ public class GracefulShutdownTests
             mockSpawnManager.Object,
             mockLoggerFactory.Object,
             mockHealthCheck.Object,
-            new Mock<InstanceService>(metrics).Object, mockCombatManager.Object
+            new Mock<InstanceService>(metrics).Object, 
+            mockCombatManager.Object
         );
 
         // Act

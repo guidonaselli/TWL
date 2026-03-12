@@ -485,6 +485,11 @@ fabric.properties
 .cursor
 .aider*
 .github/copilot
+.agents/
+.agent/
+_agents/
+_agent/
+.gemini/
 AGENTS.md
 CLAUDE.md
 
