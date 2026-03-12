@@ -23,11 +23,14 @@ public class ServerCharacter : ServerCombatant
 
     private readonly List<ServerPet> _pets = new();
     private readonly object _progressLock = new();
+    public object ProgressLock => _progressLock;
     private readonly object _orderLock = new();
     private readonly HashSet<string> _processedOrders = new();
     private readonly HashSet<string> _worldFlags = new();
 
     private int _exp;
+    private int _expToNextLevel = 100;
+    private int _statPoints;
 
     private int _gold;
 
@@ -122,8 +125,10 @@ public class ServerCharacter : ServerCombatant
     }
 
     public ICollection<int> KnownSkills => SkillMastery.Keys;
-    public int Level { get; private set; } = 1;
-    public int RebirthLevel { get; private set; }
+    public int Level { get; set; } = 1;
+    public int RebirthLevel { get; set; }
+
+    public List<TWL.Shared.Domain.DTO.RebirthHistoryRecord> RebirthHistory { get; set; } = new();
 
     public IReadOnlySet<string> WorldFlags
     {
@@ -135,8 +140,28 @@ public class ServerCharacter : ServerCombatant
             }
         }
     }
-    public int ExpToNextLevel { get; private set; } = 100;
-    public int StatPoints { get; private set; }
+    public int ExpToNextLevel
+    {
+        get
+        {
+            lock (_progressLock) { return _expToNextLevel; }
+        }
+        set
+        {
+            lock (_progressLock) { _expToNextLevel = value; }
+        }
+    }
+    public int StatPoints
+    {
+        get
+        {
+            lock (_progressLock) { return _statPoints; }
+        }
+        set
+        {
+            lock (_progressLock) { _statPoints = value; }
+        }
+    }
 
     public string ActivePetInstanceId { get; private set; }
     public DateTime LastPetSwitchTime { get; set; } = DateTime.MinValue;
@@ -180,7 +205,13 @@ public class ServerCharacter : ServerCombatant
                 return _exp;
             }
         }
-        init => _exp = value;
+        set
+        {
+            lock (_progressLock)
+            {
+                _exp = value;
+            }
+        }
     }
 
     public int Gold
@@ -198,6 +229,7 @@ public class ServerCharacter : ServerCombatant
     // Security / Anti-Fraud
     public long DailyGiftAccumulator { get; private set; }
     public DateTime LastGiftResetDate { get; private set; }
+    public DateTime LastLoginUtc { get; set; }
 
     // World Position
     private int _mapId;
@@ -984,6 +1016,7 @@ public class ServerCharacter : ServerCombatant
             PremiumCurrency = _premiumCurrency,
             DailyGiftAccumulator = DailyGiftAccumulator,
             LastGiftResetDate = LastGiftResetDate,
+            LastLoginUtc = LastLoginUtc,
             ActivePetInstanceId = ActivePetInstanceId,
             InstanceLockouts = new Dictionary<string, DateTime>(InstanceLockouts),
             MapId = MapId,
@@ -999,6 +1032,7 @@ public class ServerCharacter : ServerCombatant
             data.RebirthLevel = RebirthLevel;
             data.ExpToNextLevel = ExpToNextLevel;
             data.StatPoints = StatPoints;
+            data.RebirthHistory = new List<TWL.Shared.Domain.DTO.RebirthHistoryRecord>(RebirthHistory);
         }
 
         data.Skills = SkillMastery.Select(kvp => new SkillMasteryData
@@ -1100,6 +1134,7 @@ public class ServerCharacter : ServerCombatant
         _premiumCurrency = data.PremiumCurrency;
         DailyGiftAccumulator = data.DailyGiftAccumulator;
         LastGiftResetDate = data.LastGiftResetDate;
+        LastLoginUtc = data.LastLoginUtc;
         ActivePetInstanceId = data.ActivePetInstanceId;
         InstanceLockouts.Clear();
         if (data.InstanceLockouts != null)
@@ -1121,6 +1156,11 @@ public class ServerCharacter : ServerCombatant
             RebirthLevel = data.RebirthLevel;
             ExpToNextLevel = data.ExpToNextLevel;
             StatPoints = data.StatPoints;
+            RebirthHistory.Clear();
+            if (data.RebirthHistory != null)
+            {
+                RebirthHistory.AddRange(data.RebirthHistory);
+            }
         }
 
         SkillMastery.Clear();

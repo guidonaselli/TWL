@@ -198,5 +198,295 @@
     "MaxStack": 1,
     "RequiredLevel": 45,
     "Tier": 4
+  },
+  {
+    "Id": 500,
+    "Name": "Great HP Potion",
+    "Description": "Restores a massive amount of HP.",
+    "Type": "Consumable",
+    "Price": 500,
+    "MaxStack": 99,
+    "RequiredLevel": 60,
+    "Tier": 5
+  },
+  {
+    "Id": 501,
+    "Name": "Great SP Potion",
+    "Description": "Restores a massive amount of SP.",
+    "Type": "Consumable",
+    "Price": 500,
+    "MaxStack": 99,
+    "RequiredLevel": 60,
+    "Tier": 5
+  },
+  {
+    "Id": 600,
+    "Name": "Super HP Potion",
+    "Description": "Restores an incredible amount of HP.",
+    "Type": "Consumable",
+    "Price": 800,
+    "MaxStack": 99,
+    "RequiredLevel": 75,
+    "Tier": 6
+  },
+  {
+    "Id": 601,
+    "Name": "Super SP Potion",
+    "Description": "Restores an incredible amount of SP.",
+    "Type": "Consumable",
+    "Price": 800,
+    "MaxStack": 99,
+    "RequiredLevel": 75,
+    "Tier": 6
+  },
+  {
+    "Id": 700,
+    "Name": "Ultra HP Potion",
+    "Description": "Restores nearly all HP.",
+    "Type": "Consumable",
+    "Price": 1200,
+    "MaxStack": 99,
+    "RequiredLevel": 90,
+    "Tier": 7
+  },
+  {
+    "Id": 701,
+    "Name": "Ultra SP Potion",
+    "Description": "Restores nearly all SP.",
+    "Type": "Consumable",
+    "Price": 1200,
+    "MaxStack": 99,
+    "RequiredLevel": 90,
+    "Tier": 7
+  },
+  {
+    "Id": 800,
+    "Name": "Miracle HP Potion",
+    "Description": "Restores all HP instantly.",
+    "Type": "Consumable",
+    "Price": 2000,
+    "MaxStack": 99,
+    "RequiredLevel": 100,
+    "Tier": 8
+  },
+  {
+    "Id": 801,
+    "Name": "Miracle SP Potion",
+    "Description": "Restores all SP instantly.",
+    "Type": "Consumable",
+    "Price": 2000,
+    "MaxStack": 99,
+    "RequiredLevel": 100,
+    "Tier": 8
+  },
+  {
+    "Id": 150,
+    "Name": "Antidote",
+    "Description": "Cures Poison status.",
+    "Type": "Consumable",
+    "Price": 50,
+    "MaxStack": 99,
+    "RequiredLevel": 15,
+    "Tier": 2
+  },
+  {
+    "Id": 151,
+    "Name": "Eye Drops",
+    "Description": "Cures Blind status.",
+    "Type": "Consumable",
+    "Price": 50,
+    "MaxStack": 99,
+    "RequiredLevel": 15,
+    "Tier": 2
+  },
+  {
+    "Id": 152,
+    "Name": "Awakening Potion",
+    "Description": "Cures Sleep status.",
+    "Type": "Consumable",
+    "Price": 100,
+    "MaxStack": 99,
+    "RequiredLevel": 30,
+    "Tier": 3
+  },
+  {
+    "Id": 153,
+    "Name": "Holy Water",
+    "Description": "Cures Curse status.",
+    "Type": "Consumable",
+    "Price": 200,
+    "MaxStack": 99,
+    "RequiredLevel": 45,
+    "Tier": 4
+  },
+  {
+    "Id": 154,
+    "Name": "Panacea",
+    "Description": "Cures all negative status effects.",
+    "Type": "Consumable",
+    "Price": 1000,
+    "MaxStack": 99,
+    "RequiredLevel": 60,
+    "Tier": 5
+  },
+  {
+    "Id": 5000,
+    "Name": "Platinum Ore",
+    "Description": "A rare and sturdy crafting material.",
+    "Type": "Material",
+    "Price": 300,
+    "MaxStack": 99,
+    "RequiredLevel": 60,
+    "Tier": 5
+  },
+  {
+    "Id": 6000,
+    "Name": "Titanium Ore",
+    "Description": "An incredibly hard crafting material.",
+    "Type": "Material",
+    "Price": 600,
+    "MaxStack": 99,
+    "RequiredLevel": 75,
+    "Tier": 6
+  },
+  {
+    "Id": 7000,
+    "Name": "Mythril Ore",
+    "Description": "A legendary magical crafting material.",
+    "Type": "Material",
+    "Price": 1200,
+    "MaxStack": 99,
+    "RequiredLevel": 90,
+    "Tier": 7
+  },
+  {
+    "Id": 8000,
+    "Name": "Orichalcum",
+    "Description": "The ultimate crafting material.",
+    "Type": "Material",
+    "Price": 2500,
+    "MaxStack": 99,
+    "RequiredLevel": 100,
+    "Tier": 8
+  },
+  {
+    "Id": 5001,
+    "Name": "Enchanted Cloth",
+    "Description": "Cloth woven with deep magic.",
+    "Type": "Material",
+    "Price": 300,
+    "MaxStack": 99,
+    "RequiredLevel": 60,
+    "Tier": 5
+  },
+  {
+    "Id": 6001,
+    "Name": "Starweave Cloth",
+    "Description": "Cloth made from starlight.",
+    "Type": "Material",
+    "Price": 600,
+    "MaxStack": 99,
+    "RequiredLevel": 75,
+    "Tier": 6
+  },
+  {
+    "Id": 7001,
+    "Name": "Aether Silk",
+    "Description": "A legendary magical cloth.",
+    "Type": "Material",
+    "Price": 1200,
+    "MaxStack": 99,
+    "RequiredLevel": 90,
+    "Tier": 7
+  },
+  {
+    "Id": 8001,
+    "Name": "Divine Weave",
+    "Description": "The ultimate cloth material.",
+    "Type": "Material",
+    "Price": 2500,
+    "MaxStack": 99,
+    "RequiredLevel": 100,
+    "Tier": 8
+  },
+  {
+    "Id": 5100,
+    "Name": "Earth Core",
+    "Description": "A concentrated core of earth magic.",
+    "Type": "Material",
+    "Price": 500,
+    "MaxStack": 99,
+    "RequiredLevel": 60,
+    "Tier": 5
+  },
+  {
+    "Id": 5101,
+    "Name": "Water Core",
+    "Description": "A concentrated core of water magic.",
+    "Type": "Material",
+    "Price": 500,
+    "MaxStack": 99,
+    "RequiredLevel": 60,
+    "Tier": 5
+  },
+  {
+    "Id": 5102,
+    "Name": "Fire Core",
+    "Description": "A concentrated core of fire magic.",
+    "Type": "Material",
+    "Price": 500,
+    "MaxStack": 99,
+    "RequiredLevel": 60,
+    "Tier": 5
+  },
+  {
+    "Id": 5103,
+    "Name": "Wind Core",
+    "Description": "A concentrated core of wind magic.",
+    "Type": "Material",
+    "Price": 500,
+    "MaxStack": 99,
+    "RequiredLevel": 60,
+    "Tier": 5
+  },
+  {
+    "Id": 9004,
+    "Name": "Volcanic Ember",
+    "Description": "A rare ember that never stops burning.",
+    "Type": "KeyItem",
+    "Price": 0,
+    "MaxStack": 1,
+    "RequiredLevel": 60,
+    "Tier": 5
+  },
+  {
+    "Id": 9005,
+    "Name": "Eternal Droplet",
+    "Description": "A droplet of water that never evaporates.",
+    "Type": "KeyItem",
+    "Price": 0,
+    "MaxStack": 1,
+    "RequiredLevel": 75,
+    "Tier": 6
+  },
+  {
+    "Id": 9006,
+    "Name": "Ancestral Relic",
+    "Description": "A sacred relic from the high peaks.",
+    "Type": "KeyItem",
+    "Price": 0,
+    "MaxStack": 1,
+    "RequiredLevel": 90,
+    "Tier": 7
+  },
+  {
+    "Id": 9007,
+    "Name": "Core Resonance Shard",
+    "Description": "A shard pulsing with the world's core energy.",
+    "Type": "KeyItem",
+    "Price": 0,
+    "MaxStack": 1,
+    "RequiredLevel": 100,
+    "Tier": 8
   }
 ]

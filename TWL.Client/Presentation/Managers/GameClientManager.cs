@@ -83,4 +83,39 @@ public class GameClientManager
     /// Returns the current list of enemy characters.
     /// \summary>
     public List<Character> GetEnemies() => _enemies;
+
+    // Guild State
+    public List<TWL.Shared.Domain.DTO.GuildMemberDto> GuildRoster { get; } = new();
+    public List<TWL.Shared.Domain.DTO.GuildChatMessageDto> GuildChatLogs { get; } = new();
+
+    public void HandleGuildRosterSync(TWL.Shared.Domain.DTO.GuildRosterSyncEvent syncEvent)
+    {
+        GuildRoster.Clear();
+        GuildRoster.AddRange(syncEvent.Members);
+    }
+
+    public void HandleGuildRosterUpdate(TWL.Shared.Domain.DTO.GuildRosterUpdateEvent updateEvent)
+    {
+        var existing = GuildRoster.FirstOrDefault(m => m.CharacterId == updateEvent.Member.CharacterId);
+        if (updateEvent.IsRemoved)
+        {
+            if (existing != null) GuildRoster.Remove(existing);
+        }
+        else
+        {
+            if (existing != null) GuildRoster.Remove(existing);
+            GuildRoster.Add(updateEvent.Member);
+        }
+    }
+
+    public void HandleGuildChatEvent(TWL.Shared.Domain.DTO.GuildChatEvent chatEvent)
+    {
+        GuildChatLogs.Add(chatEvent.Message);
+    }
+
+    public void HandleGuildChatBacklog(TWL.Shared.Domain.DTO.GuildChatBacklog backlog)
+    {
+        GuildChatLogs.AddRange(backlog.Messages);
+        GuildChatLogs.Sort((a, b) => a.Timestamp.CompareTo(b.Timestamp));
+    }
 }

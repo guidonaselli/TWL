@@ -20,6 +20,21 @@
 
 ---
 
+### Guild State Persistence (In-Memory Only)
+
+**Issue:** Guild state (membership, ranks, join dates, storage) is currently managed only in-memory by `GuildManager`. There is no PostgreSQL persistence.
+
+**Files:** `TWL.Server/Simulation/Managers/GuildManager.cs`, `TWL.Server/Simulation/Managers/GuildStorageService.cs`
+
+**Impact:**
+- All guild data is lost upon server restart.
+- Risk of data desync if individual player saves reference guilds that no longer exist in memory.
+- Inconsistent with Phase 1 "Production-grade persistence" mandate.
+
+**Fix approach:** Migrate `GuildManager` and `GuildStorageService` to use `IGameDbContext` (PostgreSQL) for all state mutations. Implement `DbGuildRepository` following the same hybrid EF Core + Dapper pattern used for players.
+
+---
+
 ### Unimplemented TODO/FIXME Comments
 
 **Issue:** Feature gaps intentionally left incomplete.

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
+using TWL.Shared.Domain.Guilds;
 
 namespace TWL.Server.Simulation.Managers;
 
@@ -12,6 +13,8 @@ public class GuildManager : IGuildService
 
     // TargetId -> GuildInvite
     private readonly ConcurrentDictionary<int, GuildInvite> _pendingInvites = new();
+
+    private readonly GuildPermissionService _permissionService = new();
 
     private int _nextGuildId = 1;
 
@@ -36,8 +39,19 @@ public class GuildManager : IGuildService
     public bool IsAuthorizedToKick(int guildId, int characterId)
     {
         var guild = GetGuild(guildId);
-        // For now, only the leader can kick. Will be expanded in Rank system.
-        return guild != null && guild.LeaderId == characterId;
+        if (guild == null) return false;
+
+        var rank = guild.MemberRanks.GetValueOrDefault(characterId, GuildRank.Recruit);
+        return _permissionService.HasPermission(rank, GuildPermissions.Kick);
+    }
+
+    public bool HasPermission(int guildId, int characterId, GuildPermissions permission)
+    {
+        var guild = GetGuild(guildId);
+        if (guild == null) return false;
+
+        var rank = guild.MemberRanks.GetValueOrDefault(characterId, GuildRank.Recruit);
+        return _permissionService.HasPermission(rank, permission);
     }
 
     public (bool Success, string Message) CreateGuild(int leaderId, string leaderName, string guildName)
@@ -53,7 +67,7 @@ public class GuildManager : IGuildService
         }
 
         // Check for unique name
-        if (_guilds.Values.Any(g => g.GuildName.Equals(guildName, StringComparison.OrdinalIgnoreCase)))
+        if (_guilds.Values.Any(g => g.Name.Equals(guildName, StringComparison.OrdinalIgnoreCase)))
         {
             return (false, "Guild name is already taken.");
         }
@@ -62,10 +76,12 @@ public class GuildManager : IGuildService
         var guild = new Guild
         {
             GuildId = guildId,
-            GuildName = guildName,
+            Name = guildName,
             LeaderId = leaderId,
             MemberIds = { leaderId }
         };
+        guild.MemberRanks[leaderId] = GuildRank.Leader;
+        guild.MemberJoinDates[leaderId] = DateTimeOffset.UtcNow;
 
         if (_guilds.TryAdd(guildId, guild))
         {
@@ -94,8 +110,8 @@ public class GuildManager : IGuildService
             return (false, "Target player is already in a guild.");
         }
 
-        // For now, only the leader can invite
-        if (guild.LeaderId != inviterId)
+        var inviterRank = guild.MemberRanks.GetValueOrDefault(inviterId, GuildRank.Recruit);
+        if (!_permissionService.HasPermission(inviterRank, GuildPermissions.Invite))
         {
             return (false, "You do not have permission to invite.");
         }
@@ -163,6 +179,8 @@ public class GuildManager : IGuildService
                  return (false, "You are already in this guild.");
             }
             guild.MemberIds.Add(targetId);
+            guild.MemberRanks[targetId] = GuildRank.Recruit;
+            guild.MemberJoinDates[targetId] = DateTimeOffset.UtcNow;
         }
 
         _playerGuildMap[targetId] = guildId;
@@ -189,6 +207,7 @@ public class GuildManager : IGuildService
         lock (guild.MemberIds)
         {
             guild.MemberIds.Remove(characterId);
+            guild.MemberRanks.Remove(characterId);
 
             if (guild.MemberIds.Count == 0)
             {
@@ -197,8 +216,10 @@ public class GuildManager : IGuildService
             }
             else if (guild.LeaderId == characterId)
             {
-                // Leader left, assign new leader
-                guild.LeaderId = guild.MemberIds[0];
+                // Leader left, assign new leader by highest rank or fallback
+                var newLeader = guild.MemberIds.OrderByDescending(id => guild.MemberRanks.GetValueOrDefault(id, GuildRank.Recruit)).First();
+                guild.LeaderId = newLeader;
+                guild.MemberRanks[newLeader] = GuildRank.Leader;
             }
         }
 
@@ -213,19 +234,17 @@ public class GuildManager : IGuildService
             return (false, "You are not in a guild.");
         }
 
-        if (!IsAuthorizedToKick(guild.GuildId, kickerId))
-        {
-            return (false, "You do not have permission to kick.");
-        }
-
-        if (kickerId == targetId)
-        {
-            return (false, "You cannot kick yourself.");
-        }
-
         if (!guild.MemberIds.Contains(targetId))
         {
             return (false, "Target player is not in the guild.");
+        }
+
+        var kickerRank = guild.MemberRanks.GetValueOrDefault(kickerId, GuildRank.Recruit);
+        var targetRank = guild.MemberRanks.GetValueOrDefault(targetId, GuildRank.Recruit);
+
+        if (!_permissionService.CanKick(kickerRank, targetRank))
+        {
+            return (false, "You do not have permission to kick this member.");
         }
 
         _playerGuildMap.TryRemove(targetId, out _);
@@ -233,9 +252,52 @@ public class GuildManager : IGuildService
         lock (guild.MemberIds)
         {
             guild.MemberIds.Remove(targetId);
+            guild.MemberRanks.Remove(targetId);
         }
 
         return (true, "Player kicked.");
+    }
+
+    public (bool Success, string Message) PromoteMember(int actorId, int targetId)
+    {
+        var guild = GetGuildByMember(actorId);
+        if (guild == null) return (false, "You are not in a guild.");
+        if (actorId == targetId) return (false, "You cannot promote yourself.");
+        if (!guild.MemberIds.Contains(targetId)) return (false, "Target player is not in the guild.");
+
+        var actorRank = guild.MemberRanks.GetValueOrDefault(actorId, GuildRank.Recruit);
+        var targetRank = guild.MemberRanks.GetValueOrDefault(targetId, GuildRank.Recruit);
+
+        if (targetRank >= GuildRank.Officer) return (false, "Cannot promote further.");
+
+        var newRank = targetRank + 1;
+
+        if (!_permissionService.CanPromoteDemote(actorRank, targetRank, newRank))
+            return (false, "You do not have permission to promote this member.");
+
+        guild.MemberRanks[targetId] = newRank;
+        return (true, "Member promoted.");
+    }
+
+    public (bool Success, string Message) DemoteMember(int actorId, int targetId)
+    {
+        var guild = GetGuildByMember(actorId);
+        if (guild == null) return (false, "You are not in a guild.");
+        if (actorId == targetId) return (false, "You cannot demote yourself.");
+        if (!guild.MemberIds.Contains(targetId)) return (false, "Target player is not in the guild.");
+
+        var actorRank = guild.MemberRanks.GetValueOrDefault(actorId, GuildRank.Recruit);
+        var targetRank = guild.MemberRanks.GetValueOrDefault(targetId, GuildRank.Recruit);
+
+        if (targetRank <= GuildRank.Recruit) return (false, "Cannot demote further.");
+
+        var newRank = targetRank - 1;
+
+        if (!_permissionService.CanPromoteDemote(actorRank, targetRank, newRank))
+            return (false, "You do not have permission to demote this member.");
+
+        guild.MemberRanks[targetId] = newRank;
+        return (true, "Member demoted.");
     }
 
     private class GuildInvite

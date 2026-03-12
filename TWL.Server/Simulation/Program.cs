@@ -107,6 +107,13 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<CombatManager>();
         svcs.AddSingleton<IPartyService, PartyManager>();
         svcs.AddSingleton<IPartyChatService, PartyChatService>();
+        svcs.AddSingleton<GuildManager>();
+        svcs.AddSingleton<IGuildService>(sp => sp.GetRequiredService<GuildManager>());
+        svcs.AddSingleton<GuildChatService>();
+        svcs.AddSingleton<GuildRosterService>();
+        svcs.AddSingleton<GuildAuditLogService>();
+        svcs.AddSingleton<GuildStorageService>();
+        svcs.AddSingleton<IRebirthService, RebirthManager>();
 
         svcs.AddSingleton<IPlayerRepository>(sp =>
             new DbPlayerRepository(
@@ -156,6 +163,10 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<IPartyService>(),
                 sp.GetRequiredService<IPartyChatService>(),
                 sp.GetRequiredService<IGuildService>(),
+                sp.GetRequiredService<GuildChatService>(),
+                sp.GetRequiredService<GuildRosterService>(),
+                sp.GetRequiredService<GuildStorageService>(),
+                sp.GetRequiredService<IRebirthService>(),
                 sp.GetRequiredService<IOptions<RateLimiterOptions>>()
             );
         });

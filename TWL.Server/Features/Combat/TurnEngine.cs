@@ -7,7 +7,8 @@ public class TurnEngine : ITurnEngine
 {
     private readonly IRandomService _random;
     private readonly List<ServerCombatant> _combatants = new();
-    private Queue<ServerCombatant> _turnQueue = new();
+    private readonly List<ServerCombatant> _aliveBuffer = new();
+    private readonly Queue<ServerCombatant> _turnQueue = new();
 
     public IReadOnlyList<ServerCombatant> Participants => _combatants;
     public ServerCombatant? CurrentCombatant { get; private set; }
@@ -69,9 +70,16 @@ public class TurnEngine : ITurnEngine
 
     private void StartNewRound()
     {
-        var alive = _combatants.Where(c => c.Hp > 0).ToList();
+        _aliveBuffer.Clear();
+        foreach (var c in _combatants)
+        {
+            if (c.Hp > 0)
+            {
+                _aliveBuffer.Add(c);
+            }
+        }
 
-        if (alive.Count == 0)
+        if (_aliveBuffer.Count == 0)
         {
             _turnQueue.Clear();
             return;
@@ -79,18 +87,33 @@ public class TurnEngine : ITurnEngine
 
         // 1. Deterministic Shuffle for Tie-Breaking
         // Fisher-Yates shuffle
-        int n = alive.Count;
+        int n = _aliveBuffer.Count;
         for (int i = 0; i < n - 1; i++)
         {
             // Next(min, max) excludes max, so we want range [i, n)
             int r = _random.Next(i, n, "TurnShuffle");
-            (alive[r], alive[i]) = (alive[i], alive[r]);
+            (_aliveBuffer[r], _aliveBuffer[i]) = (_aliveBuffer[i], _aliveBuffer[r]);
         }
 
-        // 2. Stable Sort by SPD Descending
-        // LINQ OrderByDescending is stable.
-        var sorted = alive.OrderByDescending(c => c.Spd).ToList();
+        // 2. Stable Sort by SPD Descending using Insertion Sort
+        for (int i = 1; i < n; i++)
+        {
+            var key = _aliveBuffer[i];
+            int j = i - 1;
 
-        _turnQueue = new Queue<ServerCombatant>(sorted);
+            // Stable descending sort: keep elements with same Spd in their relative shuffled order.
+            while (j >= 0 && _aliveBuffer[j].Spd < key.Spd)
+            {
+                _aliveBuffer[j + 1] = _aliveBuffer[j];
+                j--;
+            }
+            _aliveBuffer[j + 1] = key;
+        }
+
+        _turnQueue.Clear();
+        foreach (var c in _aliveBuffer)
+        {
+            _turnQueue.Enqueue(c);
+        }
     }
 }

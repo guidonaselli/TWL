@@ -45,5 +45,9 @@ public enum ServerMessageType
     PlayerGuildKicked,
     PlayerGuildMemberAdded,
     PlayerGuildMemberRemoved,
-    PlayerGuildMemberUpdated
+    PlayerGuildMemberUpdated,
+    PlayerGuildRankUpdated,
+    PlayerGuildChatMessage,
+    PlayerGuildRosterSync,
+    PlayerGuildRosterUpdate
 }

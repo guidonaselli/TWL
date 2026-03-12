@@ -34,6 +34,7 @@ public class ServerCharacterData
     public long PremiumCurrency { get; set; }
     public long DailyGiftAccumulator { get; set; }
     public DateTime LastGiftResetDate { get; set; }
+    public DateTime LastLoginUtc { get; set; }
     public int MapId { get; set; }
     public float X { get; set; }
     public float Y { get; set; }
@@ -44,6 +45,8 @@ public class ServerCharacterData
     public List<SkillMasteryData> Skills { get; set; } = new();
     public string ActivePetInstanceId { get; set; }
     public Dictionary<string, DateTime> InstanceLockouts { get; set; } = new();
+
+    public List<TWL.Shared.Domain.DTO.RebirthHistoryRecord> RebirthHistory { get; set; } = new();
 }
 
 public class SkillMasteryData
