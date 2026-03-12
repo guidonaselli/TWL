@@ -1,3 +1,4 @@
+using Moq;
 using System;
 using System.Linq;
 using System.Threading.Tasks;
@@ -14,7 +15,7 @@ namespace TWL.Tests.Guild
         public void BroadcastMessage_SendsOnlyToSameGuild()
         {
             // Arrange
-            var guildManager = new GuildManager();
+            var guildManager = new GuildManager(new Mock<TWL.Shared.Domain.Guilds.IGuildRepository>().Object);
             var playerService = new PlayerService(null, null);
             var chatService = new GuildChatService(guildManager, playerService);
 

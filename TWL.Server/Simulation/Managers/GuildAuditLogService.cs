@@ -33,16 +33,12 @@ public class GuildAuditLogService
             Timestamp = DateTimeOffset.UtcNow
         };
 
-        _auditLogs.AddOrUpdate(guildId,
+        _auditLogs.AddOrUpdate(guildId, 
             id => new List<GuildAuditLogEntry> { entry },
             (id, list) => {
                 lock (list)
                 {
                     list.Add(entry);
-                    if (list.Count > 1000)
-                    {
-                        list.RemoveAt(0); // Cap history size to prevent unbounded memory growth
-                    }
                 }
                 return list;
             });

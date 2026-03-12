@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <root>
   <resheader name="resmimetype">
     <value>text/microsoft-resx</value>
@@ -474,5 +474,113 @@
   </data>
   <data name="UI_PARTY_ENTER_TO_CHAT" xml:space="preserve">
     <value>[Enter] to Chat</value>
+  </data>
+  <data name="QUEST_1301_TITLE" xml:space="preserve">
+    <value>Title 1301</value>
+  </data>
+  <data name="QUEST_1301_DESC" xml:space="preserve">
+    <value>Desc 1301</value>
+  </data>
+  <data name="QUEST_1301_OBJ" xml:space="preserve">
+    <value>Obj 1301</value>
+  </data>
+  <data name="QUEST_1302_TITLE" xml:space="preserve">
+    <value>Title 1302</value>
+  </data>
+  <data name="QUEST_1302_DESC" xml:space="preserve">
+    <value>Desc 1302</value>
+  </data>
+  <data name="QUEST_1302_OBJ" xml:space="preserve">
+    <value>Obj 1302</value>
+  </data>
+  <data name="QUEST_1303_TITLE" xml:space="preserve">
+    <value>Title 1303</value>
+  </data>
+  <data name="QUEST_1303_DESC" xml:space="preserve">
+    <value>Desc 1303</value>
+  </data>
+  <data name="QUEST_1303_OBJ" xml:space="preserve">
+    <value>Obj 1303</value>
+  </data>
+  <data name="QUEST_1304_TITLE" xml:space="preserve">
+    <value>Title 1304</value>
+  </data>
+  <data name="QUEST_1304_DESC" xml:space="preserve">
+    <value>Desc 1304</value>
+  </data>
+  <data name="QUEST_1304_OBJ" xml:space="preserve">
+    <value>Obj 1304</value>
+  </data>
+  <data name="QUEST_1305_TITLE" xml:space="preserve">
+    <value>Title 1305</value>
+  </data>
+  <data name="QUEST_1305_DESC" xml:space="preserve">
+    <value>Desc 1305</value>
+  </data>
+  <data name="QUEST_1305_OBJ" xml:space="preserve">
+    <value>Obj 1305</value>
+  </data>
+  <data name="QUEST_1306_TITLE" xml:space="preserve">
+    <value>Title 1306</value>
+  </data>
+  <data name="QUEST_1306_DESC" xml:space="preserve">
+    <value>Desc 1306</value>
+  </data>
+  <data name="QUEST_1306_OBJ" xml:space="preserve">
+    <value>Obj 1306</value>
+  </data>
+  <data name="QUEST_1307_TITLE" xml:space="preserve">
+    <value>Title 1307</value>
+  </data>
+  <data name="QUEST_1307_DESC" xml:space="preserve">
+    <value>Desc 1307</value>
+  </data>
+  <data name="QUEST_1307_OBJ" xml:space="preserve">
+    <value>Obj 1307</value>
+  </data>
+  <data name="QUEST_1401_TITLE" xml:space="preserve">
+    <value>Title 1401</value>
+  </data>
+  <data name="QUEST_1401_DESC" xml:space="preserve">
+    <value>Desc 1401</value>
+  </data>
+  <data name="QUEST_1401_OBJ" xml:space="preserve">
+    <value>Obj 1401</value>
+  </data>
+  <data name="QUEST_1402_TITLE" xml:space="preserve">
+    <value>Title 1402</value>
+  </data>
+  <data name="QUEST_1402_DESC" xml:space="preserve">
+    <value>Desc 1402</value>
+  </data>
+  <data name="QUEST_1402_OBJ" xml:space="preserve">
+    <value>Obj 1402</value>
+  </data>
+  <data name="QUEST_1403_TITLE" xml:space="preserve">
+    <value>Title 1403</value>
+  </data>
+  <data name="QUEST_1403_DESC" xml:space="preserve">
+    <value>Desc 1403</value>
+  </data>
+  <data name="QUEST_1403_OBJ" xml:space="preserve">
+    <value>Obj 1403</value>
+  </data>
+  <data name="QUEST_1404_TITLE" xml:space="preserve">
+    <value>Title 1404</value>
+  </data>
+  <data name="QUEST_1404_DESC" xml:space="preserve">
+    <value>Desc 1404</value>
+  </data>
+  <data name="QUEST_1404_OBJ" xml:space="preserve">
+    <value>Obj 1404</value>
+  </data>
+  <data name="QUEST_2401_TITLE" xml:space="preserve">
+    <value>Title 2401</value>
+  </data>
+  <data name="QUEST_2401_DESC" xml:space="preserve">
+    <value>Desc 2401</value>
+  </data>
+  <data name="QUEST_2401_OBJ" xml:space="preserve">
+    <value>Obj 2401</value>
   </data>
 </root>

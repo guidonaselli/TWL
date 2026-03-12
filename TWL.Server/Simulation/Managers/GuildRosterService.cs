@@ -38,9 +38,9 @@ public class GuildRosterService
             syncEvent.Members.Add(CreateMemberDto(guild, pId));
         }
 
-        var msg = new TWL.Shared.Net.Network.NetMessage
-        {
-            Op = TWL.Shared.Net.Network.Opcode.GuildRosterSync,
+        var msg = new TWL.Shared.Net.Network.NetMessage 
+        { 
+            Op = TWL.Shared.Net.Network.Opcode.GuildRosterSync, 
             JsonPayload = System.Text.Json.JsonSerializer.Serialize(syncEvent, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
         };
         _ = session.SendAsync(msg);
@@ -57,9 +57,9 @@ public class GuildRosterService
             IsRemoved = isRemoved
         };
 
-        var msg = new TWL.Shared.Net.Network.NetMessage
-        {
-            Op = TWL.Shared.Net.Network.Opcode.GuildRosterUpdate,
+        var msg = new TWL.Shared.Net.Network.NetMessage 
+        { 
+            Op = TWL.Shared.Net.Network.Opcode.GuildRosterUpdate, 
             JsonPayload = System.Text.Json.JsonSerializer.Serialize(updateEvent, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
         };
 

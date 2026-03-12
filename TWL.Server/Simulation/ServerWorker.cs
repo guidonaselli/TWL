@@ -38,7 +38,9 @@ public class ServerWorker : IHostedService
     private readonly InstanceService _instanceService;
     private readonly CombatManager _combatManager;
 
-    public ServerWorker(INetworkServer net, IDbService db, ILogger<ServerWorker> log, PetManager petManager,
+    private readonly IGuildService _guildService;
+
+    public ServerWorker(INetworkServer net, IDbService db, ILogger<ServerWorker> log, PetManager petManager, IGuildService guildService,
         ServerQuestManager questManager, InteractionManager interactionManager, PlayerService playerService,
         IWorldScheduler worldScheduler, ServerMetrics metrics, IMapRegistry mapRegistry,
         IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager,
@@ -48,6 +50,7 @@ public class ServerWorker : IHostedService
         _net = net;
         _db = db;
         _log = log;
+        _guildService = guildService;
         _petManager = petManager;
         _questManager = questManager;
         _interactionManager = interactionManager;
@@ -64,7 +67,7 @@ public class ServerWorker : IHostedService
         _combatManager = combatManager;
     }
 
-    public Task StartAsync(CancellationToken ct)
+    public async Task StartAsync(CancellationToken ct)
     {
         _healthCheck.SetStatus(ServerStatus.Starting);
         _log.LogInformation("Init DB...");
@@ -86,6 +89,7 @@ public class ServerWorker : IHostedService
 
         _log.LogInformation("Starting persistence service...");
         _playerService.Start();
+        await _guildService.InitializeAsync();
 
         _log.LogInformation("Loading Game Data...");
         _monsterManager.Load("Content/Data/monsters.json");
@@ -178,7 +182,7 @@ public class ServerWorker : IHostedService
         _log.LogInformation("Starting server...");
         _net.Start();
         _healthCheck.SetStatus(ServerStatus.Healthy);
-        return Task.CompletedTask;
+        return;
     }
 
     public async Task StopAsync(CancellationToken ct)

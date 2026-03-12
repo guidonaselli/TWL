@@ -18,7 +18,7 @@ public class GuildRankHierarchyTests
     {
         Assert.True(_service.CanPromoteDemote(GuildRank.Leader, GuildRank.Recruit, GuildRank.Member));
         Assert.True(_service.CanPromoteDemote(GuildRank.Leader, GuildRank.Member, GuildRank.Officer));
-
+        
         // Cannot promote to Leader
         Assert.False(_service.CanPromoteDemote(GuildRank.Leader, GuildRank.Officer, GuildRank.Leader));
     }
@@ -27,7 +27,7 @@ public class GuildRankHierarchyTests
     public void Officer_CanPromote_UpToMember()
     {
         Assert.True(_service.CanPromoteDemote(GuildRank.Officer, GuildRank.Recruit, GuildRank.Member));
-
+        
         // Officer cannot promote Member to Officer
         Assert.False(_service.CanPromoteDemote(GuildRank.Officer, GuildRank.Member, GuildRank.Officer));
     }

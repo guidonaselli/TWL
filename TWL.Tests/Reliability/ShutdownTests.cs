@@ -40,6 +40,7 @@ public class ShutdownTests
             mockDb.Object,
             mockLog.Object,
             null!, // PetManager
+            null!, // GuildService
             null!, // ServerQuestManager
             null!, // InteractionManager
             mockPlayerService.Object,

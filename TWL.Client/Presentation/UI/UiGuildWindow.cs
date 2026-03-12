@@ -52,7 +52,7 @@ public class UiGuildWindow : UiWindow
 
         base.Update(gameTime, mouse, keyboard);
 
-        if (!_showWindow)
+        if (!_showWindow) 
         {
             _lastKeyboardState = keyboard;
             return;
@@ -138,7 +138,7 @@ public class UiGuildWindow : UiWindow
         sb.DrawString(_font, "Guild Roster & Chat", new Vector2(_bounds.X + 5, _bounds.Y + 5), Color.Yellow);
 
         int yOffset = 25;
-
+        
         // Render Roster
         var onlineCount = _clientManager.GuildRoster.Count(m => m.IsOnline);
         sb.DrawString(_font, $"Members Online: {onlineCount}/{_clientManager.GuildRoster.Count}", new Vector2(_bounds.X + 5, _bounds.Y + yOffset), Color.LightGray);

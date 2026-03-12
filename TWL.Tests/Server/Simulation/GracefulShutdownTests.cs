@@ -70,6 +70,7 @@ public class GracefulShutdownTests
             mockDb.Object,
             mockLog.Object,
             mockPetManager.Object,
+            null!, // GuildService
             mockQuestManager.Object,
             mockInteractionManager.Object,
             mockPlayerService.Object,
@@ -81,7 +82,8 @@ public class GracefulShutdownTests
             mockSpawnManager.Object,
             mockLoggerFactory.Object,
             mockHealthCheck.Object,
-            new Mock<InstanceService>(metrics).Object, mockCombatManager.Object
+            new Mock<InstanceService>(metrics).Object, 
+            mockCombatManager.Object
         );
 
         // Act

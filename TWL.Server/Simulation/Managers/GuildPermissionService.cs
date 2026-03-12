@@ -26,10 +26,10 @@ public class GuildPermissionService
     {
         // Must have Promote/Demote permission entirely
         bool isPromotion = newRank > targetCurrentRank;
-
+        
         if (isPromotion && !HasPermission(actorRank, GuildPermissions.Promote))
             return false;
-
+            
         if (!isPromotion && !HasPermission(actorRank, GuildPermissions.Demote))
             return false;
 

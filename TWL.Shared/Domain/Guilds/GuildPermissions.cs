@@ -11,7 +11,7 @@ public enum GuildPermissions
     Promote = 1 << 2,
     Demote = 1 << 3,
     WithdrawStorage = 1 << 4,
-
+    
     // Derived shorthand
     All = Invite | Kick | Promote | Demote | WithdrawStorage
 }

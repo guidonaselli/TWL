@@ -59,9 +59,9 @@ public class GuildChatService
             var session = _playerService.GetSession(memberId);
             if (session != null)
             {
-                var msg = new TWL.Shared.Net.Network.NetMessage
-                {
-                    Op = TWL.Shared.Net.Network.Opcode.GuildChatBroadcast,
+                var msg = new TWL.Shared.Net.Network.NetMessage 
+                { 
+                    Op = TWL.Shared.Net.Network.Opcode.GuildChatBroadcast, 
                     JsonPayload = System.Text.Json.JsonSerializer.Serialize(chatEventDto, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
                 };
                 _ = session.SendAsync(msg);
@@ -88,9 +88,9 @@ public class GuildChatService
             if (snapshot.Count > 0)
             {
                 var payload = new GuildChatBacklog { Messages = snapshot };
-                var msg = new TWL.Shared.Net.Network.NetMessage
-                {
-                    Op = TWL.Shared.Net.Network.Opcode.GuildChatBacklog,
+                var msg = new TWL.Shared.Net.Network.NetMessage 
+                { 
+                    Op = TWL.Shared.Net.Network.Opcode.GuildChatBacklog, 
                     JsonPayload = System.Text.Json.JsonSerializer.Serialize(payload, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
                 };
                 _ = session.SendAsync(msg);

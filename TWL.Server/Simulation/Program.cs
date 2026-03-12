@@ -20,6 +20,7 @@ using TWL.Server.Simulation;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.Guilds;
 using TWL.Shared.Domain.Skills;
 using TWL.Shared.Services;
 
@@ -120,6 +121,12 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<IDbContextFactory<GameDbContext>>(),
                 sp.GetRequiredService<IDapperService>(),
                 sp.GetRequiredService<ILogger<DbPlayerRepository>>()));
+
+        svcs.AddSingleton<IGuildRepository>(sp =>
+            new DbGuildRepository(
+                sp.GetRequiredService<IDbContextFactory<GameDbContext>>(),
+                sp.GetRequiredService<IDapperService>(),
+                sp.GetRequiredService<ILogger<DbGuildRepository>>()));
         svcs.AddSingleton<PlayerService>();
         svcs.AddSingleton<PetService>();
 

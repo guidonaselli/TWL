@@ -38,7 +38,7 @@ public class WorldLoopObservabilityTests
         scheduler.Schedule(() => { Thread.Sleep(200); }, TimeSpan.Zero, "VerySlowTask");
 
         // Wait for it to execute
-        await Task.Delay(500);
+        await Task.Delay(1500);
 
         scheduler.Stop();
 

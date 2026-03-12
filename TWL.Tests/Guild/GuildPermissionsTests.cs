@@ -47,7 +47,7 @@ public class GuildPermissionsTests
         Assert.False(_service.HasPermission(GuildRank.Recruit, GuildPermissions.Invite));
         Assert.False(_service.HasPermission(GuildRank.Recruit, GuildPermissions.Kick));
     }
-
+    
     [Fact]
     public void Leader_CanKickAnyoneBelowThem()
     {
@@ -62,7 +62,7 @@ public class GuildPermissionsTests
     {
         Assert.True(_service.CanKick(GuildRank.Officer, GuildRank.Member));
         Assert.True(_service.CanKick(GuildRank.Officer, GuildRank.Recruit));
-
+        
         Assert.False(_service.CanKick(GuildRank.Officer, GuildRank.Officer));
         Assert.False(_service.CanKick(GuildRank.Officer, GuildRank.Leader));
     }
