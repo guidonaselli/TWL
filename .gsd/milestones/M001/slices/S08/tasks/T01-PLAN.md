@@ -15,6 +15,22 @@ Output: Compound service interface/manager, shared DTOs, enhancement item fields
 - [ ] "Equipment enhancement metadata persists across save/load without losing level or bonus information"
 - [ ] "Compound service is registered in runtime DI and reachable by server handlers"
 
+## Steps
+
+1. **Define DTOs**: Create `CompoundDTOs.cs` for request/response contracts.
+2. **Update Domain**: Add `EnhancementLevel` and `BonusStats` to `Item.cs`.
+3. **Define Interface**: Create `ICompoundService.cs` with `ProcessCompoundRequest` method.
+4. **Implement Manager**: Create `CompoundManager.cs` as a stub implementation (to be fleshed out in T03).
+5. **Update Persistence**: Ensure `ServerCharacter` properly serializes/deserializes the new item fields.
+6. **Register Service**: Add `CompoundManager` to `Program.cs` DI container.
+7. **Verification**: Implement `CompoundContractTests.cs` and run them.
+
+## Observability Impact
+
+- **Signal Changes**: Adding `ICompoundService` for tracking compound lifecycle.
+- **Inspection**: Future agents can check `CompoundManager` logs for operation flow.
+- **Failure Visibility**: `CompoundPersistenceError` will fire if enhancement data is lost during session transitions.
+
 ## Files
 
 - `TWL.Server/Simulation/Managers/ICompoundService.cs`

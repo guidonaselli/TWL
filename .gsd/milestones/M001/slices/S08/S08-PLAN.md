@@ -3,12 +3,17 @@
 **Goal:** Create Phase 8 compound foundation contracts and persistence metadata.
 **Demo:** Create Phase 8 compound foundation contracts and persistence metadata.
 
-## Must-Haves
+## Verification
+
+- [ ] **Phase 8 Contract Check**: Run `CompoundContractTests` to ensure interface and DTO alignment.
+- [ ] **Persistence Check**: Verify item enhancement data survives server reload.
+- [ ] **Outcome Traceability Check**: Verify `CompoundOperationCompleted` logs contain outcome details (Success/Fail/Break).
+- [ ] **Full Integration**: Execute client-to-server compound flow in test environment.
 
 
 ## Tasks
 
-- [ ] **T01: 08-compound-system 01**
+- [x] **T01: 08-compound-system 01**
   - Create Phase 8 compound foundation contracts and persistence metadata.
 
 Purpose: This establishes the server-authoritative base required for all compound NPC, formula, and fee mechanics.
@@ -33,6 +38,16 @@ Output: Economy fee extension, compound idempotency integration, session forward
 
 Purpose: This closes the loop so Phase 8 is executable end-to-end and validated against CMP-01..CMP-06.
 Output: Client server-driven compound flow integration plus integration/acceptance tests.
+
+## Observability / Diagnostics
+
+- **Log Source:** `CompoundManager`
+- **Key Signals:**
+  - `CompoundOperationStarted`: Triggered when a compound request is received.
+  - `CompoundOperationCompleted`: Triggered when an outcome is determined (Success/Fail/Break).
+  - `CompoundPersistenceError`: Triggered if item enhancement data fails to save/load.
+- **Inspection Surfaces:** `ServerCharacter.Inventory` will now include `EnhancementLevel` and `EnhancementStats` metadata.
+- **Redaction:** No PII involved.
 
 ## Files Likely Touched
 

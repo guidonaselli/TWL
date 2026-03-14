@@ -92,13 +92,16 @@ public class ServerCharacter : ServerCombatant
                     _bankCache = _bank.Select(i => new Item
                     {
                         ItemId = i.ItemId,
+                        InstanceId = i.InstanceId,
                         Name = i.Name,
                         Type = i.Type,
                         MaxStack = i.MaxStack,
                         Quantity = i.Quantity,
                         ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
                         Policy = i.Policy,
-                        BoundToId = i.BoundToId
+                        BoundToId = i.BoundToId,
+                        EnhancementLevel = i.EnhancementLevel,
+                        EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
                     }).ToArray();
                 }
 
@@ -283,13 +286,16 @@ public class ServerCharacter : ServerCombatant
                     _inventoryCache = _inventory.Select(i => new Item
                     {
                         ItemId = i.ItemId,
+                        InstanceId = i.InstanceId,
                         Name = i.Name,
                         Type = i.Type,
                         MaxStack = i.MaxStack,
                         Quantity = i.Quantity,
                         ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
                         Policy = i.Policy,
-                        BoundToId = i.BoundToId
+                        BoundToId = i.BoundToId,
+                        EnhancementLevel = i.EnhancementLevel,
+                        EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
                     }).ToArray();
                 }
 
@@ -309,13 +315,16 @@ public class ServerCharacter : ServerCombatant
                     _equipmentCache = _equipment.Select(i => new Item
                     {
                         ItemId = i.ItemId,
+                        InstanceId = i.InstanceId,
                         Name = i.Name,
                         Type = i.Type,
                         MaxStack = i.MaxStack,
                         Quantity = i.Quantity,
                         ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
                         Policy = i.Policy,
-                        BoundToId = i.BoundToId
+                        BoundToId = i.BoundToId,
+                        EnhancementLevel = i.EnhancementLevel,
+                        EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
                     }).ToArray();
                 }
 
@@ -683,8 +692,8 @@ public class ServerCharacter : ServerCombatant
 
         lock (_inventory)
         {
-            // Only stack if ID, Policy and BoundToId match
-            var existing = _inventory.Find(i => i.ItemId == itemId && i.Policy == policy && i.BoundToId == boundToId);
+            // Only stack if ID, Policy, BoundToId and EnhancementLevel match
+            var existing = _inventory.Find(i => i.ItemId == itemId && i.Policy == policy && i.BoundToId == boundToId && i.EnhancementLevel == 0);
             if (existing != null)
             {
                 existing.Quantity += quantity;
@@ -752,12 +761,15 @@ public class ServerCharacter : ServerCombatant
                 modifiedItem = new Item
                 {
                     ItemId = item.ItemId,
+                    InstanceId = item.InstanceId,
                     Name = item.Name,
                     Type = item.Type,
                     MaxStack = item.MaxStack,
                     Quantity = item.Quantity,
                     Policy = item.Policy,
-                    BoundToId = item.BoundToId
+                    BoundToId = item.BoundToId,
+                    EnhancementLevel = item.EnhancementLevel,
+                    EnhancementStats = item.EnhancementStats != null ? new Dictionary<string, float>(item.EnhancementStats) : null
                 };
                 return true;
             }
@@ -772,12 +784,15 @@ public class ServerCharacter : ServerCombatant
                 modifiedItem = new Item
                 {
                     ItemId = item.ItemId,
+                    InstanceId = item.InstanceId,
                     Name = item.Name,
                     Type = item.Type,
                     MaxStack = item.MaxStack,
                     Quantity = item.Quantity,
                     Policy = item.Policy,
-                    BoundToId = item.BoundToId
+                    BoundToId = item.BoundToId,
+                    EnhancementLevel = item.EnhancementLevel,
+                    EnhancementStats = item.EnhancementStats != null ? new Dictionary<string, float>(item.EnhancementStats) : null
                 };
 
                 // Update Total Quantities Cache
@@ -898,12 +913,15 @@ public class ServerCharacter : ServerCombatant
                     results.Add(new Item
                     {
                         ItemId = item.ItemId,
+                        InstanceId = item.InstanceId,
                         Name = item.Name,
                         Type = item.Type,
                         MaxStack = item.MaxStack,
                         Quantity = item.Quantity,
                         Policy = item.Policy,
-                        BoundToId = item.BoundToId
+                        BoundToId = item.BoundToId,
+                        EnhancementLevel = item.EnhancementLevel,
+                        EnhancementStats = item.EnhancementStats != null ? new Dictionary<string, float>(item.EnhancementStats) : null
                     });
                 }
             }
@@ -1066,13 +1084,16 @@ public class ServerCharacter : ServerCombatant
             data.Inventory = _inventory.Select(i => new Item
             {
                 ItemId = i.ItemId,
+                InstanceId = i.InstanceId,
                 Name = i.Name,
                 Type = i.Type,
                 MaxStack = i.MaxStack,
                 Quantity = i.Quantity,
                 ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
                 Policy = i.Policy,
-                BoundToId = i.BoundToId
+                BoundToId = i.BoundToId,
+                EnhancementLevel = i.EnhancementLevel,
+                EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
             }).ToList();
         }
 
@@ -1081,13 +1102,16 @@ public class ServerCharacter : ServerCombatant
             data.Equipment = _equipment.Select(i => new Item
             {
                 ItemId = i.ItemId,
+                InstanceId = i.InstanceId,
                 Name = i.Name,
                 Type = i.Type,
                 MaxStack = i.MaxStack,
                 Quantity = i.Quantity,
                 ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
                 Policy = i.Policy,
-                BoundToId = i.BoundToId
+                BoundToId = i.BoundToId,
+                EnhancementLevel = i.EnhancementLevel,
+                EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
             }).ToList();
         }
 
@@ -1096,13 +1120,16 @@ public class ServerCharacter : ServerCombatant
             data.Bank = _bank.Select(i => new Item
             {
                 ItemId = i.ItemId,
+                InstanceId = i.InstanceId,
                 Name = i.Name,
                 Type = i.Type,
                 MaxStack = i.MaxStack,
                 Quantity = i.Quantity,
                 ForgeSuccessRateBonus = i.ForgeSuccessRateBonus,
                 Policy = i.Policy,
-                BoundToId = i.BoundToId
+                BoundToId = i.BoundToId,
+                EnhancementLevel = i.EnhancementLevel,
+                EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
             }).ToList();
         }
 
