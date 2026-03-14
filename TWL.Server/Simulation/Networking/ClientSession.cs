@@ -61,7 +61,7 @@ public class ClientSession
     private static int _nextConnectionId = -1;
     private readonly int _connectionId = Interlocked.Decrement(ref _nextConnectionId);
 
-    public int UserId = -1; // se setea tras login
+    public virtual int UserId { get; set; } = -1; // se setea tras login
     private DateTime _lastMoveTimeUtc = DateTime.UtcNow;
 
     protected ClientSession()

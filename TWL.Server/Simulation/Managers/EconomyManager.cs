@@ -54,9 +54,16 @@ public class EconomyManager : IEconomyService, IDisposable
     private int _cleanupCounter;
     private int _isCleaningUp;
 
+    public double MarketTaxRate { get; private set; } = 0.05;
+
     public EconomyManager(string ledgerFile = "economy_ledger.log", string? providerSecret = null)
     {
         _providerSecret = providerSecret ?? Environment.GetEnvironmentVariable("ECONOMY_SECRET") ?? "TEST_SECRET_DEFAULT";
+        
+        if (double.TryParse(Environment.GetEnvironmentVariable("MARKET_TAX_RATE"), out var rate))
+        {
+            MarketTaxRate = rate;
+        }
         if (_providerSecret == "TEST_SECRET_DEFAULT")
         {
             Console.WriteLine("Warning: EconomyManager using TEST_SECRET_DEFAULT. Do not use in Production.");

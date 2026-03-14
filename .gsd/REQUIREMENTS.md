@@ -218,6 +218,22 @@ Player can cancel own listing before purchase (item returned to inventory)
 
 Market displays price history showing min/avg/max prices for last N transactions per item
 
+### MKT-03 — Player can purchase listing with atomic gold/item transfer and automatic tax deduction
+- Status: validated
+- Class: core-capability
+- Source: inferred
+- Primary Slice: S07
+
+Player can purchase listing with atomic gold/item transfer and automatic tax deduction
+
+### MKT-06 — Transaction fees (5-10% configurable) are deducted from seller proceeds as economy sink
+- Status: validated
+- Class: core-capability
+- Source: inferred
+- Primary Slice: S07
+
+Transaction fees (5-10% configurable) are deducted from seller proceeds as economy sink
+
 ### MKT-07 — Listings expire after configured duration and items return to seller inventory
 - Status: validated
 - Class: core-capability
@@ -225,6 +241,14 @@ Market displays price history showing min/avg/max prices for last N transactions
 - Primary Slice: S07
 
 Listings expire after configured duration and items return to seller inventory
+
+### MKT-08 — Direct player-to-player trade window for face-to-face trading with both-party confirmation
+- Status: validated
+- Class: core-capability
+- Source: inferred
+- Primary Slice: S07
+
+Direct player-to-player trade window for face-to-face trading with both-party confirmation
 
 ### CONT-01 — `items.json` contains 200+ items across 8 tiers (Lv1-100) covering consumables, crafting materials, quest items
 - Status: validated
@@ -259,30 +283,6 @@ Party UI displays all members with real-time HP/MP/status sync
 - Primary Slice: S04
 
 Party chat channel provides private communication for coordination
-
-### MKT-03 — Player can purchase listing with atomic gold/item transfer and automatic tax deduction
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S07
-
-Player can purchase listing with atomic gold/item transfer and automatic tax deduction
-
-### MKT-06 — Transaction fees (5-10% configurable) are deducted from seller proceeds as economy sink
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S07
-
-Transaction fees (5-10% configurable) are deducted from seller proceeds as economy sink
-
-### MKT-08 — Direct player-to-player trade window for face-to-face trading with both-party confirmation
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S07
-
-Direct player-to-player trade window for face-to-face trading with both-party confirmation
 
 ### CMP-01 — Player can access compound NPC to enhance equipment
 - Status: active

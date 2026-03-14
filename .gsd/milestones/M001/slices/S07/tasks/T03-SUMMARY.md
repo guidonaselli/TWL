@@ -31,3 +31,7 @@ Implemented market browsing and analytics.
 #### Verification Results
 - `HandleMarketSearchRequest_Calls_MarketService_And_SendsResponse` test passed.
 - Search filters were verified through `MarketQueryService` implementation.
+
+## Diagnostics
+- **Search Logs**: Verify `MarketQueryService` logs search parameters and result counts.
+- **Analytics**: Verify `GetPriceHistory` returns min/avg/max for specific item IDs.

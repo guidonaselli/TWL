@@ -15,4 +15,9 @@ public interface IEconomyService
 
     EconomyOperationResultDTO GiftShopItem(ServerCharacter giver, ServerCharacter receiver, int shopItemId,
         int quantity, string operationId, string? traceId = null);
+
+    /// <summary>
+    /// Gets the current market tax rate (0.0 to 1.0).
+    /// </summary>
+    double MarketTaxRate { get; }
 }

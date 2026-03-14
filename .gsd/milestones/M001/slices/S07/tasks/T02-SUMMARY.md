@@ -31,3 +31,7 @@ Implemented listing lifecycle operations including creation, cancellation, and e
 #### Verification Results
 - `MarketContractTests` verified listing creation and cancellation.
 - Expiration logic was verified through domain service tests.
+
+## Diagnostics
+- **Logs**: Search for "Listing created", "Listing cancelled", or "Listing expired" in server logs.
+- **Scheduler**: Log output from `MarketListingScheduler` confirms it is polling for expired items.

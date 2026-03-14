@@ -38,6 +38,7 @@ public class ServerWorker : IHostedService
     private readonly InstanceService _instanceService;
     private readonly CombatManager _combatManager;
     private readonly IRebirthService _rebirthService;
+    private readonly IMarketService _marketService;
 
     private readonly IGuildService _guildService;
 
@@ -46,7 +47,7 @@ public class ServerWorker : IHostedService
         IWorldScheduler worldScheduler, ServerMetrics metrics, IMapRegistry mapRegistry,
         IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager,
         ILoggerFactory loggerFactory, HealthCheckService healthCheck, InstanceService instanceService,
-        CombatManager combatManager, IRebirthService rebirthService)
+        CombatManager combatManager, IRebirthService rebirthService, IMarketService marketService)
     {
         _net = net;
         _db = db;
@@ -67,6 +68,7 @@ public class ServerWorker : IHostedService
         _instanceService = instanceService;
         _combatManager = combatManager;
         _rebirthService = rebirthService;
+        _marketService = marketService;
     }
 
     public async Task StartAsync(CancellationToken ct)
@@ -92,6 +94,7 @@ public class ServerWorker : IHostedService
         _log.LogInformation("Starting persistence service...");
         _playerService.Start();
         await _guildService.InitializeAsync();
+        await _marketService.InitializeAsync();
 
         _log.LogInformation("Loading Game Data...");
         _monsterManager.Load("Content/Data/monsters.json");

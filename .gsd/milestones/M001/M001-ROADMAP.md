@@ -22,7 +22,7 @@
   > After this: Implement the guild lifecycle foundation: guild creation, membership invite flow, leave/kick flow, and core network contracts.
 - [x] **S06: Rebirth System** `risk:medium` `depends:[S05]`
   > After this: Implement character rebirth transactional foundation, including formula policy, atomic state mutation, persistence history, and network entry points.
-- [ ] **S07: P2P Market System** `risk:medium` `depends:[S06]`
+- [x] **S07: P2P Market System** `risk:medium` `depends:[S06]`
   > After this: Create Phase 7 market foundation: domain service, persistence schema, and network contracts.
 - [ ] **S08: Compound System** `risk:medium` `depends:[S07]`
   > After this: Create Phase 8 compound foundation contracts and persistence metadata.

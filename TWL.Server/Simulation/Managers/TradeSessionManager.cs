@@ -199,82 +199,13 @@ public class TradeSessionManager
             return;
         }
 
-        // 1. Validate both have the gold/items staged
-        // (Handled by TradeManager.TransferItem during execution, but we should pre-check)
-        
-        bool success = true;
-        
-        // Use a transaction-like flow (though TradeManager does it per item)
-        // For direct trade, we need to move multiple items and gold.
-        
-        // Gold transfer
-        if (session.InitiatorOffer.Gold > 0)
-        {
-            if (initiator.Gold < session.InitiatorOffer.Gold) success = false;
-        }
-        if (session.ReceiverOffer.Gold > 0)
-        {
-            if (receiver.Gold < session.ReceiverOffer.Gold) success = false;
-        }
-        
-        if (!success)
-        {
-            session.IsCancelled = true;
-            await BroadcastStateAsync(session);
-            CleanupSession(session);
-            return;
-        }
-
         // Execute transfers
-        // This is complex because we want it to be atomic. 
-        // TradeManager.TransferItem is mostly atomic for ONE item type.
-        // For multi-item trade, we should ideally have a multi-item transfer method.
-        
-        // Let's implement a simple version that uses TradeManager.TransferItem
-        // In a real production system, this would be wrapped in a single DB transaction.
-        
-        // Move Initiator -> Receiver
-        foreach (var item in session.InitiatorOffer.Items)
-        {
-            if (!_tradeManager.TransferItem(initiator, receiver, item.ItemId, item.Quantity))
-            {
-                success = false;
-                break;
-            }
-        }
-        
-        if (success && session.InitiatorOffer.Gold > 0)
-        {
-            if (initiator.TryConsumeGold((int)session.InitiatorOffer.Gold))
-            {
-                receiver.AddGold((int)session.InitiatorOffer.Gold);
-            }
-            else success = false;
-        }
-        
-        // Move Receiver -> Initiator
-        if (success)
-        {
-            foreach (var item in session.ReceiverOffer.Items)
-            {
-                if (!_tradeManager.TransferItem(receiver, initiator, item.ItemId, item.Quantity))
-                {
-                    success = false;
-                    // Note: Rollback of previous items would be needed here for true atomicity!
-                    // For now, we rely on TradeManager's internal validation.
-                    break;
-                }
-            }
-            
-            if (success && session.ReceiverOffer.Gold > 0)
-            {
-                if (receiver.TryConsumeGold((int)session.ReceiverOffer.Gold))
-                {
-                    initiator.AddGold((int)session.ReceiverOffer.Gold);
-                }
-                else success = false;
-            }
-        }
+        var p1ToP2Items = session.InitiatorOffer.Items.Select(i => (i.ItemId, i.Quantity)).ToList();
+        var p2ToP1Items = session.ReceiverOffer.Items.Select(i => (i.ItemId, i.Quantity)).ToList();
+
+        bool success = _tradeManager.TransferItemsBatch(initiator, receiver, 
+            p1ToP2Items, session.InitiatorOffer.Gold, 
+            p2ToP1Items, session.ReceiverOffer.Gold);
 
         if (success)
         {

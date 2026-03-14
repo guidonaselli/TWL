@@ -22,6 +22,7 @@ public class MarketIdempotencyTests
         _economyMock = new Mock<IEconomyService>();
         _tradeMock = new Mock<TradeManager>();
         _dbMock = new Mock<IDbService>();
+        _economyMock.Setup(e => e.MarketTaxRate).Returns(0.05);
         
         var repoMock = new Mock<TWL.Server.Persistence.IPlayerRepository>();
         var metricsMock = new Mock<TWL.Server.Simulation.Managers.ServerMetrics>();

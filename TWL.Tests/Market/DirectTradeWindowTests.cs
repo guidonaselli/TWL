@@ -1,104 +1,121 @@
-using System.Text.Json;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Moq;
+using TWL.Server.Persistence.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.DTO;
+using TWL.Shared.Domain.Models;
 using TWL.Shared.Net.Network;
-using TWL.Server.Persistence.Services;
+using Xunit;
 
 namespace TWL.Tests.Market;
 
 public class DirectTradeWindowTests
 {
-    private readonly Mock<PlayerService> _playerMock;
-    private readonly Mock<TradeManager> _tradeMock;
-    private readonly TradeSessionManager _tradeSessionManager;
+    private readonly Mock<PlayerService> _playerServiceMock;
+    private readonly TradeManager _tradeManager;
+    private readonly TradeSessionManager _sessionManager;
 
     public DirectTradeWindowTests()
     {
-        var repoMock = new Mock<TWL.Server.Persistence.IPlayerRepository>();
-        var metricsMock = new Mock<TWL.Server.Simulation.Managers.ServerMetrics>();
-        _playerMock = new Mock<PlayerService>(repoMock.Object, metricsMock.Object);
-        _tradeMock = new Mock<TradeManager>();
-        
-        _tradeSessionManager = new TradeSessionManager(_playerMock.Object, _tradeMock.Object);
+        _playerServiceMock = new Mock<PlayerService>(null, null);
+        _tradeManager = new TradeManager();
+        _sessionManager = new TradeSessionManager(_playerServiceMock.Object, _tradeManager);
     }
 
     [Fact]
-    public async Task TradeRequest_Sends_RequestToTarget()
+    public async Task Trade_SuccessfulExchange_MovesItemsAndGold()
     {
         // Arrange
-        var inviterId = 1;
-        var targetId = 2;
-        
-        var inviterSession = new Mock<ClientSession>();
-        inviterSession.Setup(s => s.Character).Returns(new ServerCharacter { Id = 1, Name = "Inviter" });
-        
-        var targetSession = new Mock<ClientSession>();
-        targetSession.Setup(s => s.Character).Returns(new ServerCharacter { Id = 2, Name = "Target" });
+        var p1Id = 1;
+        var p2Id = 2;
 
-        _playerMock.Setup(p => p.GetSession(inviterId)).Returns(inviterSession.Object);
-        _playerMock.Setup(p => p.GetSession(targetId)).Returns(targetSession.Object);
+        var p1 = new ServerCharacter { Id = p1Id, Name = "P1", Gold = 1000 };
+        var p2 = new ServerCharacter { Id = p2Id, Name = "P2", Gold = 1000 };
+
+        p1.AddItem(10, 5); // 5x Item 10
+        p2.AddItem(20, 3); // 3x Item 20
+
+        var s1Mock = new Mock<ClientSession>();
+        s1Mock.SetupGet(s => s.Character).Returns(p1);
+        s1Mock.SetupGet(s => s.UserId).Returns(p1Id);
+
+        var s2Mock = new Mock<ClientSession>();
+        s2Mock.SetupGet(s => s.Character).Returns(p2);
+        s2Mock.SetupGet(s => s.UserId).Returns(p2Id);
+
+        _playerServiceMock.Setup(s => s.GetSession(p1Id)).Returns(s1Mock.Object);
+        _playerServiceMock.Setup(s => s.GetSession(p2Id)).Returns(s2Mock.Object);
 
         // Act
-        await _tradeSessionManager.RequestTradeAsync(inviterId, targetId);
+        await _sessionManager.AcceptTradeAsync(p2Id, p1Id);
+        
+        // P1 offers 2x Item 10 and 100 Gold
+        await _sessionManager.UpdateOfferAsync(p1Id, new TradeOfferUpdateDto
+        {
+            Gold = 100,
+            Items = new List<TradeItemDto> { new() { ItemId = 10, Quantity = 2 } }
+        });
+
+        // P2 offers 1x Item 20 and 50 Gold
+        await _sessionManager.UpdateOfferAsync(p2Id, new TradeOfferUpdateDto
+        {
+            Gold = 50,
+            Items = new List<TradeItemDto> { new() { ItemId = 20, Quantity = 1 } }
+        });
+
+        // Both confirm
+        await _sessionManager.ConfirmTradeAsync(p1Id);
+        await _sessionManager.ConfirmTradeAsync(p2Id);
 
         // Assert
-        targetSession.Verify(s => s.SendAsync(It.Is<NetMessage>(m => m.Op == Opcode.TradeRequest)), Times.Once);
+        Assert.Equal(1000 - 100 + 50, p1.Gold);
+        Assert.Equal(1000 - 50 + 100, p2.Gold);
+
+        Assert.Equal(3, p1.GetItems(10).Sum(i => i.Quantity));
+        Assert.Equal(2, p2.GetItems(10).Sum(i => i.Quantity));
+
+        Assert.Equal(1, p1.GetItems(20).Sum(i => i.Quantity));
+        Assert.Equal(2, p2.GetItems(20).Sum(i => i.Quantity));
     }
 
     [Fact]
-    public async Task AcceptTrade_StartsSession_AndBroadcastsState()
+    public async Task Trade_BindPolicyViolation_RejectsTransfer()
     {
         // Arrange
-        var p1 = 1;
-        var p2 = 2;
-        
-        var s1 = new Mock<ClientSession>();
-        var s2 = new Mock<ClientSession>();
+        var p1Id = 1;
+        var p2Id = 2;
 
-        _playerMock.Setup(p => p.GetSession(p1)).Returns(s1.Object);
-        _playerMock.Setup(p => p.GetSession(p2)).Returns(s2.Object);
+        var p1 = new ServerCharacter { Id = p1Id, Name = "P1" };
+        var p2 = new ServerCharacter { Id = p2Id, Name = "P2" };
 
-        // Act
-        await _tradeSessionManager.AcceptTradeAsync(p2, p1);
+        // P1 has a CharacterBound item
+        p1.AddItem(99, 1, BindPolicy.CharacterBound, p1Id);
 
-        // Assert
-        s1.Verify(s => s.SendAsync(It.Is<NetMessage>(m => m.Op == Opcode.TradeStateUpdate)), Times.Once);
-        s2.Verify(s => s.SendAsync(It.Is<NetMessage>(m => m.Op == Opcode.TradeStateUpdate)), Times.Once);
-    }
+        var s1Mock = new Mock<ClientSession>();
+        s1Mock.SetupGet(s => s.Character).Returns(p1);
+        _playerServiceMock.Setup(s => s.GetSession(p1Id)).Returns(s1Mock.Object);
 
-    [Fact]
-    public async Task TradeConfirmation_BothParties_ExecutesTrade()
-    {
-        // Arrange
-        var p1 = 1;
-        var p2 = 2;
-        
-        var c1 = new ServerCharacter { Id = p1, Name = "P1", Gold = 1000 };
-        var c2 = new ServerCharacter { Id = p2, Name = "P2", Gold = 1000 };
+        var s2Mock = new Mock<ClientSession>();
+        s2Mock.SetupGet(s => s.Character).Returns(p2);
+        _playerServiceMock.Setup(s => s.GetSession(p2Id)).Returns(s2Mock.Object);
 
-        var s1 = new Mock<ClientSession>();
-        s1.Setup(s => s.Character).Returns(c1);
-        var s2 = new Mock<ClientSession>();
-        s2.Setup(s => s.Character).Returns(c2);
-
-        _playerMock.Setup(p => p.GetSession(p1)).Returns(s1.Object);
-        _playerMock.Setup(p => p.GetSession(p2)).Returns(s2.Object);
-
-        await _tradeSessionManager.AcceptTradeAsync(p2, p1);
-        
-        // P1 offers 500 gold
-        await _tradeSessionManager.UpdateOfferAsync(p1, new TradeOfferUpdateDto { Gold = 500 });
+        await _sessionManager.AcceptTradeAsync(p2Id, p1Id);
 
         // Act
-        await _tradeSessionManager.ConfirmTradeAsync(p1);
-        await _tradeSessionManager.ConfirmTradeAsync(p2);
+        await _sessionManager.UpdateOfferAsync(p1Id, new TradeOfferUpdateDto
+        {
+            Items = new List<TradeItemDto> { new() { ItemId = 99, Quantity = 1 } }
+        });
+
+        await _sessionManager.ConfirmTradeAsync(p1Id);
+        await _sessionManager.ConfirmTradeAsync(p2Id);
 
         // Assert
-        Assert.Equal(500, c1.Gold);
-        Assert.Equal(1500, c2.Gold);
-        s1.Verify(s => s.SendAsync(It.Is<NetMessage>(m => m.Op == Opcode.TradeComplete)), Times.Once);
-        s2.Verify(s => s.SendAsync(It.Is<NetMessage>(m => m.Op == Opcode.TradeComplete)), Times.Once);
+        Assert.Equal(1, p1.GetItems(99).Sum(i => i.Quantity));
+        Assert.Empty(p2.GetItems(99));
     }
 }

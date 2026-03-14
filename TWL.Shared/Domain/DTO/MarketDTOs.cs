@@ -116,3 +116,14 @@ public class MarketHistoryDTO
     public long Volume { get; set; }
     public string Window { get; set; } = string.Empty; // "24h", "7d", "30d"
 }
+
+/// <summary>
+/// Aggregate statistics for the marketplace.
+/// </summary>
+public class MarketStatsDTO
+{
+    public int ActiveListingCount { get; set; }
+    public long TotalGoldVolume { get; set; }
+    public long TotalTaxCollected { get; set; }
+    public int TotalItemsSold { get; set; }
+}

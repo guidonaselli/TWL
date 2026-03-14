@@ -27,3 +27,19 @@ Output: Trade session manager + trade DTO/opcode routing + client trade window i
 - `TWL.Client/Presentation/UI/UiTradeWindow.cs`
 - `TWL.Tests/Market/DirectTradeWindowTests.cs`
 - `TWL.Tests/Market/MarketTradeIntegrationTests.cs`
+
+## Steps
+
+1. **Domain & Network**: Define `TradeDTOs` and add trade `Opcodes`.
+2. **Server Infrastructure**: Implement `TradeSessionManager` to manage active 1-on-1 sessions and state (pending, locked, confirmed).
+3. **Server Logic**: Update `TradeManager` to handle trade invitations and coordinate with `TradeSessionManager`.
+4. **Networking**: Wire up trade opcodes in `ClientSession`.
+5. **Client Presentation**: Implement `UiTradeWindow` and update `ClientMarketplaceManager`/`GameClientManager` to handle trade state sync.
+6. **Tests**: Implement `DirectTradeWindowTests` and `MarketTradeIntegrationTests`.
+7. **Verification**: Run all S07 tests to ensure no regressions in the market system.
+
+## Observability Impact
+
+- **Trade Logs**: `TWL.Server` will log trade start, item/gold offering updates, locking, and final commitment/cancellation.
+- **Session State**: `TradeSessionManager` will track session duration and party status, visible in server diagnostics.
+- **Failure Visibility**: Trade rejections (due to bind policy or inventory space) will be logged with specific reasons and sent as DTO errors to clients.

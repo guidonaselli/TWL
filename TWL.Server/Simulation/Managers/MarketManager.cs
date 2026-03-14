@@ -18,7 +18,6 @@ namespace TWL.Server.Simulation.Managers;
 /// </summary>
 public class MarketManager : IMarketService
 {
-    private const double MARKET_TAX_RATE = 0.05;
     private const int IDEMPOTENCY_EXPIRATION_MINUTES = 10;
 
     private readonly ConcurrentDictionary<string, MarketListingDTO> _listings = new();
@@ -91,7 +90,7 @@ public class MarketManager : IMarketService
         return _listings.Values.Where(l => l.Status == MarketListingStatus.Active);
     }
 
-    public Task<MarketOperationResponse> CreateListingAsync(ServerCharacter character, CreateMarketListingRequest request)
+    public async Task<MarketOperationResponse> CreateListingAsync(ServerCharacter character, CreateMarketListingRequest request)
     {
         ArgumentNullException.ThrowIfNull(character);
         ArgumentNullException.ThrowIfNull(request);
@@ -99,24 +98,24 @@ public class MarketManager : IMarketService
         // Enforce valid bounds
         if (request.Quantity <= 0 || request.Quantity > 999)
         {
-            return Task.FromResult(new MarketOperationResponse { Success = false, Message = "Invalid quantity (1-999)." });
+            return new MarketOperationResponse { Success = false, Message = "Invalid quantity (1-999)." };
         }
 
         if (request.PricePerUnit <= 0 || request.PricePerUnit > 99_999_999)
         {
-            return Task.FromResult(new MarketOperationResponse { Success = false, Message = "Invalid price." });
+            return new MarketOperationResponse { Success = false, Message = "Invalid price." };
         }
 
         // Check inventory availability
         if (!character.HasItem(request.ItemId, request.Quantity))
         {
-            return Task.FromResult(new MarketOperationResponse { Success = false, Message = "Item not found in inventory." });
+            return new MarketOperationResponse { Success = false, Message = "Item not found in inventory." };
         }
 
         // Inventory is locked during the listing (removed from character)
         if (!character.RemoveItem(request.ItemId, request.Quantity))
         {
-            return Task.FromResult(new MarketOperationResponse { Success = false, Message = "Failed to lock items for listing." });
+            return new MarketOperationResponse { Success = false, Message = "Failed to lock items for listing." };
         }
 
         var listing = new MarketListingDTO
@@ -136,19 +135,22 @@ public class MarketManager : IMarketService
 
         if (_listings.TryAdd(listing.ListingId, listing))
         {
+            // Persist to database
+            await _dbService.CreateMarketListingAsync(listing.ListingId, listing.SellerId, listing.ItemId, listing.ItemName, listing.Quantity, listing.PricePerUnit, listing.TotalPrice, listing.ExpiresUtc);
+
             SecurityLogger.LogSecurityEvent("MarketListingCreated", character.Id, $"ListingId:{listing.ListingId} ItemId:{listing.ItemId} Qty:{listing.Quantity} TotalPrice:{listing.TotalPrice}");
-            return Task.FromResult(new MarketOperationResponse 
+            return new MarketOperationResponse 
             { 
                 Success = true, 
                 ListingId = listing.ListingId,
                 OperationId = request.OperationId,
                 Message = "Listing created successfully."
-            });
+            };
         }
 
         // Rollback if TryAdd fails (unlikely)
         character.AddItem(request.ItemId, request.Quantity);
-        return Task.FromResult(new MarketOperationResponse { Success = false, Message = "System error creating listing." });
+        return new MarketOperationResponse { Success = false, Message = "System error creating listing." };
     }
 
     public async Task<MarketOperationResponse> BuyListingAsync(ServerCharacter buyer, BuyMarketListingRequest request)
@@ -207,7 +209,7 @@ public class MarketManager : IMarketService
         }
 
         long grossAmount = listing.TotalPrice;
-        long taxAmount = (long)(grossAmount * MARKET_TAX_RATE);
+        long taxAmount = (long)(grossAmount * _economyService.MarketTaxRate);
         long netAmount = grossAmount - taxAmount;
 
         // Atomic transition attempt
@@ -228,6 +230,9 @@ public class MarketManager : IMarketService
 
             listing.Status = MarketListingStatus.Sold;
         }
+
+        // Update persistence (moved outside of lock to avoid await-in-lock)
+        await _dbService.UpdateMarketListingStatusAsync(listing.ListingId, false);
 
         // Grant items to buyer
         buyer.AddItem(listing.ItemId, listing.Quantity);
@@ -258,43 +263,45 @@ public class MarketManager : IMarketService
         return response;
     }
 
-    public Task<MarketOperationResponse> CancelListingAsync(ServerCharacter seller, CancelMarketListingRequest request)
+    public async Task<MarketOperationResponse> CancelListingAsync(ServerCharacter seller, CancelMarketListingRequest request)
     {
         ArgumentNullException.ThrowIfNull(seller);
         ArgumentNullException.ThrowIfNull(request);
 
         if (!_listings.TryGetValue(request.ListingId, out var listing))
         {
-            return Task.FromResult(new MarketOperationResponse { Success = false, Message = "Listing not found." });
+            return new MarketOperationResponse { Success = false, Message = "Listing not found." };
         }
 
         // restricted to seller ownership
         if (listing.SellerId != seller.Id)
         {
             SecurityLogger.LogSecurityEvent("MarketUnauthorizedCancelAttempt", seller.Id, $"ListingId:{request.ListingId}");
-            return Task.FromResult(new MarketOperationResponse { Success = false, Message = "Unauthorized cancellation attempt." });
+            return new MarketOperationResponse { Success = false, Message = "Unauthorized cancellation attempt." };
         }
 
         // Terminal states check
         if (listing.Status != MarketListingStatus.Active)
         {
-            return Task.FromResult(new MarketOperationResponse { Success = false, Message = "Listing is no longer active." });
+            return new MarketOperationResponse { Success = false, Message = "Listing is no longer active." };
         }
 
         // transition is explicit
         listing.Status = MarketListingStatus.Cancelled;
+        // Update persistence
+        await _dbService.UpdateMarketListingStatusAsync(listing.ListingId, false);
 
         // Safe item return behavior
         seller.AddItem(listing.ItemId, listing.Quantity);
 
         SecurityLogger.LogSecurityEvent("MarketListingCancelled", seller.Id, $"ListingId:{listing.ListingId}");
 
-        return Task.FromResult(new MarketOperationResponse
+        return new MarketOperationResponse
         {
             Success = true,
             ListingId = listing.ListingId,
             Message = "Listing cancelled successfully. Items returned to inventory."
-        });
+        };
     }
 
     public async Task ExpireListingsAsync()
@@ -305,14 +312,20 @@ public class MarketManager : IMarketService
         foreach (var listing in expired)
         {
             // Atomically update status to prevent double-expiration/idempotency
+            bool shouldProcess = false;
             lock (listing)
             {
-                if (listing.Status != MarketListingStatus.Active)
+                if (listing.Status == MarketListingStatus.Active)
                 {
-                    continue;
+                    listing.Status = MarketListingStatus.Expired;
+                    shouldProcess = true;
                 }
-                listing.Status = MarketListingStatus.Expired;
             }
+
+            if (!shouldProcess) continue;
+
+            // Update persistence (moved outside of lock)
+            await _dbService.UpdateMarketListingStatusAsync(listing.ListingId, false);
 
             // Return items to the seller (handles online and offline cases via PlayerService)
             bool success = await _playerService.ReturnMarketItemAsync(listing.SellerId, listing.ItemId, listing.Quantity);
@@ -387,5 +400,40 @@ public class MarketManager : IMarketService
             Volume = history.Sum(s => s.Quantity),
             Window = window
         };
+    }
+
+    public MarketStatsDTO GetStats()
+    {
+        return new MarketStatsDTO
+        {
+            ActiveListingCount = _listings.Values.Count(l => l.Status == MarketListingStatus.Active),
+            TotalGoldVolume = _saleHistory.Sum(s => s.GrossAmount),
+            TotalTaxCollected = _saleHistory.Sum(s => s.TaxAmount),
+            TotalItemsSold = _saleHistory.Sum(s => s.Quantity)
+        };
+    }
+
+    public async Task InitializeAsync()
+    {
+        var dbListings = await _dbService.LoadActiveMarketListingsAsync();
+        foreach (var dbListing in dbListings)
+        {
+            var listing = new MarketListingDTO
+            {
+                ListingId = dbListing.ListingId,
+                SellerId = dbListing.SellerId,
+                SellerName = "Unknown", // We'd need to join or load names if important
+                ItemId = dbListing.ItemId,
+                ItemName = dbListing.ItemName,
+                Quantity = dbListing.Quantity,
+                PricePerUnit = dbListing.PricePerUnit,
+                TotalPrice = dbListing.TotalPrice,
+                Status = MarketListingStatus.Active,
+                CreatedUtc = dbListing.CreatedUtc,
+                ExpiresUtc = dbListing.ExpiresUtc
+            };
+            _listings.TryAdd(listing.ListingId, listing);
+        }
+        Console.WriteLine($"[MarketManager] Initialized with {_listings.Count} active listings from DB.");
     }
 }

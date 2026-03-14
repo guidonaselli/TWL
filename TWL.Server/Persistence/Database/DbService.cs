@@ -79,7 +79,7 @@ public class DbService : IDbService
                     is_active BOOLEAN NOT NULL DEFAULT TRUE
                 );
 
-                CREATE TABLE IF NOT EXISTS market_transactions (
+                CREATE TABLE IF NOT EXISTS market_history (
                     transaction_id SERIAL PRIMARY KEY,
                     listing_id TEXT NOT NULL,
                     buyer_id INT NOT NULL,
@@ -203,7 +203,7 @@ public class DbService : IDbService
             await con.OpenAsync();
 
             const string sql = @"
-                INSERT INTO market_transactions (
+                INSERT INTO market_history (
                     listing_id, buyer_id, seller_id, item_id, item_name, quantity, 
                     price_per_unit, total_price, gross_amount, tax_amount, net_amount, completed_utc
                 ) VALUES (
@@ -230,9 +230,103 @@ public class DbService : IDbService
         catch (Exception ex)
         {
             Console.WriteLine($"[DbService] Failed to record market transaction: {ex.Message}");
-            // We swallow this for now or rethrow? 
-            // In a high-integrity system we might rethrow, but here we log and continue if possible.
-            // But Task 2 says "Finalize market sale record persistence", so it's probably better to rethrow if it fails.
+            throw;
+        }
+    }
+
+    public virtual async Task CreateMarketListingAsync(string listingId, int sellerId, int itemId, string itemName, int quantity, long pricePerUnit, long totalPrice, DateTime expiresUtc)
+    {
+        try
+        {
+            await using var con = new NpgsqlConnection(_connString);
+            await con.OpenAsync();
+
+            const string sql = @"
+                INSERT INTO market_listings (
+                    listing_id, seller_id, item_id, item_name, quantity, 
+                    price_per_unit, total_price, created_utc, expires_utc, is_active
+                ) VALUES (
+                    @listing_id, @seller_id, @item_id, @item_name, @quantity, 
+                    @price_per_unit, @total_price, @created_utc, @expires_utc, @is_active
+                )";
+
+            await using var cmd = new NpgsqlCommand(sql, con);
+            cmd.Parameters.AddWithValue("listing_id", listingId);
+            cmd.Parameters.AddWithValue("seller_id", sellerId);
+            cmd.Parameters.AddWithValue("item_id", itemId);
+            cmd.Parameters.AddWithValue("item_name", itemName);
+            cmd.Parameters.AddWithValue("quantity", quantity);
+            cmd.Parameters.AddWithValue("price_per_unit", pricePerUnit);
+            cmd.Parameters.AddWithValue("total_price", totalPrice);
+            cmd.Parameters.AddWithValue("created_utc", DateTime.UtcNow);
+            cmd.Parameters.AddWithValue("expires_utc", expiresUtc);
+            cmd.Parameters.AddWithValue("is_active", true);
+
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DbService] Failed to create market listing: {ex.Message}");
+            throw;
+        }
+    }
+
+    public virtual async Task UpdateMarketListingStatusAsync(string listingId, bool isActive)
+    {
+        try
+        {
+            await using var con = new NpgsqlConnection(_connString);
+            await con.OpenAsync();
+
+            const string sql = "UPDATE market_listings SET is_active = @is_active WHERE listing_id = @listing_id";
+
+            await using var cmd = new NpgsqlCommand(sql, con);
+            cmd.Parameters.AddWithValue("listing_id", listingId);
+            cmd.Parameters.AddWithValue("is_active", isActive);
+
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DbService] Failed to update market listing status: {ex.Message}");
+            throw;
+        }
+    }
+
+    public virtual async Task<List<MarketListingPersistenceData>> LoadActiveMarketListingsAsync()
+    {
+        try
+        {
+            await using var con = new NpgsqlConnection(_connString);
+            await con.OpenAsync();
+
+            const string sql = "SELECT * FROM market_listings WHERE is_active = TRUE";
+
+            await using var cmd = new NpgsqlCommand(sql, con);
+            await using var reader = await cmd.ExecuteReaderAsync();
+
+            var listings = new List<MarketListingPersistenceData>();
+            while (await reader.ReadAsync())
+            {
+                listings.Add(new MarketListingPersistenceData
+                {
+                    ListingId = reader.GetString(reader.GetOrdinal("listing_id")),
+                    SellerId = reader.GetInt32(reader.GetOrdinal("seller_id")),
+                    ItemId = reader.GetInt32(reader.GetOrdinal("item_id")),
+                    ItemName = reader.GetString(reader.GetOrdinal("item_name")),
+                    Quantity = reader.GetInt32(reader.GetOrdinal("quantity")),
+                    PricePerUnit = reader.GetInt64(reader.GetOrdinal("price_per_unit")),
+                    TotalPrice = reader.GetInt64(reader.GetOrdinal("total_price")),
+                    CreatedUtc = reader.GetDateTime(reader.GetOrdinal("created_utc")),
+                    ExpiresUtc = reader.GetDateTime(reader.GetOrdinal("expires_utc")),
+                    IsActive = reader.GetBoolean(reader.GetOrdinal("is_active"))
+                });
+            }
+            return listings;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DbService] Failed to load active market listings: {ex.Message}");
             throw;
         }
     }

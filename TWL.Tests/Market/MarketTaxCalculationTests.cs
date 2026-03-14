@@ -22,6 +22,7 @@ public class MarketTaxCalculationTests
         _economyMock = new Mock<IEconomyService>();
         _tradeMock = new Mock<TradeManager>();
         _dbMock = new Mock<IDbService>();
+        _economyMock.Setup(e => e.MarketTaxRate).Returns(0.05);
         
         var repoMock = new Mock<TWL.Server.Persistence.IPlayerRepository>();
         var metricsMock = new Mock<TWL.Server.Simulation.Managers.ServerMetrics>();
@@ -70,5 +71,36 @@ public class MarketTaxCalculationTests
         // Verify DB record
         _dbMock.Verify(db => db.RecordMarketTransactionAsync(
             listingId, 2, 1, 101, "Item 101", 1, totalPrice, totalPrice, totalPrice, expectedTax, expectedNet), Times.Once);
+    }
+
+    [Fact]
+    public async Task BuyListing_UsesConfigurableTaxRate()
+    {
+        // Arrange
+        _economyMock.Setup(e => e.MarketTaxRate).Returns(0.10); // 10% tax
+        
+        var seller = new ServerCharacter { Id = 1, Name = "Seller" };
+        seller.AddItem(101, 1);
+        
+        var buyer = new ServerCharacter { Id = 2, Name = "Buyer", Gold = 1000 };
+
+        var createResponse = await _marketManager.CreateListingAsync(seller, new CreateMarketListingRequest
+        {
+            ItemId = 101,
+            Quantity = 1,
+            PricePerUnit = 1000
+        });
+        var listingId = createResponse.ListingId;
+
+        // Act
+        var buyResponse = await _marketManager.BuyListingAsync(buyer, new BuyMarketListingRequest
+        {
+            ListingId = listingId
+        });
+
+        // Assert
+        Assert.True(buyResponse.Success);
+        Assert.Contains("Tax applied: 100 Gold.", buyResponse.Message);
+        _playerMock.Verify(p => p.AddGoldAsync(1, 900), Times.Once);
     }
 }

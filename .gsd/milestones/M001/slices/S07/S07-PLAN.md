@@ -5,6 +5,25 @@
 
 ## Must-Haves
 
+- [x] Market service interface + manager, DTO/opcode surface, persistence schema updates. (T01)
+- [x] Listing state machine + expiration scheduler. (T02)
+- [x] Query service + search/history DTO expansion. (T03)
+- [x] Atomic purchase flow + configurable tax policy. (T04)
+- [x] Trade session manager + trade DTO/opcode routing. (T05)
+
+## Observability / Diagnostics
+
+- **Market Logs**: `TWL.Server` logs all listing creation, cancellation, and purchases with listing ID and player IDs.
+- **Audit Table**: `MarketHistory` in DB tracks every settled purchase with tax amount and net proceeds.
+- **Status Surface**: `IMarketService.GetStats()` provides counts of active listings, total gold volume, and tax collected.
+- **Redaction**: Player IDs and Item IDs are logged; no PII (though none exists in this domain).
+
+## Verification
+
+- [x] **Market Purchase Settlement Test**: Verify atomic gold/item transfer.
+- [x] **Market Tax Test**: Verify tax calculation and distribution.
+- [x] **Market Idempotency Test**: Verify duplicate purchase requests fail or are handled safely.
+- [x] **Diagnostic Check**: Verify purchase history is correctly recorded in `MarketHistory`.
 
 ## Tasks
 
@@ -23,12 +42,12 @@ Output: Listing state machine + expiration scheduler + lifecycle regression test
 
 Purpose: This delivers MKT-02 and MKT-05 and prepares stable query/read flows for execution UI.
 Output: Query service + search/history DTO expansion + client ingestion + search/history regression tests.
-- [ ] **T04: 07-p2p-market-system 04**
+- [x] **T04: 07-p2p-market-system 04**
   - Implement listing purchase settlement with atomic transfer, tax handling, and idempotency.
 
 Purpose: This delivers MKT-03 and MKT-06 while satisfying MKT-08's anti-duplication expectation for valuable transfers.
 Output: Atomic purchase flow + configurable tax policy + settlement/idempotency/tax regression tests.
-- [ ] **T05: 07-p2p-market-system 05**
+- [x] **T05: 07-p2p-market-system 05**
   - Implement direct player-to-player trade window and finalize client market/trade integration.
 
 Purpose: This delivers MKT-08 and completes the market phase with a server-authoritative live trading path.

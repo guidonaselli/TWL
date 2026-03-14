@@ -45,4 +45,14 @@ public interface IMarketService
     /// Projects market history (min/avg/max) for a specific item over a configurable time window.
     /// </summary>
     MarketHistoryDTO GetPriceHistory(int itemId, string window = "7d");
+
+    /// <summary>
+    /// Returns aggregate marketplace statistics for diagnostics.
+    /// </summary>
+    MarketStatsDTO GetStats();
+
+    /// <summary>
+    /// Initializes the market service (e.g., loading listings from DB).
+    /// </summary>
+    Task InitializeAsync();
 }

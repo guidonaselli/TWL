@@ -57,5 +57,7 @@ public class EconomyServiceMockTests
             CallLog.Add($"GiftShopItem({giver.Id}, {receiver.Id}, {shopItemId}, {quantity})");
             return new EconomyOperationResultDTO { Success = true, Message = "Mock Success" };
         }
+
+        public double MarketTaxRate => 0.05;
     }
 }

@@ -12,3 +12,6 @@
 | D006 | Treat replay protection, movement validation, idempotency, and serializable transactions as mandatory foundations for valuable multiplayer operations | The old planning materials frame these as security prerequisites, not optional polish | 2026-02-15 |
 | D007 | Preserve turn-based combat and the elemental cycle as core gameplay identity | The project summary marks these as validated differentiators rather than experimental mechanics | 2026-02-14 |
 | D008 | Use additive diminishing returns (10/8/5) for multi-generation pet rebirth | Align with WLO-like progression depth while preventing stat runaway and maintaining predictable growth curves | 2026-03-14 |
+| D009 | Use Semi-Atomic Batch Transfer for player-to-player trades | Ensures consistent multi-entity state mutations in memory with rollback capability without requiring distributed transactions | 2026-03-14 |
+| D010 | Implement configurable marketplace tax rate via environment variables | Allows server operators to tune the economy's gold sink without code changes | 2026-03-14 |
+| D011 | Audit all market transactions in a permanent `market_history` database table | Provides a robust audit trail for economy tracking, fraud detection, and player support | 2026-03-14 |

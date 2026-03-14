@@ -32,3 +32,7 @@ Implemented market foundation contracts, persistence schema, and domain service.
 #### Verification Results
 - `dotnet test` passed for `MarketContractTests`.
 - Build succeeded for `TWL.Server` and `TWL.Shared`.
+
+## Diagnostics
+- **Logs**: Grep for "MarketManager" or "IMarketService" to see initialization and listing operations.
+- **Database**: Inspect `market_listings` and `market_history` tables for persistent state and audit logs.
