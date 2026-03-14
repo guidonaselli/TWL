@@ -108,8 +108,12 @@ public class UiGameplay : UiManager
         var statsX = 90;
 
         // Nivel
+        var levelText = _player.RebirthLevel > 0
+            ? $"Lv. {_player.Level} (R{_player.RebirthLevel})"
+            : Loc.TF("UI_LevelFormat", _player.Level);
+
         sb.DrawString(_font,
-            Loc.TF("UI_LevelFormat", _player.Level),
+            levelText,
             new Vector2(statsX, 20), Color.Yellow);
 
         // HP

@@ -897,7 +897,8 @@ public class ClientSession
                     PosY = Character?.Y ?? 0f,
                     Hp = Character?.Hp ?? 0,
                     MaxHp = Character?.MaxHp ?? 0,
-                    MapId = Character?.MapId ?? 0
+                    MapId = Character?.MapId ?? 0,
+                    RebirthLevel = Character?.RebirthLevel ?? 0
                 }, _jsonOptions)
             });
 
@@ -1524,7 +1525,7 @@ public class ClientSession
             var request = JsonSerializer.Deserialize<CharacterRebirthRequest>(payload, _jsonOptions);
             if (request == null) return;
 
-            var (success, message, statPointsGained) = _rebirthService.TryRebirthCharacter(Character, request.OperationId);
+            var (success, message, statPointsGained) = _rebirthService.TryRebirthCharacter(Character, request.OperationId, null, null);
 
             var response = new CharacterRebirthResponse
             {
