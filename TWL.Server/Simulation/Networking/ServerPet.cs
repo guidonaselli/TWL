@@ -59,7 +59,13 @@ public class ServerPet : ServerCombatant
     public bool IsDead { get; set; }
     public bool IsLost { get; set; }
     public bool DeathQuestCompleted { get; set; }
-    public bool HasRebirthed { get; set; }
+
+    /// <summary>Number of times this pet has rebirthed (0 = never). Replaces the old boolean HasRebirthed.</summary>
+    public int RebirthGeneration { get; set; }
+
+    /// <summary>True if the pet has rebirthed at least once (backward-compat helper).</summary>
+    public bool HasRebirthed => RebirthGeneration > 0;
+
     public DateTime? ExpirationTime { get; set; }
 
     public bool IsExpired => ExpirationTime.HasValue && DateTime.UtcNow > ExpirationTime.Value;
@@ -151,15 +157,19 @@ public class ServerPet : ServerCombatant
         Wis = wis;
         Agi = agi;
 
-        if (HasRebirthed)
+        if (RebirthGeneration > 0)
         {
-            _maxHp = (int)(_maxHp * 1.1);
-            _maxSp = (int)(_maxSp * 1.1);
-            Str = (int)(Str * 1.1);
-            Con = (int)(Con * 1.1);
-            Int = (int)(Int * 1.1);
-            Wis = (int)(Wis * 1.1);
-            Agi = (int)(Agi * 1.1);
+            // Cumulative bonus: each generation adds a percentage of the BASE stat.
+            // Generation 1: +10%, Gen 2: +18% (+8), Gen 3+: +23% (+5 more per gen).
+            // Implemented as additive stacking per generation rather than compounding.
+            float bonusMultiplier = GetCumulativeStatMultiplier(RebirthGeneration);
+            _maxHp = (int)(_maxHp * bonusMultiplier);
+            _maxSp = (int)(_maxSp * bonusMultiplier);
+            Str = (int)(Str * bonusMultiplier);
+            Con = (int)(Con * bonusMultiplier);
+            Int = (int)(Int * bonusMultiplier);
+            Wis = (int)(Wis * bonusMultiplier);
+            Agi = (int)(Agi * bonusMultiplier);
         }
 
         if (IsRebellious)
@@ -251,9 +261,49 @@ public class ServerPet : ServerCombatant
         IsDirty = true;
     }
 
+    /// <summary>
+    /// Returns the per-generation stat bonus as a flat percentage point (10 → 8 → 5 for gen3+).
+    /// </summary>
+    public static int GetRebirthBonusPoints(int generation)
+    {
+        return generation switch
+        {
+            1 => 10,
+            2 => 8,
+            _ => 5  // generation 3 and above
+        };
+    }
+
+    /// <summary>
+    /// Returns a cumulative stat multiplier for the given number of rebirth generations.
+    /// Example: gen 1 → 1.10, gen 2 → 1.18, gen 3 → 1.23, gen 4 → 1.28
+    /// </summary>
+    public static float GetCumulativeStatMultiplier(int generations)
+    {
+        float totalBonus = 0f;
+        for (int g = 1; g <= generations; g++)
+        {
+            totalBonus += GetRebirthBonusPoints(g) / 100f;
+        }
+        return 1f + totalBonus;
+    }
+
+    /// <summary>
+    /// Attempts to rebirth this pet. Capturable pets cannot rebirth.
+    /// Multi-generation rebirth is allowed for Quest/HumanLike pets using 10/8/5 diminishing schedule.
+    /// </summary>
+    /// <returns>True on success; false if ineligible.</returns>
     public bool TryRebirth()
     {
-        if (_definition == null || !(_definition.RebirthEligible || _definition.RebirthSkillId > 0))
+        // Capturable pets cannot rebirth — quest/HumanLike pets can rebirth multiple times.
+        if (_definition == null)
+        {
+            return false;
+        }
+
+        // Eligibility: quest-eligible (non-Capture type) and explicitly marked rebirth-eligible.
+        bool isCaptureType = _definition.Type == PetType.Capture;
+        if (isCaptureType || !_definition.RebirthEligible)
         {
             return false;
         }
@@ -263,12 +313,8 @@ public class ServerPet : ServerCombatant
             return false;
         }
 
-        if (HasRebirthed)
-        {
-            return false;
-        }
-
-        HasRebirthed = true;
+        // Increment generation (supports multiple rebirths).
+        RebirthGeneration++;
         Level = 1;
         Exp = 0;
         ExpToNextLevel = PetGrowthCalculator.GetExpForLevel(Level);
@@ -279,7 +325,8 @@ public class ServerPet : ServerCombatant
 
         IsDirty = true;
 
-        if (_definition.RebirthSkillId > 0 && !UnlockedSkillIds.Contains(_definition.RebirthSkillId))
+        // Unlock rebirth skill on first rebirth (if configured).
+        if (RebirthGeneration == 1 && _definition.RebirthSkillId > 0 && !UnlockedSkillIds.Contains(_definition.RebirthSkillId))
         {
             UnlockedSkillIds.Add(_definition.RebirthSkillId);
         }
@@ -305,7 +352,7 @@ public class ServerPet : ServerCombatant
 
             var levelMet = Level >= skillSet.UnlockLevel;
             var amityMet = Amity >= skillSet.UnlockAmity;
-            var rebirthMet = !skillSet.RequiresRebirth || HasRebirthed;
+            var rebirthMet = !skillSet.RequiresRebirth || RebirthGeneration > 0;
 
             if (levelMet && amityMet && rebirthMet)
             {
@@ -365,7 +412,7 @@ public class ServerPet : ServerCombatant
             IsDead = IsDead,
             IsLost = IsLost,
             DeathQuestCompleted = DeathQuestCompleted,
-            HasRebirthed = HasRebirthed,
+            RebirthGeneration = RebirthGeneration,
             ExpirationTime = ExpirationTime,
             UnlockedSkillIds = new List<int>(UnlockedSkillIds)
         };
@@ -382,7 +429,8 @@ public class ServerPet : ServerCombatant
         IsDead = data.IsDead;
         IsLost = data.IsLost;
         DeathQuestCompleted = data.DeathQuestCompleted;
-        HasRebirthed = data.HasRebirthed;
+        // Migrate old saves: if HasRebirthed (legacy bool stored in data) but RebirthGeneration is 0, treat as gen 1.
+        RebirthGeneration = data.RebirthGeneration > 0 ? data.RebirthGeneration : (data.HasRebirthed ? 1 : 0);
         ExpirationTime = data.ExpirationTime;
         if (data.UnlockedSkillIds != null)
         {

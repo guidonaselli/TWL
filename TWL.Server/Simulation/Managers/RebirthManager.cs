@@ -48,14 +48,28 @@ public class RebirthManager : IRebirthService
             return (false, "Level 100 required.", 0);
         }
 
+        // 1.1 Quest Flag Check
+        if (!character.QuestComponent.Flags.Contains("REBIRTH_QUALIFIED"))
+        {
+            LogAndRecordFailure(character, operationId, "Character missing 'REBIRTH_QUALIFIED' flag.");
+            return (false, "Rebirth quest not completed.", 0);
+        }
+
+        // 1.2 Item Check (Core Resonance Shard - 9007)
+        if (!character.HasItem(9007, 1))
+        {
+            LogAndRecordFailure(character, operationId, "Character missing Core Resonance Shard (9007).");
+            return (false, "Core Resonance Shard (9007) required.", 0);
+        }
+
         // Avoid concurrent rebirth processing for the same character
         lock (character.ProgressLock)
         {
             // Double-check eligibility inside lock
-            if (character.Level < 100)
+            if (character.Level < 100 || !character.QuestComponent.Flags.Contains("REBIRTH_QUALIFIED") || !character.HasItem(9007, 1))
             {
-                LogAndRecordFailure(character, operationId, "Race condition prevented rebirth (Level < 100).");
-                return (false, "Level 100 required.", 0);
+                LogAndRecordFailure(character, operationId, "Race condition or missing requirements prevented rebirth.");
+                return (false, "Requirements not met.", 0);
             }
 
             int oldLevel = character.Level;
@@ -68,12 +82,17 @@ public class RebirthManager : IRebirthService
                 character.Level = 1;
                 character.RebirthLevel = oldRebirthCount + 1;
                 character.Exp = 0; // Reset Exp
-                // Next level exp calculation should ideally come from a central Exp table,
-                // but setting it to a default starting value.
                 character.ExpToNextLevel = 100;
-
+                
                 // Grant unassigned stat points
                 character.StatPoints += bonusPoints;
+
+                // Reset stats to baseline
+                character.ResetStatsToBaseline();
+
+                // Consume Requirement Item (Moved after all potential local logic failures)
+                character.TryConsumeItem(9007, 1);
+
 
                 // Add History Record
                 var historyRecord = new RebirthHistoryRecord

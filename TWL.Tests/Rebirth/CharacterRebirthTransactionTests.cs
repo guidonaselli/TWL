@@ -6,6 +6,7 @@ using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.DTO;
+using TWL.Server.Simulation.Networking.Components;
 
 namespace TWL.Tests.Rebirth;
 
@@ -14,17 +15,28 @@ public class CharacterRebirthTransactionTests
     private readonly RebirthManager _rebirthManager;
     private readonly Mock<ILogger<RebirthManager>> _loggerMock;
 
+    private readonly ServerQuestManager _questManager;
+
     public CharacterRebirthTransactionTests()
     {
         _loggerMock = new Mock<ILogger<RebirthManager>>();
         _rebirthManager = new RebirthManager(_loggerMock.Object);
+        _questManager = new ServerQuestManager();
+    }
+
+    private ServerCharacter CreateTestCharacter(int level = 100)
+    {
+        var character = new ServerCharacter { Id = 1, Name = "Test", Level = level };
+        character.QuestComponent = new PlayerQuestComponent(_questManager);
+        character.QuestComponent.Character = character;
+        return character;
     }
 
     [Fact]
     public void TryRebirthCharacter_RejectsLevelBelow100()
     {
         // Arrange
-        var character = new ServerCharacter { Id = 1, Name = "Test", Level = 99 };
+        var character = CreateTestCharacter(99);
         string opId = Guid.NewGuid().ToString();
 
         // Act
@@ -48,7 +60,11 @@ public class CharacterRebirthTransactionTests
     public void TryRebirthCharacter_SuccessfulRebirth_GrantsCorrectPointsAndResetsLevel(int currentRebirthCount, int expectedPoints)
     {
         // Arrange
-        var character = new ServerCharacter { Id = 1, Name = "Test", Level = 100, RebirthLevel = currentRebirthCount };
+        var character = CreateTestCharacter(100);
+        character.RebirthLevel = currentRebirthCount;
+        character.QuestComponent.AddFlag("REBIRTH_QUALIFIED");
+        character.AddItem(9007, 1);
+        
         string opId = Guid.NewGuid().ToString();
         int initialStatPoints = character.StatPoints;
 

@@ -6,6 +6,7 @@ using TWL.Client.Presentation.Helpers;
 using TWL.Client.Presentation.Managers;
 using TWL.Client.Presentation.Networking;
 using TWL.Client.Presentation.Services;
+using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Net;
 using TWL.Shared.Net.Abstractions;
@@ -336,7 +337,9 @@ public class UiMainMenu
 
         _loginStatusMessage = Loc.T("UI_LoginStatus_LoginSuccess");
         _loginStatusColor = Color.LightGreen;
-        _scenes.ChangeScene("Gameplay");
+        
+        var playerData = PlayerCharacterData.FromLoginResponse(response, _username);
+        _scenes.ChangeScene("Gameplay", playerData);
     }
 
     private void DrawMainMenu(SpriteBatch sb)

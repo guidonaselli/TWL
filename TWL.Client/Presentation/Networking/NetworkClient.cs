@@ -161,6 +161,23 @@ public class NetworkClient
                 var chatBacklog = JsonSerializer.Deserialize<GuildChatBacklog>(serverMsg.JsonPayload, _jsonOptions);
                 if (chatBacklog != null) _gameClientManager.HandleGuildChatBacklog(chatBacklog);
                 break;
+            case Opcode.TradeRequest:
+                var tradeReq = JsonSerializer.Deserialize<TradeRequestReceivedDto>(serverMsg.JsonPayload, _jsonOptions);
+                if (tradeReq != null) _gameClientManager.TradeManager.HandleTradeRequest(tradeReq.InviterId, tradeReq.InviterName);
+                break;
+            case Opcode.TradeDecline:
+                _gameClientManager.TradeManager.HandleTradeDecline();
+                break;
+            case Opcode.TradeStateUpdate:
+                var tradeState = JsonSerializer.Deserialize<TradeStateUpdateDto>(serverMsg.JsonPayload, _jsonOptions);
+                if (tradeState != null) _gameClientManager.TradeManager.HandleTradeStateUpdate(tradeState);
+                break;
+            case Opcode.TradeComplete:
+                _gameClientManager.TradeManager.HandleTradeComplete();
+                break;
+            case Opcode.TradeCancel:
+                _gameClientManager.TradeManager.HandleTradeCancel();
+                break;
         }
 
         EventBus.Publish(serverMsg);

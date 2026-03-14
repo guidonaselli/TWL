@@ -35,6 +35,9 @@ public class NetworkServer : INetworkServer
     private readonly GuildRosterService _guildRosterService;
     private readonly GuildStorageService _guildStorageService;
     private readonly IRebirthService _rebirthService;
+    private readonly IMarketService _marketService;
+    private readonly MarketQueryService _marketQueryService;
+    private readonly TradeSessionManager _tradeSessionManager;
     private readonly IOptions<RateLimiterOptions> _rateLimiterOptions;
     private CancellationTokenSource _cts;
     private bool _running;
@@ -46,7 +49,7 @@ public class NetworkServer : INetworkServer
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
         IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard,
         MovementValidator movementValidator, IPartyService partyService, IPartyChatService partyChatService,
-        IGuildService guildService, GuildChatService guildChatService, GuildRosterService guildRosterService, GuildStorageService guildStorageService, IRebirthService rebirthService, IOptions<RateLimiterOptions> rateLimiterOptions)
+        IGuildService guildService, GuildChatService guildChatService, GuildRosterService guildRosterService, GuildStorageService guildStorageService, IRebirthService rebirthService, IMarketService marketService, MarketQueryService marketQueryService, TradeSessionManager tradeSessionManager, IOptions<RateLimiterOptions> rateLimiterOptions)
     {
         _listener = new TcpListener(IPAddress.Any, port);
         _dbService = dbService;
@@ -70,6 +73,9 @@ public class NetworkServer : INetworkServer
         _guildRosterService = guildRosterService;
         _guildStorageService = guildStorageService;
         _rebirthService = rebirthService;
+        _marketService = marketService;
+        _marketQueryService = marketQueryService;
+        _tradeSessionManager = tradeSessionManager;
         _rateLimiterOptions = rateLimiterOptions;
     }
 
@@ -101,7 +107,7 @@ public class NetworkServer : INetworkServer
                     _combatManager, _interactionManager, _playerService, _economyManager, _metrics, _petService, _mediator,
                     _worldTriggerService,
                     _spawnManager, _replayGuard, _movementValidator, _partyService, _partyChatService,
-                    _guildService, _guildChatService, _guildRosterService, _guildStorageService, _rebirthService, _rateLimiterOptions.Value);
+                    _guildService, _guildChatService, _guildRosterService, _guildStorageService, _rebirthService, _marketService, _marketQueryService, _tradeSessionManager, _rateLimiterOptions.Value);
                 session.StartHandling();
             }
         }

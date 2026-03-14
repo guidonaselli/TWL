@@ -1,7 +1,8 @@
 using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Graphics;
+using TWL.Shared.Net.Payloads;
 
-namespace TWL.Client.Presentation.Managers;
+namespace TWL.Shared.Domain.Characters;
 
 public class PlayerCharacterData
 {
@@ -12,6 +13,7 @@ public class PlayerCharacterData
     public int Exp { get; set; }
     public int Hp { get; set; }
     public int MaxHp { get; set; }
+    public int RebirthLevel { get; set; }
     public float PosX { get; set; }
     public float PosY { get; set; }
     public CharacterAppearance Appearance { get; set; } = new();
@@ -20,15 +22,30 @@ public class PlayerCharacterData
     {
         return new PlayerCharacterData
         {
-            UserId = -1, // DTO might not have UserId easily accessible or it's different mapping
+            UserId = -1,
             PlayerId = dto.PlayerId,
             Name = dto.UserName,
             Hp = dto.Hp,
             MaxHp = dto.MaxHp,
             PosX = dto.X,
             PosY = dto.Y,
-            Appearance = dto.Appearance
-            // Level/Exp defaults or mapped if available
+            Appearance = dto.Appearance,
+            RebirthLevel = dto.RebirthLevel
+        };
+    }
+
+    public static PlayerCharacterData FromLoginResponse(LoginResponseDto response, string name)
+    {
+        return new PlayerCharacterData
+        {
+            UserId = response.UserId,
+            PlayerId = response.UserId,
+            Name = name,
+            Hp = response.Hp,
+            MaxHp = response.MaxHp,
+            PosX = response.PosX,
+            PosY = response.PosY,
+            RebirthLevel = response.RebirthLevel
         };
     }
 }

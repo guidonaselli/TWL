@@ -3,6 +3,7 @@ using System.Diagnostics;
 using TWL.Server.Architecture.Observability;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Models;
 
 namespace TWL.Server.Persistence.Services;
 
@@ -214,7 +215,7 @@ public class PlayerService
 
     public async Task<PlayerSaveData?> LoadDataAsync(int userId) => await _repo.LoadAsync(userId);
 
-    public void SaveSession(ClientSession session) => SaveSessionAsync(session).GetAwaiter().GetResult();
+    public virtual void SaveSession(ClientSession session) => SaveSessionAsync(session).GetAwaiter().GetResult();
 
     public async Task SaveSessionAsync(ClientSession session)
     {
@@ -238,4 +239,102 @@ public class PlayerService
         session.Character.IsDirty = false;
         session.QuestComponent.IsDirty = false;
     }
-}
+
+    /// <summary>
+    /// Returns an item to a player's inventory, handling both online and offline cases.
+    /// Used by the market system when listings expire or are cancelled for offline users.
+    /// </summary>
+    public virtual async Task<bool> ReturnMarketItemAsync(int userId, int itemId, int quantity)
+    {
+        // 1. Check if the player is online
+        var session = GetSession(userId);
+        if (session?.Character != null)
+        {
+            // Player is online, add to active character (Thread-safe)
+            return session.Character.AddItem(itemId, quantity);
+        }
+
+        // 2. Player is offline, load their data from persistence
+        var saveData = await LoadDataAsync(userId);
+        if (saveData == null)
+        {
+            PersistenceLogger.LogEvent("ReturnItemError", $"UserId:{userId} ItemId:{itemId} - Player data not found.", errors: 1);
+            return false;
+        }
+
+        // 3. Add to inventory (handling basic stacking)
+        // Note: For offline users we don't strictly enforce MaxInventorySlots here to prevent item loss,
+        // but we follow basic stacking rules.
+        var existing = saveData.Character.Inventory.Find(i => i.ItemId == itemId && i.Policy == BindPolicy.Unbound && i.BoundToId == null);
+        if (existing != null)
+        {
+            existing.Quantity += quantity;
+        }
+        else
+        {
+            saveData.Character.Inventory.Add(new Item
+            {
+                ItemId = itemId,
+                Quantity = quantity,
+                Policy = BindPolicy.Unbound,
+                BoundToId = null
+            });
+        }
+
+        saveData.LastSaved = DateTime.UtcNow;
+
+        // 4. Persist the change
+        try
+        {
+            await _repo.SaveAsync(userId, saveData);
+            PersistenceLogger.LogEvent("ReturnItemOffline", $"UserId:{userId} ItemId:{itemId} Qty:{quantity} - Success.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            PersistenceLogger.LogEvent("ReturnItemError", $"UserId:{userId} ItemId:{itemId} - {ex.Message}", errors: 1);
+            return false;
+        }
+        }
+
+        /// <summary>
+        /// Adds gold to a player's balance, handling both online and offline cases.
+        /// Used by the market system when listings are sold to credit the seller.
+        /// </summary>
+        public virtual async Task<bool> AddGoldAsync(int userId, int amount)
+        {
+        // 1. Check if the player is online
+        var session = GetSession(userId);
+        if (session?.Character != null)
+        {
+            // Player is online, add to active character (Thread-safe)
+            session.Character.AddGold(amount);
+            return true;
+        }
+
+        // 2. Player is offline, load their data from persistence
+        var saveData = await LoadDataAsync(userId);
+        if (saveData == null)
+        {
+            PersistenceLogger.LogEvent("AddGoldError", $"UserId:{userId} Amount:{amount} - Player data not found.", errors: 1);
+            return false;
+        }
+
+        // 3. Add to gold
+        saveData.Character.Gold += amount;
+        saveData.LastSaved = DateTime.UtcNow;
+
+        // 4. Persist the change
+        try
+        {
+            await _repo.SaveAsync(userId, saveData);
+            PersistenceLogger.LogEvent("AddGoldOffline", $"UserId:{userId} Amount:{amount} - Success.");
+            return true;
+        }
+        catch (Exception ex)
+        {
+            PersistenceLogger.LogEvent("AddGoldError", $"UserId:{userId} Amount:{amount} - {ex.Message}", errors: 1);
+            return false;
+        }
+        }
+        }

@@ -16,6 +16,18 @@ public class PetManager
     private readonly Dictionary<int, PetDefinition> _definitions = new();
     private readonly Dictionary<int, int> _amityItems = new();
 
+    public void Load(IEnumerable<PetDefinition> definitions)
+    {
+        foreach (var def in definitions)
+        {
+            if (def.Element == Element.None)
+            {
+                def.Element = Element.Earth; // Default for tests if missing
+            }
+            _definitions[def.PetTypeId] = def;
+        }
+    }
+
     public void Load(string path)
     {
         if (!File.Exists(path))

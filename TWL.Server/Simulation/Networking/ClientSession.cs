@@ -51,6 +51,9 @@ public class ClientSession
     private readonly GuildRosterService _guildRosterService;
     private readonly GuildStorageService _guildStorageService;
     private readonly IRebirthService _rebirthService;
+    private readonly IMarketService _marketService;
+    private readonly MarketQueryService _marketQueryService;
+    private readonly TradeSessionManager _tradeSessionManager;
     private readonly SpawnManager _spawnManager;
     private readonly NetworkStream _stream;
     private readonly IWorldTriggerService _worldTriggerService;
@@ -70,7 +73,7 @@ public class ClientSession
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
         IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard,
         MovementValidator movementValidator, IPartyService partyService, IPartyChatService partyChatService,
-        IGuildService guildService, GuildChatService guildChatService, GuildRosterService guildRosterService, GuildStorageService guildStorageService, IRebirthService rebirthService, RateLimiterOptions rateLimiterOptions)
+        IGuildService guildService, GuildChatService guildChatService, GuildRosterService guildRosterService, GuildStorageService guildStorageService, IRebirthService rebirthService, IMarketService marketService, MarketQueryService marketQueryService, TradeSessionManager tradeSessionManager, RateLimiterOptions rateLimiterOptions)
     {
         _client = client;
         _stream = client.GetStream();
@@ -86,6 +89,7 @@ public class ClientSession
         _mediator = mediator;
         _worldTriggerService = worldTriggerService;
         _spawnManager = spawnManager;
+        _tradeSessionManager = tradeSessionManager;
         QuestComponent = new PlayerQuestComponent(questManager, petManager);
         QuestComponent.OnFlagAdded += OnQuestFlagAdded;
         QuestComponent.OnQuestUpdated += OnQuestUpdated;
@@ -99,6 +103,8 @@ public class ClientSession
         _guildRosterService = guildRosterService;
         _guildStorageService = guildStorageService;
         _rebirthService = rebirthService;
+        _marketService = marketService;
+        _marketQueryService = marketQueryService;
 
         if (_combatManager != null)
         {
@@ -106,7 +112,8 @@ public class ClientSession
         }
     }
 
-    public PlayerQuestComponent QuestComponent { get; protected set; }
+    public virtual PlayerQuestComponent QuestComponent { get; protected set; }
+
 
     private void OnQuestFlagAdded(string flag)
     {
@@ -138,7 +145,8 @@ public class ClientSession
         }
     }
 
-    public ServerCharacter? Character { get; protected set; }
+    public virtual ServerCharacter? Character { get; protected set; }
+
 
     private void OnCombatantDeath(ServerCombatant victim)
     {
@@ -399,6 +407,36 @@ public class ClientSession
             case Opcode.CharacterRebirthRequest:
                 await HandleCharacterRebirthAsync(msg.JsonPayload, traceId);
                 break;
+            case Opcode.MarketSearchRequest:
+                await HandleMarketSearchAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.MarketCreateRequest:
+                await HandleMarketCreateAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.MarketBuyRequest:
+                await HandleMarketBuyAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.MarketCancelRequest:
+                await HandleMarketCancelAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.TradeRequest:
+                await HandleTradeRequestAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.TradeAccept:
+                await HandleTradeAcceptAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.TradeDecline:
+                await HandleTradeDeclineAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.TradeCancel:
+                await HandleTradeCancelAsync(traceId);
+                break;
+            case Opcode.TradeOfferUpdate:
+                await HandleTradeOfferUpdateAsync(msg.JsonPayload, traceId);
+                break;
+            case Opcode.TradeConfirm:
+                await HandleTradeConfirmAsync(traceId);
+                break;
             // etc.
         }
 
@@ -481,6 +519,9 @@ public class ClientSession
                 break;
             case PetActionType.Dismiss:
                 success = _petService.DismissPet(UserId, request.PetInstanceId);
+                break;
+            case PetActionType.Rebirth:
+                success = _petService.TryRebirth(UserId, request.PetInstanceId);
                 break;
             // Utility etc.
         }
@@ -897,6 +938,7 @@ public class ClientSession
                     PosY = Character?.Y ?? 0f,
                     Hp = Character?.Hp ?? 0,
                     MaxHp = Character?.MaxHp ?? 0,
+                    RebirthLevel = Character?.RebirthLevel ?? 0,
                     MapId = Character?.MapId ?? 0
                 }, _jsonOptions)
             });
@@ -1549,6 +1591,139 @@ public class ClientSession
         {
         }
     }
+
+    private async Task HandleMarketSearchAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        try
+        {
+            var request = JsonSerializer.Deserialize<MarketSearchRequest>(payload, _jsonOptions);
+            if (request == null) return;
+
+            var result = await _marketQueryService.SearchAsync(request);
+            await SendAsync(new NetMessage
+            {
+                Op = Opcode.MarketSearchResponse,
+                JsonPayload = JsonSerializer.Serialize(result, _jsonOptions)
+            });
+        }
+        catch (JsonException) { }
+    }
+
+    private async Task HandleMarketCreateAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        try
+        {
+            var request = JsonSerializer.Deserialize<CreateMarketListingRequest>(payload, _jsonOptions);
+            if (request == null) return;
+
+            var result = await _marketService.CreateListingAsync(Character, request);
+            await SendAsync(new NetMessage
+            {
+                Op = Opcode.MarketOperationResponse,
+                JsonPayload = JsonSerializer.Serialize(result, _jsonOptions)
+            });
+        }
+        catch (JsonException) { }
+    }
+
+    private async Task HandleMarketBuyAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        try
+        {
+            var request = JsonSerializer.Deserialize<BuyMarketListingRequest>(payload, _jsonOptions);
+            if (request == null) return;
+
+            var result = await _marketService.BuyListingAsync(Character, request);
+            await SendAsync(new NetMessage
+            {
+                Op = Opcode.MarketOperationResponse,
+                JsonPayload = JsonSerializer.Serialize(result, _jsonOptions)
+            });
+        }
+        catch (JsonException) { }
+    }
+
+    private async Task HandleMarketCancelAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        try
+        {
+            var request = JsonSerializer.Deserialize<CancelMarketListingRequest>(payload, _jsonOptions);
+            if (request == null) return;
+
+            var result = await _marketService.CancelListingAsync(Character, request);
+            await SendAsync(new NetMessage
+            {
+                Op = Opcode.MarketOperationResponse,
+                JsonPayload = JsonSerializer.Serialize(result, _jsonOptions)
+            });
+        }
+        catch (JsonException) { }
+    }
+
+    private async Task HandleTradeRequestAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        try
+        {
+            var request = JsonSerializer.Deserialize<TradeRequestDto>(payload, _jsonOptions);
+            if (request == null) return;
+            await _tradeSessionManager.RequestTradeAsync(UserId, request.TargetUserId);
+        }
+        catch (JsonException) { }
+    }
+
+    private async Task HandleTradeAcceptAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        try
+        {
+            var request = JsonSerializer.Deserialize<TradeRequestDto>(payload, _jsonOptions);
+            if (request == null) return;
+            await _tradeSessionManager.AcceptTradeAsync(UserId, request.TargetUserId);
+        }
+        catch (JsonException) { }
+    }
+
+    private async Task HandleTradeDeclineAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        try
+        {
+            var request = JsonSerializer.Deserialize<TradeRequestDto>(payload, _jsonOptions);
+            if (request == null) return;
+            await _tradeSessionManager.DeclineTradeAsync(UserId, request.TargetUserId);
+        }
+        catch (JsonException) { }
+    }
+
+    private async Task HandleTradeCancelAsync(string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        await _tradeSessionManager.CancelTradeAsync(UserId);
+    }
+
+    private async Task HandleTradeOfferUpdateAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        try
+        {
+            var update = JsonSerializer.Deserialize<TradeOfferUpdateDto>(payload, _jsonOptions);
+            if (update == null) return;
+            await _tradeSessionManager.UpdateOfferAsync(UserId, update);
+        }
+        catch (JsonException) { }
+    }
+
+    private async Task HandleTradeConfirmAsync(string traceId)
+    {
+        if (UserId <= 0 || Character == null) return;
+        await _tradeSessionManager.ConfirmTradeAsync(UserId);
+    }
+
 
     public virtual async Task DisconnectAsync(string reason)
     {

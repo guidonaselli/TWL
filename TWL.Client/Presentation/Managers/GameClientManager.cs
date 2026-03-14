@@ -35,6 +35,7 @@ public class GameClientManager
         QuestManager = new ClientQuestManager(questDataManager);
         InventoryManager = new ClientInventoryManager();
         MarketplaceManager = new ClientMarketplaceManager();
+        TradeManager = new ClientTradeManager();
     }
 
     public Guid PlayerId { get; }
@@ -47,6 +48,7 @@ public class GameClientManager
     public ClientQuestManager QuestManager { get; }
     public ClientInventoryManager InventoryManager { get; }
     public ClientMarketplaceManager MarketplaceManager { get; }
+    public ClientTradeManager TradeManager { get; }
 
     public PartyState Party { get; } = new();
 

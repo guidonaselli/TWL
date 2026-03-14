@@ -26,6 +26,7 @@
     <ItemGroup>
         <ProjectReference Include="..\TWL.Server\TWL.Server.csproj"/>
         <ProjectReference Include="..\TWL.Shared\TWL.Shared.csproj"/>
+        <ProjectReference Include="..\TWL.Client\TWL.Client.csproj"/>
     </ItemGroup>
 
 </Project>

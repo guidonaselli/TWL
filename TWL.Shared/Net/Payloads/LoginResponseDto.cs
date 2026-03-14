@@ -6,8 +6,10 @@ public class LoginResponseDto
     public int UserId { get; set; }
     public float PosX { get; set; }
     public float PosY { get; set; }
+    public int Level { get; set; }
     public int Hp { get; set; }
     public int MaxHp { get; set; }
+    public int RebirthLevel { get; set; }
     public int MapId { get; set; }
     public string ErrorMessage { get; set; }
 }

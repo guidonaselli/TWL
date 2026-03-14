@@ -47,7 +47,7 @@ public class DbService : IDbService
         }
 
         // Legacy Init (maintain for 'accounts' table until full migration)
-        // InitDatabase();
+        InitDatabase();
 
         Console.WriteLine("Database initialized successfully.");
     }
@@ -65,6 +65,36 @@ public class DbService : IDbService
                     username VARCHAR(50) UNIQUE NOT NULL,
                     pass_hash VARCHAR(128) NOT NULL
                 );
+
+                CREATE TABLE IF NOT EXISTS market_listings (
+                    listing_id TEXT PRIMARY KEY,
+                    seller_id INT NOT NULL,
+                    item_id INT NOT NULL,
+                    item_name TEXT NOT NULL,
+                    quantity INT NOT NULL,
+                    price_per_unit BIGINT NOT NULL,
+                    total_price BIGINT NOT NULL,
+                    created_utc TIMESTAMP NOT NULL,
+                    expires_utc TIMESTAMP NOT NULL,
+                    is_active BOOLEAN NOT NULL DEFAULT TRUE
+                );
+
+                CREATE TABLE IF NOT EXISTS market_transactions (
+                    transaction_id SERIAL PRIMARY KEY,
+                    listing_id TEXT NOT NULL,
+                    buyer_id INT NOT NULL,
+                    seller_id INT NOT NULL,
+                    item_id INT NOT NULL,
+                    item_name TEXT NOT NULL,
+                    quantity INT NOT NULL,
+                    price_per_unit BIGINT NOT NULL,
+                    total_price BIGINT NOT NULL,
+                    gross_amount BIGINT NOT NULL,
+                    tax_amount BIGINT NOT NULL,
+                    net_amount BIGINT NOT NULL,
+                    completed_utc TIMESTAMP NOT NULL
+                );
+                
                 -- Players table is now managed by EF Core as 'Players' (capitalized),
                 -- while this legacy script created 'players' (lowercase).
                 -- To avoid conflicts, we remove the 'players' creation here.
@@ -161,6 +191,48 @@ public class DbService : IDbService
             await transaction.RollbackAsync();
             // In a real production system, log this failure to a telemetry sink for operational triage
             Console.WriteLine($"[DbService] Serializable transaction failed: {ex.Message}");
+            throw;
+        }
+    }
+
+    public virtual async Task RecordMarketTransactionAsync(string listingId, int buyerId, int sellerId, int itemId, string itemName, int quantity, long pricePerUnit, long totalPrice, long grossAmount, long taxAmount, long netAmount)
+    {
+        try
+        {
+            await using var con = new NpgsqlConnection(_connString);
+            await con.OpenAsync();
+
+            const string sql = @"
+                INSERT INTO market_transactions (
+                    listing_id, buyer_id, seller_id, item_id, item_name, quantity, 
+                    price_per_unit, total_price, gross_amount, tax_amount, net_amount, completed_utc
+                ) VALUES (
+                    @listing_id, @buyer_id, @seller_id, @item_id, @item_name, @quantity, 
+                    @price_per_unit, @total_price, @gross_amount, @tax_amount, @net_amount, @completed_utc
+                )";
+
+            await using var cmd = new NpgsqlCommand(sql, con);
+            cmd.Parameters.AddWithValue("listing_id", listingId);
+            cmd.Parameters.AddWithValue("buyer_id", buyerId);
+            cmd.Parameters.AddWithValue("seller_id", sellerId);
+            cmd.Parameters.AddWithValue("item_id", itemId);
+            cmd.Parameters.AddWithValue("item_name", itemName);
+            cmd.Parameters.AddWithValue("quantity", quantity);
+            cmd.Parameters.AddWithValue("price_per_unit", pricePerUnit);
+            cmd.Parameters.AddWithValue("total_price", totalPrice);
+            cmd.Parameters.AddWithValue("gross_amount", grossAmount);
+            cmd.Parameters.AddWithValue("tax_amount", taxAmount);
+            cmd.Parameters.AddWithValue("net_amount", netAmount);
+            cmd.Parameters.AddWithValue("completed_utc", DateTime.UtcNow);
+
+            await cmd.ExecuteNonQueryAsync();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"[DbService] Failed to record market transaction: {ex.Message}");
+            // We swallow this for now or rethrow? 
+            // In a high-integrity system we might rethrow, but here we log and continue if possible.
+            // But Task 2 says "Finalize market sale record persistence", so it's probably better to rethrow if it fails.
             throw;
         }
     }

@@ -32,6 +32,14 @@ public enum Opcode
     PurchaseGemsVerify,
     BuyShopItemRequest,
 
+    // Market
+    MarketSearchRequest,
+    MarketSearchResponse,
+    MarketCreateRequest,
+    MarketBuyRequest,
+    MarketCancelRequest,
+    MarketOperationResponse,
+
     // Pet
     PetActionRequest,
     PetActionResponse,
@@ -84,6 +92,16 @@ public enum Opcode
     GuildStorageWithdrawRequest,
     GuildStorageUpdateEvent,
     GuildStorageOperationResultEvent,
+
+    // Trade
+    TradeRequest,
+    TradeAccept,
+    TradeDecline,
+    TradeCancel,
+    TradeOfferUpdate,
+    TradeConfirm,
+    TradeComplete,
+    TradeStateUpdate,
 
     // Status
     StatsUpdate,

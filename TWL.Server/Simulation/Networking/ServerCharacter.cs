@@ -1,6 +1,7 @@
 using System.IO;
 using TWL.Server.Persistence;
 using TWL.Server.Security;
+using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Models;
 
@@ -162,6 +163,8 @@ public class ServerCharacter : ServerCombatant
             lock (_progressLock) { _statPoints = value; }
         }
     }
+
+    public PlayerQuestComponent QuestComponent { get; set; } = null!;
 
     public string ActivePetInstanceId { get; private set; }
     public DateTime LastPetSwitchTime { get; set; } = DateTime.MinValue;
@@ -804,6 +807,11 @@ public class ServerCharacter : ServerCombatant
         }
     }
 
+    public bool TryConsumeItem(int itemId, int quantity)
+    {
+        return RemoveItem(itemId, quantity);
+    }
+
     public bool RemoveItem(int itemId, int quantity) => RemoveItem(itemId, quantity, null);
 
     public bool RemoveItem(int itemId, int quantity, BindPolicy? policyFilter)
@@ -989,7 +997,18 @@ public class ServerCharacter : ServerCombatant
         }
     }
 
-    // ApplyDamage, Heal are inherited
+    public virtual void ResetStatsToBaseline()
+    {
+        lock (_progressLock)
+        {
+            Str = 8;
+            Con = 8;
+            Int = 8;
+            Wis = 8;
+            Agi = 8;
+            IsDirty = true;
+        }
+    }
 
     public ServerCharacterData GetSaveData()
     {

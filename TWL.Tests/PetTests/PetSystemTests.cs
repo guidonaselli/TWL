@@ -66,6 +66,28 @@ public class PetSystemTests : IDisposable
     ""RebirthSkillId"": 900
   },
   {
+    ""PetTypeId"": 9998,
+    ""Name"": ""Quest Wolf"",
+    ""Type"": ""Quest"",
+    ""Element"": ""Earth"",
+    ""BaseHp"": 100,
+    ""BaseStr"": 10,
+    ""BaseCon"": 10,
+    ""BaseInt"": 5,
+    ""BaseWis"": 5,
+    ""BaseAgi"": 10,
+    ""GrowthModel"": {
+      ""HpGrowthPerLevel"": 10.0,
+      ""SpGrowthPerLevel"": 5.0
+    },
+    ""SkillSet"": [
+        { ""SkillId"": 100, ""UnlockLevel"": 1, ""UnlockAmity"": 0 }
+    ],
+    ""RebirthEligible"": true,
+    ""RebirthSkillId"": 900
+  },
+
+  {
     ""PetTypeId"": 8888,
     ""Name"": ""Temp Pet"",
     ""Type"": ""Quest"",
@@ -270,7 +292,8 @@ public class PetSystemTests : IDisposable
         session.SetCharacter(chara);
         _playerService.RegisterSession(session);
 
-        var petId = _petService.CreatePet(1, 9999);
+        var petId = _petService.CreatePet(1, 9998);
+
         var pet = chara.Pets[0];
 
         // Setup for Rebirth

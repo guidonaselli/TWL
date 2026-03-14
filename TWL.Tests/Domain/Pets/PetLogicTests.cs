@@ -6,6 +6,7 @@ namespace TWL.Tests.Domain.Pets;
 public class PetLogicTests
 {
     [Fact]
+
     public void TestSkillUnlocks()
     {
         var def = new PetDefinition
@@ -63,6 +64,8 @@ public class PetLogicTests
         // Try again
         pet.SetLevel(100);
         result = pet.TryRebirth();
-        Assert.False(result); // Already rebirthed
+        Assert.True(result, "Multi-generation rebirth should be allowed for eligible pets.");
+        Assert.Equal(2, pet.RebirthGeneration);
+
     }
 }

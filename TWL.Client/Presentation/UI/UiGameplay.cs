@@ -1,4 +1,4 @@
-﻿// UiGameplay.cs
+// UiGameplay.cs
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -108,8 +108,14 @@ public class UiGameplay : UiManager
         var statsX = 90;
 
         // Nivel
+        var levelText = _player.Level.ToString();
+        if (_player.PlayerData?.RebirthLevel > 0)
+        {
+            levelText += $" (R{_player.PlayerData.RebirthLevel})";
+        }
+
         sb.DrawString(_font,
-            Loc.TF("UI_LevelFormat", _player.Level),
+            Loc.TF("UI_LevelFormat", levelText),
             new Vector2(statsX, 20), Color.Yellow);
 
         // HP

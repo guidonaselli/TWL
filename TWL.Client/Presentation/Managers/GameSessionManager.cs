@@ -1,8 +1,10 @@
+using TWL.Shared.Domain.Characters;
+
 namespace TWL.Client.Presentation.Managers;
 
 public class GameSessionManager
 {
-    public PlayerCharacterData CurrentPlayer { get; private set; }
+    public PlayerCharacterData? CurrentPlayer { get; private set; }
     public bool IsLoggedIn { get; private set; }
 
     public void StartSession(PlayerCharacterData playerData)

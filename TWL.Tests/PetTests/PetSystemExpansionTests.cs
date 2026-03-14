@@ -40,7 +40,7 @@ public class PetSystemExpansionTests : IDisposable
   {
     ""PetTypeId"": 1001,
     ""Name"": ""Slime"",
-    ""Type"": ""Capture"",
+    ""Type"": ""Quest"",
     ""Element"": ""Earth"",
     ""BaseHp"": 100,
     ""GrowthModel"": { ""HpGrowthPerLevel"": 10 },

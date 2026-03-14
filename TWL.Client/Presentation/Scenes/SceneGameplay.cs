@@ -110,9 +110,12 @@ public sealed class SceneGameplay : SceneBase, IPayloadReceiver
 
         var dto = new PlayerColorsDto();
 
-        _player = new PlayerCharacter(_gameManager.PlayerId, "Hero", Element.Fire, dto);
+        _player = new PlayerCharacter(_gameManager.PlayerId, _playerData.Name, Element.Fire, dto);
+        _player.PlayerData = _playerData;
         _player.Position = new Vector2(_playerData.PosX, _playerData.PosY);
-        // You might want to set other stats from _playerData here as well
+        _player.Health = _playerData.Hp > 0 ? _playerData.Hp : _playerData.MaxHp;
+        // MaxHealth is derived in Level baseline, but we should ensure it matches server if possible
+        // For now, let's just ensure prestige is linked
 
         _playerView = new PlayerView(_player);
         _ui = new UiGameplay(_player, _gameManager.Party, _gameManager.NetworkClient);

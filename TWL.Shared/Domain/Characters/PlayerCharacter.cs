@@ -52,6 +52,7 @@ public class PlayerCharacter : Character
 
     public PlayerColorsDto Colors { get; set; } = new();
     public CharacterAppearance Appearance { get; set; } = new();
+    public PlayerCharacterData? PlayerData { get; set; }
 
     // Resources
     public int Gold { get; set; }

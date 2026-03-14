@@ -115,6 +115,17 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<GuildAuditLogService>();
         svcs.AddSingleton<GuildStorageService>();
         svcs.AddSingleton<IRebirthService, RebirthManager>();
+        
+        // Market Services
+        svcs.AddSingleton<TradeManager>();
+        svcs.AddSingleton<TradeSessionManager>();
+        svcs.AddSingleton<IMarketService>(sp => new MarketManager(
+            sp.GetRequiredService<IEconomyService>(),
+            sp.GetRequiredService<TradeManager>(),
+            sp.GetRequiredService<PlayerService>(),
+            sp.GetRequiredService<IDbService>()
+        ));
+        svcs.AddSingleton<MarketQueryService>();
 
         svcs.AddSingleton<IPlayerRepository>(sp =>
             new DbPlayerRepository(
@@ -174,11 +185,15 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<GuildRosterService>(),
                 sp.GetRequiredService<GuildStorageService>(),
                 sp.GetRequiredService<IRebirthService>(),
+                sp.GetRequiredService<IMarketService>(),
+                sp.GetRequiredService<MarketQueryService>(),
+                sp.GetRequiredService<TradeSessionManager>(),
                 sp.GetRequiredService<IOptions<RateLimiterOptions>>()
             );
         });
         svcs.AddSingleton<HealthCheckService>();
         svcs.AddHostedService<HealthCheckService>(sp => sp.GetRequiredService<HealthCheckService>());
+        svcs.AddHostedService<MarketListingScheduler>();
         svcs.AddHostedService<ServerWorker>(); // Worker que arranca/para NetworkServer
     })
     .Build()
