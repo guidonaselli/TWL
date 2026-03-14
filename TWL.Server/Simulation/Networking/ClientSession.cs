@@ -523,7 +523,12 @@ public class ClientSession
             case PetActionType.Rebirth:
                 success = _petService.TryRebirth(UserId, request.PetInstanceId);
                 break;
-            // Utility etc.
+            case PetActionType.Evolve:
+                success = _petService.TryEvolve(UserId, request.PetInstanceId);
+                break;
+            case PetActionType.Utility:
+                // Existing utility logic if any
+                break;
         }
 
         await SendAsync(new NetMessage
@@ -1566,7 +1571,7 @@ public class ClientSession
             var request = JsonSerializer.Deserialize<CharacterRebirthRequest>(payload, _jsonOptions);
             if (request == null) return;
 
-            var (success, message, statPointsGained) = _rebirthService.TryRebirthCharacter(Character, request.OperationId);
+            var (success, message, statPointsGained) = _rebirthService.TryRebirthCharacter(Character, QuestComponent, request.OperationId);
 
             var response = new CharacterRebirthResponse
             {

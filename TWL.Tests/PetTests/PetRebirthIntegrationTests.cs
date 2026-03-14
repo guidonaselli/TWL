@@ -1,10 +1,15 @@
+using Xunit;
+using Moq;
+using System.Linq;
+using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
+using TWL.Server.Persistence;
+using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
-using Microsoft.Extensions.Logging;
-using Moq;
-using Xunit;
+using TWL.Shared.Services;
 
 namespace TWL.Tests.PetTests;
 
@@ -27,16 +32,30 @@ public class PetRebirthIntegrationTests
             new() { 
                 PetTypeId = 1, 
                 Name = "QuestPet", 
-                Type = "Quest", 
+                Type = PetType.Quest, 
+                IsQuestPet = true,
                 RebirthEligible = true,
+                Element = Element.Fire,
                 GrowthModel = new PetGrowthModel { HpGrowthPerLevel = 10 }
             },
             new() { 
                 PetTypeId = 2, 
                 Name = "CapturePet", 
-                Type = "Capture", 
+                Type = PetType.Capture, 
                 RebirthEligible = true,
+                Element = Element.Water,
                 GrowthModel = new PetGrowthModel { HpGrowthPerLevel = 10 }
+            },
+            new() { 
+                PetTypeId = 1001, 
+                Name = "QuestPet1001", 
+                Type = PetType.Quest, 
+                Element = Element.Earth,
+                IsQuestPet = true, 
+                RebirthEligible = true,
+                BaseHp = 100,
+                BaseInt = 10,
+                GrowthModel = new PetGrowthModel { CurveType = GrowthCurveType.Standard }
             }
         });
 
@@ -44,9 +63,13 @@ public class PetRebirthIntegrationTests
         var metrics = new ServerMetrics();
         _playerService = new PlayerService(_mockRepo.Object, metrics);
         
-        var combatManager = new Mock<CombatManager>(null, null, null, null).Object;
-        var monsterManager = new Mock<MonsterManager>().Object;
+        var mockResolver = new Mock<ICombatResolver>().Object;
+        var mockSkills = new Mock<ISkillCatalog>().Object;
+        var mockStatus = new Mock<IStatusEngine>().Object;
         var random = new Mock<IRandomService>().Object;
+
+        var combatManager = new CombatManager(mockResolver, random, mockSkills, mockStatus);
+        var monsterManager = new Mock<MonsterManager>().Object;
         var logger = new Mock<ILogger<PetService>>().Object;
 
         _petService = new PetService(_playerService, _petManager, monsterManager, combatManager, random, logger);
@@ -55,22 +78,18 @@ public class PetRebirthIntegrationTests
     [Fact]
     public void TryRebirth_Success_ForEligibleQuestPet()
     {
-        // 1. Setup Session & Character
         var session = new ClientSessionForTest();
         var character = new ServerCharacter { Id = 1, Name = "PetMaster" };
         session.SetCharacter(character);
         _playerService.RegisterSession(session);
 
-        // 2. Give Quest Pet to character
         var def = _petManager.GetDefinition(1);
         var pet = new ServerPet(def);
         pet.SetLevel(100);
         character.AddPet(pet);
 
-        // 3. Act
         var result = _petService.TryRebirth(1, pet.InstanceId);
 
-        // 4. Assert
         Assert.True(result, "Rebirth should succeed for quest pet at level 100");
         Assert.Equal(1, pet.Level);
         Assert.Equal(1, pet.RebirthGeneration);
@@ -80,59 +99,70 @@ public class PetRebirthIntegrationTests
     [Fact]
     public void TryRebirth_Fails_ForCapturePet()
     {
-        // 1. Setup Session
         var session = new ClientSessionForTest();
         var character = new ServerCharacter { Id = 1 };
         session.SetCharacter(character);
         _playerService.RegisterSession(session);
 
-        // 2. Give Capture Pet
         var def = _petManager.GetDefinition(2);
         var pet = new ServerPet(def);
         pet.SetLevel(100);
         character.AddPet(pet);
 
-        // 3. Act
         var result = _petService.TryRebirth(1, pet.InstanceId);
 
-        // 4. Assert
         Assert.False(result, "Rebirth should be denied for Capture pets regardless of eligibility flag");
         Assert.Equal(100, pet.Level);
         Assert.False(pet.HasRebirthed);
     }
 
     [Fact]
-    public void PetRebirth_DiminishingReturns_Verification()
+    public void PetRebirth_State_PersistsThroughSaveLoad()
     {
-        var def = _petManager.GetDefinition(1);
-        var pet = new ServerPet(def); // MaxHp at Level 100 is approx 1000? No, let's see.
-        // BaseHp 0 + 10 * 99 = 990. 
-        // We care about MaxHp at Level 1 *after* rebirth.
-
-        // Gen 0 (Normal)
-        var normalMaxHp = pet.MaxHp;
-
-        // Gen 0 -> 1: +10%
+        var def = _petManager.GetDefinition(1001);
+        var pet = new ServerPet(def);
         pet.SetLevel(100);
-        pet.TryRebirth();
-        var gen1MaxHp = pet.MaxHp;
-
-        // Gen 1 -> 2: +8%
-        pet.SetLevel(100);
-        pet.TryRebirth();
-        var gen2MaxHp = pet.MaxHp;
-
-        // Gen 2 -> 3: +5%
-        pet.SetLevel(100);
-        pet.TryRebirth();
-        var gen3MaxHp = pet.MaxHp;
-
-        Assert.True(gen1MaxHp > normalMaxHp);
-        Assert.True(gen2MaxHp > gen1MaxHp);
-        Assert.True(gen3MaxHp > gen2MaxHp);
         
-        // Ratio check (approximate due to rounding)
-        // Gen 1 bonus is 10%, Gen 2 is 8%.
-        // Increment from gen1 to gen2 should be smaller than from normal to gen1 in percentage terms.
+        bool success = pet.TryRebirth();
+        Assert.True(success);
+        Assert.Equal(1, pet.RebirthGeneration);
+        Assert.Equal(1, pet.Level);
+
+        var saveData = pet.GetSaveData();
+        Assert.Equal(1, saveData.RebirthGeneration);
+
+        var newPet = new ServerPet();
+        newPet.LoadSaveData(saveData);
+        newPet.Hydrate(def);
+
+        Assert.Equal(1, newPet.RebirthGeneration);
+        Assert.Equal(1, newPet.Level);
+        
+        PetGrowthCalculator.CalculateStats(def, 1, out var expectedHp, out var _, out var _, out var _, out var _, out var _, out var _);
+        int expectedHpWithBonus = (int)(expectedHp * 1.10);
+        Assert.Equal(expectedHpWithBonus, newPet.MaxHp);
+    }
+
+    [Fact]
+    public void Character_SaveLoad_IncludesPetRebirthState()
+    {
+        var character = new ServerCharacter { Id = 1, Name = "PetOwner" };
+        var def = _petManager.GetDefinition(1001);
+        var pet = new ServerPet(def);
+        pet.SetLevel(100);
+        pet.TryRebirth(); // Generation 1
+        pet.SetLevel(100);
+        pet.TryRebirth(); // Generation 2
+        character.AddPet(pet);
+
+        var charSave = character.GetSaveData();
+        var petSave = charSave.Pets.Single(p => p.DefinitionId == 1001);
+        Assert.Equal(2, petSave.RebirthGeneration);
+
+        var newCharacter = new ServerCharacter();
+        newCharacter.LoadSaveData(charSave);
+        
+        var loadedPet = newCharacter.Pets.Single(p => p.DefinitionId == 1001);
+        Assert.Equal(2, loadedPet.RebirthGeneration);
     }
 }

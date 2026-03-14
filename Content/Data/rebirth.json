@@ -1,0 +1,6 @@
+{
+  "min_level": 100,
+  "required_quest_id": 5000,
+  "required_item_id": 9999,
+  "required_item_quantity": 1
+}

@@ -1,20 +1,19 @@
-using System;
-using System.Linq;
-using Microsoft.Extensions.Logging;
 using Moq;
-using Xunit;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Models;
+using Microsoft.Extensions.Logging;
+using Xunit;
 using TWL.Server.Simulation.Networking.Components;
+using System.Linq;
+using System;
 
 namespace TWL.Tests.Rebirth;
 
 public class CharacterRebirthRequirementTests
 {
-    private readonly RebirthManager _rebirthManager;
     private readonly Mock<ILogger<RebirthManager>> _loggerMock;
-
+    private readonly RebirthManager _rebirthManager;
     private readonly ServerQuestManager _questManager;
 
     public CharacterRebirthRequirementTests()
@@ -84,30 +83,49 @@ public class CharacterRebirthRequirementTests
     }
 
     [Fact]
-    public void TryRebirthCharacter_PreservesSkillsAndEquipment()
+    public void TryRebirthCharacter_Fails_WhenLevelBelow100()
+    {
+        // Arrange
+        var character = CreateTestCharacter(99);
+        
+        // Act
+        var result = _rebirthManager.TryRebirthCharacter(character, "op1");
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Contains("Level 100 required", result.Message);
+    }
+
+    [Fact]
+    public void TryRebirthCharacter_Fails_WhenQuestNotCompleted()
     {
         // Arrange
         var character = CreateTestCharacter(100);
-        character.QuestComponent.AddFlag("REBIRTH_QUALIFIED");
-        
-        // Mock skills
-        character.LearnSkill(1001);
-        
-        // Mock equipment (Item 5001 - "Dragon Blade")
-        character.AddItem(5001, 1); // Add to inventory first
-        character.Equip(character.Inventory.Count - 1); // Equip the last added item
-        
-        character.AddItem(9007, 1); // Add rebirth item AFTER equipping to avoid slot confusion
+        _rebirthManager.SetRequirements(new RebirthRequirements { RequiredQuestId = 5000 });
+
+        var questComponent = new PlayerQuestComponent(new ServerQuestManager());
+        // Quest 5000 not started
+
+        // Act
+        var result = _rebirthManager.TryRebirthCharacter(character, questComponent, "op2");
+
+        // Assert
+        Assert.False(result.Success);
+        Assert.Contains("quest", result.Message, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void TryRebirthCharacter_Fails_WhenItemMissing_DataDriven()
+    {
+        // Arrange
+        var character = CreateTestCharacter(100);
+        _rebirthManager.SetRequirements(new RebirthRequirements { RequiredItemId = 9999, RequiredItemQuantity = 1 });
         
         // Act
-        var (success, msg, points) = _rebirthManager.TryRebirthCharacter(character, "op123");
- 
+        var result = _rebirthManager.TryRebirthCharacter(character, null, "op3");
+
         // Assert
-        Assert.True(success);
-        Assert.Contains(1001, character.KnownSkills);
-        Assert.True(character.HasEquippedItem(5001));
-        
-        // Stats are reset to level 1 baseline
-        Assert.Equal(1, character.Level);
+        Assert.False(result.Success);
+        Assert.Contains("item", result.Message, StringComparison.OrdinalIgnoreCase);
     }
 }

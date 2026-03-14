@@ -30,6 +30,7 @@ public class ShutdownTests
         var mockPlayerRepo = new Mock<IPlayerRepository>();
         var mockPlayerService = new Mock<PlayerService>(mockPlayerRepo.Object, metrics);
         var mockHealthCheck = new Mock<HealthCheckService>();
+        var mockRebirthService = new Mock<IRebirthService>();
 
         // Setup PlayerService mocks
         mockPlayerService.Setup(s => s.DisconnectAllAsync(It.IsAny<string>())).Returns(Task.CompletedTask).Verifiable();
@@ -53,7 +54,8 @@ public class ShutdownTests
             null!,  // ILoggerFactory
             mockHealthCheck.Object,
             null!,  // InstanceService
-            null!   // CombatManager
+            null!,  // CombatManager
+            mockRebirthService.Object
         );
 
         // Act

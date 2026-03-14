@@ -3,6 +3,7 @@ namespace TWL.Client.Presentation.Models;
 public class GameSaveData
 {
     public int Level { get; set; }
+    public int RebirthLevel { get; set; }
     public int Exp { get; set; }
     public int ExpToNextLevel { get; set; }
 

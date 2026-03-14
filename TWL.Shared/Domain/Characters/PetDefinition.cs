@@ -18,6 +18,8 @@ public class PetDefinition
     public string? RequiredFlag;
 
     public bool IsUnique;
+    public bool IsQuestPet;
+    public int? EvolutionId;
     public string Name;
     public int PetTypeId;
     public string PortraitPath;

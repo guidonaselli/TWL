@@ -38,7 +38,8 @@ public class RebirthPrestigeDisplayTests
         {
             PlayerId = 1,
             UserName = "Hero",
-            RebirthLevel = 2
+            RebirthLevel = 2,
+            Level = 50
         };
 
         // Act
@@ -71,5 +72,29 @@ public class RebirthPrestigeDisplayTests
         Assert.Equal("TestUser", data.Name);
         Assert.Equal(10f, data.PosX);
         Assert.Equal(20f, data.PosY);
+    }
+
+    [Fact]
+    public void PlayerCharacter_SetProgress_UpdatesRebirthLevel()
+    {
+        // Arrange
+        var player = new PlayerCharacter(Guid.NewGuid(), "TestPlayer", Element.Fire);
+        
+        // Act
+        player.SetProgress(10, 2, 500, 1000);
+
+        // Assert
+        Assert.Equal(10, player.Level);
+        Assert.Equal(2, player.RebirthLevel);
+    }
+
+    [Fact]
+    public void PlayerCharacter_InitialRebirthLevel_IsZero()
+    {
+        // Arrange & Act
+        var player = new PlayerCharacter(Guid.NewGuid(), "TestPlayer", Element.Fire);
+
+        // Assert
+        Assert.Equal(0, player.RebirthLevel);
     }
 }

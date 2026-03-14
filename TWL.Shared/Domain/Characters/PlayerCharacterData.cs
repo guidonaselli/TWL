@@ -10,10 +10,10 @@ public class PlayerCharacterData
     public int PlayerId { get; set; }
     public string Name { get; set; } = string.Empty;
     public int Level { get; set; }
+    public int RebirthLevel { get; set; }
     public int Exp { get; set; }
     public int Hp { get; set; }
     public int MaxHp { get; set; }
-    public int RebirthLevel { get; set; }
     public float PosX { get; set; }
     public float PosY { get; set; }
     public CharacterAppearance Appearance { get; set; } = new();
@@ -27,10 +27,11 @@ public class PlayerCharacterData
             Name = dto.UserName,
             Hp = dto.Hp,
             MaxHp = dto.MaxHp,
+            Level = dto.Level,
+            RebirthLevel = dto.RebirthLevel,
             PosX = dto.X,
             PosY = dto.Y,
-            Appearance = dto.Appearance,
-            RebirthLevel = dto.RebirthLevel
+            Appearance = dto.Appearance
         };
     }
 

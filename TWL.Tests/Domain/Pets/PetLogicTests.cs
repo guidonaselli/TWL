@@ -49,6 +49,8 @@ public class PetLogicTests
             PetTypeId = 1,
             Name = "Test",
             Element = Element.Earth,
+            IsQuestPet = true,
+            Type = PetType.Quest,
             RebirthEligible = true,
             RebirthSkillId = 999
         };
@@ -58,14 +60,25 @@ public class PetLogicTests
         var result = pet.TryRebirth();
         Assert.True(result);
         Assert.Equal(1, pet.Level);
-        Assert.True(pet.HasRebirthed);
+        Assert.Equal(1, pet.RebirthGeneration);
         Assert.Contains(999, pet.UnlockedSkillIds);
 
-        // Try again
+        // Try again (2nd Rebirth)
         pet.SetLevel(100);
         result = pet.TryRebirth();
         Assert.True(result, "Multi-generation rebirth should be allowed for eligible pets.");
         Assert.Equal(2, pet.RebirthGeneration);
 
+        // Try again (3rd Rebirth)
+        pet.SetLevel(100);
+        result = pet.TryRebirth();
+        Assert.True(result);
+        Assert.Equal(3, pet.RebirthGeneration);
+
+        // Try again (4th Rebirth - should succeed in current unbounded implementation)
+        pet.SetLevel(100);
+        result = pet.TryRebirth();
+        Assert.True(result, "4th rebirth should be allowed with diminishing returns.");
+        Assert.Equal(4, pet.RebirthGeneration);
     }
 }

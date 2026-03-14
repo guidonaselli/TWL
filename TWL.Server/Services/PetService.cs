@@ -272,10 +272,52 @@ public class PetService : IPetService
             return false;
         }
 
+        // Must-Have: Only Quest pets can rebirth
+        var def = _petManager.GetDefinition(pet.DefinitionId);
+        if (def == null || !def.IsQuestPet)
+        {
+            _logger.LogWarning("Rebirth failed: Pet {PetId} is not a quest pet. Owner: {OwnerId}", petInstanceId, ownerId);
+            return false;
+        }
+
         if (pet.TryRebirth())
         {
              _logger.LogInformation("Pet {PetId} Reborn! Owner: {OwnerId}", petInstanceId, ownerId);
              return true;
+        }
+        return false;
+    }
+
+    public bool TryEvolve(int ownerId, string petInstanceId)
+    {
+        var pet = GetPet(ownerId, petInstanceId);
+        if (pet == null)
+        {
+            return false;
+        }
+
+        var def = _petManager.GetDefinition(pet.DefinitionId);
+        if (def == null || !def.IsQuestPet || !def.EvolutionId.HasValue)
+        {
+            _logger.LogWarning("Evolution failed: Pet {PetId} is not a quest pet or has no evolution. Owner: {OwnerId}", petInstanceId, ownerId);
+            return false;
+        }
+
+        if (pet.Level < 100)
+        {
+            return false;
+        }
+
+        var nextDef = _petManager.GetDefinition(def.EvolutionId.Value);
+        if (nextDef == null)
+        {
+            return false;
+        }
+
+        if (pet.TryEvolve(nextDef))
+        {
+            _logger.LogInformation("Pet {PetId} Evolved into {NextDefId}! Owner: {OwnerId}", petInstanceId, def.EvolutionId.Value, ownerId);
+            return true;
         }
         return false;
     }

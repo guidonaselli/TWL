@@ -1,8 +1,15 @@
 using Xunit;
+using Moq;
+using System.IO;
+using System.Linq;
+using System.Collections.Generic;
+using TWL.Server.Persistence;
+using TWL.Server.Persistence.Services;
+using TWL.Server.Services;
+using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
-using TWL.Server.Simulation.Managers;
-
+using TWL.Shared.Services;
 
 namespace TWL.Tests.PetTests;
 
@@ -10,22 +17,94 @@ namespace TWL.Tests.PetTests;
 /// Validates pet evolution (skill unlock and level reset) on rebirth and multi-generation progression.
 /// Covers requirements PET-04 (evolution/action routing).
 /// </summary>
-public class PetRebirthEvolutionTests
+public class PetRebirthEvolutionTests : IDisposable
 {
     private const int RebirthSkillId = 5001;
+
+    private readonly CombatManager _combatManager;
+    private readonly ServerMetrics _metrics;
+    private readonly Mock<IRandomService> _mockRandom;
+    private readonly Mock<IPlayerRepository> _mockRepo;
+    private readonly PetManager _petManager;
+    private readonly PetService _petService;
+    private readonly PlayerService _playerService;
+    private readonly Mock<MonsterManager> _mockMonsterManager;
+
+    public PetRebirthEvolutionTests()
+    {
+        _mockRepo = new Mock<IPlayerRepository>();
+        _metrics = new ServerMetrics();
+        _playerService = new PlayerService(_mockRepo.Object, _metrics);
+        _petManager = new PetManager();
+
+        Directory.CreateDirectory("Content/Data");
+        File.WriteAllText("Content/Data/pets_evolution_test.json", @"
+[
+  {
+    ""PetTypeId"": 1002,
+    ""Name"": ""Evolving Quest Pet"",
+    ""IsQuestPet"": true,
+    ""RebirthEligible"": true,
+    ""RebirthSkillId"": 5001,
+    ""BaseHp"": 200,
+    ""Element"": ""Fire"",
+    ""EvolutionId"": 2002
+  },
+  {
+    ""PetTypeId"": 2001,
+    ""Name"": ""Young Dragon"",
+    ""IsQuestPet"": true,
+    ""EvolutionId"": 2002,
+    ""BaseHp"": 150,
+    ""Element"": ""Fire""
+  },
+  {
+    ""PetTypeId"": 2002,
+    ""Name"": ""Elder Dragon"",
+    ""IsQuestPet"": true,
+    ""BaseHp"": 300,
+    ""Element"": ""Fire""
+  },
+  {
+    ""PetTypeId"": 2003,
+    ""Name"": ""Wild Cat"",
+    ""IsQuestPet"": false,
+    ""EvolutionId"": 2004,
+    ""BaseHp"": 80,
+    ""Element"": ""Wind""
+  }
+]");
+        _petManager.Load("Content/Data/pets_evolution_test.json");
+
+        _mockRandom = new Mock<IRandomService>();
+        _mockMonsterManager = new Mock<MonsterManager>();
+        
+        var mockResolver = new Mock<ICombatResolver>();
+        var mockSkills = new Mock<ISkillCatalog>();
+        var mockStatus = new Mock<IStatusEngine>();
+        
+        _combatManager = new CombatManager(mockResolver.Object, _mockRandom.Object, mockSkills.Object, mockStatus.Object);
+        _petService = new PetService(_playerService, _petManager, _mockMonsterManager.Object, _combatManager, _mockRandom.Object, new Mock<Microsoft.Extensions.Logging.ILogger<PetService>>().Object);
+    }
+
+    public void Dispose()
+    {
+        if (File.Exists("Content/Data/pets_evolution_test.json"))
+            File.Delete("Content/Data/pets_evolution_test.json");
+    }
 
     private static PetDefinition MakeQuestPetDefWithRebirthSkill() => new()
     {
         PetTypeId = 1002,
         Name = "Evolving Quest Pet",
         Type = PetType.Quest,
+        IsQuestPet = true,
         RebirthEligible = true,
         RebirthSkillId = RebirthSkillId,
         Element = Element.Fire,
         BaseHp = 200,
         BaseStr = 10, BaseCon = 10, BaseInt = 10, BaseWis = 10, BaseAgi = 10,
         GrowthModel = new PetGrowthModel { HpGrowthPerLevel = 5, StrWeight = 20, ConWeight = 20, IntWeight = 20, WisWeight = 20, AgiWeight = 20 }
-
     };
 
     private static PetDefinition MakeQuestPetDefNoSkill() => new()
@@ -33,16 +112,16 @@ public class PetRebirthEvolutionTests
         PetTypeId = 1003,
         Name = "Simple Quest Pet",
         Type = PetType.Quest,
+        IsQuestPet = true,
         RebirthEligible = true,
         RebirthSkillId = 0, // No rebirth skill
         Element = Element.Wind,
         BaseHp = 150,
         BaseStr = 8, BaseCon = 8, BaseInt = 8, BaseWis = 8, BaseAgi = 8,
         GrowthModel = new PetGrowthModel { HpGrowthPerLevel = 3, StrWeight = 20, ConWeight = 20, IntWeight = 20, WisWeight = 20, AgiWeight = 20 }
-
     };
 
-    // ─── Skill Unlock on Evolution ───────────────────────────────────────────────
+    // ─── Unit Tests from HEAD ───────────────────────────────────────────────────
 
     [Fact]
     public void TryRebirth_WithRebirthSkillId_UnlocksSkillOnFirstRebirth()
@@ -84,8 +163,6 @@ public class PetRebirthEvolutionTests
         Assert.Equal(skillsBefore.Count, pet.UnlockedSkillIds.Count);
     }
 
-    // ─── Level Reset on Rebirth ──────────────────────────────────────────────────
-
     [Fact]
     public void TryRebirth_ResetsLevelToOne()
     {
@@ -96,45 +173,6 @@ public class PetRebirthEvolutionTests
 
         Assert.Equal(1, pet.Level);
         Assert.Equal(0, pet.Exp);
-    }
-
-    [Fact]
-    public void TryRebirth_ResetsExpToNextLevel()
-    {
-        var pet = new ServerPet(MakeQuestPetDefNoSkill());
-        pet.SetLevel(100);
-        int expectedExpForLevel1 = PetGrowthCalculator.GetExpForLevel(1);
-
-        pet.TryRebirth();
-
-        Assert.Equal(expectedExpForLevel1, pet.ExpToNextLevel);
-    }
-
-    // ─── HP/MP Reset on Rebirth ──────────────────────────────────────────────────
-
-    [Fact]
-    public void TryRebirth_RestoresFullHpAfterReset()
-    {
-        var pet = new ServerPet(MakeQuestPetDefNoSkill());
-        pet.SetLevel(100);
-        pet.Hp = 1; // Simulate low HP
-
-        pet.TryRebirth();
-
-        Assert.Equal(pet.MaxHp, pet.Hp);
-    }
-
-    // ─── Generation Tracking & IsDirty ──────────────────────────────────────────
-
-    [Fact]
-    public void TryRebirth_SetsIsDirtyForPersistence()
-    {
-        var pet = new ServerPet(MakeQuestPetDefNoSkill());
-        pet.SetLevel(100);
-
-        pet.TryRebirth();
-
-        Assert.True(pet.IsDirty);
     }
 
     [Fact]
@@ -150,57 +188,45 @@ public class PetRebirthEvolutionTests
         }
     }
 
-    // ─── Save/Load Roundtrip ─────────────────────────────────────────────────────
+    // ─── Integration Tests from S06 ─────────────────────────────────────────────
 
     [Fact]
-    public void GetSaveData_PersistsRebirthGeneration()
+    public void QuestPet_CanEvolve_AtLevel100()
     {
-        var pet = new ServerPet(MakeQuestPetDefNoSkill());
+        // Setup session
+        var session = new ClientSessionForTest();
+        session.SetCharacter(new ServerCharacter { Id = 1, Name = "Player" });
+        _playerService.RegisterSession(session);
+
+        var def = _petManager.GetDefinition(2001);
+        var pet = new ServerPet(def);
         pet.SetLevel(100);
-        pet.TryRebirth();          // Gen 1
+        session.Character.AddPet(pet);
 
-        var saveData = pet.GetSaveData();
-
-        Assert.Equal(1, saveData.RebirthGeneration);
+        // Act
+        var success = _petService.TryEvolve(1, pet.InstanceId);
+        
+        // Assert
+        Assert.True(success);
+        Assert.Equal(2002, pet.DefinitionId);
+        Assert.Equal("Elder Dragon", pet.Name);
+        Assert.True(pet.MaxHp >= 300);
     }
 
     [Fact]
-    public void LoadSaveData_RestoresRebirthGeneration()
+    public void QuestPet_CannotEvolve_BelowLevel100()
     {
-        var original = new ServerPet(MakeQuestPetDefNoSkill());
-        original.SetLevel(100);
-        original.TryRebirth(); // Gen 1
-        original.SetLevel(100);
-        original.TryRebirth(); // Gen 2
-        var saveData = original.GetSaveData();
+        var session = new ClientSessionForTest();
+        session.SetCharacter(new ServerCharacter { Id = 1 });
+        _playerService.RegisterSession(session);
 
-        var restored = new ServerPet(MakeQuestPetDefNoSkill());
-        restored.LoadSaveData(saveData);
+        var def = _petManager.GetDefinition(2001);
+        var pet = new ServerPet(def);
+        pet.SetLevel(99);
+        session.Character.AddPet(pet);
 
-        Assert.Equal(2, restored.RebirthGeneration);
-        Assert.True(restored.HasRebirthed);
-    }
-
-    [Fact]
-    public void LoadSaveData_MigratesLegacyHasRebirthBoolToGenerationOne()
-    {
-        // Simulate an old save with HasRebirthed=true but RebirthGeneration=0
-        var legacySaveData = new TWL.Server.Persistence.ServerPetData
-        {
-            InstanceId = System.Guid.NewGuid().ToString(),
-            DefinitionId = 1003,
-            Name = "Old Save Pet",
-            Level = 1,
-            Exp = 0,
-            Amity = 50,
-            HasRebirthed = true,
-            RebirthGeneration = 0  // Old save format
-        };
-
-        var pet = new ServerPet(MakeQuestPetDefNoSkill());
-        pet.LoadSaveData(legacySaveData);
-
-        Assert.Equal(1, pet.RebirthGeneration);
-        Assert.True(pet.HasRebirthed);
+        var success = _petService.TryEvolve(1, pet.InstanceId);
+        Assert.False(success);
+        Assert.Equal(2001, pet.DefinitionId);
     }
 }

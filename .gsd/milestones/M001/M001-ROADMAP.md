@@ -20,7 +20,7 @@
   > After this: Implement the server-authoritative party lifecycle foundation (create/invite/accept/decline/leave/kick) and align quest gating with party membership rules.
 - [x] **S05: Guild System** `risk:medium` `depends:[S04]`
   > After this: Implement the guild lifecycle foundation: guild creation, membership invite flow, leave/kick flow, and core network contracts.
-- [ ] **S06: Rebirth System** `risk:medium` `depends:[S05]`
+- [x] **S06: Rebirth System** `risk:medium` `depends:[S05]`
   > After this: Implement character rebirth transactional foundation, including formula policy, atomic state mutation, persistence history, and network entry points.
 - [ ] **S07: P2P Market System** `risk:medium` `depends:[S06]`
   > After this: Create Phase 7 market foundation: domain service, persistence schema, and network contracts.

@@ -129,7 +129,7 @@ public class ServerCharacter : ServerCombatant
     public int Level { get; set; } = 1;
     public int RebirthLevel { get; set; }
 
-    public List<TWL.Shared.Domain.DTO.RebirthHistoryRecord> RebirthHistory { get; set; } = new();
+    public IList<TWL.Shared.Domain.DTO.RebirthHistoryRecord> RebirthHistory { get; set; } = new List<TWL.Shared.Domain.DTO.RebirthHistoryRecord>();
 
     public IReadOnlySet<string> WorldFlags
     {
@@ -1176,10 +1176,10 @@ public class ServerCharacter : ServerCombatant
             ExpToNextLevel = data.ExpToNextLevel;
             StatPoints = data.StatPoints;
             RebirthHistory.Clear();
-            if (data.RebirthHistory != null)
-            {
-                RebirthHistory.AddRange(data.RebirthHistory);
-            }
+                foreach (var record in data.RebirthHistory)
+                {
+                    RebirthHistory.Add(record);
+                }
         }
 
         SkillMastery.Clear();

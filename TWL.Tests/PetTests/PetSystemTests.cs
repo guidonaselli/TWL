@@ -43,6 +43,7 @@ public class PetSystemTests : IDisposable
     ""PetTypeId"": 9999,
     ""Name"": ""Test Wolf"",
     ""Type"": ""Capture"",
+    ""IsQuestPet"": true,
     ""Element"": ""Earth"",
     ""BaseHp"": 100,
     ""BaseStr"": 10,
@@ -69,6 +70,7 @@ public class PetSystemTests : IDisposable
     ""PetTypeId"": 9998,
     ""Name"": ""Quest Wolf"",
     ""Type"": ""Quest"",
+    ""IsQuestPet"": true,
     ""Element"": ""Earth"",
     ""BaseHp"": 100,
     ""BaseStr"": 10,
@@ -307,7 +309,7 @@ public class PetSystemTests : IDisposable
 
         // Assert
         Assert.True(success);
-        Assert.True(pet.HasRebirthed);
+        Assert.Equal(1, pet.RebirthGeneration);
         Assert.Equal(1, pet.Level);
         Assert.Contains(900, pet.UnlockedSkillIds);
 

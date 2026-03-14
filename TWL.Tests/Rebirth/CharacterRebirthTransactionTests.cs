@@ -47,8 +47,10 @@ public class CharacterRebirthTransactionTests
         Assert.Equal(0, points);
         Assert.Equal(99, character.Level);
 
-        // Assert no history is recorded to prevent DoS
-        Assert.Empty(character.RebirthHistory);
+        // Assert history IS recorded for auditability (as per updated requirement)
+        var history = Assert.Single(character.RebirthHistory);
+        Assert.False(history.Success);
+        Assert.Equal("Level 100 required.", msg);
     }
 
     [Theory]

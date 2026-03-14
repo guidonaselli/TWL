@@ -8,5 +8,7 @@ public class LoginSuccessResponseDto
     public int Hp { get; set; }
 
     public int MaxHp { get; set; }
+    public int RebirthLevel { get; set; }
+    public int Level { get; set; }
     // ... otras estadísticas y datos del jugador que se necesiten en el cliente
 }

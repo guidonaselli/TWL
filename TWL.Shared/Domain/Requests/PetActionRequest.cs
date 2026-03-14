@@ -5,7 +5,8 @@ public enum PetActionType
     Switch,
     Dismiss,
     Utility,
-    Rebirth
+    Rebirth,
+    Evolve
 }
 
 public class PetActionRequest

@@ -37,6 +37,7 @@ public class ServerWorker : IHostedService
     private readonly HealthCheckService _healthCheck;
     private readonly InstanceService _instanceService;
     private readonly CombatManager _combatManager;
+    private readonly IRebirthService _rebirthService;
 
     private readonly IGuildService _guildService;
 
@@ -45,7 +46,7 @@ public class ServerWorker : IHostedService
         IWorldScheduler worldScheduler, ServerMetrics metrics, IMapRegistry mapRegistry,
         IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager,
         ILoggerFactory loggerFactory, HealthCheckService healthCheck, InstanceService instanceService,
-        CombatManager combatManager)
+        CombatManager combatManager, IRebirthService rebirthService)
     {
         _net = net;
         _db = db;
@@ -65,6 +66,7 @@ public class ServerWorker : IHostedService
         _healthCheck = healthCheck;
         _instanceService = instanceService;
         _combatManager = combatManager;
+        _rebirthService = rebirthService;
     }
 
     public async Task StartAsync(CancellationToken ct)
@@ -97,6 +99,7 @@ public class ServerWorker : IHostedService
         _petManager.Load("Content/Data/pets.json");
         _questManager.Load("Content/Data/quests.json");
         _interactionManager.Load("Content/Data/interactions.json");
+        _rebirthService.LoadRequirements("Content/Data/rebirth.json");
 
         // Schedule Spawn Manager
         _worldScheduler.ScheduleRepeating(() => _spawnManager.Update(0.05f), TimeSpan.FromMilliseconds(50),

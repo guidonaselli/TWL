@@ -1,9 +1,14 @@
+using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.DTO;
 using Microsoft.Extensions.Logging;
-using Moq;
 using Xunit;
+using TWL.Server.Simulation.Networking.Components;
+using TWL.Shared.Domain.Models;
+using TWL.Shared.Domain.Requests;
+using System.Linq;
+using System;
 
 namespace TWL.Tests.Rebirth;
 
@@ -13,19 +18,30 @@ namespace TWL.Tests.Rebirth;
 /// </summary>
 public class RebirthEndToEndTests
 {
+    private readonly Mock<ILogger<RebirthManager>> _loggerMock;
     private readonly RebirthManager _rebirthManager;
-    private readonly Mock<ILogger<RebirthManager>> _mockLogger;
 
     public RebirthEndToEndTests()
     {
-        _mockLogger = new Mock<ILogger<RebirthManager>>();
-        _rebirthManager = new RebirthManager(_mockLogger.Object);
+        _loggerMock = new Mock<ILogger<RebirthManager>>();
+        _rebirthManager = new RebirthManager(_loggerMock.Object);
     }
 
     [Fact]
     public void FullRebirthFlow_Succeeds_WhenRequirementsMet()
     {
-        // 1. Setup Character with all requirements
+        // 1. Setup Requirements
+        int requiredQuestId = 5000;
+        int requiredItemId = 9007; // Core Shard
+        _rebirthManager.SetRequirements(new RebirthRequirements
+        {
+            MinLevel = 100,
+            RequiredQuestId = requiredQuestId,
+            RequiredItemId = requiredItemId,
+            RequiredItemQuantity = 1
+        });
+
+        // 2. Setup Character
         var character = new ServerCharacter
         {
             Id = 1,
@@ -35,17 +51,25 @@ public class RebirthEndToEndTests
             StatPoints = 10
         };
         
+        // 3. Setup Quest Component
+        var questManager = new ServerQuestManager();
+        character.QuestComponent = new PlayerQuestComponent(questManager);
+        character.QuestComponent.Character = character;
+        
         // Add Rebirth qualified flag
         character.QuestComponent.AddFlag("REBIRTH_QUALIFIED");
         
         // Add Core Resonance Shard (9007)
         character.AddItem(9007, 1);
 
-        // 2. Execute Rebirth via Manager
-        var opId = Guid.NewGuid().ToString();
-        var (success, message, granted) = _rebirthManager.TryRebirthCharacter(character, opId);
+        // Force complete the required quest
+        character.QuestComponent.QuestStates[requiredQuestId] = QuestState.Completed;
 
-        // 3. Assert Results
+        // 4. Execute Rebirth
+        var opId = Guid.NewGuid().ToString();
+        var (success, message, granted) = _rebirthManager.TryRebirthCharacter(character, character.QuestComponent, opId);
+
+        // 5. Assert Results
         Assert.True(success, $"Rebirth failed: {message}");
         Assert.Equal(1, character.RebirthLevel);
         Assert.Equal(1, character.Level);
@@ -55,7 +79,7 @@ public class RebirthEndToEndTests
         // Ensure item was consumed
         Assert.False(character.HasItem(9007, 1));
 
-        // 4. Verify History Record
+        // 6. Verify History Record
         Assert.Single(character.RebirthHistory);
         var record = character.RebirthHistory[0];
         Assert.Equal(opId, record.OperationId);
@@ -71,10 +95,12 @@ public class RebirthEndToEndTests
     public void Rebirth_Visibility_PersistsThroughSaveLoad()
     {
         var character = new ServerCharacter { Id = 1, Level = 100 };
+        character.QuestComponent = new PlayerQuestComponent(new ServerQuestManager());
+        character.QuestComponent.Character = character;
         character.QuestComponent.AddFlag("REBIRTH_QUALIFIED");
         character.AddItem(9007, 1);
         
-        _rebirthManager.TryRebirthCharacter(character, "audit-log-1");
+        _rebirthManager.TryRebirthCharacter(character, character.QuestComponent, "audit-log-1");
 
         // Save
         var saveData = character.GetSaveData();
@@ -91,32 +117,37 @@ public class RebirthEndToEndTests
     }
 
     [Fact]
-    public void Rebirth_DiminishingReturns_Progression()
+    public void Rebirth_MultipleGenerations_CorrectScaling()
     {
-        var character = new ServerCharacter { Id = 1, Level = 100 };
+        var character = new ServerCharacter { Id = 1, Level = 100, RebirthLevel = 0 };
+        character.QuestComponent = new PlayerQuestComponent(new ServerQuestManager());
+        character.QuestComponent.Character = character;
         character.QuestComponent.AddFlag("REBIRTH_QUALIFIED");
         
-        // Round 1 (Gen 0 -> 1): +20
+        // 1st Rebirth (0 -> 1)
         character.AddItem(9007, 1);
-        var res1 = _rebirthManager.TryRebirthCharacter(character, "op1");
-        Assert.Equal(20, res1.StatPointsGained);
+        _rebirthManager.TryRebirthCharacter(character, character.QuestComponent, "gen1");
+        Assert.Equal(20, character.RebirthHistory.Last().StatPointsGranted);
 
-        // Round 2 (Gen 1 -> 2): +15
+        // 2nd Rebirth (1 -> 2)
         character.Level = 100;
         character.AddItem(9007, 1);
-        var res2 = _rebirthManager.TryRebirthCharacter(character, "op2");
-        Assert.Equal(15, res2.StatPointsGained);
+        _rebirthManager.TryRebirthCharacter(character, "gen2");
+        Assert.Equal(15, character.RebirthHistory.Last().StatPointsGranted);
 
-        // Round 3 (Gen 2 -> 3): +10
+        // 3rd Rebirth (2 -> 3)
         character.Level = 100;
         character.AddItem(9007, 1);
-        var res3 = _rebirthManager.TryRebirthCharacter(character, "op3");
-        Assert.Equal(10, res3.StatPointsGained);
+        _rebirthManager.TryRebirthCharacter(character, "gen3");
+        Assert.Equal(10, character.RebirthHistory.Last().StatPointsGranted);
 
-        // Round 4 (Gen 3 -> 4): +5
+        // 4th Rebirth (3 -> 4)
         character.Level = 100;
         character.AddItem(9007, 1);
-        var res4 = _rebirthManager.TryRebirthCharacter(character, "op4");
-        Assert.Equal(5, res4.StatPointsGained);
+        _rebirthManager.TryRebirthCharacter(character, "gen4");
+        Assert.Equal(5, character.RebirthHistory.Last().StatPointsGranted);
+
+        Assert.Equal(4, character.RebirthLevel);
+        Assert.Equal(4, character.RebirthHistory.Count);
     }
 }

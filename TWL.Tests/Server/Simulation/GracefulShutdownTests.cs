@@ -58,6 +58,7 @@ public class GracefulShutdownTests
         // Use a mock sequence to verify order of critical operations
         var sequence = new MockSequence();
         var mockHealthCheck = new Mock<HealthCheckService>();
+        var mockRebirthService = new Mock<IRebirthService>();
 
         // Expectations in order
         mockHealthCheck.InSequence(sequence).Setup(x => x.SetStatus(ServerStatus.ShuttingDown));
@@ -83,7 +84,8 @@ public class GracefulShutdownTests
             mockLoggerFactory.Object,
             mockHealthCheck.Object,
             new Mock<InstanceService>(metrics).Object, 
-            mockCombatManager.Object
+            mockCombatManager.Object,
+            mockRebirthService.Object
         );
 
         // Act

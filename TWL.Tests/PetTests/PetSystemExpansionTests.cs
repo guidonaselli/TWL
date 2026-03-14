@@ -115,6 +115,7 @@ public class PetSystemExpansionTests : IDisposable
     public void Rebirth_ResetsLevel_BoostsStats()
     {
         var def = _petManager.GetDefinition(1001);
+        def.IsQuestPet = true; // Required for rebirth now
         var pet = new ServerPet(def);
         pet.SetLevel(100);
 
@@ -124,7 +125,7 @@ public class PetSystemExpansionTests : IDisposable
         // Assert
         Assert.True(success);
         Assert.Equal(1, pet.Level);
-        Assert.True(pet.HasRebirthed);
+        Assert.Equal(1, pet.RebirthGeneration);
 
         // Check stat boost: Level 1 Rebirth vs Level 1 Normal
         var normalPet = new ServerPet(def); // Level 1 default

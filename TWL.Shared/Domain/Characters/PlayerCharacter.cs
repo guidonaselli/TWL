@@ -64,6 +64,7 @@ public class PlayerCharacter : Character
 
     // Progression
     public int Level { get; private set; }
+    public int RebirthLevel { get; private set; }
     public int Exp { get; private set; }
     public int ExpToNextLevel { get; private set; }
     public int StatPoints { get; private set; }
@@ -228,9 +229,10 @@ public class PlayerCharacter : Character
         Sp = MaxSp;
     }
 
-    public void SetProgress(int level, int exp, int expToNextLevel)
+    public void SetProgress(int level, int rebirthLevel, int exp, int expToNextLevel)
     {
         Level = level;
+        RebirthLevel = rebirthLevel;
         Exp = exp;
         ExpToNextLevel = expToNextLevel;
     }

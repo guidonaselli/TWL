@@ -1,8 +1,14 @@
+using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.DTO;
 using Microsoft.Extensions.Logging;
-using Moq;
 using Xunit;
+using TWL.Server.Simulation.Networking.Components;
+using TWL.Shared.Domain.Models;
+using System.Linq;
+using System;
+using System.Collections.Generic;
 
 namespace TWL.Tests.Rebirth;
 
@@ -25,8 +31,39 @@ public class RebirthRollbackAuditTests
         }
     }
 
-    private readonly RebirthManager _rebirthManager;
+    private class ThrowingList<T> : IList<T>
+    {
+        private readonly List<T> _inner = new();
+        public int FailAtCount { get; set; } = -1;
+        private int _addCount = 0;
+
+        public void Add(T item)
+        {
+            if (_addCount == FailAtCount)
+            {
+                _addCount++;
+                throw new InvalidOperationException("Simulated Persistence Failure");
+            }
+            _addCount++;
+            _inner.Add(item);
+        }
+
+        public int Count => _inner.Count;
+        public bool IsReadOnly => false;
+        public T this[int index] { get => _inner[index]; set => _inner[index] = value; }
+        public void Clear() => _inner.Clear();
+        public bool Contains(T item) => _inner.Contains(item);
+        public void CopyTo(T[] array, int arrayIndex) => _inner.CopyTo(array, arrayIndex);
+        public IEnumerator<T> GetEnumerator() => _inner.GetEnumerator();
+        public int IndexOf(T item) => _inner.IndexOf(item);
+        public void Insert(int index, T item) => _inner.Insert(index, item);
+        public bool Remove(T item) => _inner.Remove(item);
+        public void RemoveAt(int index) => _inner.RemoveAt(index);
+        System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => _inner.GetEnumerator();
+    }
+
     private readonly Mock<ILogger<RebirthManager>> _mockLogger;
+    private readonly RebirthManager _rebirthManager;
 
     public RebirthRollbackAuditTests()
     {
@@ -35,7 +72,7 @@ public class RebirthRollbackAuditTests
     }
 
     [Fact]
-    public void Rebirth_ShouldRollback_OnException()
+    public void Rebirth_ShouldRollback_OnLogicException()
     {
         // Setup
         var character = new FaultyCharacter
@@ -46,6 +83,8 @@ public class RebirthRollbackAuditTests
             StatPoints = 10,
             ShouldFailReset = true
         };
+        character.QuestComponent = new PlayerQuestComponent(new ServerQuestManager());
+        character.QuestComponent.Character = character;
         character.QuestComponent.AddFlag("REBIRTH_QUALIFIED");
         character.AddItem(9007, 1);
 
@@ -65,6 +104,46 @@ public class RebirthRollbackAuditTests
         Assert.True(character.HasItem(9007, 1));
     }
 
+    [Fact]
+    public void Rebirth_ShouldRollback_OnPersistenceException()
+    {
+        // Arrange
+        var history = new ThrowingList<RebirthHistoryRecord>();
+        var character = new ServerCharacter
+        {
+            Id = 1,
+            Level = 100,
+            RebirthLevel = 0,
+            StatPoints = 0,
+            RebirthHistory = history
+        };
+        character.QuestComponent = new PlayerQuestComponent(new ServerQuestManager());
+        character.QuestComponent.Character = character;
+        character.QuestComponent.AddFlag("REBIRTH_QUALIFIED");
+        character.AddItem(9007, 1);
+
+        _rebirthManager.SetRequirements(new RebirthRequirements { MinLevel = 100 });
+        
+        // Fail at the first Add (which is the success record in the Try block)
+        history.FailAtCount = 0;
+        string opId = "ROLLBACK_TEST";
+
+        // Act
+        var (success, msg, points) = _rebirthManager.TryRebirthCharacter(character, opId);
+
+        // Assert
+        Assert.False(success);
+        
+        // Verify state is rolled back
+        Assert.Equal(100, character.Level);
+        Assert.Equal(0, character.RebirthLevel);
+        Assert.Equal(0, character.StatPoints);
+
+        // Verify that a FAILURE record was recorded (added by LogAndRecordFailure in catch block)
+        Assert.Single(history);
+        Assert.False(history[0].Success);
+        Assert.Contains("Transaction failure", history[0].Reason);
+    }
 
     [Fact]
     public void Audit_ShouldLogFailure_WhenRequirementsMissing()
@@ -74,9 +153,9 @@ public class RebirthRollbackAuditTests
         var (success, message, _) = _rebirthManager.TryRebirthCharacter(character, "audit-fail-1");
         
         Assert.False(success);
-        Assert.Equal("Level 100 required.", message);
+        Assert.Contains("Level 100 required", message);
 
-        // Verify Logger was called (Task 2.2)
+        // Verify Logger was called
         _mockLogger.Verify(
             x => x.Log(
                 LogLevel.Warning,

@@ -59,13 +59,11 @@ public class ServerPet : ServerCombatant
     public bool IsDead { get; set; }
     public bool IsLost { get; set; }
     public bool DeathQuestCompleted { get; set; }
-
     /// <summary>Number of times this pet has rebirthed (0 = never). Replaces the old boolean HasRebirthed.</summary>
     public int RebirthGeneration { get; set; }
 
     /// <summary>True if the pet has rebirthed at least once (backward-compat helper).</summary>
     public bool HasRebirthed => RebirthGeneration > 0;
-
     public DateTime? ExpirationTime { get; set; }
 
     public bool IsExpired => ExpirationTime.HasValue && DateTime.UtcNow > ExpirationTime.Value;
@@ -308,6 +306,12 @@ public class ServerPet : ServerCombatant
             return false;
         }
 
+        // Eligibility check: Only Quest pets can rebirth (Must-Have)
+        if (!_definition.IsQuestPet)
+        {
+            return false;
+        }
+
         if (Level < 100)
         {
             return false;
@@ -333,6 +337,23 @@ public class ServerPet : ServerCombatant
 
         CheckSkillUnlocks();
 
+        return true;
+    }
+
+    public bool TryEvolve(PetDefinition nextDef)
+    {
+        if (nextDef == null) return false;
+
+        // Eligibility: Only Quest pets can evolve
+        if (!_definition.IsQuestPet) return false;
+
+        _definition = nextDef;
+        DefinitionId = nextDef.PetTypeId;
+        Name = nextDef.Name;
+
+        RecalculateStats();
+        CheckSkillUnlocks();
+        IsDirty = true;
         return true;
     }
 

@@ -71,7 +71,7 @@ public sealed class SceneGameplay : SceneBase, IPayloadReceiver
         }
         else if (payload is GameSaveData data && _player != null)
         {
-            _player.SetProgress(data.Level, data.Exp, data.ExpToNextLevel);
+            _player.SetProgress(data.Level, data.RebirthLevel, data.Exp, data.ExpToNextLevel);
             _player.Health = data.Health;
             _player.MaxHealth = data.MaxHealth;
             _player.Sp = data.Sp;
