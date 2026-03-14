@@ -309,7 +309,11 @@ public class PetSystemTests : IDisposable
 
         // Assert
         Assert.True(success);
+<<<<<<< HEAD
         Assert.Equal(1, pet.RebirthGeneration);
+=======
+        Assert.Equal(1, pet.RebirthCount);
+>>>>>>> gsd/M001/S06
         Assert.Equal(1, pet.Level);
         Assert.Contains(900, pet.UnlockedSkillIds);
 

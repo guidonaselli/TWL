@@ -1,7 +1,15 @@
+<<<<<<< HEAD
+=======
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using Microsoft.Extensions.Logging;
+>>>>>>> gsd/M001/S06
 using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.DTO;
+<<<<<<< HEAD
 using Microsoft.Extensions.Logging;
 using Xunit;
 using TWL.Server.Simulation.Networking.Components;
@@ -29,6 +37,22 @@ public class RebirthRollbackAuditTests
             }
             base.ResetStatsToBaseline();
         }
+=======
+using TWL.Shared.Domain.Models;
+using Xunit;
+
+namespace TWL.Tests.Rebirth;
+
+public class RebirthRollbackAuditTests
+{
+    private readonly Mock<ILogger<RebirthManager>> _loggerMock;
+    private readonly RebirthManager _rebirthManager;
+
+    public RebirthRollbackAuditTests()
+    {
+        _loggerMock = new Mock<ILogger<RebirthManager>>();
+        _rebirthManager = new RebirthManager(_loggerMock.Object);
+>>>>>>> gsd/M001/S06
     }
 
     private class ThrowingList<T> : IList<T>
@@ -62,6 +86,7 @@ public class RebirthRollbackAuditTests
         System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator() => _inner.GetEnumerator();
     }
 
+<<<<<<< HEAD
     private readonly Mock<ILogger<RebirthManager>> _mockLogger;
     private readonly RebirthManager _rebirthManager;
 
@@ -106,6 +131,10 @@ public class RebirthRollbackAuditTests
 
     [Fact]
     public void Rebirth_ShouldRollback_OnPersistenceException()
+=======
+    [Fact]
+    public void Rebirth_RollsBackState_AndLogsFailure_OnException()
+>>>>>>> gsd/M001/S06
     {
         // Arrange
         var history = new ThrowingList<RebirthHistoryRecord>();
@@ -117,10 +146,13 @@ public class RebirthRollbackAuditTests
             StatPoints = 0,
             RebirthHistory = history
         };
+<<<<<<< HEAD
         character.QuestComponent = new PlayerQuestComponent(new ServerQuestManager());
         character.QuestComponent.Character = character;
         character.QuestComponent.AddFlag("REBIRTH_QUALIFIED");
         character.AddItem(9007, 1);
+=======
+>>>>>>> gsd/M001/S06
 
         _rebirthManager.SetRequirements(new RebirthRequirements { MinLevel = 100 });
         
@@ -144,6 +176,7 @@ public class RebirthRollbackAuditTests
         Assert.False(history[0].Success);
         Assert.Contains("Transaction failure", history[0].Reason);
     }
+<<<<<<< HEAD
 
     [Fact]
     public void Audit_ShouldLogFailure_WhenRequirementsMissing()
@@ -165,4 +198,6 @@ public class RebirthRollbackAuditTests
                 It.IsAny<Func<It.IsAnyType, Exception, string>>()),
             Times.Once);
     }
+=======
+>>>>>>> gsd/M001/S06
 }

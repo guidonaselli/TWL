@@ -31,7 +31,10 @@ public class ShutdownTests
         var mockPlayerService = new Mock<PlayerService>(mockPlayerRepo.Object, metrics);
         var mockHealthCheck = new Mock<HealthCheckService>();
         var mockRebirthService = new Mock<IRebirthService>();
+<<<<<<< HEAD
         var mockMarketService = new Mock<IMarketService>();
+=======
+>>>>>>> gsd/M001/S06
 
         // Setup PlayerService mocks
         mockPlayerService.Setup(s => s.DisconnectAllAsync(It.IsAny<string>())).Returns(Task.CompletedTask).Verifiable();
@@ -56,8 +59,12 @@ public class ShutdownTests
             mockHealthCheck.Object,
             null!,  // InstanceService
             null!,  // CombatManager
+<<<<<<< HEAD
             mockRebirthService.Object,
             mockMarketService.Object
+=======
+            mockRebirthService.Object
+>>>>>>> gsd/M001/S06
         );
 
         // Act

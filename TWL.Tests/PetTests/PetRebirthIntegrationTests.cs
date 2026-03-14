@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 using Xunit;
 using Moq;
 using System.Linq;
@@ -138,6 +139,60 @@ public class PetRebirthIntegrationTests
         Assert.Equal(1, newPet.RebirthGeneration);
         Assert.Equal(1, newPet.Level);
         
+=======
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using TWL.Server.Simulation.Managers;
+using TWL.Server.Simulation.Networking;
+using TWL.Shared.Domain.Characters;
+using Xunit;
+
+namespace TWL.Tests.PetTests;
+
+public class PetRebirthIntegrationTests
+{
+    [Fact]
+    public void PetRebirth_State_PersistsThroughSaveLoad()
+    {
+        // Arrange
+        var def = new PetDefinition
+        {
+            PetTypeId = 1001,
+            Name = "QuestPet",
+            Element = Element.Fire,
+            IsQuestPet = true,
+            RebirthEligible = true,
+            BaseHp = 100,
+            BaseInt = 10,
+            GrowthModel = new PetGrowthModel { CurveType = GrowthCurveType.Standard }
+        };
+
+        var pet = new ServerPet(def);
+        pet.SetLevel(100);
+        
+        // Act - Rebirth
+        bool success = pet.TryRebirth();
+        Assert.True(success);
+        Assert.Equal(1, pet.RebirthCount);
+        Assert.Equal(1, pet.Level);
+
+        // Save
+        var saveData = pet.GetSaveData();
+        Assert.Equal(1, saveData.RebirthCount);
+
+        // Load into new instance
+        var newPet = new ServerPet();
+        newPet.LoadSaveData(saveData);
+        newPet.Hydrate(def); // Need to re-hydrate to apply stats correctly
+
+        // Assert
+        Assert.Equal(1, newPet.RebirthCount);
+        Assert.Equal(1, newPet.Level);
+        
+        // Verify stats are calculated with rebirth bonus
+        // Level 1 stats with 10% bonus
+>>>>>>> gsd/M001/S06
         PetGrowthCalculator.CalculateStats(def, 1, out var expectedHp, out var _, out var _, out var _, out var _, out var _, out var _);
         int expectedHpWithBonus = (int)(expectedHp * 1.10);
         Assert.Equal(expectedHpWithBonus, newPet.MaxHp);
@@ -146,6 +201,7 @@ public class PetRebirthIntegrationTests
     [Fact]
     public void Character_SaveLoad_IncludesPetRebirthState()
     {
+<<<<<<< HEAD
         var character = new ServerCharacter { Id = 1, Name = "PetOwner" };
         var def = _petManager.GetDefinition(1001);
         var pet = new ServerPet(def);
@@ -164,5 +220,26 @@ public class PetRebirthIntegrationTests
         
         var loadedPet = newCharacter.Pets.Single(p => p.DefinitionId == 1001);
         Assert.Equal(2, loadedPet.RebirthGeneration);
+=======
+        // Arrange
+        var character = new ServerCharacter { Id = 1, Name = "PetOwner" };
+        var def = new PetDefinition { PetTypeId = 1001, Name = "QuestPet", Element = Element.Wind, IsQuestPet = true };
+        var pet = new ServerPet(def);
+        pet.RebirthCount = 2;
+        character.AddPet(pet);
+
+        // Save Character
+        var charSave = character.GetSaveData();
+        var petSave = charSave.Pets.Single(p => p.DefinitionId == 1001);
+        Assert.Equal(2, petSave.RebirthCount);
+
+        // Load Character
+        var newCharacter = new ServerCharacter();
+        newCharacter.LoadSaveData(charSave);
+        
+        // Assert
+        var loadedPet = newCharacter.Pets.Single(p => p.DefinitionId == 1001);
+        Assert.Equal(2, loadedPet.RebirthCount);
+>>>>>>> gsd/M001/S06
     }
 }
