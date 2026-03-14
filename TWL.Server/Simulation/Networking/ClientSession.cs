@@ -53,6 +53,7 @@ public class ClientSession
     private readonly IRebirthService _rebirthService;
     private readonly IMarketService _marketService;
     private readonly MarketQueryService _marketQueryService;
+    private readonly ICompoundService _compoundService;
     private readonly TradeSessionManager _tradeSessionManager;
     private readonly SpawnManager _spawnManager;
     private readonly NetworkStream _stream;
@@ -73,7 +74,7 @@ public class ClientSession
         IEconomyService economyManager, ServerMetrics metrics, PetService petService, IMediator mediator,
         IWorldTriggerService worldTriggerService, SpawnManager spawnManager, ReplayGuard replayGuard,
         MovementValidator movementValidator, IPartyService partyService, IPartyChatService partyChatService,
-        IGuildService guildService, GuildChatService guildChatService, GuildRosterService guildRosterService, GuildStorageService guildStorageService, IRebirthService rebirthService, IMarketService marketService, MarketQueryService marketQueryService, TradeSessionManager tradeSessionManager, RateLimiterOptions rateLimiterOptions)
+        IGuildService guildService, GuildChatService guildChatService, GuildRosterService guildRosterService, GuildStorageService guildStorageService, IRebirthService rebirthService, IMarketService marketService, MarketQueryService marketQueryService, ICompoundService compoundService, TradeSessionManager tradeSessionManager, RateLimiterOptions rateLimiterOptions)
     {
         _client = client;
         _stream = client.GetStream();
@@ -89,6 +90,7 @@ public class ClientSession
         _mediator = mediator;
         _worldTriggerService = worldTriggerService;
         _spawnManager = spawnManager;
+        _compoundService = compoundService;
         _tradeSessionManager = tradeSessionManager;
         QuestComponent = new PlayerQuestComponent(questManager, petManager);
         QuestComponent.OnFlagAdded += OnQuestFlagAdded;
@@ -102,9 +104,9 @@ public class ClientSession
         _guildChatService = guildChatService;
         _guildRosterService = guildRosterService;
         _guildStorageService = guildStorageService;
-        _rebirthService = rebirthService;
         _marketService = marketService;
         _marketQueryService = marketQueryService;
+        _rebirthService = rebirthService;
 
         if (_combatManager != null)
         {
@@ -437,6 +439,12 @@ public class ClientSession
             case Opcode.TradeConfirm:
                 await HandleTradeConfirmAsync(traceId);
                 break;
+            case Opcode.CompoundEntryRequest:
+                await HandleCompoundEntryAsync(traceId);
+                break;
+            case Opcode.CompoundRequest:
+                await HandleCompoundRequestAsync(msg.JsonPayload, traceId);
+                break;
             // etc.
         }
 
@@ -690,6 +698,11 @@ public class ClientSession
             {
                 await SendQuestUpdateAsync(questId);
             }
+
+            if (result.InteractionType == "Compound")
+            {
+                await HandleCompoundEntryAsync(traceId);
+            }
         }
     }
 
@@ -786,6 +799,81 @@ public class ClientSession
             Op = Opcode.QuestUpdateBroadcast,
             JsonPayload = json
         });
+    }
+
+    private async Task HandleCompoundEntryAsync(string traceId)
+    {
+        if (UserId <= 0 || Character == null)
+        {
+            return;
+        }
+
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.CompoundEntryResponse,
+            JsonPayload = JsonSerializer.Serialize(new { success = true }, _jsonOptions)
+        });
+
+        PipelineLogger.LogStage(traceId, "CompoundEntry", 0, "Success");
+    }
+
+    private async Task HandleCompoundRequestAsync(string payload, string traceId)
+    {
+        if (UserId <= 0 || Character == null)
+        {
+            return;
+        }
+
+        CompoundRequestDTO? request = null;
+        try
+        {
+            request = JsonSerializer.Deserialize<CompoundRequestDTO>(payload, _jsonOptions);
+        }
+        catch (JsonException)
+        {
+            return;
+        }
+
+        if (request == null)
+        {
+            return;
+        }
+
+        // Must-Have: Validate that items exist in player inventory or equipment
+        bool targetExists = Character.Inventory.Any(i => i.InstanceId == request.TargetItemId) ||
+                           Character.Equipment.Any(i => i.InstanceId == request.TargetItemId);
+
+        bool ingredientExists = Character.Inventory.Any(i => i.InstanceId == request.IngredientItemId);
+
+        bool catalystExists = !request.CatalystItemId.HasValue ||
+                             Character.Inventory.Any(i => i.InstanceId == request.CatalystItemId.Value);
+
+        if (!targetExists || !ingredientExists || !catalystExists)
+        {
+            SecurityLogger.LogSecurityEvent("InvalidCompoundRequest", UserId,
+                $"Missing items. Target:{request.TargetItemId} Ingredient:{request.IngredientItemId} Catalyst:{request.CatalystItemId}", traceId);
+
+            await SendAsync(new NetMessage
+            {
+                Op = Opcode.CompoundResponse,
+                JsonPayload = JsonSerializer.Serialize(new CompoundResponseDTO
+                {
+                    Success = false,
+                    Message = "ERR_COMPOUND_MISSING_ITEMS"
+                }, _jsonOptions)
+            });
+            return;
+        }
+
+        var response = await _compoundService.ProcessCompoundRequest(Character, request);
+
+        await SendAsync(new NetMessage
+        {
+            Op = Opcode.CompoundResponse,
+            JsonPayload = JsonSerializer.Serialize(response, _jsonOptions)
+        });
+
+        PipelineLogger.LogStage(traceId, "CompoundRequest", 0, $"Outcome:{response.Outcome} Success:{response.Success}");
     }
 
     private async Task SendLoginError(string errorMessage)

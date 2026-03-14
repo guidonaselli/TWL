@@ -112,9 +112,10 @@ public class LoadTest
         var spawnManager = new SpawnManager(monsterManager, combatManager, random, _playerService);
 
         var mediator = new Mediator(); // Using concrete Mediator for load test
+        var mockMarket = new Mock<IMarketService>();
         _server = new NetworkServer(0, db, petManager, questManager, combatManager, interactionManager,
             _playerService, _economy, _metrics, petService, mediator, worldTrigger, spawnManager,
-            new ReplayGuard(new ReplayGuardOptions()));
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager(), new PartyChatService(new PartyManager(), _playerService, NullLogger<PartyChatService>.Instance), guildManager, guildChatService, guildRosterService, guildStorageService, new RebirthManager(NullLogger<RebirthManager>.Instance), mockMarket.Object, new MarketQueryService(mockMarket.Object), new CompoundManager(NullLogger<CompoundManager>.Instance), new TradeSessionManager(_playerService, new TradeManager()), Microsoft.Extensions.Options.Options.Create(new RateLimiterOptions()));
     }
 
     public async Task RunAsync()

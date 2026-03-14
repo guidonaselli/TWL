@@ -66,7 +66,8 @@ public class InteractHandler : ICommandHandler<InteractCommand, InteractResult>
         var result = new InteractResult
         {
             Success = true,
-            UpdatedQuestIds = new List<int>() // Events handle updates now
+            UpdatedQuestIds = new List<int>(), // Events handle updates now
+            InteractionType = interactionType
         };
 
         return Task.FromResult(result);

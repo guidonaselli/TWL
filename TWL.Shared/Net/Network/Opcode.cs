@@ -44,6 +44,12 @@ public enum Opcode
     PetActionRequest,
     PetActionResponse,
 
+    // Compound
+    CompoundEntryRequest,
+    CompoundEntryResponse,
+    CompoundRequest,
+    CompoundResponse,
+
     // Encounter
     EncounterStarted,
 

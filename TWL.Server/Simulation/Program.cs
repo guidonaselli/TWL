@@ -188,6 +188,7 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<IRebirthService>(),
                 sp.GetRequiredService<IMarketService>(),
                 sp.GetRequiredService<MarketQueryService>(),
+                sp.GetRequiredService<ICompoundService>(),
                 sp.GetRequiredService<TradeSessionManager>(),
                 sp.GetRequiredService<IOptions<RateLimiterOptions>>()
             );

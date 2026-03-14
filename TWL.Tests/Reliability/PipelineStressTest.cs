@@ -58,11 +58,12 @@ public class PipelineStressTest
         var guildStorageService = new GuildStorageService(guildManager, guildRepository.Object, guildAuditLogService, NullLogger<GuildStorageService>.Instance);
 
         var mockMarket = new Mock<IMarketService>();
+        var mockCompound = new Mock<ICompoundService>();
 
         // Dynamic port assignment: use port 0 to let OS assign a free port
         var server = new NetworkServer(0, db, mockPet.Object, mockQuest.Object, combatManager, mockInteract.Object,
             playerService, mockEconomy.Object, metrics, petService, new Mock<IMediator>().Object, mockWorldTrigger.Object, spawnManager,
-            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager(), new TWL.Server.Simulation.Managers.PartyChatService(new PartyManager(), playerService, new Microsoft.Extensions.Logging.Abstractions.NullLogger<TWL.Server.Simulation.Managers.PartyChatService>()), guildManager, guildChatService, guildRosterService, guildStorageService, new RebirthManager(new Microsoft.Extensions.Logging.Abstractions.NullLogger<RebirthManager>()), mockMarket.Object, new MarketQueryService(mockMarket.Object), new TradeSessionManager(playerService, new TradeManager()), Options.Create(new RateLimiterOptions()));
+            new ReplayGuard(new ReplayGuardOptions()), new MovementValidator(new MovementValidationOptions()), new PartyManager(), new TWL.Server.Simulation.Managers.PartyChatService(new PartyManager(), playerService, new Microsoft.Extensions.Logging.Abstractions.NullLogger<TWL.Server.Simulation.Managers.PartyChatService>()), guildManager, guildChatService, guildRosterService, guildStorageService, new RebirthManager(new Microsoft.Extensions.Logging.Abstractions.NullLogger<RebirthManager>()), mockMarket.Object, new MarketQueryService(mockMarket.Object), mockCompound.Object, new TradeSessionManager(playerService, new TradeManager()), Options.Create(new RateLimiterOptions()));
 
         server.Start();
         var port = server.Port;

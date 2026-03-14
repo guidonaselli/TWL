@@ -133,5 +133,10 @@
     "Type": "Interact",
     "RequiredQuestId": 1402,
     "RewardItems": []
+  },
+  {
+    "TargetName": "CompoundMaster",
+    "Type": "Compound",
+    "RewardItems": []
   }
 ]
