@@ -360,7 +360,9 @@
     "SkillIds": [],
     "IsAggressive": true,
     "ExpReward": 100,
-    "Tags": ["QuestOnly"],
+    "Tags": [
+      "QuestOnly"
+    ],
     "Behavior": {
       "AggroRadius": 5.0,
       "LeashRadius": 10.0,
@@ -426,5 +428,2394 @@
       "IsPassive": false
     },
     "EncounterWeight": 10
+  },
+  {
+    "MonsterId": 1001,
+    "Name": "Earth Crab",
+    "Code": "MOB_CRAB_EARTH",
+    "FamilyId": 1,
+    "Element": "Earth",
+    "Level": 3,
+    "BaseHp": 60,
+    "BaseSp": 10,
+    "BaseStr": 8,
+    "BaseCon": 12,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 3,
+    "SpritePath": "Monsters/mob_crab_earth_64.png",
+    "PortraitPath": "Portraits/mob_crab_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 15,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1002,
+    "Name": "Water Crab",
+    "Code": "MOB_CRAB_WATER",
+    "FamilyId": 1,
+    "Element": "Water",
+    "Level": 3,
+    "BaseHp": 55,
+    "BaseSp": 12,
+    "BaseStr": 8,
+    "BaseCon": 10,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 4,
+    "SpritePath": "Monsters/mob_crab_water_64.png",
+    "PortraitPath": "Portraits/mob_crab_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 15,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1003,
+    "Name": "Fire Crab",
+    "Code": "MOB_CRAB_FIRE",
+    "FamilyId": 1,
+    "Element": "Fire",
+    "Level": 4,
+    "BaseHp": 45,
+    "BaseSp": 10,
+    "BaseStr": 10,
+    "BaseCon": 10,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 4,
+    "SpritePath": "Monsters/mob_crab_fire_64.png",
+    "PortraitPath": "Portraits/mob_crab_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 20,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1004,
+    "Name": "Wind Crab",
+    "Code": "MOB_CRAB_WIND",
+    "FamilyId": 1,
+    "Element": "Wind",
+    "Level": 3,
+    "BaseHp": 40,
+    "BaseSp": 11,
+    "BaseStr": 8,
+    "BaseCon": 10,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 5,
+    "SpritePath": "Monsters/mob_crab_wind_64.png",
+    "PortraitPath": "Portraits/mob_crab_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 15,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1005,
+    "Name": "Earth Monkey",
+    "Code": "MOB_MONKEY_EARTH",
+    "FamilyId": 2,
+    "Element": "Earth",
+    "Level": 6,
+    "BaseHp": 96,
+    "BaseSp": 20,
+    "BaseStr": 13,
+    "BaseCon": 14,
+    "BaseInt": 5,
+    "BaseWis": 5,
+    "BaseAgi": 8,
+    "SpritePath": "Monsters/mob_monkey_earth_64.png",
+    "PortraitPath": "Portraits/mob_monkey_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 30,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1006,
+    "Name": "Water Monkey",
+    "Code": "MOB_MONKEY_WATER",
+    "FamilyId": 2,
+    "Element": "Water",
+    "Level": 6,
+    "BaseHp": 88,
+    "BaseSp": 24,
+    "BaseStr": 12,
+    "BaseCon": 12,
+    "BaseInt": 5,
+    "BaseWis": 6,
+    "BaseAgi": 10,
+    "SpritePath": "Monsters/mob_monkey_water_64.png",
+    "PortraitPath": "Portraits/mob_monkey_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 30,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1007,
+    "Name": "Fire Monkey",
+    "Code": "MOB_MONKEY_FIRE",
+    "FamilyId": 2,
+    "Element": "Fire",
+    "Level": 7,
+    "BaseHp": 72,
+    "BaseSp": 20,
+    "BaseStr": 15,
+    "BaseCon": 12,
+    "BaseInt": 6,
+    "BaseWis": 5,
+    "BaseAgi": 11,
+    "SpritePath": "Monsters/mob_monkey_fire_64.png",
+    "PortraitPath": "Portraits/mob_monkey_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 35,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1008,
+    "Name": "Wind Monkey",
+    "Code": "MOB_MONKEY_WIND",
+    "FamilyId": 2,
+    "Element": "Wind",
+    "Level": 6,
+    "BaseHp": 64,
+    "BaseSp": 22,
+    "BaseStr": 12,
+    "BaseCon": 12,
+    "BaseInt": 5,
+    "BaseWis": 5,
+    "BaseAgi": 14,
+    "SpritePath": "Monsters/mob_monkey_wind_64.png",
+    "PortraitPath": "Portraits/mob_monkey_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 30,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1009,
+    "Name": "Earth Vine",
+    "Code": "MOB_VINE_EARTH",
+    "FamilyId": 3,
+    "Element": "Earth",
+    "Level": 2,
+    "BaseHp": 36,
+    "BaseSp": 10,
+    "BaseStr": 5,
+    "BaseCon": 6,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 1,
+    "SpritePath": "Monsters/mob_vine_earth_64.png",
+    "PortraitPath": "Portraits/mob_vine_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 10,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1010,
+    "Name": "Water Vine",
+    "Code": "MOB_VINE_WATER",
+    "FamilyId": 3,
+    "Element": "Water",
+    "Level": 2,
+    "BaseHp": 33,
+    "BaseSp": 12,
+    "BaseStr": 5,
+    "BaseCon": 5,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 2,
+    "SpritePath": "Monsters/mob_vine_water_64.png",
+    "PortraitPath": "Portraits/mob_vine_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 10,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1011,
+    "Name": "Fire Vine",
+    "Code": "MOB_VINE_FIRE",
+    "FamilyId": 3,
+    "Element": "Fire",
+    "Level": 3,
+    "BaseHp": 27,
+    "BaseSp": 10,
+    "BaseStr": 6,
+    "BaseCon": 5,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 2,
+    "SpritePath": "Monsters/mob_vine_fire_64.png",
+    "PortraitPath": "Portraits/mob_vine_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 15,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1012,
+    "Name": "Wind Vine",
+    "Code": "MOB_VINE_WIND",
+    "FamilyId": 3,
+    "Element": "Wind",
+    "Level": 2,
+    "BaseHp": 24,
+    "BaseSp": 11,
+    "BaseStr": 5,
+    "BaseCon": 5,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 2,
+    "SpritePath": "Monsters/mob_vine_wind_64.png",
+    "PortraitPath": "Portraits/mob_vine_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 10,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1013,
+    "Name": "Earth Slime",
+    "Code": "MOB_SLIME_EARTH",
+    "FamilyId": 4,
+    "Element": "Earth",
+    "Level": 5,
+    "BaseHp": 48,
+    "BaseSp": 10,
+    "BaseStr": 6,
+    "BaseCon": 7,
+    "BaseInt": 6,
+    "BaseWis": 6,
+    "BaseAgi": 2,
+    "SpritePath": "Monsters/mob_slime_earth_64.png",
+    "PortraitPath": "Portraits/mob_slime_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 25,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1014,
+    "Name": "Water Slime",
+    "Code": "MOB_SLIME_WATER",
+    "FamilyId": 4,
+    "Element": "Water",
+    "Level": 5,
+    "BaseHp": 44,
+    "BaseSp": 12,
+    "BaseStr": 6,
+    "BaseCon": 6,
+    "BaseInt": 6,
+    "BaseWis": 7,
+    "BaseAgi": 3,
+    "SpritePath": "Monsters/mob_slime_water_64.png",
+    "PortraitPath": "Portraits/mob_slime_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 25,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1015,
+    "Name": "Fire Slime",
+    "Code": "MOB_SLIME_FIRE",
+    "FamilyId": 4,
+    "Element": "Fire",
+    "Level": 6,
+    "BaseHp": 36,
+    "BaseSp": 10,
+    "BaseStr": 7,
+    "BaseCon": 6,
+    "BaseInt": 7,
+    "BaseWis": 6,
+    "BaseAgi": 3,
+    "SpritePath": "Monsters/mob_slime_fire_64.png",
+    "PortraitPath": "Portraits/mob_slime_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 30,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1016,
+    "Name": "Wind Slime",
+    "Code": "MOB_SLIME_WIND",
+    "FamilyId": 4,
+    "Element": "Wind",
+    "Level": 5,
+    "BaseHp": 32,
+    "BaseSp": 11,
+    "BaseStr": 6,
+    "BaseCon": 6,
+    "BaseInt": 6,
+    "BaseWis": 6,
+    "BaseAgi": 4,
+    "SpritePath": "Monsters/mob_slime_wind_64.png",
+    "PortraitPath": "Portraits/mob_slime_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 25,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1017,
+    "Name": "Earth Goblin",
+    "Code": "MOB_GOBLIN_EARTH",
+    "FamilyId": 5,
+    "Element": "Earth",
+    "Level": 10,
+    "BaseHp": 72,
+    "BaseSp": 15,
+    "BaseStr": 11,
+    "BaseCon": 9,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 6,
+    "SpritePath": "Monsters/mob_goblin_earth_64.png",
+    "PortraitPath": "Portraits/mob_goblin_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 50,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1018,
+    "Name": "Water Goblin",
+    "Code": "MOB_GOBLIN_WATER",
+    "FamilyId": 5,
+    "Element": "Water",
+    "Level": 10,
+    "BaseHp": 66,
+    "BaseSp": 18,
+    "BaseStr": 10,
+    "BaseCon": 8,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 8,
+    "SpritePath": "Monsters/mob_goblin_water_64.png",
+    "PortraitPath": "Portraits/mob_goblin_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 50,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1019,
+    "Name": "Fire Goblin",
+    "Code": "MOB_GOBLIN_FIRE",
+    "FamilyId": 5,
+    "Element": "Fire",
+    "Level": 11,
+    "BaseHp": 54,
+    "BaseSp": 15,
+    "BaseStr": 13,
+    "BaseCon": 8,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 8,
+    "SpritePath": "Monsters/mob_goblin_fire_64.png",
+    "PortraitPath": "Portraits/mob_goblin_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 55,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1020,
+    "Name": "Wind Goblin",
+    "Code": "MOB_GOBLIN_WIND",
+    "FamilyId": 5,
+    "Element": "Wind",
+    "Level": 10,
+    "BaseHp": 48,
+    "BaseSp": 16,
+    "BaseStr": 10,
+    "BaseCon": 8,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 11,
+    "SpritePath": "Monsters/mob_goblin_wind_64.png",
+    "PortraitPath": "Portraits/mob_goblin_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 50,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1021,
+    "Name": "Earth Wolf",
+    "Code": "MOB_WOLF_EARTH",
+    "FamilyId": 6,
+    "Element": "Earth",
+    "Level": 15,
+    "BaseHp": 108,
+    "BaseSp": 20,
+    "BaseStr": 15,
+    "BaseCon": 12,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 11,
+    "SpritePath": "Monsters/mob_wolf_earth_64.png",
+    "PortraitPath": "Portraits/mob_wolf_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 75,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1022,
+    "Name": "Water Wolf",
+    "Code": "MOB_WOLF_WATER",
+    "FamilyId": 6,
+    "Element": "Water",
+    "Level": 15,
+    "BaseHp": 99,
+    "BaseSp": 24,
+    "BaseStr": 14,
+    "BaseCon": 10,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 14,
+    "SpritePath": "Monsters/mob_wolf_water_64.png",
+    "PortraitPath": "Portraits/mob_wolf_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 75,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1023,
+    "Name": "Fire Wolf",
+    "Code": "MOB_WOLF_FIRE",
+    "FamilyId": 6,
+    "Element": "Fire",
+    "Level": 16,
+    "BaseHp": 81,
+    "BaseSp": 20,
+    "BaseStr": 18,
+    "BaseCon": 10,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 15,
+    "SpritePath": "Monsters/mob_wolf_fire_64.png",
+    "PortraitPath": "Portraits/mob_wolf_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 80,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1024,
+    "Name": "Wind Wolf",
+    "Code": "MOB_WOLF_WIND",
+    "FamilyId": 6,
+    "Element": "Wind",
+    "Level": 15,
+    "BaseHp": 72,
+    "BaseSp": 22,
+    "BaseStr": 14,
+    "BaseCon": 10,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 19,
+    "SpritePath": "Monsters/mob_wolf_wind_64.png",
+    "PortraitPath": "Portraits/mob_wolf_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 75,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1025,
+    "Name": "Earth Elemental",
+    "Code": "MOB_ELEMENTAL_EARTH",
+    "FamilyId": 7,
+    "Element": "Earth",
+    "Level": 25,
+    "BaseHp": 144,
+    "BaseSp": 80,
+    "BaseStr": 8,
+    "BaseCon": 12,
+    "BaseInt": 20,
+    "BaseWis": 20,
+    "BaseAgi": 6,
+    "SpritePath": "Monsters/mob_elemental_earth_64.png",
+    "PortraitPath": "Portraits/mob_elemental_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 125,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1026,
+    "Name": "Water Elemental",
+    "Code": "MOB_ELEMENTAL_WATER",
+    "FamilyId": 7,
+    "Element": "Water",
+    "Level": 25,
+    "BaseHp": 132,
+    "BaseSp": 96,
+    "BaseStr": 8,
+    "BaseCon": 10,
+    "BaseInt": 22,
+    "BaseWis": 24,
+    "BaseAgi": 8,
+    "SpritePath": "Monsters/mob_elemental_water_64.png",
+    "PortraitPath": "Portraits/mob_elemental_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 125,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1027,
+    "Name": "Fire Elemental",
+    "Code": "MOB_ELEMENTAL_FIRE",
+    "FamilyId": 7,
+    "Element": "Fire",
+    "Level": 26,
+    "BaseHp": 108,
+    "BaseSp": 80,
+    "BaseStr": 10,
+    "BaseCon": 10,
+    "BaseInt": 24,
+    "BaseWis": 20,
+    "BaseAgi": 8,
+    "SpritePath": "Monsters/mob_elemental_fire_64.png",
+    "PortraitPath": "Portraits/mob_elemental_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 130,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1028,
+    "Name": "Wind Elemental",
+    "Code": "MOB_ELEMENTAL_WIND",
+    "FamilyId": 7,
+    "Element": "Wind",
+    "Level": 25,
+    "BaseHp": 96,
+    "BaseSp": 88,
+    "BaseStr": 8,
+    "BaseCon": 10,
+    "BaseInt": 20,
+    "BaseWis": 22,
+    "BaseAgi": 11,
+    "SpritePath": "Monsters/mob_elemental_wind_64.png",
+    "PortraitPath": "Portraits/mob_elemental_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 125,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1029,
+    "Name": "Earth Dragon",
+    "Code": "MOB_DRAGON_EARTH",
+    "FamilyId": 8,
+    "Element": "Earth",
+    "Level": 50,
+    "BaseHp": 360,
+    "BaseSp": 100,
+    "BaseStr": 33,
+    "BaseCon": 36,
+    "BaseInt": 25,
+    "BaseWis": 20,
+    "BaseAgi": 16,
+    "SpritePath": "Monsters/mob_dragon_earth_64.png",
+    "PortraitPath": "Portraits/mob_dragon_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 250,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 400,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1030,
+    "Name": "Water Dragon",
+    "Code": "MOB_DRAGON_WATER",
+    "FamilyId": 8,
+    "Element": "Water",
+    "Level": 50,
+    "BaseHp": 330,
+    "BaseSp": 120,
+    "BaseStr": 30,
+    "BaseCon": 30,
+    "BaseInt": 27,
+    "BaseWis": 24,
+    "BaseAgi": 20,
+    "SpritePath": "Monsters/mob_dragon_water_64.png",
+    "PortraitPath": "Portraits/mob_dragon_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 250,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 400,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1031,
+    "Name": "Fire Dragon",
+    "Code": "MOB_DRAGON_FIRE",
+    "FamilyId": 8,
+    "Element": "Fire",
+    "Level": 51,
+    "BaseHp": 270,
+    "BaseSp": 100,
+    "BaseStr": 39,
+    "BaseCon": 30,
+    "BaseInt": 30,
+    "BaseWis": 20,
+    "BaseAgi": 22,
+    "SpritePath": "Monsters/mob_dragon_fire_64.png",
+    "PortraitPath": "Portraits/mob_dragon_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 255,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 400,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1032,
+    "Name": "Wind Dragon",
+    "Code": "MOB_DRAGON_WIND",
+    "FamilyId": 8,
+    "Element": "Wind",
+    "Level": 50,
+    "BaseHp": 240,
+    "BaseSp": 110,
+    "BaseStr": 30,
+    "BaseCon": 30,
+    "BaseInt": 25,
+    "BaseWis": 22,
+    "BaseAgi": 28,
+    "SpritePath": "Monsters/mob_dragon_wind_64.png",
+    "PortraitPath": "Portraits/mob_dragon_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 250,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 400,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1033,
+    "Name": "Earth Construct",
+    "Code": "MOB_CONSTRUCT_EARTH",
+    "FamilyId": 9,
+    "Element": "Earth",
+    "Level": 40,
+    "BaseHp": 300,
+    "BaseSp": 0,
+    "BaseStr": 27,
+    "BaseCon": 48,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 4,
+    "SpritePath": "Monsters/mob_construct_earth_64.png",
+    "PortraitPath": "Portraits/mob_construct_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 200,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1034,
+    "Name": "Water Construct",
+    "Code": "MOB_CONSTRUCT_WATER",
+    "FamilyId": 9,
+    "Element": "Water",
+    "Level": 40,
+    "BaseHp": 275,
+    "BaseSp": 0,
+    "BaseStr": 25,
+    "BaseCon": 40,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 5,
+    "SpritePath": "Monsters/mob_construct_water_64.png",
+    "PortraitPath": "Portraits/mob_construct_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 200,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1035,
+    "Name": "Fire Construct",
+    "Code": "MOB_CONSTRUCT_FIRE",
+    "FamilyId": 9,
+    "Element": "Fire",
+    "Level": 41,
+    "BaseHp": 225,
+    "BaseSp": 0,
+    "BaseStr": 32,
+    "BaseCon": 40,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 5,
+    "SpritePath": "Monsters/mob_construct_fire_64.png",
+    "PortraitPath": "Portraits/mob_construct_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 205,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1036,
+    "Name": "Wind Construct",
+    "Code": "MOB_CONSTRUCT_WIND",
+    "FamilyId": 9,
+    "Element": "Wind",
+    "Level": 40,
+    "BaseHp": 200,
+    "BaseSp": 0,
+    "BaseStr": 25,
+    "BaseCon": 40,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 7,
+    "SpritePath": "Monsters/mob_construct_wind_64.png",
+    "PortraitPath": "Portraits/mob_construct_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 200,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1037,
+    "Name": "Earth Spirit",
+    "Code": "MOB_SPIRIT_EARTH",
+    "FamilyId": 10,
+    "Element": "Earth",
+    "Level": 35,
+    "BaseHp": 96,
+    "BaseSp": 100,
+    "BaseStr": 4,
+    "BaseCon": 7,
+    "BaseInt": 25,
+    "BaseWis": 25,
+    "BaseAgi": 12,
+    "SpritePath": "Monsters/mob_spirit_earth_64.png",
+    "PortraitPath": "Portraits/mob_spirit_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 175,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1038,
+    "Name": "Water Spirit",
+    "Code": "MOB_SPIRIT_WATER",
+    "FamilyId": 10,
+    "Element": "Water",
+    "Level": 35,
+    "BaseHp": 88,
+    "BaseSp": 120,
+    "BaseStr": 4,
+    "BaseCon": 6,
+    "BaseInt": 27,
+    "BaseWis": 30,
+    "BaseAgi": 15,
+    "SpritePath": "Monsters/mob_spirit_water_64.png",
+    "PortraitPath": "Portraits/mob_spirit_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 175,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1039,
+    "Name": "Fire Spirit",
+    "Code": "MOB_SPIRIT_FIRE",
+    "FamilyId": 10,
+    "Element": "Fire",
+    "Level": 36,
+    "BaseHp": 72,
+    "BaseSp": 100,
+    "BaseStr": 5,
+    "BaseCon": 6,
+    "BaseInt": 30,
+    "BaseWis": 25,
+    "BaseAgi": 16,
+    "SpritePath": "Monsters/mob_spirit_fire_64.png",
+    "PortraitPath": "Portraits/mob_spirit_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 180,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1040,
+    "Name": "Wind Spirit",
+    "Code": "MOB_SPIRIT_WIND",
+    "FamilyId": 10,
+    "Element": "Wind",
+    "Level": 35,
+    "BaseHp": 64,
+    "BaseSp": 110,
+    "BaseStr": 4,
+    "BaseCon": 6,
+    "BaseInt": 25,
+    "BaseWis": 27,
+    "BaseAgi": 21,
+    "SpritePath": "Monsters/mob_spirit_wind_64.png",
+    "PortraitPath": "Portraits/mob_spirit_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 175,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1041,
+    "Name": "Earth Beast",
+    "Code": "MOB_BEAST_EARTH",
+    "FamilyId": 11,
+    "Element": "Earth",
+    "Level": 45,
+    "BaseHp": 180,
+    "BaseSp": 30,
+    "BaseStr": 24,
+    "BaseCon": 21,
+    "BaseInt": 6,
+    "BaseWis": 6,
+    "BaseAgi": 14,
+    "SpritePath": "Monsters/mob_beast_earth_64.png",
+    "PortraitPath": "Portraits/mob_beast_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 225,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 400,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1042,
+    "Name": "Water Beast",
+    "Code": "MOB_BEAST_WATER",
+    "FamilyId": 11,
+    "Element": "Water",
+    "Level": 45,
+    "BaseHp": 165,
+    "BaseSp": 36,
+    "BaseStr": 22,
+    "BaseCon": 18,
+    "BaseInt": 6,
+    "BaseWis": 7,
+    "BaseAgi": 18,
+    "SpritePath": "Monsters/mob_beast_water_64.png",
+    "PortraitPath": "Portraits/mob_beast_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 225,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 400,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1043,
+    "Name": "Fire Beast",
+    "Code": "MOB_BEAST_FIRE",
+    "FamilyId": 11,
+    "Element": "Fire",
+    "Level": 46,
+    "BaseHp": 135,
+    "BaseSp": 30,
+    "BaseStr": 28,
+    "BaseCon": 18,
+    "BaseInt": 7,
+    "BaseWis": 6,
+    "BaseAgi": 19,
+    "SpritePath": "Monsters/mob_beast_fire_64.png",
+    "PortraitPath": "Portraits/mob_beast_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 230,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 400,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1044,
+    "Name": "Wind Beast",
+    "Code": "MOB_BEAST_WIND",
+    "FamilyId": 11,
+    "Element": "Wind",
+    "Level": 45,
+    "BaseHp": 120,
+    "BaseSp": 33,
+    "BaseStr": 22,
+    "BaseCon": 18,
+    "BaseInt": 6,
+    "BaseWis": 6,
+    "BaseAgi": 25,
+    "SpritePath": "Monsters/mob_beast_wind_64.png",
+    "PortraitPath": "Portraits/mob_beast_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 225,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 400,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1045,
+    "Name": "Earth Insect",
+    "Code": "MOB_INSECT_EARTH",
+    "FamilyId": 12,
+    "Element": "Earth",
+    "Level": 20,
+    "BaseHp": 72,
+    "BaseSp": 10,
+    "BaseStr": 13,
+    "BaseCon": 9,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 20,
+    "SpritePath": "Monsters/mob_insect_earth_64.png",
+    "PortraitPath": "Portraits/mob_insect_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 100,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1046,
+    "Name": "Water Insect",
+    "Code": "MOB_INSECT_WATER",
+    "FamilyId": 12,
+    "Element": "Water",
+    "Level": 20,
+    "BaseHp": 66,
+    "BaseSp": 12,
+    "BaseStr": 12,
+    "BaseCon": 8,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 25,
+    "SpritePath": "Monsters/mob_insect_water_64.png",
+    "PortraitPath": "Portraits/mob_insect_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": false,
+    "ExpReward": 100,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 5.0,
+      "LeashRadius": 15.0,
+      "PatrolSpeed": 1.0,
+      "IsPassive": true
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1047,
+    "Name": "Fire Insect",
+    "Code": "MOB_INSECT_FIRE",
+    "FamilyId": 12,
+    "Element": "Fire",
+    "Level": 21,
+    "BaseHp": 54,
+    "BaseSp": 10,
+    "BaseStr": 15,
+    "BaseCon": 8,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 27,
+    "SpritePath": "Monsters/mob_insect_fire_64.png",
+    "PortraitPath": "Portraits/mob_insect_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 105,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1048,
+    "Name": "Wind Insect",
+    "Code": "MOB_INSECT_WIND",
+    "FamilyId": 12,
+    "Element": "Wind",
+    "Level": 20,
+    "BaseHp": 48,
+    "BaseSp": 11,
+    "BaseStr": 12,
+    "BaseCon": 8,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 35,
+    "SpritePath": "Monsters/mob_insect_wind_64.png",
+    "PortraitPath": "Portraits/mob_insect_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 100,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 1049,
+    "Name": "Earthquake Behemoth",
+    "Code": "BOSS_EARTHQUAKE_BEHEMOTH",
+    "FamilyId": 11,
+    "Element": "Earth",
+    "Level": 45,
+    "BaseHp": 2250,
+    "BaseSp": 450,
+    "BaseStr": 135,
+    "BaseCon": 135,
+    "BaseInt": 135,
+    "BaseWis": 135,
+    "BaseAgi": 135,
+    "SpritePath": "Monsters/boss_earthquake_behemoth.png",
+    "PortraitPath": "Portraits/boss_earthquake_behemoth.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 4500,
+    "Tags": [
+      "Boss"
+    ],
+    "Behavior": {
+      "AggroRadius": 10.0,
+      "LeashRadius": 30.0,
+      "PatrolSpeed": 3.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 1,
+    "Drops": [
+      {
+        "ItemId": 500,
+        "Chance": 1.0,
+        "MinQuantity": 1,
+        "MaxQuantity": 3
+      }
+    ]
+  },
+  {
+    "MonsterId": 1050,
+    "Name": "Tsunami Leviathan",
+    "Code": "BOSS_TSUNAMI_LEVIATHAN",
+    "FamilyId": 8,
+    "Element": "Water",
+    "Level": 55,
+    "BaseHp": 2750,
+    "BaseSp": 550,
+    "BaseStr": 165,
+    "BaseCon": 165,
+    "BaseInt": 165,
+    "BaseWis": 165,
+    "BaseAgi": 165,
+    "SpritePath": "Monsters/boss_tsunami_leviathan.png",
+    "PortraitPath": "Portraits/boss_tsunami_leviathan.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 5500,
+    "Tags": [
+      "Boss"
+    ],
+    "Behavior": {
+      "AggroRadius": 10.0,
+      "LeashRadius": 30.0,
+      "PatrolSpeed": 3.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 1,
+    "Drops": [
+      {
+        "ItemId": 500,
+        "Chance": 1.0,
+        "MinQuantity": 1,
+        "MaxQuantity": 3
+      }
+    ]
+  },
+  {
+    "MonsterId": 1051,
+    "Name": "Inferno Lord",
+    "Code": "BOSS_INFERNO_LORD",
+    "FamilyId": 7,
+    "Element": "Fire",
+    "Level": 65,
+    "BaseHp": 3250,
+    "BaseSp": 650,
+    "BaseStr": 195,
+    "BaseCon": 195,
+    "BaseInt": 195,
+    "BaseWis": 195,
+    "BaseAgi": 195,
+    "SpritePath": "Monsters/boss_inferno_lord.png",
+    "PortraitPath": "Portraits/boss_inferno_lord.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 6500,
+    "Tags": [
+      "Boss"
+    ],
+    "Behavior": {
+      "AggroRadius": 10.0,
+      "LeashRadius": 30.0,
+      "PatrolSpeed": 3.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 1,
+    "Drops": [
+      {
+        "ItemId": 500,
+        "Chance": 1.0,
+        "MinQuantity": 1,
+        "MaxQuantity": 3
+      }
+    ]
+  },
+  {
+    "MonsterId": 1052,
+    "Name": "Hurricane Wyrm",
+    "Code": "BOSS_HURRICANE_WYRM",
+    "FamilyId": 8,
+    "Element": "Wind",
+    "Level": 75,
+    "BaseHp": 3750,
+    "BaseSp": 750,
+    "BaseStr": 225,
+    "BaseCon": 225,
+    "BaseInt": 225,
+    "BaseWis": 225,
+    "BaseAgi": 225,
+    "SpritePath": "Monsters/boss_hurricane_wyrm.png",
+    "PortraitPath": "Portraits/boss_hurricane_wyrm.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 7500,
+    "Tags": [
+      "Boss"
+    ],
+    "Behavior": {
+      "AggroRadius": 10.0,
+      "LeashRadius": 30.0,
+      "PatrolSpeed": 3.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 1,
+    "Drops": [
+      {
+        "ItemId": 500,
+        "Chance": 1.0,
+        "MinQuantity": 1,
+        "MaxQuantity": 3
+      }
+    ]
+  },
+  {
+    "MonsterId": 1053,
+    "Name": "Granite Titan",
+    "Code": "BOSS_GRANITE_TITAN",
+    "FamilyId": 9,
+    "Element": "Earth",
+    "Level": 85,
+    "BaseHp": 4250,
+    "BaseSp": 850,
+    "BaseStr": 255,
+    "BaseCon": 255,
+    "BaseInt": 255,
+    "BaseWis": 255,
+    "BaseAgi": 255,
+    "SpritePath": "Monsters/boss_granite_titan.png",
+    "PortraitPath": "Portraits/boss_granite_titan.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 8500,
+    "Tags": [
+      "Boss"
+    ],
+    "Behavior": {
+      "AggroRadius": 10.0,
+      "LeashRadius": 30.0,
+      "PatrolSpeed": 3.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 1,
+    "Drops": [
+      {
+        "ItemId": 500,
+        "Chance": 1.0,
+        "MinQuantity": 1,
+        "MaxQuantity": 3
+      }
+    ]
+  },
+  {
+    "MonsterId": 1054,
+    "Name": "Void Dragon",
+    "Code": "BOSS_VOID_DRAGON",
+    "FamilyId": 8,
+    "Element": "None",
+    "Level": 95,
+    "BaseHp": 4750,
+    "BaseSp": 950,
+    "BaseStr": 285,
+    "BaseCon": 285,
+    "BaseInt": 285,
+    "BaseWis": 285,
+    "BaseAgi": 285,
+    "SpritePath": "Monsters/boss_void_dragon.png",
+    "PortraitPath": "Portraits/boss_void_dragon.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 9500,
+    "Tags": [
+      "Boss",
+      "QuestOnly"
+    ],
+    "Behavior": {
+      "AggroRadius": 10.0,
+      "LeashRadius": 30.0,
+      "PatrolSpeed": 3.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 1,
+    "Drops": [
+      {
+        "ItemId": 500,
+        "Chance": 1.0,
+        "MinQuantity": 1,
+        "MaxQuantity": 3
+      }
+    ]
+  },
+  {
+    "MonsterId": 10000,
+    "Name": "Earth Troll",
+    "Code": "MOB_TROLL_EARTH",
+    "FamilyId": 13,
+    "Element": "Earth",
+    "Level": 20,
+    "BaseHp": 180,
+    "BaseSp": 20,
+    "BaseStr": 19,
+    "BaseCon": 18,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 4,
+    "SpritePath": "Monsters/mob_troll_earth_64.png",
+    "PortraitPath": "Portraits/mob_troll_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 100,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 10001,
+    "Name": "Water Troll",
+    "Code": "MOB_TROLL_WATER",
+    "FamilyId": 13,
+    "Element": "Water",
+    "Level": 20,
+    "BaseHp": 165,
+    "BaseSp": 24,
+    "BaseStr": 18,
+    "BaseCon": 15,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 6,
+    "SpritePath": "Monsters/mob_troll_water_64.png",
+    "PortraitPath": "Portraits/mob_troll_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 100,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 10002,
+    "Name": "Fire Troll",
+    "Code": "MOB_TROLL_FIRE",
+    "FamilyId": 13,
+    "Element": "Fire",
+    "Level": 21,
+    "BaseHp": 135,
+    "BaseSp": 20,
+    "BaseStr": 23,
+    "BaseCon": 15,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 6,
+    "SpritePath": "Monsters/mob_troll_fire_64.png",
+    "PortraitPath": "Portraits/mob_troll_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 105,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 10003,
+    "Name": "Wind Troll",
+    "Code": "MOB_TROLL_WIND",
+    "FamilyId": 13,
+    "Element": "Wind",
+    "Level": 20,
+    "BaseHp": 120,
+    "BaseSp": 22,
+    "BaseStr": 18,
+    "BaseCon": 15,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 8,
+    "SpritePath": "Monsters/mob_troll_wind_64.png",
+    "PortraitPath": "Portraits/mob_troll_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 100,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 200,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 10004,
+    "Name": "Earth Spider",
+    "Code": "MOB_SPIDER_EARTH",
+    "FamilyId": 14,
+    "Element": "Earth",
+    "Level": 8,
+    "BaseHp": 48,
+    "BaseSp": 10,
+    "BaseStr": 8,
+    "BaseCon": 6,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 12,
+    "SpritePath": "Monsters/mob_spider_earth_64.png",
+    "PortraitPath": "Portraits/mob_spider_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 40,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 10005,
+    "Name": "Water Spider",
+    "Code": "MOB_SPIDER_WATER",
+    "FamilyId": 14,
+    "Element": "Water",
+    "Level": 8,
+    "BaseHp": 44,
+    "BaseSp": 12,
+    "BaseStr": 8,
+    "BaseCon": 5,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 15,
+    "SpritePath": "Monsters/mob_spider_water_64.png",
+    "PortraitPath": "Portraits/mob_spider_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 40,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 10006,
+    "Name": "Fire Spider",
+    "Code": "MOB_SPIDER_FIRE",
+    "FamilyId": 14,
+    "Element": "Fire",
+    "Level": 9,
+    "BaseHp": 36,
+    "BaseSp": 10,
+    "BaseStr": 10,
+    "BaseCon": 5,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 16,
+    "SpritePath": "Monsters/mob_spider_fire_64.png",
+    "PortraitPath": "Portraits/mob_spider_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 45,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 10007,
+    "Name": "Wind Spider",
+    "Code": "MOB_SPIDER_WIND",
+    "FamilyId": 14,
+    "Element": "Wind",
+    "Level": 8,
+    "BaseHp": 32,
+    "BaseSp": 11,
+    "BaseStr": 8,
+    "BaseCon": 5,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 21,
+    "SpritePath": "Monsters/mob_spider_wind_64.png",
+    "PortraitPath": "Portraits/mob_spider_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 40,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 100,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 10008,
+    "Name": "Earth Vampire",
+    "Code": "MOB_VAMPIRE_EARTH",
+    "FamilyId": 15,
+    "Element": "Earth",
+    "Level": 30,
+    "BaseHp": 144,
+    "BaseSp": 50,
+    "BaseStr": 15,
+    "BaseCon": 14,
+    "BaseInt": 14,
+    "BaseWis": 12,
+    "BaseAgi": 16,
+    "SpritePath": "Monsters/mob_vampire_earth_64.png",
+    "PortraitPath": "Portraits/mob_vampire_earth_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 150,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 10009,
+    "Name": "Water Vampire",
+    "Code": "MOB_VAMPIRE_WATER",
+    "FamilyId": 15,
+    "Element": "Water",
+    "Level": 30,
+    "BaseHp": 132,
+    "BaseSp": 60,
+    "BaseStr": 14,
+    "BaseCon": 12,
+    "BaseInt": 15,
+    "BaseWis": 14,
+    "BaseAgi": 20,
+    "SpritePath": "Monsters/mob_vampire_water_64.png",
+    "PortraitPath": "Portraits/mob_vampire_water_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 150,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 10010,
+    "Name": "Fire Vampire",
+    "Code": "MOB_VAMPIRE_FIRE",
+    "FamilyId": 15,
+    "Element": "Fire",
+    "Level": 31,
+    "BaseHp": 108,
+    "BaseSp": 50,
+    "BaseStr": 18,
+    "BaseCon": 12,
+    "BaseInt": 16,
+    "BaseWis": 12,
+    "BaseAgi": 22,
+    "SpritePath": "Monsters/mob_vampire_fire_64.png",
+    "PortraitPath": "Portraits/mob_vampire_fire_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 155,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
+  },
+  {
+    "MonsterId": 10011,
+    "Name": "Wind Vampire",
+    "Code": "MOB_VAMPIRE_WIND",
+    "FamilyId": 15,
+    "Element": "Wind",
+    "Level": 30,
+    "BaseHp": 96,
+    "BaseSp": 55,
+    "BaseStr": 14,
+    "BaseCon": 12,
+    "BaseInt": 14,
+    "BaseWis": 13,
+    "BaseAgi": 28,
+    "SpritePath": "Monsters/mob_vampire_wind_64.png",
+    "PortraitPath": "Portraits/mob_vampire_wind_256.png",
+    "SkillIds": [],
+    "IsAggressive": true,
+    "ExpReward": 150,
+    "Tags": [],
+    "Behavior": {
+      "AggroRadius": 8.0,
+      "LeashRadius": 20.0,
+      "PatrolSpeed": 2.0,
+      "IsPassive": false
+    },
+    "EncounterWeight": 10,
+    "Drops": [
+      {
+        "ItemId": 300,
+        "Chance": 0.2,
+        "MinQuantity": 1,
+        "MaxQuantity": 1
+      }
+    ]
   }
 ]
