@@ -11,6 +11,7 @@ public class PlayerDataDTO
     public int Hp { get; set; }
 
     public int MaxHp { get; set; }
+    public int RebirthLevel { get; set; }
 
     public CharacterAppearance Appearance { get; set; } = new();
     // ... etc.

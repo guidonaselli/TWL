@@ -9,5 +9,6 @@ public class LoginResponseDto
     public int Hp { get; set; }
     public int MaxHp { get; set; }
     public int MapId { get; set; }
+    public int RebirthLevel { get; set; }
     public string ErrorMessage { get; set; }
 }

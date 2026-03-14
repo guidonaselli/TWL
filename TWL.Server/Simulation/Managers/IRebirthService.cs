@@ -7,5 +7,5 @@ namespace TWL.Server.Simulation.Managers;
 public interface IRebirthService
 {
     int GetDiminishingReturnsBonus(int currentRebirthCount);
-    (bool Success, string Message, int StatPointsGained) TryRebirthCharacter(ServerCharacter character, string operationId);
+    (bool Success, string Message, int StatPointsGained) TryRebirthCharacter(ServerCharacter character, string operationId, int? requiredItemId = null, string? requiredQuestFlag = null);
 }

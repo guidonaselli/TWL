@@ -29,7 +29,7 @@ public class RebirthManager : IRebirthService
         };
     }
 
-    public (bool Success, string Message, int StatPointsGained) TryRebirthCharacter(ServerCharacter character, string operationId)
+    public (bool Success, string Message, int StatPointsGained) TryRebirthCharacter(ServerCharacter character, string operationId, int? requiredItemId = null, string? requiredQuestFlag = null)
     {
         if (character == null)
         {
@@ -48,6 +48,18 @@ public class RebirthManager : IRebirthService
             return (false, "Level 100 required.", 0);
         }
 
+        if (requiredQuestFlag != null && !character.WorldFlags.Contains(requiredQuestFlag))
+        {
+            LogAndRecordFailure(character, operationId, $"Character missing required quest flag: {requiredQuestFlag}");
+            return (false, "Required quest not completed.", 0);
+        }
+
+        if (requiredItemId.HasValue && !character.HasItem(requiredItemId.Value, 1))
+        {
+            LogAndRecordFailure(character, operationId, $"Character missing required item: {requiredItemId.Value}");
+            return (false, "Required item not found.", 0);
+        }
+
         // Avoid concurrent rebirth processing for the same character
         lock (character.ProgressLock)
         {
@@ -56,6 +68,15 @@ public class RebirthManager : IRebirthService
             {
                 LogAndRecordFailure(character, operationId, "Race condition prevented rebirth (Level < 100).");
                 return (false, "Level 100 required.", 0);
+            }
+
+            if (requiredItemId.HasValue)
+            {
+                if (!character.RemoveItem(requiredItemId.Value, 1))
+                {
+                    LogAndRecordFailure(character, operationId, "Race condition prevented rebirth (Item removal failed).");
+                    return (false, "Required item not found.", 0);
+                }
             }
 
             int oldLevel = character.Level;

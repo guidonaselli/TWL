@@ -25,10 +25,10 @@ See: .planning/PROJECT.md (updated 2026-02-14)
 
 ## Session Handoff (Ralph Loop)
 
-**Last session:** 2026-03-11 (Phase 6, Plan 06-01)
-**last_completed_task:** Plan 06-01 (Character rebirth transactional foundation)
-**Stopped at:** Completed character rebirth state mutations, diminishing returns formula, and persistent history with security fixes.
-**Resume file:** .planning/phases/06-rebirth-system/06-02-PLAN.md (Next Plan)
+**Last session:** 2026-03-14 (Phase 6, Plan 06-02)
+**last_completed_task:** Plan 06-02 (Character rebirth eligibility gates, build retention, and client prestige display in character info/nameplate/HUD)
+**Stopped at:** Completed character rebirth eligibility checks, client payload propagation, and client HUD display.
+**Resume file:** .planning/phases/06-rebirth-system/06-03-PLAN.md (Next Plan)
 
 ---
-*Next step: Start 06-02 (Character rebirth eligibility gates and build retention)*
+*Next step: Start 06-03 (Pet rebirth policy completion with quest-vs-capturable differentiation, 10/8/5 diminishing bonuses, and evolution/action routing)*

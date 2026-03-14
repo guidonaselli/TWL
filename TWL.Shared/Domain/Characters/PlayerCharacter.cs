@@ -63,6 +63,7 @@ public class PlayerCharacter : Character
 
     // Progression
     public int Level { get; private set; }
+    public int RebirthLevel { get; set; }
     public int Exp { get; private set; }
     public int ExpToNextLevel { get; private set; }
     public int StatPoints { get; private set; }

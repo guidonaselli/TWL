@@ -112,6 +112,7 @@ public sealed class SceneGameplay : SceneBase, IPayloadReceiver
 
         _player = new PlayerCharacter(_gameManager.PlayerId, "Hero", Element.Fire, dto);
         _player.Position = new Vector2(_playerData.PosX, _playerData.PosY);
+        _player.RebirthLevel = _playerData.RebirthLevel;
         // You might want to set other stats from _playerData here as well
 
         _playerView = new PlayerView(_player);
