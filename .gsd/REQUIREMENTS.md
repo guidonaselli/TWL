@@ -250,90 +250,8 @@ Listings expire after configured duration and items return to seller inventory
 
 Direct player-to-player trade window for face-to-face trading with both-party confirmation
 
-### CONT-01 — `items.json` contains 200+ items across 8 tiers (Lv1-100) covering consumables, crafting materials, quest items
-- Status: validated
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S11
-
-`items.json` contains 200+ items across 8 tiers (Lv1-100) covering consumables, crafting materials, quest items
-
-## Active
-
-### QUAL-01 — Fix 8 failing content validation tests (quest chains: Hidden Cove, Ruins Expansion, Hidden Ruins; localization keys)
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S03
-
-Fix 8 failing content validation tests (quest chains: Hidden Cove, Ruins Expansion, Hidden Ruins; localization keys)
-
-### PTY-06 — Party UI displays all members with real-time HP/MP/status sync
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S04
-
-Party UI displays all members with real-time HP/MP/status sync
-
-### PTY-07 — Party chat channel provides private communication for coordination
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S04
-
-Party chat channel provides private communication for coordination
-
-### CMP-01 — Player can access compound NPC to enhance equipment
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S08
-
-Player can access compound NPC to enhance equipment
-
-### CMP-02 — Player can select base item and enhancement materials from inventory
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S08
-
-Player can select base item and enhancement materials from inventory
-
-### CMP-03 — System calculates success rate based on item level and materials used
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S08
-
-System calculates success rate based on item level and materials used
-
-### CMP-04 — Enhancement success grants permanent stat bonuses to equipment
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S08
-
-Enhancement success grants permanent stat bonuses to equipment
-
-### CMP-05 — Enhancement failure consumes materials but preserves base item (no destruction)
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S08
-
-Enhancement failure consumes materials but preserves base item (no destruction)
-
-### CMP-06 — Non-refundable compound fee prevents listing fee arbitrage exploits
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S08
-
-Non-refundable compound fee prevents listing fee arbitrage exploits
-
 ### REB-01 — Character can rebirth at level 100+ resetting to level 1 with permanent stat bonuses (10-20 points)
-- Status: active
+- Status: validated
 - Class: core-capability
 - Source: inferred
 - Primary Slice: S06
@@ -341,7 +259,7 @@ Non-refundable compound fee prevents listing fee arbitrage exploits
 Character can rebirth at level 100+ resetting to level 1 with permanent stat bonuses (10-20 points)
 
 ### REB-02 — Character rebirth requirements include minimum level and optional quest/item requirement
-- Status: active
+- Status: validated
 - Class: core-capability
 - Source: inferred
 - Primary Slice: S06
@@ -349,7 +267,7 @@ Character can rebirth at level 100+ resetting to level 1 with permanent stat bon
 Character rebirth requirements include minimum level and optional quest/item requirement
 
 ### REB-03 — Character rebirth count is tracked and displayed in character info/nameplate (visible prestige)
-- Status: active
+- Status: validated
 - Class: core-capability
 - Source: inferred
 - Primary Slice: S06
@@ -357,7 +275,7 @@ Character rebirth requirements include minimum level and optional quest/item req
 Character rebirth count is tracked and displayed in character info/nameplate (visible prestige)
 
 ### REB-04 — Character retains skill trees and equipment after rebirth (can use all gear at level 1)
-- Status: active
+- Status: validated
 - Class: core-capability
 - Source: inferred
 - Primary Slice: S06
@@ -365,7 +283,7 @@ Character rebirth count is tracked and displayed in character info/nameplate (vi
 Character retains skill trees and equipment after rebirth (can use all gear at level 1)
 
 ### REB-05 — Rebirth operation is atomic transaction (all-or-nothing stat changes with rollback safety)
-- Status: active
+- Status: validated
 - Class: core-capability
 - Source: inferred
 - Primary Slice: S06
@@ -373,7 +291,7 @@ Character retains skill trees and equipment after rebirth (can use all gear at l
 Rebirth operation is atomic transaction (all-or-nothing stat changes with rollback safety)
 
 ### REB-06 — Rebirth history has audit trail for debugging and rollback capability
-- Status: active
+- Status: validated
 - Class: core-capability
 - Source: inferred
 - Primary Slice: S06
@@ -381,31 +299,15 @@ Rebirth operation is atomic transaction (all-or-nothing stat changes with rollba
 Rebirth history has audit trail for debugging and rollback capability
 
 ### REB-07 — Diminishing returns formula applies (Rebirth 1: 20 stats, 2: 15, 3: 10, 4: 5) to prevent infinite scaling
-- Status: active
+- Status: validated
 - Class: core-capability
 - Source: inferred
 - Primary Slice: S06
 
 Diminishing returns formula applies (Rebirth 1: 20 stats, 2: 15, 3: 10, 4: 5) to prevent infinite scaling
 
-### PET-01 — Pet combat AI makes intelligent skill selections based on target HP, party status, elemental advantage (not random)
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S09
-
-Pet combat AI makes intelligent skill selections based on target HP, party status, elemental advantage (not random)
-
-### PET-02 — pets.json is populated with complete starter region pet roster (20+ pets)
-- Status: active
-- Class: core-capability
-- Source: inferred
-- Primary Slice: S09
-
-pets.json is populated with complete starter region pet roster (20+ pets)
-
 ### PET-03 — Quest pets can rebirth/evolve while capturable pets cannot (preserved differentiation from WLO)
-- Status: active
+- Status: validated
 - Class: core-capability
 - Source: inferred
 - Primary Slice: S06
@@ -413,12 +315,23 @@ pets.json is populated with complete starter region pet roster (20+ pets)
 Quest pets can rebirth/evolve while capturable pets cannot (preserved differentiation from WLO)
 
 ### PET-04 — Pet rebirth grants stat bonuses and evolution to new forms (Pet Rebirth 1: 10 stats, 2: 8, 3: 5)
-- Status: active
+- Status: validated
 - Class: core-capability
 - Source: inferred
 - Primary Slice: S06
 
 Pet rebirth grants stat bonuses and evolution to new forms (Pet Rebirth 1: 10 stats, 2: 8, 3: 5)
+
+## Active
+
+### CONT-01 — `items.json` contains 200+ items across 8 tiers (Lv1-100) covering consumables, crafting materials, quest items
+- Status: active
+- Class: core-capability
+- Source: inferred
+- Primary Slice: S11
+
+`items.json` contains 200+ items across 8 tiers (Lv1-100) covering consumables, crafting materials, quest items
+
 
 ### PET-05 — Pet amity decreases by 1 on KO (knockout) in combat
 - Status: active
