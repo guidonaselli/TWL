@@ -106,7 +106,6 @@ public class RebirthManager : IRebirthService
                 LogAndRecordFailure(character, operationId, $"Missing required item(s): {_requirements.RequiredItemId} x{_requirements.RequiredItemQuantity}");
                 return (false, "Required item(s) missing.", 0);
             }
-<<<<<<< HEAD
         }
 
         // 1.1 Quest Flag Check
@@ -121,25 +120,16 @@ public class RebirthManager : IRebirthService
         {
             LogAndRecordFailure(character, operationId, "Character missing Core Resonance Shard (9007).");
             return (false, "Core Resonance Shard (9007) required.", 0);
-=======
->>>>>>> gsd/M001/S06
         }
 
         // Avoid concurrent rebirth processing for the same character
         lock (character.ProgressLock)
         {
             // Double-check eligibility inside lock
-<<<<<<< HEAD
             if (character.Level < _requirements.MinLevel || !character.QuestComponent.Flags.Contains("REBIRTH_QUALIFIED") || !character.HasItem(9007, 1))
             {
                 LogAndRecordFailure(character, operationId, "Race condition or missing requirements prevented rebirth.");
                 return (false, "Requirements not met.", 0);
-=======
-            if (character.Level < _requirements.MinLevel)
-            {
-                LogAndRecordFailure(character, operationId, $"Race condition prevented rebirth (Level < {_requirements.MinLevel}).");
-                return (false, $"Level {_requirements.MinLevel} required.", 0);
->>>>>>> gsd/M001/S06
             }
 
             int oldLevel = character.Level;
@@ -157,12 +147,9 @@ public class RebirthManager : IRebirthService
                 // Grant unassigned stat points
                 character.StatPoints += bonusPoints;
 
-<<<<<<< HEAD
                 // Reset stats to baseline
                 character.ResetStatsToBaseline();
 
-=======
->>>>>>> gsd/M001/S06
                 // Consume required items if any
                 if (_requirements.RequiredItemId.HasValue && _requirements.RequiredItemQuantity > 0)
                 {
@@ -173,14 +160,11 @@ public class RebirthManager : IRebirthService
                         throw new InvalidOperationException("Failed to consume rebirth items during atomic transaction.");
                     }
                 }
-<<<<<<< HEAD
                 else
                 {
                     // Fallback to legacy item if no data-driven requirement is set but we are here
                     character.TryConsumeItem(9007, 1);
                 }
-=======
->>>>>>> gsd/M001/S06
 
                 // Add History Record
                 var historyRecord = new RebirthHistoryRecord

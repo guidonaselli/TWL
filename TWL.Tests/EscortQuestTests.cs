@@ -2,6 +2,7 @@ using Moq;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
+using TWL.Shared.Domain.Interactions;
 using TWL.Shared.Domain.Quests;
 using TWL.Shared.Domain.Requests;
 
@@ -73,7 +74,7 @@ public class EscortQuestTests
         var result = manager.ProcessInteraction(character, questComponent, "AlchemyTable");
 
         // Assert
-        Assert.Equal("Compound", result);
+        Assert.Equal(InteractionType.Compound, result);
         Assert.False(character.HasItem(1, 1)); // Should be consumed
         Assert.True(character.HasItem(2, 1)); // Should be rewarded
 

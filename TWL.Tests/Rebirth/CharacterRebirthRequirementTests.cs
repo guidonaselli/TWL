@@ -5,11 +5,8 @@ using TWL.Shared.Domain.Models;
 using Microsoft.Extensions.Logging;
 using Xunit;
 using TWL.Server.Simulation.Networking.Components;
-<<<<<<< HEAD
 using System.Linq;
 using System;
-=======
->>>>>>> gsd/M001/S06
 
 namespace TWL.Tests.Rebirth;
 
@@ -17,16 +14,12 @@ public class CharacterRebirthRequirementTests
 {
     private readonly Mock<ILogger<RebirthManager>> _loggerMock;
     private readonly RebirthManager _rebirthManager;
-<<<<<<< HEAD
     private readonly ServerQuestManager _questManager;
-=======
->>>>>>> gsd/M001/S06
 
     public CharacterRebirthRequirementTests()
     {
         _loggerMock = new Mock<ILogger<RebirthManager>>();
         _rebirthManager = new RebirthManager(_loggerMock.Object);
-<<<<<<< HEAD
         _questManager = new ServerQuestManager();
     }
 
@@ -87,19 +80,13 @@ public class CharacterRebirthRequirementTests
         Assert.True(success);
         Assert.Equal(1, character.Level);
         Assert.Empty(character.Inventory.Where(i => i.ItemId == 9007));
-=======
->>>>>>> gsd/M001/S06
     }
 
     [Fact]
     public void TryRebirthCharacter_Fails_WhenLevelBelow100()
     {
         // Arrange
-<<<<<<< HEAD
         var character = CreateTestCharacter(99);
-=======
-        var character = new ServerCharacter { Level = 99 };
->>>>>>> gsd/M001/S06
         
         // Act
         var result = _rebirthManager.TryRebirthCharacter(character, "op1");
@@ -113,13 +100,7 @@ public class CharacterRebirthRequirementTests
     public void TryRebirthCharacter_Fails_WhenQuestNotCompleted()
     {
         // Arrange
-<<<<<<< HEAD
         var character = CreateTestCharacter(100);
-=======
-        var character = new ServerCharacter { Level = 100 };
-        // We need to inject Quest prerequisites into RebirthManager.
-        // For this test, let's assume quest 5000 is required.
->>>>>>> gsd/M001/S06
         _rebirthManager.SetRequirements(new RebirthRequirements { RequiredQuestId = 5000 });
 
         var questComponent = new PlayerQuestComponent(new ServerQuestManager());
@@ -134,17 +115,10 @@ public class CharacterRebirthRequirementTests
     }
 
     [Fact]
-<<<<<<< HEAD
     public void TryRebirthCharacter_Fails_WhenItemMissing_DataDriven()
     {
         // Arrange
         var character = CreateTestCharacter(100);
-=======
-    public void TryRebirthCharacter_Fails_WhenItemMissing()
-    {
-        // Arrange
-        var character = new ServerCharacter { Level = 100 };
->>>>>>> gsd/M001/S06
         _rebirthManager.SetRequirements(new RebirthRequirements { RequiredItemId = 9999, RequiredItemQuantity = 1 });
         
         // Act
@@ -154,23 +128,5 @@ public class CharacterRebirthRequirementTests
         Assert.False(result.Success);
         Assert.Contains("item", result.Message, StringComparison.OrdinalIgnoreCase);
     }
-<<<<<<< HEAD
-=======
 
-    [Fact]
-    public void TryRebirthCharacter_RecordsFailureInHistory_WhenLevelTooLow()
-    {
-        // Arrange
-        var character = new ServerCharacter { Level = 99 };
-        
-        // Act
-        _rebirthManager.TryRebirthCharacter(character, "op_fail_level");
-
-        // Assert
-        Assert.Single(character.RebirthHistory);
-        var record = character.RebirthHistory[0];
-        Assert.False(record.Success);
-        Assert.Contains("level", record.Reason, StringComparison.OrdinalIgnoreCase);
-    }
->>>>>>> gsd/M001/S06
 }

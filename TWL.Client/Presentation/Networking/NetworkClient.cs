@@ -178,6 +178,13 @@ public class NetworkClient
             case Opcode.TradeCancel:
                 _gameClientManager.TradeManager.HandleTradeCancel();
                 break;
+            case Opcode.SMSG_COMPOUND_REQUEST_START_ACK:
+                _gameClientManager.HandleCompoundStartAck();
+                break;
+            case Opcode.CompoundResponse:
+                var compoundResponse = JsonSerializer.Deserialize<CompoundResponseDTO>(serverMsg.JsonPayload, _jsonOptions);
+                if (compoundResponse != null) _gameClientManager.HandleCompoundResponse(compoundResponse);
+                break;
         }
 
         EventBus.Publish(serverMsg);

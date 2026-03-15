@@ -5,6 +5,7 @@ using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using Microsoft.Extensions.Logging;
 using Moq;
+using TWL.Shared.Services;
 
 namespace TWL.Tests.Compound;
 
@@ -76,20 +77,22 @@ public class CompoundContractTests
     }
 
     [Fact]
-    public async Task CompoundManager_ShouldReturnFailure_WhenNotImplemented()
+    public async Task CompoundManager_ShouldReturnFailure_WhenItemsInvalid()
     {
         // Arrange
         var loggerMock = new Mock<ILogger<CompoundManager>>();
-        var manager = new CompoundManager(loggerMock.Object);
+        var ratePolicyMock = new Mock<ICompoundRatePolicy>();
+        var randomServiceMock = new Mock<IRandomService>();
+        var manager = new CompoundManager(loggerMock.Object, ratePolicyMock.Object, randomServiceMock.Object);
         var character = new ServerCharacter { Name = "TestPlayer" };
-        var request = new CompoundRequestDTO { TargetItemId = Guid.NewGuid() };
+        var request = new CompoundRequestDTO { TargetItemId = Guid.NewGuid(), IngredientItemId = Guid.NewGuid() };
 
         // Act
         var response = await manager.ProcessCompoundRequest(character, request);
 
         // Assert
         Assert.False(response.Success);
-        Assert.Contains("pending implementation", response.Message);
+        Assert.Equal("Invalid items specified.", response.Message);
         Assert.Equal(CompoundOutcome.Fail, response.Outcome);
     }
 }

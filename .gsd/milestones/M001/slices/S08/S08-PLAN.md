@@ -39,7 +39,7 @@ Output: Updated `ICompoundService` and `CompoundManager` methods, modified call 
 
 Purpose: This delivers CMP-06 and hardens compound requests against replay and duplicate-charge inconsistencies.
 Output: Economy fee extension, compound idempotency integration, session forwarding updates, and fee/idempotency tests.
-- [ ] **T06: Finalize compound client integration**
+- [x] **T06: Finalize compound client integration**
   - Finalize compound client integration and phase-level verification coverage.
 
 Purpose: This closes the loop so Phase 8 is executable end-to-end and validated against CMP-01..CMP-06.

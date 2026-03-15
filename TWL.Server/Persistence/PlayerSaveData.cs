@@ -76,14 +76,10 @@ public class ServerPetData
     public bool IsDead { get; set; }
     public bool IsLost { get; set; }
     public bool DeathQuestCompleted { get; set; }
-<<<<<<< HEAD
     /// <summary>Legacy: kept for migrating old save files. Use RebirthGeneration going forward.</summary>
     public bool HasRebirthed { get; set; }
     /// <summary>Number of rebirth cycles completed. Generation 0 = never rebirthed.</summary>
     public int RebirthGeneration { get; set; }
-=======
-    public int RebirthCount { get; set; }
->>>>>>> gsd/M001/S06
     public DateTime? ExpirationTime { get; set; }
     public List<int> UnlockedSkillIds { get; set; } = new();
 }

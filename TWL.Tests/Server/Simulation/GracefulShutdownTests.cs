@@ -59,10 +59,7 @@ public class GracefulShutdownTests
         var sequence = new MockSequence();
         var mockHealthCheck = new Mock<HealthCheckService>();
         var mockRebirthService = new Mock<IRebirthService>();
-<<<<<<< HEAD
         var mockMarketService = new Mock<IMarketService>();
-=======
->>>>>>> gsd/M001/S06
 
         // Expectations in order
         mockHealthCheck.InSequence(sequence).Setup(x => x.SetStatus(ServerStatus.ShuttingDown));
@@ -89,12 +86,8 @@ public class GracefulShutdownTests
             mockHealthCheck.Object,
             new Mock<InstanceService>(metrics).Object, 
             mockCombatManager.Object,
-<<<<<<< HEAD
             mockRebirthService.Object,
             mockMarketService.Object
-=======
-            mockRebirthService.Object
->>>>>>> gsd/M001/S06
         );
 
         // Act

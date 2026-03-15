@@ -35,7 +35,7 @@ public class InteractionTests
             new()
             {
                 TargetName = "Rock",
-                Type = "Gather",
+                Type = InteractionType.Gather,
                 RewardItems = new List<ItemReward> { new(201, 1) }
             }
         };
@@ -45,7 +45,7 @@ public class InteractionTests
         var result = _manager.ProcessInteraction(_character, _questComponent, "Rock");
 
         Assert.NotNull(result);
-        Assert.Equal("Gather", result);
+        Assert.Equal(InteractionType.Gather, result);
         Assert.True(_character.HasItem(201, 1));
     }
 
@@ -58,7 +58,7 @@ public class InteractionTests
             new()
             {
                 TargetName = "QuestRock",
-                Type = "Gather",
+                Type = InteractionType.Gather,
                 RewardItems = new List<ItemReward> { new(201, 1) },
                 RequiredQuestId = 1016
             }
@@ -82,7 +82,7 @@ public class InteractionTests
             new()
             {
                 TargetName = "QuestRock",
-                Type = "Gather",
+                Type = InteractionType.Gather,
                 RewardItems = new List<ItemReward> { new(201, 1) },
                 RequiredQuestId = 1016
             }
@@ -107,7 +107,7 @@ public class InteractionTests
             new()
             {
                 TargetName = "Bench",
-                Type = "Craft",
+                Type = InteractionType.Craft,
                 RequiredItems = new List<ItemReward> { new(201, 1) },
                 RewardItems = new List<ItemReward> { new(203, 1) }
             }
@@ -120,7 +120,7 @@ public class InteractionTests
         var result = _manager.ProcessInteraction(_character, _questComponent, "Bench");
 
         Assert.NotNull(result);
-        Assert.Equal("Craft", result);
+        Assert.Equal(InteractionType.Craft, result);
         Assert.False(_character.HasItem(201, 1)); // Consumed
         Assert.True(_character.HasItem(203, 1)); // Rewarded
     }
@@ -133,7 +133,7 @@ public class InteractionTests
             new()
             {
                 TargetName = "Bench",
-                Type = "Craft",
+                Type = InteractionType.Craft,
                 RequiredItems = new List<ItemReward> { new(201, 1) },
                 RewardItems = new List<ItemReward> { new(203, 1) }
             }

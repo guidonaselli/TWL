@@ -79,7 +79,7 @@ public class QuestEngineEventsTests : IDisposable
             new()
             {
                 TargetName = "AlchemyTable",
-                Type = "Compound",
+                Type = InteractionType.Compound,
                 RewardItems = new List<ItemReward>()
             }
         };
@@ -143,10 +143,10 @@ public class QuestEngineEventsTests : IDisposable
         // Act
         // Use InteractHandler logic: interaction returns Type, then passed to QuestComponent
         var type = _interactionManager.ProcessInteraction(_player, _questComponent, "AlchemyTable");
-        Assert.Equal("Compound", type);
+        Assert.Equal(InteractionType.Compound, type);
 
         // Simulate ServerCharacter event
-        _player.NotifyInteract("AlchemyTable", type);
+        _player.NotifyInteract("AlchemyTable", type.ToString());
 
         // Assert
         Assert.Equal(QuestState.Completed, _questComponent.QuestStates[3]);

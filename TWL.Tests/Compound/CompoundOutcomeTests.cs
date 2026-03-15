@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using TWL.Server.Persistence;
 using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.DTO;
@@ -29,8 +30,9 @@ namespace TWL.Tests.Compound
         private ServerCharacter CreateCharacterWithItems(Item target, Item material)
         {
             var character = new ServerCharacter { Id = 1, Name = "Tester" };
-            character.Inventory.Add(target);
-            character.Inventory.Add(material);
+            character.LoadSaveData(new ServerCharacterData { 
+                Inventory = new List<Item> { target, material } 
+            });
             return character;
         }
 
@@ -41,7 +43,7 @@ namespace TWL.Tests.Compound
             var targetItem = new Item { ItemId = 1, EnhancementLevel = 0, InstanceId = System.Guid.NewGuid() };
             var materialItem = new Item { ItemId = 2, Quantity = 1, InstanceId = System.Guid.NewGuid() };
             var character = CreateCharacterWithItems(targetItem, materialItem);
-            var request = new CompoundRequestDTO { TargetItemId = targetItem.InstanceId, MaterialItemId = materialItem.InstanceId };
+            var request = new CompoundRequestDTO { TargetItemId = targetItem.InstanceId, IngredientItemId = materialItem.InstanceId };
 
             _ratePolicyMock.Setup(p => p.GetSuccessChance(It.IsAny<Item>(), It.IsAny<Item>())).Returns(0.9); // 90% chance
             _randomServiceMock.Setup(r => r.NextDouble(It.IsAny<string>())).Returns(0.5); // Roll is less than chance
@@ -64,7 +66,7 @@ namespace TWL.Tests.Compound
             var targetItem = new Item { ItemId = 1, EnhancementLevel = 0, InstanceId = System.Guid.NewGuid() };
             var materialItem = new Item { ItemId = 2, Quantity = 1, InstanceId = System.Guid.NewGuid() };
             var character = CreateCharacterWithItems(targetItem, materialItem);
-            var request = new CompoundRequestDTO { TargetItemId = targetItem.InstanceId, MaterialItemId = materialItem.InstanceId };
+            var request = new CompoundRequestDTO { TargetItemId = targetItem.InstanceId, IngredientItemId = materialItem.InstanceId };
 
             _ratePolicyMock.Setup(p => p.GetSuccessChance(It.IsAny<Item>(), It.IsAny<Item>())).Returns(0.1); // 10% chance
             _randomServiceMock.Setup(r => r.NextDouble(It.IsAny<string>())).Returns(0.5); // Roll is greater than chance
@@ -85,7 +87,7 @@ namespace TWL.Tests.Compound
         {
             // Arrange
             var character = new ServerCharacter { Id = 1, Name = "Tester" };
-            var request = new CompoundRequestDTO { TargetItemId = System.Guid.NewGuid(), MaterialItemId = System.Guid.NewGuid() };
+            var request = new CompoundRequestDTO { TargetItemId = System.Guid.NewGuid(), IngredientItemId = System.Guid.NewGuid() };
 
             // Act
             var response = await _compoundManager.ProcessCompoundRequest(character, request);

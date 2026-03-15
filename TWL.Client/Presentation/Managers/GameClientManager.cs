@@ -1,10 +1,13 @@
 ﻿// File: `TWL.Client/Managers/GameClientManager.cs`
 
+using System.Text.Json;
 using Microsoft.Extensions.Logging;
 using TWL.Client.Presentation.Networking;
 using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.DTO;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Domain.State;
+using TWL.Shared.Net.Network;
 
 namespace TWL.Client.Presentation.Managers;
 
@@ -89,6 +92,34 @@ public class GameClientManager
     // Guild State
     public List<TWL.Shared.Domain.DTO.GuildMemberDto> GuildRoster { get; } = new();
     public List<TWL.Shared.Domain.DTO.GuildChatMessageDto> GuildChatLogs { get; } = new();
+
+    public event Action? OnCompoundWindowRequested;
+    public event Action<CompoundResponseDTO>? OnCompoundResponseReceived;
+
+    public void HandleCompoundStartAck()
+    {
+        OnCompoundWindowRequested?.Invoke();
+    }
+
+    public void HandleCompoundResponse(CompoundResponseDTO response)
+    {
+        OnCompoundResponseReceived?.Invoke(response);
+    }
+
+    public void SendCompoundRequest(Guid targetId, Guid ingredientId, Guid? catalystId = null)
+    {
+        var request = new CompoundRequestDTO
+        {
+            TargetItemId = targetId,
+            IngredientItemId = ingredientId,
+            CatalystItemId = catalystId
+        };
+        NetworkClient.SendNetMessage(new NetMessage
+        {
+            Op = Opcode.CompoundRequest,
+            JsonPayload = JsonSerializer.Serialize(request)
+        });
+    }
 
     public void HandleGuildRosterSync(TWL.Shared.Domain.DTO.GuildRosterSyncEvent syncEvent)
     {

@@ -6,6 +6,7 @@ using TWL.Server.Simulation.Networking.Components;
 using TWL.Server.Services.World;
 using TWL.Shared.Domain.Models;
 using TWL.Shared.Domain.DTO;
+using TWL.Shared.Domain.Interactions;
 using TWL.Shared.Net.Network;
 using Xunit;
 using System.Text.Json;
@@ -71,7 +72,7 @@ public class CompoundNpcAccessTests
 
         // Assert
         Assert.True(result.Success);
-        Assert.Equal("Compound", result.InteractionType);
+        Assert.Equal(InteractionType.Compound, result.InteractionType);
 
         // Cleanup
         if (File.Exists(tempFile)) File.Delete(tempFile);
@@ -146,8 +147,9 @@ public class CompoundNpcAccessTests
 
         // Assert
         compoundServiceMock.Verify(s => s.ProcessCompoundRequest(character, It.Is<CompoundRequestDTO>(r => r.TargetItemId == targetId)), Times.Once);
-        Assert.Single(session.SentMessages);
-        Assert.Equal(Opcode.CompoundResponse, session.SentMessages[0].Op);
+        Assert.Equal(2, session.SentMessages.Count); // CompoundResponse + InventoryUpdate
+        Assert.Contains(session.SentMessages, m => m.Op == Opcode.CompoundResponse);
+        Assert.Contains(session.SentMessages, m => m.Op == Opcode.InventoryUpdate);
     }
 
     [Fact]
@@ -168,6 +170,6 @@ public class CompoundNpcAccessTests
         
         var type = interactionManager.ProcessInteraction(character, questComponent, "CompoundMaster");
         
-        Assert.Equal("Compound", type);
+        Assert.Equal(InteractionType.Compound, type);
     }
 }

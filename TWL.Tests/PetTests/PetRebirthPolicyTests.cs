@@ -1,11 +1,7 @@
-<<<<<<< HEAD
 using Xunit;
 using Moq;
 using System.IO;
 using System.Collections.Generic;
-=======
-using Moq;
->>>>>>> gsd/M001/S06
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
@@ -13,7 +9,6 @@ using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Services;
-<<<<<<< HEAD
 
 namespace TWL.Tests.PetTests;
 
@@ -21,12 +16,6 @@ namespace TWL.Tests.PetTests;
 /// Validates quest-vs-capturable differentiation and 10/8/5 diminishing bonus schedule for pet rebirth.
 /// Covers requirements PET-03 and PET-04.
 /// </summary>
-=======
-using Xunit;
-
-namespace TWL.Tests.PetTests;
-
->>>>>>> gsd/M001/S06
 public class PetRebirthPolicyTests : IDisposable
 {
     private readonly CombatManager _combatManager;
@@ -54,12 +43,8 @@ public class PetRebirthPolicyTests : IDisposable
     ""IsQuestPet"": true,
     ""RebirthEligible"": true,
     ""BaseHp"": 100,
-<<<<<<< HEAD
     ""Element"": ""Earth"",
     ""Type"": ""Quest""
-=======
-    ""Element"": ""Earth""
->>>>>>> gsd/M001/S06
   },
   {
     ""PetTypeId"": 1002,
@@ -67,12 +52,8 @@ public class PetRebirthPolicyTests : IDisposable
     ""IsQuestPet"": false,
     ""RebirthEligible"": true,
     ""BaseHp"": 100,
-<<<<<<< HEAD
     ""Element"": ""Wind"",
     ""Type"": ""Capture""
-=======
-    ""Element"": ""Wind""
->>>>>>> gsd/M001/S06
   }
 ]");
         _petManager.Load("Content/Data/pets_policy_test.json");
@@ -94,7 +75,6 @@ public class PetRebirthPolicyTests : IDisposable
             File.Delete("Content/Data/pets_policy_test.json");
     }
 
-<<<<<<< HEAD
     private static PetDefinition MakeQuestPetDef(int petTypeId = 1001) => new()
     {
         PetTypeId = petTypeId,
@@ -194,56 +174,5 @@ public class PetRebirthPolicyTests : IDisposable
         var expectedStr = (int)(baselineStr * 1.10f);
 
         Assert.Equal(expectedStr, pet.Str);
-=======
-    [Fact]
-    public void QuestPet_CanRebirth()
-    {
-        var def = _petManager.GetDefinition(1001);
-        var pet = new ServerPet(def);
-        pet.SetLevel(100);
-
-        var success = pet.TryRebirth();
-        Assert.True(success);
-        Assert.Equal(1, pet.RebirthCount);
-    }
-
-    [Fact]
-    public void CapturablePet_CannotRebirth()
-    {
-        var def = _petManager.GetDefinition(1002);
-        var pet = new ServerPet(def);
-        pet.SetLevel(100);
-
-        var success = pet.TryRebirth();
-        Assert.False(success);
-        Assert.Equal(0, pet.RebirthCount);
-    }
-
-    [Fact]
-    public void DiminishingReturns_10_8_5_Schedule()
-    {
-        var def = _petManager.GetDefinition(1001);
-        var pet = new ServerPet(def);
-        int baseHp = pet.MaxHp;
-
-        // 1st Rebirth: +10%
-        pet.SetLevel(100);
-        pet.TryRebirth();
-        Assert.Equal((int)(baseHp * 1.10), pet.MaxHp);
-
-        // 2nd Rebirth: +18% total (10+8)
-        pet.SetLevel(100);
-        pet.TryRebirth();
-        Assert.Equal((int)(baseHp * 1.18), pet.MaxHp);
-
-        // 3rd Rebirth: +23% total (10+8+5)
-        pet.SetLevel(100);
-        pet.TryRebirth();
-        Assert.Equal((int)(baseHp * 1.23), pet.MaxHp);
-        
-        // 4th Rebirth: Should fail (limit 3)
-        pet.SetLevel(100);
-        Assert.False(pet.TryRebirth());
->>>>>>> gsd/M001/S06
     }
 }
