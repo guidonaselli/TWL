@@ -28,7 +28,7 @@ Output: Compound opcodes, session handlers, interaction definitions, and NPC-acc
 
 Purpose: This delivers CMP-03, CMP-04, and CMP-05 with deterministic server-side compound resolution.
 Output: Rate policy component, compound outcome application in manager, and outcome-focused regression tests.
-- [ ] **T04: Refactor `CompoundManager` for Authoritative Inventory Mutation**
+- [x] **T04: Refactor `CompoundManager` for Authoritative Inventory Mutation**
   - NOTE: Implementation complete, but verification is blocked by unrelated test failures. See T04-SUMMARY.md.
   - Resolve the architectural blocker from T03 by refactoring the `ICompoundService` to operate on `ServerCharacter` instances instead of just inventories.
 
