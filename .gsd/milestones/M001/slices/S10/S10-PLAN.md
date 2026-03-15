@@ -5,6 +5,22 @@
 
 ## Must-Haves
 
+- Combat deaths remove exactly 1% of current-level EXP, floored at zero.
+- EXP penalties are triggered only from server-side combat death handling.
+- Death penalty application is idempotent per death event and inspectable in tests.
+
+## Verification
+
+- `pwsh -File scripts/test-filter.ps1 -Names DeathPenaltyServiceTests -Tail 60`
+- `pwsh -File scripts/build.ps1 -Config Debug`
+- Failure-path check: `DeathPenaltyServiceTests` proves duplicate processing for the same death event does not apply a second penalty and leaves the EXP state unchanged after the first mutation.
+
+## Observability / Diagnostics
+
+- Runtime signals: death penalty application is expressed as a deterministic service result containing penalty amount, pre/post EXP, and whether the event was skipped as duplicate.
+- Inspection surfaces: focused xUnit coverage in `TWL.Tests/Server/Combat/DeathPenaltyServiceTests.cs`; build/test output via `pwsh -File scripts/test-filter.ps1` and `pwsh -File scripts/build.ps1`.
+- Failure visibility: duplicate-event handling and EXP floor behavior are asserted directly so regressions fail with concrete expected/actual EXP values.
+- Redaction constraints: diagnostics must not include secrets, credentials, or unrelated player PII beyond test fixture identifiers.
 
 ## Tasks
 
