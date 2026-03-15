@@ -22,7 +22,9 @@
       "Bash(do if [[ ! $f == *.backup ]])",
       "Bash(then identify \"$f\")",
       "Bash(ls:*)",
-      "Bash(find \"D:\\\\IT\\\\Projects\\\\Rider\\\\TheWonderlandSolution\\\\.codex\" -maxdepth 3 -name \"*.md\" -o -name \"*.txt\" -o -name \"*.yaml\" -o -name \"*.yml\" 2>/dev/null | head -20; echo \"===\"; find \"D:\\\\IT\\\\Projects\\\\Rider\\\\TheWonderlandSolution\\\\.opencode\" -maxdepth 3 -name \"*.md\" -o -name \"*.txt\" -o -name \"*.yaml\" -o -name \"*.json\" 2>/dev/null | head -20)"
+      "Bash(find \"D:\\\\IT\\\\Projects\\\\Rider\\\\TheWonderlandSolution\\\\.codex\" -maxdepth 3 -name \"*.md\" -o -name \"*.txt\" -o -name \"*.yaml\" -o -name \"*.yml\" 2>/dev/null | head -20; echo \"===\"; find \"D:\\\\IT\\\\Projects\\\\Rider\\\\TheWonderlandSolution\\\\.opencode\" -maxdepth 3 -name \"*.md\" -o -name \"*.txt\" -o -name \"*.yaml\" -o -name \"*.json\" 2>/dev/null | head -20)",
+      "Bash(find:*)",
+      "Bash(grep:*)"
     ]
   }
 }
