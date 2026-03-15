@@ -729,6 +729,65 @@ public class ServerCharacter : ServerCombatant
         }
     }
 
+    public bool EnhanceItem(Guid instanceId, int levelsToAdd)
+    {
+        lock (_inventory)
+        {
+            var item = _inventory.FirstOrDefault(i => i.InstanceId == instanceId);
+            if (item == null)
+            {
+                return false; // Item not found
+            }
+
+            item.EnhancementLevel += levelsToAdd;
+            
+            _inventoryCache = null;
+            IsDirty = true;
+            return true;
+        }
+    }
+
+    public bool RemoveItemByInstanceId(Guid instanceId, int quantity)
+    {
+        lock (_inventory)
+        {
+            var item = _inventory.FirstOrDefault(i => i.InstanceId == instanceId);
+            if (item == null)
+            {
+                return false; // Item not found
+            }
+
+            if (item.Quantity < quantity)
+            {
+                return false; // Not enough quantity
+            }
+
+            item.Quantity -= quantity;
+            if (item.Quantity <= 0)
+            {
+                _inventory.Remove(item);
+            }
+
+            // Update Total Quantities Cache
+            if (_itemTotalQuantities.TryGetValue(item.ItemId, out var currentTotal))
+            {
+                var newTotal = currentTotal - quantity;
+                if (newTotal <= 0)
+                {
+                    _itemTotalQuantities.Remove(item.ItemId);
+                }
+                else
+                {
+                    _itemTotalQuantities[item.ItemId] = newTotal;
+                }
+            }
+
+            _inventoryCache = null;
+            IsDirty = true;
+            return true;
+        }
+    }
+
     public bool HasItem(int itemId, int quantity)
     {
         lock (_inventory)

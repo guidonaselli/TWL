@@ -28,12 +28,18 @@ Output: Compound opcodes, session handlers, interaction definitions, and NPC-acc
 
 Purpose: This delivers CMP-03, CMP-04, and CMP-05 with deterministic server-side compound resolution.
 Output: Rate policy component, compound outcome application in manager, and outcome-focused regression tests.
-- [ ] **T04: 08-compound-system 04**
+- [ ] **T04: Refactor `CompoundManager` for Authoritative Inventory Mutation**
+  - NOTE: Implementation complete, but verification is blocked by unrelated test failures. See T04-SUMMARY.md.
+  - Resolve the architectural blocker from T03 by refactoring the `ICompoundService` to operate on `ServerCharacter` instances instead of just inventories.
+
+Purpose: This enables the `CompoundManager` to authoritatively modify character state by calling methods on the `ServerCharacter` entity, respecting encapsulation.
+Output: Updated `ICompoundService` and `CompoundManager` methods, modified call sites in `ClientSession`, and passing tests for `CompoundOutcomeTests`.
+- [ ] **T05: Integrate non-refundable compound fee economics**
   - Integrate non-refundable compound fee economics and anti-arbitrage safeguards.
 
 Purpose: This delivers CMP-06 and hardens compound requests against replay and duplicate-charge inconsistencies.
 Output: Economy fee extension, compound idempotency integration, session forwarding updates, and fee/idempotency tests.
-- [ ] **T05: 08-compound-system 05**
+- [ ] **T06: Finalize compound client integration**
   - Finalize compound client integration and phase-level verification coverage.
 
 Purpose: This closes the loop so Phase 8 is executable end-to-end and validated against CMP-01..CMP-06.
@@ -65,12 +71,10 @@ Output: Client server-driven compound flow integration plus integration/acceptan
 - `Content/Data/interactions.json`
 - `TWL.Tests/Compound/CompoundNpcAccessTests.cs`
 - `TWL.Server/Simulation/Managers/CompoundRatePolicy.cs`
-- `TWL.Server/Simulation/Managers/CompoundManager.cs`
 - `TWL.Server/Simulation/Networking/ServerCharacter.cs`
 - `TWL.Tests/Compound/CompoundOutcomeTests.cs`
 - `TWL.Server/Simulation/Managers/IEconomyService.cs`
 - `TWL.Server/Simulation/Managers/EconomyManager.cs`
-- `TWL.Server/Simulation/Managers/CompoundManager.cs`
 - `TWL.Server/Simulation/Networking/ClientSession.cs`
 - `TWL.Shared/Domain/DTO/CompoundDTOs.cs`
 - `TWL.Tests/Compound/CompoundFeeIdempotencyTests.cs`
