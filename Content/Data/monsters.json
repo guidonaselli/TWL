@@ -56,7 +56,10 @@
       "PatrolSpeed": 1.0,
       "IsPassive": true
     },
-    "EncounterWeight": 10
+    "EncounterWeight": 10,
+    "PetTypeId": 1031,
+    "IsCapturable": true,
+    "CaptureThreshold": 0.5
   },
   {
     "MonsterId": 2003,
@@ -84,7 +87,10 @@
       "PatrolSpeed": 1.5,
       "IsPassive": false
     },
-    "EncounterWeight": 10
+    "EncounterWeight": 10,
+    "PetTypeId": 1032,
+    "IsCapturable": true,
+    "CaptureThreshold": 0.5
   },
   {
     "MonsterId": 2004,
@@ -112,7 +118,10 @@
       "PatrolSpeed": 1.0,
       "IsPassive": true
     },
-    "EncounterWeight": 10
+    "EncounterWeight": 10,
+    "PetTypeId": 1033,
+    "IsCapturable": true,
+    "CaptureThreshold": 0.5
   },
   {
     "MonsterId": 2005,
@@ -141,7 +150,7 @@
       "IsPassive": false
     },
     "EncounterWeight": 8,
-    "PetTypeId": 1018,
+    "PetTypeId": 1034,
     "IsCapturable": true,
     "CaptureThreshold": 0.4
   },
@@ -171,7 +180,10 @@
       "PatrolSpeed": 2.0,
       "IsPassive": false
     },
-    "EncounterWeight": 8
+    "EncounterWeight": 8,
+    "PetTypeId": 1035,
+    "IsCapturable": true,
+    "CaptureThreshold": 0.4
   },
   {
     "MonsterId": 2007,
@@ -199,7 +211,10 @@
       "PatrolSpeed": 2.2,
       "IsPassive": false
     },
-    "EncounterWeight": 5
+    "EncounterWeight": 5,
+    "PetTypeId": 1036,
+    "IsCapturable": true,
+    "CaptureThreshold": 0.4
   },
   {
     "MonsterId": 2008,
@@ -227,7 +242,10 @@
       "PatrolSpeed": 1.5,
       "IsPassive": true
     },
-    "EncounterWeight": 5
+    "EncounterWeight": 5,
+    "PetTypeId": 1037,
+    "IsCapturable": true,
+    "CaptureThreshold": 0.4
   },
   {
     "MonsterId": 2009,

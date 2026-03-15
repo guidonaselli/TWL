@@ -66,7 +66,10 @@ public abstract class Character
     public int Spd => Agi;
 
     public bool IsSealed { get; set; }
-    public float MovementSpeed { get; set; } = 2f;
+    public bool IsMounted { get; set; }
+    public float MoveSpeedModifier { get; set; } = 1.0f;
+    public float BaseMovementSpeed { get; set; } = 2f;
+    public float MovementSpeed => BaseMovementSpeed * MoveSpeedModifier;
 
     public Vector2 Position { get; set; }
     public FacingDirection CurrentDirection { get; set; }

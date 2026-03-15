@@ -536,7 +536,10 @@ public class ClientSession
                 success = _petService.TryEvolve(UserId, request.PetInstanceId);
                 break;
             case PetActionType.Utility:
-                // Existing utility logic if any
+                if (Enum.TryParse<PetUtilityType>(request.AdditionalData, out var utilityType))
+                {
+                    success = _petService.UseUtility(UserId, request.PetInstanceId, utilityType);
+                }
                 break;
         }
 
@@ -1112,7 +1115,7 @@ public class ClientSession
         var deltaTime = now - _lastMoveTimeUtc;
         
         // Use MovementValidator
-        if (!(_movementValidator?.Validate(Character.X, Character.Y, moveDto, deltaTime, out var reason) ?? true))
+        if (!(_movementValidator?.Validate(Character.X, Character.Y, moveDto, deltaTime, Character.MoveSpeedModifier, out var reason) ?? true))
         {
             _metrics?.RecordValidationError();
             SecurityLogger.LogSecurityEvent("MoveValidationRejected", UserId, $"Dest={Character.X + moveDto.dx:F1},{Character.Y + moveDto.dy:F1} Reason={reason}");

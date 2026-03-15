@@ -396,6 +396,25 @@ public class ContentValidationTests
     }
 
     [Fact]
+    public void ValidateCapturableMonsterLinkage()
+    {
+        var monsters = ContentTestHelper.LoadMonsters();
+        var pets = ContentTestHelper.LoadPets();
+        var petIds = pets.Select(p => p.PetTypeId).ToHashSet();
+
+        foreach (var monster in monsters)
+        {
+            if (monster.IsCapturable)
+            {
+                Assert.True(monster.PetTypeId.HasValue,
+                    $"Monster {monster.MonsterId} ({monster.Name}) is capturable but missing PetTypeId.");
+                Assert.True(petIds.Contains(monster.PetTypeId.Value),
+                    $"Monster {monster.MonsterId} ({monster.Name}) refers to non-existent PetTypeId {monster.PetTypeId.Value}.");
+            }
+        }
+    }
+
+    [Fact]
     public void ValidateSpawnConfigs()
     {
         var configs = ContentTestHelper.LoadSpawnConfigs();

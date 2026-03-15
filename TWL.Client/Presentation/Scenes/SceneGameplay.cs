@@ -123,6 +123,28 @@ public sealed class SceneGameplay : SceneBase, IPayloadReceiver
 
         EventBus.Subscribe<BattleStarted>(e => Scenes.ChangeScene("Battle", e));
         EventBus.Subscribe<BattleFinished>(e => OnBattleFinished(e));
+
+        _gameManager.OnStatsUpdated += HandleStatsUpdated;
+    }
+
+    private void HandleStatsUpdated(System.Text.Json.JsonElement payload)
+    {
+        if (payload.TryGetProperty("isMounted", out var isMountedProp))
+        {
+            _player.IsMounted = isMountedProp.GetBoolean();
+        }
+        if (payload.TryGetProperty("moveSpeedModifier", out var moveSpeedProp))
+        {
+            _player.MoveSpeedModifier = (float)moveSpeedProp.GetDouble();
+        }
+        if (payload.TryGetProperty("hp", out var hpProp))
+        {
+            _player.Health = hpProp.GetInt32();
+        }
+        if (payload.TryGetProperty("maxHp", out var maxHpProp))
+        {
+            _player.MaxHealth = maxHpProp.GetInt32();
+        }
     }
 
     public override void LoadContent()

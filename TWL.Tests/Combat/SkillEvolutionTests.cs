@@ -40,6 +40,7 @@ public class SkillEvolutionTests
 
     public SkillEvolutionTests()
     {
+        SkillRegistry.Instance.ClearForTest();
         SkillRegistry.Instance.LoadSkills(TestSkillsJson);
     }
 

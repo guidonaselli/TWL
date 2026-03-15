@@ -33,6 +33,7 @@ public class PetDefinition
     public List<int> SkillIds; // skill fijos
 
     public List<PetSkillSet> SkillSet;
+    public List<PetBondTier> BondTiers;
 
     // Asset paths (new)
     public string SpritePath;
@@ -48,7 +49,15 @@ public class PetDefinition
         Utilities = new List<PetUtility>();
         SkillIds = new List<int>();
         CaptureRules = new CaptureRules();
+        BondTiers = new List<PetBondTier>();
     }
+}
+
+public class PetBondTier
+{
+    public int AmityThreshold { get; set; }
+    public float StatMultiplier { get; set; } = 1.0f;
+    public string Name { get; set; } = "Neutral";
 }
 
 public class CaptureRules

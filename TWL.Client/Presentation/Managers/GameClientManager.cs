@@ -1,4 +1,4 @@
-﻿// File: `TWL.Client/Managers/GameClientManager.cs`
+// File: `TWL.Client/Managers/GameClientManager.cs`
 
 using System.Text.Json;
 using Microsoft.Extensions.Logging;
@@ -150,5 +150,12 @@ public class GameClientManager
     {
         GuildChatLogs.AddRange(backlog.Messages);
         GuildChatLogs.Sort((a, b) => a.Timestamp.CompareTo(b.Timestamp));
+    }
+
+    public event Action<JsonElement>? OnStatsUpdated;
+
+    public void HandleStatsUpdate(JsonElement payload)
+    {
+        OnStatsUpdated?.Invoke(payload);
     }
 }

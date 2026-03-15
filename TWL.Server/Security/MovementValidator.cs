@@ -15,7 +15,7 @@ public class MovementValidator
     /// <summary>
     /// Validates a movement attempt from the client.
     /// </summary>
-    public bool Validate(float currentX, float currentY, MoveDTO move, TimeSpan deltaTime, out string reason)
+    public bool Validate(float currentX, float currentY, MoveDTO move, TimeSpan deltaTime, float moveSpeedModifier, out string reason)
     {
         reason = string.Empty;
 
@@ -27,21 +27,22 @@ public class MovementValidator
             return false;
         }
 
-        // 2. Check maximum axis delta limits
-        if (Math.Abs(move.dx) > _options.MaxAxisDeltaPerTick || Math.Abs(move.dy) > _options.MaxAxisDeltaPerTick)
+        // 2. Check maximum axis delta limits (scaled by modifier)
+        var maxAxisDelta = _options.MaxAxisDeltaPerTick * moveSpeedModifier;
+        if (Math.Abs(move.dx) > maxAxisDelta || Math.Abs(move.dy) > maxAxisDelta)
         {
-            reason = $"SpeedHack:AxisSpeedLimitExceeded:dx={move.dx:F2},dy={move.dy:F2},max={_options.MaxAxisDeltaPerTick:F2}";
+            reason = $"SpeedHack:AxisSpeedLimitExceeded:dx={move.dx:F2},dy={move.dy:F2},max={maxAxisDelta:F2}";
             return false;
         }
 
-        // 3. Euclidean distance checks
+        // 3. Euclidean distance checks (scaled by modifier)
         var distance = (float)Math.Sqrt(move.dx * move.dx + move.dy * move.dy);
         
-        var allowedDistance = _options.MaxDistancePerTick;
+        var allowedDistance = _options.MaxDistancePerTick * moveSpeedModifier;
         if (_options.AllowDiagonalBoost)
         {
             // If diagonal boost is allowed, limit is effectively sqrt(max_x^2 + max_y^2)
-            allowedDistance = (float)Math.Sqrt(2 * _options.MaxAxisDeltaPerTick * _options.MaxAxisDeltaPerTick);
+            allowedDistance = (float)Math.Sqrt(2 * maxAxisDelta * maxAxisDelta);
         }
 
         // Compare using a small tolerance for floating point errors (e.g. 0.001) if necessary, 

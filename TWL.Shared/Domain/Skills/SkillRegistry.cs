@@ -110,6 +110,17 @@ public class SkillRegistry : ISkillCatalog
     }
 
     /// <summary>
+    /// Clears all registered skills. Use only for testing.
+    /// </summary>
+    public void ClearForTest()
+    {
+        lock (_lock)
+        {
+            _skills.Clear();
+        }
+    }
+
+    /// <summary>
     /// Applies consistency rules for stage upgrades, making the Parent Skill the SSOT.
     /// Ensures that if A upgrades to B, B's UnlockRules require A.
     /// </summary>

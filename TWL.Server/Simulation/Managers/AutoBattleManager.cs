@@ -26,7 +26,7 @@ public class AutoBattleManager
         AutoBattlePolicy policy = AutoBattlePolicy.Balanced,
         IRandomService? random = null)
     {
-        var validTargets = combatants.Where(c => c.Hp > 0).ToList();
+        var validTargets = combatants.Where(c => c.Hp > 0).OrderBy(c => c.Id).ToList();
         var enemies = validTargets.Where(c => c.Team != actor.Team).ToList();
         var allies = validTargets.Where(c => c.Team == actor.Team).ToList();
 
@@ -180,21 +180,21 @@ public class AutoBattleManager
                             switch (buffEffect.Param)
                             {
                                 case "Atk":
-                                    targetAlly = candidates.OrderByDescending(c => c.Atk).First();
+                                    targetAlly = candidates.OrderByDescending(c => c.Atk).ThenBy(c => c.Id).First();
                                     break;
                                 case "Mat":
-                                    targetAlly = candidates.OrderByDescending(c => c.Mat).First();
+                                    targetAlly = candidates.OrderByDescending(c => c.Mat).ThenBy(c => c.Id).First();
                                     break;
                                 case "Def":
                                     // Maybe tank? High Def or Low Def? Usually buff tank (High Def) or weakling?
                                     // Let's go with High Def as "Tank" role heuristic
-                                    targetAlly = candidates.OrderByDescending(c => c.Def).First();
+                                    targetAlly = candidates.OrderByDescending(c => c.Def).ThenBy(c => c.Id).First();
                                     break;
                                 case "Mdf":
-                                    targetAlly = candidates.OrderByDescending(c => c.Mdf).First();
+                                    targetAlly = candidates.OrderByDescending(c => c.Mdf).ThenBy(c => c.Id).First();
                                     break;
                                 case "Spd":
-                                    targetAlly = candidates.OrderByDescending(c => c.Spd).First();
+                                    targetAlly = candidates.OrderByDescending(c => c.Spd).ThenBy(c => c.Id).First();
                                     break;
                                 // Add more as needed
                             }

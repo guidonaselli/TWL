@@ -26,7 +26,7 @@
   > After this: Create Phase 7 market foundation: domain service, persistence schema, and network contracts.
 - [x] **S08: Compound System** `risk:medium` `depends:[S07]`
   > After this: Create Phase 8 compound foundation contracts and persistence metadata.
-- [ ] **S09: Pet System Completion** `risk:medium` `depends:[S08]`
+- [x] **S09: Pet System Completion** `risk:medium` `depends:[S08]`
   > After this: Harden pet combat AI to satisfy PET-01 with deterministic, intelligent action selection.
 - [ ] **S10: Combat & Progression Integration** `risk:medium` `depends:[S09]`
   > After this: Implement death-penalty EXP loss on player death (`CMB-01` partial) using server-authoritative combat event handling.

@@ -11,9 +11,23 @@ Output: Bond metadata model updates, runtime bond mechanics, and focused amity/b
 
 ## Must-Haves
 
-- [ ] "Pet amity decreases by exactly 1 on KO/death combat event"
-- [ ] "Bonding thresholds grant measurable pet benefits (stat bonuses and/or unlock behavior) as amity rises"
-- [ ] "Bonding effects are deterministic and bounded to prevent runaway scaling"
+- [x] "Pet amity decreases by exactly 1 on KO/death combat event"
+- [x] "Bonding thresholds grant measurable pet benefits (stat bonuses and/or unlock behavior) as amity rises"
+- [x] "Bonding effects are deterministic and bounded to prevent runaway scaling"
+
+## Steps
+
+1. **Define Bonding Tiers**: Update `PetDefinition.cs` to include a data structure for bonding rewards (stat multipliers or flat bonuses).
+2. **Implement KO Penalty**: Update `ServerPet.cs` or `PetService.cs` to hook into the death event and decrement amity.
+3. **Apply Bonding Bonuses**: Update `ServerPet.cs` to calculate and apply stat bonuses based on current amity and definition tiers.
+4. **Create Regression Tests**: Implement `PetAmityKoTests.cs` and `PetBondingMechanicsTests.cs` to verify these mechanics.
+5. **Verify All Must-Haves**: Run `scripts\verify.ps1` and specific pet system tests.
+
+## Observability Impact
+
+- **Logs**: `PetService` and `ServerPet` should log amity changes (especially on KO) at `Info` level.
+- **Metrics**: Current amity and active bond tier should be visible in the pet's state for debugging.
+- **Failures**: If amity fails to decrement on KO, it should be caught by `PetAmityKoTests`. If bonding bonuses are miscalculated, `PetBondingMechanicsTests` will fail.
 
 ## Files
 

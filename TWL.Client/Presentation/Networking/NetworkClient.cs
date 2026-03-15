@@ -185,6 +185,10 @@ public class NetworkClient
                 var compoundResponse = JsonSerializer.Deserialize<CompoundResponseDTO>(serverMsg.JsonPayload, _jsonOptions);
                 if (compoundResponse != null) _gameClientManager.HandleCompoundResponse(compoundResponse);
                 break;
+            case Opcode.StatsUpdate:
+                var statsPayload = JsonSerializer.Deserialize<JsonElement>(serverMsg.JsonPayload, _jsonOptions);
+                _gameClientManager.HandleStatsUpdate(statsPayload);
+                break;
         }
 
         EventBus.Publish(serverMsg);

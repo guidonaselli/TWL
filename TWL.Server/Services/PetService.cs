@@ -29,7 +29,7 @@ public class PetService : IPetService
         _combatManager.OnCombatantDeath += HandlePetDeath;
     }
 
-    public string CreatePet(int ownerId, int definitionId)
+    public virtual string CreatePet(int ownerId, int definitionId)
     {
         var session = _playerService.GetSession(ownerId);
         if (session == null || session.Character == null)
@@ -53,7 +53,7 @@ public class PetService : IPetService
         return pet.InstanceId;
     }
 
-    public string CaptureEnemy(int ownerId, int enemyCombatantId)
+    public virtual string CaptureEnemy(int ownerId, int enemyCombatantId)
     {
         var session = _playerService.GetSession(ownerId);
         if (session == null || session.Character == null)
@@ -160,7 +160,7 @@ public class PetService : IPetService
     public const int ItemRevive100Hp = 802;
     public const int ItemRevive500Hp = 803;
 
-    public bool RevivePet(int ownerId, string petInstanceId)
+    public virtual bool RevivePet(int ownerId, string petInstanceId)
     {
         var session = _playerService.GetSession(ownerId);
         if (session == null || session.Character == null)
@@ -209,7 +209,7 @@ public class PetService : IPetService
         return false;
     }
 
-    public bool DismissPet(int ownerId, string petInstanceId)
+    public virtual bool DismissPet(int ownerId, string petInstanceId)
     {
         var session = _playerService.GetSession(ownerId);
         if (session == null || session.Character == null)
@@ -229,7 +229,7 @@ public class PetService : IPetService
         return session.Character.RemovePet(petInstanceId);
     }
 
-    public bool AddExperience(int ownerId, string petInstanceId, int amount)
+    public virtual bool AddExperience(int ownerId, string petInstanceId, int amount)
     {
         var pet = GetPet(ownerId, petInstanceId);
         if (pet == null)
@@ -241,12 +241,12 @@ public class PetService : IPetService
         return true;
     }
 
-    public bool ModifyAmity(int ownerId, string petInstanceId, int amount)
+    public virtual bool ModifyAmity(int ownerId, string petInstanceId, int amount)
     {
         return AwardAmity(ownerId, petInstanceId, amount, "Manual Modification");
     }
 
-    public bool AwardAmity(int ownerId, string petInstanceId, int amount, string reason)
+    public virtual bool AwardAmity(int ownerId, string petInstanceId, int amount, string reason)
     {
         var pet = GetPet(ownerId, petInstanceId);
         if (pet == null)
@@ -259,12 +259,12 @@ public class PetService : IPetService
         return true;
     }
 
-    public void ProcessCombatWin(int ownerId, string petInstanceId)
+    public virtual void ProcessCombatWin(int ownerId, string petInstanceId)
     {
         AwardAmity(ownerId, petInstanceId, 1, "Combat Win");
     }
 
-    public bool TryRebirth(int ownerId, string petInstanceId)
+    public virtual bool TryRebirth(int ownerId, string petInstanceId)
     {
         var pet = GetPet(ownerId, petInstanceId);
         if (pet == null)
@@ -288,7 +288,7 @@ public class PetService : IPetService
         return false;
     }
 
-    public bool TryEvolve(int ownerId, string petInstanceId)
+    public virtual bool TryEvolve(int ownerId, string petInstanceId)
     {
         var pet = GetPet(ownerId, petInstanceId);
         if (pet == null)
@@ -322,7 +322,7 @@ public class PetService : IPetService
         return false;
     }
 
-    public bool SwitchPet(int ownerId, string petInstanceId)
+    public virtual bool SwitchPet(int ownerId, string petInstanceId)
     {
         var session = _playerService.GetSession(ownerId);
         if (session == null || session.Character == null)
@@ -396,7 +396,7 @@ public class PetService : IPetService
         }
     }
 
-    public bool UseUtility(int ownerId, string petInstanceId, PetUtilityType type, string? args = null)
+    public virtual bool UseUtility(int ownerId, string petInstanceId, PetUtilityType type, string? args = null)
     {
         var session = _playerService.GetSession(ownerId);
         if (session == null || session.Character == null)
@@ -432,6 +432,17 @@ public class PetService : IPetService
                     // value is treated as the bonus (e.g. 0.5 -> 1.5x speed)
                     chara.MoveSpeedModifier = 1.0f + value;
                 }
+
+                // Sync to client
+                _ = session.SendAsync(new TWL.Shared.Net.Network.NetMessage
+                {
+                    Op = TWL.Shared.Net.Network.Opcode.StatsUpdate,
+                    JsonPayload = System.Text.Json.JsonSerializer.Serialize(new
+                    {
+                        isMounted = chara.IsMounted,
+                        moveSpeedModifier = chara.MoveSpeedModifier
+                    })
+                });
 
                 break;
 
@@ -525,7 +536,7 @@ public class PetService : IPetService
         return false;
     }
 
-    public void CheckPetAvailability(int ownerId)
+    public virtual void CheckPetAvailability(int ownerId)
     {
         var session = _playerService.GetSession(ownerId);
         if (session == null || session.Character == null)

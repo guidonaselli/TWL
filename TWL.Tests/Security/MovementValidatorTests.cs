@@ -28,7 +28,7 @@ public class MovementValidatorTests
         var move = new MoveDTO { dx = 1.0f, dy = 0.0f };
         var deltaTime = TimeSpan.FromMilliseconds(500);
 
-        var result = _validator.Validate(0f, 0f, move, deltaTime, out string reason);
+        var result = _validator.Validate(0f, 0f, move, deltaTime, 1.0f, out string reason);
 
         Assert.True(result);
         Assert.Empty(reason);
@@ -40,7 +40,7 @@ public class MovementValidatorTests
         var move = new MoveDTO { dx = float.NaN, dy = 0.0f };
         var deltaTime = TimeSpan.FromMilliseconds(500);
 
-        var result = _validator.Validate(0f, 0f, move, deltaTime, out string reason);
+        var result = _validator.Validate(0f, 0f, move, deltaTime, 1.0f, out string reason);
 
         Assert.False(result);
         Assert.Equal("MalformedPayload:NaNOrInfinity", reason);
@@ -52,7 +52,7 @@ public class MovementValidatorTests
         var move = new MoveDTO { dx = 0.0f, dy = float.PositiveInfinity };
         var deltaTime = TimeSpan.FromMilliseconds(500);
 
-        var result = _validator.Validate(0f, 0f, move, deltaTime, out string reason);
+        var result = _validator.Validate(0f, 0f, move, deltaTime, 1.0f, out string reason);
 
         Assert.False(result);
         Assert.Equal("MalformedPayload:NaNOrInfinity", reason);
@@ -64,7 +64,7 @@ public class MovementValidatorTests
         var move = new MoveDTO { dx = 1.1f, dy = 0.0f };
         var deltaTime = TimeSpan.FromMilliseconds(500);
 
-        var result = _validator.Validate(0f, 0f, move, deltaTime, out string reason);
+        var result = _validator.Validate(0f, 0f, move, deltaTime, 1.0f, out string reason);
 
         Assert.False(result);
         Assert.StartsWith("SpeedHack:AxisSpeedLimitExceeded", reason, StringComparison.OrdinalIgnoreCase);
@@ -86,7 +86,7 @@ public class MovementValidatorTests
         var move = new MoveDTO { dx = 1.0f, dy = 1.0f };
         var deltaTime = TimeSpan.FromMilliseconds(500);
 
-        var result = localValidator.Validate(0f, 0f, move, deltaTime, out string reason);
+        var result = localValidator.Validate(0f, 0f, move, deltaTime, 1.0f, out string reason);
 
         Assert.False(result);
         Assert.StartsWith("SpeedHack:EuclideanSpeedLimitExceeded", reason, StringComparison.OrdinalIgnoreCase);
@@ -108,7 +108,7 @@ public class MovementValidatorTests
         var move = new MoveDTO { dx = 1.0f, dy = 1.0f };
         var deltaTime = TimeSpan.FromMilliseconds(500);
 
-        var result = localValidator.Validate(0f, 0f, move, deltaTime, out string reason);
+        var result = localValidator.Validate(0f, 0f, move, deltaTime, 1.0f, out string reason);
 
         Assert.True(result);
         Assert.Empty(reason);
@@ -121,9 +121,35 @@ public class MovementValidatorTests
         var deltaTime = TimeSpan.FromMilliseconds(500);
 
         // Current position + dx = 10000.5 > 10000.0
-        var result = _validator.Validate(9999.5f, 0f, move, deltaTime, out string reason);
+        var result = _validator.Validate(9999.5f, 0f, move, deltaTime, 1.0f, out string reason);
 
         Assert.False(result);
         Assert.StartsWith("OutOfBounds:MaxCoordinateExceeded", reason, StringComparison.OrdinalIgnoreCase);
+    }
+
+    [Fact]
+    public void Validate_WithSpeedModifier_AllowsFasterMovement()
+    {
+        // MaxAxisDeltaPerTick is 1.0. With 1.5x modifier, 1.4 should be valid.
+        var move = new MoveDTO { dx = 1.4f, dy = 0.0f };
+        var deltaTime = TimeSpan.FromMilliseconds(500);
+
+        var result = _validator.Validate(0f, 0f, move, deltaTime, 1.5f, out string reason);
+
+        Assert.True(result);
+        Assert.Empty(reason);
+    }
+
+    [Fact]
+    public void Validate_WithSpeedModifier_StillRejectsTooFastMovement()
+    {
+        // MaxAxisDeltaPerTick is 1.0. With 1.5x modifier, 1.6 should be invalid.
+        var move = new MoveDTO { dx = 1.6f, dy = 0.0f };
+        var deltaTime = TimeSpan.FromMilliseconds(500);
+
+        var result = _validator.Validate(0f, 0f, move, deltaTime, 1.5f, out string reason);
+
+        Assert.False(result);
+        Assert.StartsWith("SpeedHack:AxisSpeedLimitExceeded", reason, StringComparison.OrdinalIgnoreCase);
     }
 }

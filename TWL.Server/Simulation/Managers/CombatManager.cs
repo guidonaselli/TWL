@@ -21,6 +21,7 @@ public class CombatManager
     private readonly ISkillCatalog _skills;
     private readonly IStatusEngine _statusEngine;
     private readonly AutoBattleManager _autoBattleManager;
+    private readonly IPetBattlePolicy _petBattlePolicy;
     private readonly PartyRewardDistributor? _partyRewardDistributor;
 
     public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
@@ -31,6 +32,14 @@ public class CombatManager
 
     public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
         IStatusEngine statusEngine, AutoBattleManager autoBattleManager, PartyRewardDistributor? partyRewardDistributor = null)
+        : this(resolver, random, skills, statusEngine, autoBattleManager, 
+            new PetBattlePolicy(autoBattleManager, Microsoft.Extensions.Logging.Abstractions.NullLogger<PetBattlePolicy>.Instance), 
+            partyRewardDistributor)
+    {
+    }
+
+    public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
+        IStatusEngine statusEngine, AutoBattleManager autoBattleManager, IPetBattlePolicy petBattlePolicy, PartyRewardDistributor? partyRewardDistributor = null)
     {
         _combatants = new ConcurrentDictionary<int, ServerCombatant>();
         _resolver = resolver;
@@ -38,6 +47,7 @@ public class CombatManager
         _skills = skills;
         _statusEngine = statusEngine;
         _autoBattleManager = autoBattleManager;
+        _petBattlePolicy = petBattlePolicy;
         _partyRewardDistributor = partyRewardDistributor;
     }
 
@@ -351,8 +361,15 @@ public class CombatManager
                 // Act
                 var participants = GetParticipants(encounterId);
 
-                // If Pet, use owner's logic or simple AI? AutoBattleManager handles it.
-                var action = _autoBattleManager.GetBestAction(turnEngine.CurrentCombatant, participants, AutoBattlePolicy.Balanced, _random);
+                UseSkillRequest? action;
+                if (turnEngine.CurrentCombatant is ServerPet)
+                {
+                    action = _petBattlePolicy.GetAction(turnEngine.CurrentCombatant, participants, _random);
+                }
+                else
+                {
+                    action = _autoBattleManager.GetBestAction(turnEngine.CurrentCombatant, participants, AutoBattlePolicy.Balanced, _random);
+                }
 
                 if (action != null)
                 {

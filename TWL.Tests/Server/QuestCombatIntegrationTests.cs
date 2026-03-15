@@ -18,6 +18,7 @@ public class QuestCombatIntegrationTests
 
     public QuestCombatIntegrationTests()
     {
+        SkillRegistry.Instance.ClearForTest();
         // 1. Setup Quest Manager with a Kill Quest
         _questManager = new ServerQuestManager();
         var quests = new List<QuestDefinition>
@@ -123,32 +124,30 @@ public class QuestCombatIntegrationTests
     }
 
     [Fact]
-    public void CombatDamage_ShouldNotProgressQuest_IfTargetAlive()
+    public void CombatKill_ByPet_ShouldProgressOwnerQuest()
     {
-        var player = new ServerCharacter { Id = 1, Name = "Hero", Hp = 100, Str = 5 }; // Low STR
-        // Atk = 10. Skill = 20. Target Def = 16. Dmg = 4.
-
-        var mob = new ServerCharacter { Id = 2, Name = "WeakCrab", Hp = 100, Team = Team.Enemy };
-
-        _combatManager.AddCharacter(player);
+        // Setup Owner and Pet
+        var hero = new ServerCharacter { Id = 1, Name = "Hero" };
+        var pet = new ServerPet { Id = -1, Name = "FaithfulDog", OwnerId = 1 };
+        pet.Str = 50; // High STR
+        
+        var mob = new ServerCharacter { Id = 2, Name = "WeakCrab", Hp = 10, Team = Team.Enemy };
+        
+        _combatManager.AddCharacter(hero);
+        _combatManager.RegisterCombatant(pet);
         _combatManager.AddCharacter(mob);
+        
+        // Link PlayerQuestComponent to Character
+        _playerQuests.Character = hero;
 
-        var request = new UseSkillRequest { PlayerId = 1, TargetId = 2, SkillId = 999 };
-        var result = _combatManager.UseSkill(request);
-
-        Assert.NotEmpty(result);
-        Assert.True(result[0].NewTargetHp > 0);
-
-        // Simulate ClientSession Logic
-        var updated = new List<int>();
-        if (result[0].NewTargetHp <= 0)
-        {
-            // Should not reach here
-            var target = _combatManager.GetCharacter(result[0].TargetId);
-            updated = _playerQuests.TryProgress("Kill", target.Name);
-        }
-
-        Assert.Empty(updated);
-        Assert.Equal(0, _playerQuests.QuestProgress[1][0]);
+        // Pet attacks Mob
+        var request = new UseSkillRequest { PlayerId = -1, TargetId = 2, SkillId = 999 };
+        var results = _combatManager.UseSkill(request);
+        
+        Assert.Single(results);
+        Assert.True(results[0].TargetDied);
+        
+        // Assert Quest Progress
+        Assert.Equal(1, _playerQuests.QuestProgress[1][0]);
     }
 }

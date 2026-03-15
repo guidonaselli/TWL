@@ -161,32 +161,49 @@ public class ServerPet : ServerCombatant
             // Generation 1: +10%, Gen 2: +18% (+8), Gen 3+: +23% (+5 more per gen).
             // Implemented as additive stacking per generation rather than compounding.
             float bonusMultiplier = GetCumulativeStatMultiplier(RebirthGeneration);
-            _maxHp = (int)(_maxHp * bonusMultiplier);
-            _maxSp = (int)(_maxSp * bonusMultiplier);
-            Str = (int)(Str * bonusMultiplier);
-            Con = (int)(Con * bonusMultiplier);
-            Int = (int)(Int * bonusMultiplier);
-            Wis = (int)(Wis * bonusMultiplier);
-            Agi = (int)(Agi * bonusMultiplier);
+            _maxHp = (int)MathF.Round(_maxHp * bonusMultiplier);
+            _maxSp = (int)MathF.Round(_maxSp * bonusMultiplier);
+            Str = (int)MathF.Round(Str * bonusMultiplier);
+            Con = (int)MathF.Round(Con * bonusMultiplier);
+            Int = (int)MathF.Round(Int * bonusMultiplier);
+            Wis = (int)MathF.Round(Wis * bonusMultiplier);
+            Agi = (int)MathF.Round(Agi * bonusMultiplier);
         }
 
-        if (IsRebellious)
+        float amityMultiplier = 1.0f;
+        if (_definition.BondTiers != null && _definition.BondTiers.Count > 0)
         {
-            // Amity < 20 Penalty: -20% Stats
-            Str = (int)(Str * 0.8);
-            Con = (int)(Con * 0.8);
-            Int = (int)(Int * 0.8);
-            Wis = (int)(Wis * 0.8);
-            Agi = (int)(Agi * 0.8);
+            // Data-driven bonding tiers
+            var activeTier = _definition.BondTiers
+                .Where(t => t.AmityThreshold <= Amity)
+                .OrderByDescending(t => t.AmityThreshold)
+                .FirstOrDefault();
+
+            if (activeTier != null)
+            {
+                amityMultiplier = activeTier.StatMultiplier;
+            }
         }
-        else if (Amity >= 90)
+        else
         {
-            // High Amity Bonus: +10% Stats
-            Str = (int)(Str * 1.1);
-            Con = (int)(Con * 1.1);
-            Int = (int)(Int * 1.1);
-            Wis = (int)(Wis * 1.1);
-            Agi = (int)(Agi * 1.1);
+            // Legacy/Fallback behavior
+            if (IsRebellious)
+            {
+                amityMultiplier = 0.8f;
+            }
+            else if (Amity >= 90)
+            {
+                amityMultiplier = 1.1f;
+            }
+        }
+
+        if (amityMultiplier != 1.0f)
+        {
+            Str = (int)MathF.Round(Str * amityMultiplier);
+            Con = (int)MathF.Round(Con * amityMultiplier);
+            Int = (int)MathF.Round(Int * amityMultiplier);
+            Wis = (int)MathF.Round(Wis * amityMultiplier);
+            Agi = (int)MathF.Round(Agi * amityMultiplier);
         }
     }
 
