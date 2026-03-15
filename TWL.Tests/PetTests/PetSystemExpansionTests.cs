@@ -125,7 +125,11 @@ public class PetSystemExpansionTests : IDisposable
         // Assert
         Assert.True(success);
         Assert.Equal(1, pet.Level);
+<<<<<<< HEAD
         Assert.Equal(1, pet.RebirthGeneration);
+=======
+        Assert.Equal(1, pet.RebirthCount);
+>>>>>>> gsd/M001/S06
 
         // Check stat boost: Level 1 Rebirth vs Level 1 Normal
         var normalPet = new ServerPet(def); // Level 1 default

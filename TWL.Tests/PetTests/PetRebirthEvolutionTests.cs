@@ -1,8 +1,12 @@
+<<<<<<< HEAD
 using Xunit;
 using Moq;
 using System.IO;
 using System.Linq;
 using System.Collections.Generic;
+=======
+using Moq;
+>>>>>>> gsd/M001/S06
 using TWL.Server.Persistence;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Services;
@@ -10,6 +14,7 @@ using TWL.Server.Simulation.Managers;
 using TWL.Server.Simulation.Networking;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Services;
+<<<<<<< HEAD
 
 namespace TWL.Tests.PetTests;
 
@@ -21,6 +26,14 @@ public class PetRebirthEvolutionTests : IDisposable
 {
     private const int RebirthSkillId = 5001;
 
+=======
+using Xunit;
+
+namespace TWL.Tests.PetTests;
+
+public class PetRebirthEvolutionTests : IDisposable
+{
+>>>>>>> gsd/M001/S06
     private readonly CombatManager _combatManager;
     private readonly ServerMetrics _metrics;
     private readonly Mock<IRandomService> _mockRandom;
@@ -41,6 +54,7 @@ public class PetRebirthEvolutionTests : IDisposable
         File.WriteAllText("Content/Data/pets_evolution_test.json", @"
 [
   {
+<<<<<<< HEAD
     ""PetTypeId"": 1002,
     ""Name"": ""Evolving Quest Pet"",
     ""IsQuestPet"": true,
@@ -51,6 +65,8 @@ public class PetRebirthEvolutionTests : IDisposable
     ""EvolutionId"": 2002
   },
   {
+=======
+>>>>>>> gsd/M001/S06
     ""PetTypeId"": 2001,
     ""Name"": ""Young Dragon"",
     ""IsQuestPet"": true,
@@ -93,6 +109,7 @@ public class PetRebirthEvolutionTests : IDisposable
             File.Delete("Content/Data/pets_evolution_test.json");
     }
 
+<<<<<<< HEAD
     private static PetDefinition MakeQuestPetDefWithRebirthSkill() => new()
     {
         PetTypeId = 1002,
@@ -190,6 +207,8 @@ public class PetRebirthEvolutionTests : IDisposable
 
     // ─── Integration Tests from S06 ─────────────────────────────────────────────
 
+=======
+>>>>>>> gsd/M001/S06
     [Fact]
     public void QuestPet_CanEvolve_AtLevel100()
     {
@@ -229,4 +248,23 @@ public class PetRebirthEvolutionTests : IDisposable
         Assert.False(success);
         Assert.Equal(2001, pet.DefinitionId);
     }
+<<<<<<< HEAD
+=======
+
+    [Fact]
+    public void WildPet_CannotEvolve()
+    {
+        var session = new ClientSessionForTest();
+        session.SetCharacter(new ServerCharacter { Id = 1 });
+        _playerService.RegisterSession(session);
+
+        var def = _petManager.GetDefinition(2003);
+        var pet = new ServerPet(def);
+        pet.SetLevel(100);
+        session.Character.AddPet(pet);
+
+        var success = _petService.TryEvolve(1, pet.InstanceId);
+        Assert.False(success);
+    }
+>>>>>>> gsd/M001/S06
 }

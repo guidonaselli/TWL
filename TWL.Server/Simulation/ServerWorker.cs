@@ -38,7 +38,10 @@ public class ServerWorker : IHostedService
     private readonly InstanceService _instanceService;
     private readonly CombatManager _combatManager;
     private readonly IRebirthService _rebirthService;
+<<<<<<< HEAD
     private readonly IMarketService _marketService;
+=======
+>>>>>>> gsd/M001/S06
 
     private readonly IGuildService _guildService;
 
@@ -47,7 +50,11 @@ public class ServerWorker : IHostedService
         IWorldScheduler worldScheduler, ServerMetrics metrics, IMapRegistry mapRegistry,
         IWorldTriggerService worldTriggerService, MonsterManager monsterManager, SpawnManager spawnManager,
         ILoggerFactory loggerFactory, HealthCheckService healthCheck, InstanceService instanceService,
+<<<<<<< HEAD
         CombatManager combatManager, IRebirthService rebirthService, IMarketService marketService)
+=======
+        CombatManager combatManager, IRebirthService rebirthService)
+>>>>>>> gsd/M001/S06
     {
         _net = net;
         _db = db;
@@ -68,7 +75,10 @@ public class ServerWorker : IHostedService
         _instanceService = instanceService;
         _combatManager = combatManager;
         _rebirthService = rebirthService;
+<<<<<<< HEAD
         _marketService = marketService;
+=======
+>>>>>>> gsd/M001/S06
     }
 
     public async Task StartAsync(CancellationToken ct)

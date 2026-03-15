@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 using System;
 using System.Text.Json;
 using Xunit;
@@ -5,12 +6,19 @@ using TWL.Shared.Net.Payloads;
 using TWL.Shared.Domain.DTO;
 using TWL.Client.Presentation.Managers;
 using TWL.Shared.Domain.Characters;
+=======
+using TWL.Shared.Domain.Characters;
+using TWL.Shared.Domain.Models;
+using Xunit;
+using System;
+>>>>>>> gsd/M001/S06
 
 namespace TWL.Tests.Rebirth;
 
 public class RebirthPrestigeDisplayTests
 {
     [Fact]
+<<<<<<< HEAD
     public void LoginResponseDto_SerializesRebirthLevel()
     {
         // Arrange
@@ -75,6 +83,8 @@ public class RebirthPrestigeDisplayTests
     }
 
     [Fact]
+=======
+>>>>>>> gsd/M001/S06
     public void PlayerCharacter_SetProgress_UpdatesRebirthLevel()
     {
         // Arrange

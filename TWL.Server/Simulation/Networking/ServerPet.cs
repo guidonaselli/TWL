@@ -59,11 +59,15 @@ public class ServerPet : ServerCombatant
     public bool IsDead { get; set; }
     public bool IsLost { get; set; }
     public bool DeathQuestCompleted { get; set; }
+<<<<<<< HEAD
     /// <summary>Number of times this pet has rebirthed (0 = never). Replaces the old boolean HasRebirthed.</summary>
     public int RebirthGeneration { get; set; }
 
     /// <summary>True if the pet has rebirthed at least once (backward-compat helper).</summary>
     public bool HasRebirthed => RebirthGeneration > 0;
+=======
+    public int RebirthCount { get; set; }
+>>>>>>> gsd/M001/S06
     public DateTime? ExpirationTime { get; set; }
 
     public bool IsExpired => ExpirationTime.HasValue && DateTime.UtcNow > ExpirationTime.Value;
@@ -155,6 +159,7 @@ public class ServerPet : ServerCombatant
         Wis = wis;
         Agi = agi;
 
+<<<<<<< HEAD
         if (RebirthGeneration > 0)
         {
             // Cumulative bonus: each generation adds a percentage of the BASE stat.
@@ -168,6 +173,23 @@ public class ServerPet : ServerCombatant
             Int = (int)(Int * bonusMultiplier);
             Wis = (int)(Wis * bonusMultiplier);
             Agi = (int)(Agi * bonusMultiplier);
+=======
+        if (RebirthCount > 0)
+        {
+            float bonus = 0f;
+            if (RebirthCount >= 1) bonus += 0.10f;
+            if (RebirthCount >= 2) bonus += 0.08f;
+            if (RebirthCount >= 3) bonus += 0.05f;
+
+            float multiplier = 1.0f + bonus;
+            _maxHp = (int)(_maxHp * multiplier);
+            _maxSp = (int)(_maxSp * multiplier);
+            Str = (int)(Str * multiplier);
+            Con = (int)(Con * multiplier);
+            Int = (int)(Int * multiplier);
+            Wis = (int)(Wis * multiplier);
+            Agi = (int)(Agi * multiplier);
+>>>>>>> gsd/M001/S06
         }
 
         if (IsRebellious)
@@ -312,13 +334,30 @@ public class ServerPet : ServerCombatant
             return false;
         }
 
+        // Eligibility check: Only Quest pets can rebirth (Must-Have)
+        if (!_definition.IsQuestPet)
+        {
+            return false;
+        }
+
         if (Level < 100)
         {
             return false;
         }
 
+<<<<<<< HEAD
         // Increment generation (supports multiple rebirths).
         RebirthGeneration++;
+=======
+        // Max 3 rebirths for the 10/8/5 schedule? 
+        // Or just increment and it caps naturally.
+        if (RebirthCount >= 3)
+        {
+            return false;
+        }
+
+        RebirthCount++;
+>>>>>>> gsd/M001/S06
         Level = 1;
         Exp = 0;
         ExpToNextLevel = PetGrowthCalculator.GetExpForLevel(Level);
@@ -373,7 +412,11 @@ public class ServerPet : ServerCombatant
 
             var levelMet = Level >= skillSet.UnlockLevel;
             var amityMet = Amity >= skillSet.UnlockAmity;
+<<<<<<< HEAD
             var rebirthMet = !skillSet.RequiresRebirth || RebirthGeneration > 0;
+=======
+            var rebirthMet = !skillSet.RequiresRebirth || RebirthCount > 0;
+>>>>>>> gsd/M001/S06
 
             if (levelMet && amityMet && rebirthMet)
             {
@@ -433,7 +476,11 @@ public class ServerPet : ServerCombatant
             IsDead = IsDead,
             IsLost = IsLost,
             DeathQuestCompleted = DeathQuestCompleted,
+<<<<<<< HEAD
             RebirthGeneration = RebirthGeneration,
+=======
+            RebirthCount = RebirthCount,
+>>>>>>> gsd/M001/S06
             ExpirationTime = ExpirationTime,
             UnlockedSkillIds = new List<int>(UnlockedSkillIds)
         };
@@ -450,8 +497,12 @@ public class ServerPet : ServerCombatant
         IsDead = data.IsDead;
         IsLost = data.IsLost;
         DeathQuestCompleted = data.DeathQuestCompleted;
+<<<<<<< HEAD
         // Migrate old saves: if HasRebirthed (legacy bool stored in data) but RebirthGeneration is 0, treat as gen 1.
         RebirthGeneration = data.RebirthGeneration > 0 ? data.RebirthGeneration : (data.HasRebirthed ? 1 : 0);
+=======
+        RebirthCount = data.RebirthCount;
+>>>>>>> gsd/M001/S06
         ExpirationTime = data.ExpirationTime;
         if (data.UnlockedSkillIds != null)
         {
