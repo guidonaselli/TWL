@@ -2,48 +2,49 @@
 trigger: always_on
 ---
 
-    1 # THE WONDERLAND CONTINUUM RULE (ID: TWL-GSD-001)
-    2
-    3 **Propósito:** Establecer un protocolo de progreso perpetuo, auto-correctivo y consciente del estado del proyecto para cualquier agente GSD que opere en el repositorio de The Wonderland Solution.
-    4
-    5 ---
-    6
-    7 ### **Directiva 1: El Protocolo de Inicio (The "Sync-Check")**
-    8
-    9 Antes de realizar CUALQUIER acción de codificación o planificación, un agente DEBE sincronizarse con la realidad del proyecto:
-   10
-   11 1.  **Leer el `ROADMAP.md` y `STATE.md` en `.planning/`:** Identificar la siguiente tarea/plan `[PENDING]` de la fase actual (ej. `02-02-PLAN.md`).
-   12 2.  **Validar el "Porqué":** Abrir `.planning/REQUIREMENTS.md`. Encontrar la sección de `Traceability` o el `Appendix A: Production Gap Analysis` que justifica la tarea actual. El agente debe
-      declarar que entiende *por qué* la tarea es necesaria (ej. *"Procedo con el Plan 02-02, que es necesario para cerrar el gap de seguridad SEC-01: prevención de speed-hacks."*).
-   13
-   14 ---
-   15
-   16 ### **Directiva 2: El Protocolo de Descubrimiento (Emergent Gap Detection)**
-   17
-   18 Si, durante la ejecución de una tarea, el agente identifica una nueva necesidad (un test que falta en `TWL.Tests`, una oportunidad de refactor, una vulnerabilidad no contemplada, una feature ausent
-      para cumplir el "Core Value"), DEBE seguir este protocolo de expansión:
-   19
-   20 1.  **Registrar el Gap:** Añadir una nueva línea a `.planning/REQUIREMENTS.md` bajo una sección `## v1.1 Discovered Requirements`, marcándola con `[DISCOVERED]`.
-   21 2.  **Proponer la Tarea:** Añadir una nueva entrada de plan (ej. `02-04-PLAN.md`) a la fase correspondiente en `.planning/ROADMAP.md` para abordar este nuevo requisito.
-   22 3.  **No Desviarse:** El agente NO debe trabajar en el nuevo gap inmediatamente. Debe completar su tarea actual y luego seguir el orden del `ROADMAP` actualizado.
-   23
-   24 ---
-   25
-   26 ### **Directiva 3: El Protocolo de Cierre (The "Hard Commit")**
-   27
-   28 Una tarea (ej. `02-02-PLAN.md`) NO se considera `[DONE]` y el agente NO puede dar por finalizado su trabajo hasta que se cumplan estas 3 condiciones, en este orden:
-   29
-   30 1.  **Código Completo:** La implementación está finalizada y los tests relevantes en `TWL.Tests` se ejecutan y pasan.
-   31 2.  **Estado Actualizado:** El agente edita `.planning/ROADMAP.md` para marcar el plan como `[x]` (ej. `[x] 02-02-PLAN.md`).
-   32 3.  **Estado Global Confirmado:** El agente edita `.planning/STATE.md`, actualizando la sección `last_completed_task` con el nombre del plan recién terminado y la fecha. **Este es el "commit" final
-      inmutable de la sesión de trabajo.**
-   33
-   34 ---
-   35
-   36 ### **Directiva 4: El Protocolo de Continuidad (The "Momentum Clause")**
-   37
-   38 Inmediatamente después de completar exitosamente el Protocolo de Cierre, el agente DEBE tomar la iniciativa para mantener el impulso:
-   39
-   40 1.  **Anunciar Finalización:** Declarar: *"He completado y persistido el estado del Plan [nombre-del-plan]."*
-   41 2.  **Proponer Siguiente Acción:** Inmediatamente después, iniciar un nuevo "Sync-Check" (Directiva 1) para la siguiente tarea pendiente en el `ROADMAP` y preguntar: *"La siguiente tarea es        
-      [siguiente-plan]. ¿Procedo?"*
+# THE WONDERLAND CONTINUUM RULE (ID: TWL-GSD-002)
+
+**Propósito:** Establecer un protocolo de progreso perpetuo, auto-correctivo y consciente del estado del proyecto para cualquier agente que opere en el repositorio de The Wonderland Solution, usando la estructura GSD 2.
+
+---
+
+### **Directiva 1: El Protocolo de Inicio (The "Sync-Check")**
+
+Antes de realizar CUALQUIER acción de codificación o planificación, un agente DEBE sincronizarse con la realidad del proyecto:
+
+1.  **Leer `.gsd/STATE.md`:** Identificar el milestone activo, el slice activo, y la próxima acción pendiente.
+2.  **Leer `.gsd/milestones/M001/M001-ROADMAP.md`:** Localizar el primer slice `- [ ]` en tu dominio.
+3.  **Navegar al slice:** Leer el plan del slice (ej. `.gsd/milestones/M001/slices/S08/S08-PLAN.md`) y encontrar el primer task `- [ ]`.
+4.  **Leer el plan del task:** (ej. `.gsd/milestones/M001/slices/S08/tasks/T05-PLAN.md`) para entender el alcance de implementación.
+5.  **Validar el "Porqué":** Consultar `.gsd/REQUIREMENTS.md` para confirmar qué requirement cubre este task.
+
+---
+
+### **Directiva 2: El Protocolo de Descubrimiento (Emergent Gap Detection)**
+
+Si, durante la ejecución de una tarea, el agente identifica una nueva necesidad:
+
+1.  **Registrar el Gap:** Añadir una nueva entrada a `.gsd/REQUIREMENTS.md` bajo `## Discovered Requirements`, con tag `[DISCOVERED]`.
+2.  **No Desviarse:** Completar el task actual antes de trabajar en el gap descubierto.
+
+---
+
+### **Directiva 3: El Protocolo de Cierre (The "Hard Commit")**
+
+Un task NO se considera DONE hasta que:
+
+1.  **Código/Contenido Completo:** La implementación está finalizada y `pwsh -File scripts/verify.ps1` pasa.
+2.  **Task Marcado:** El task está `[x]` en el plan del slice (ej. `S08-PLAN.md`).
+3.  **Summary Creado:** Existe `tasks/TXX-SUMMARY.md` documentando lo hecho.
+4.  **Si el slice completo:** Marcarlo `[x]` en `M001-ROADMAP.md`.
+5.  **Estado Actualizado:** `.gsd/STATE.md` refleja la posición actual.
+
+---
+
+### **Directiva 4: El Protocolo de Continuidad (The "Momentum Clause")**
+
+Después de completar un task:
+
+1.  Anunciar: *"He completado el Task TXX del Slice SYY."*
+2.  Iniciar nuevo Sync-Check para el siguiente task `- [ ]`.
+3.  Si el slice completo, proponer el siguiente slice pendiente.

@@ -61,12 +61,13 @@ public class InteractHandler : ICommandHandler<InteractCommand, InteractResult>
         // Notify character of interaction (Event-Driven)
         // PlayerQuestComponent listens to OnInteract and updates state.
         // ClientSession listens to OnQuestUpdated and sends packets.
-        character.NotifyInteract(targetName, interactionType);
+        character.NotifyInteract(targetName, interactionType?.ToString());
 
         var result = new InteractResult
         {
             Success = true,
-            UpdatedQuestIds = new List<int>() // Events handle updates now
+            UpdatedQuestIds = new List<int>(), // Events handle updates now
+            InteractionType = interactionType
         };
 
         return Task.FromResult(result);

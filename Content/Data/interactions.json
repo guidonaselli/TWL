@@ -133,5 +133,15 @@
     "Type": "Interact",
     "RequiredQuestId": 1402,
     "RewardItems": []
+  },
+  {
+    "TargetName": "Ruk",
+    "Type": "Compound",
+    "RewardItems": []
+  },
+  {
+    "TargetName": "CompoundMaster",
+    "Type": "Compound",
+    "RewardItems": []
   }
 ]

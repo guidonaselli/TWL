@@ -44,6 +44,12 @@ public enum Opcode
     PetActionRequest,
     PetActionResponse,
 
+    // Compound
+    CMSG_COMPOUND_REQUEST_START,
+    SMSG_COMPOUND_REQUEST_START_ACK,
+    CompoundRequest,
+    CompoundResponse,
+
     // Encounter
     EncounterStarted,
 

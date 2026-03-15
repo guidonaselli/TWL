@@ -115,6 +115,12 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<GuildAuditLogService>();
         svcs.AddSingleton<GuildStorageService>();
         svcs.AddSingleton<IRebirthService, RebirthManager>();
+        svcs.AddSingleton<ICompoundRatePolicy, CompoundRatePolicy>();
+        svcs.AddSingleton<ICompoundService>(sp => new CompoundManager(
+            sp.GetRequiredService<ILogger<CompoundManager>>(),
+            sp.GetRequiredService<ICompoundRatePolicy>(),
+            sp.GetRequiredService<IRandomService>()
+        ));
         
         // Market Services
         svcs.AddSingleton<TradeManager>();
@@ -187,6 +193,7 @@ Host.CreateDefaultBuilder(args)
                 sp.GetRequiredService<IRebirthService>(),
                 sp.GetRequiredService<IMarketService>(),
                 sp.GetRequiredService<MarketQueryService>(),
+                sp.GetRequiredService<ICompoundService>(),
                 sp.GetRequiredService<TradeSessionManager>(),
                 sp.GetRequiredService<IOptions<RateLimiterOptions>>()
             );

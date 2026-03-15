@@ -1,7 +1,39 @@
 # GEMINI.md — The Wonderland Legacy (TWL)
 
-> Project-level instructions for Gemini CLI. Read before acting.
-> For full project context, architecture, and GSD protocol, see `AGENTS.md` and `CONTEXT.md`.
+> Project-level instructions for Gemini CLI and Jules. Read before acting.
+> For full project context, architecture, and GSD protocol, see `AGENTS.md` and `.gsd/PROJECT.md`.
+
+---
+
+## GSD 2 State Protocol
+
+**All state lives in `.gsd/`, NOT `.planning/` (legacy, do not use).**
+
+| File | Purpose |
+|------|---------|
+| `.gsd/STATE.md` | Current position: active milestone, slice, task |
+| `.gsd/PROJECT.md` | Living project description |
+| `.gsd/REQUIREMENTS.md` | All requirements with status tracking |
+| `.gsd/DECISIONS.md` | Append-only architectural decisions register |
+| `.gsd/milestones/M001/M001-ROADMAP.md` | Master slice checklist for Milestone 1 |
+| `.gsd/milestones/M001/slices/SXX/SXX-PLAN.md` | Task checklist per slice |
+| `.gsd/milestones/M001/slices/SXX/tasks/TYY-PLAN.md` | Individual task implementation plan |
+
+### Sync-Check (Mandatory Before Any Work)
+
+1. Read `.gsd/STATE.md` → find active milestone + slice + task
+2. Read `.gsd/milestones/M001/M001-ROADMAP.md` → find first `- [ ]` slice in your domain
+3. Read that slice's plan → find first `- [ ]` task
+4. Read that task's plan → understand implementation scope
+5. Read `.gsd/REQUIREMENTS.md` → understand why the task matters
+
+### Completion Protocol
+
+1. Tests pass: `pwsh -File scripts/verify.ps1`
+2. Task marked `[x]` in slice plan file
+3. Summary written: `tasks/TXX-SUMMARY.md`
+4. If slice fully done → mark `[x]` in `M001-ROADMAP.md`
+5. Update `.gsd/STATE.md`
 
 ---
 
@@ -31,24 +63,13 @@ Known file locations:
 
 ---
 
-## GSD Protocol
-
-Follow the TWL Continuum Rule — full spec in `.agents/rules/twl-gsd.md` and `AGENTS.md`.
-
-1. **Sync-Check**: Read `.planning/STATE.md` + `.planning/ROADMAP.md` before any work.
-2. **Gap Detection**: New needs → append to `REQUIREMENTS.md` under `## v1.1 Discovered Requirements`. Do not act on them immediately.
-3. **Hard Commit**: Task is DONE only when code passes tests + `ROADMAP.md` marked `[x]` + `STATE.md` updated.
-4. **Momentum**: After completion, propose the next pending task.
-
----
-
 ## Code Conventions
 
 - **Language**: C# 12 / .NET 10
 - **Architecture**: Server-authoritative (TWL.Shared → TWL.Client / TWL.Server)
 - **Naming**: PascalCase public, `_camelCase` private fields
 - **Testing**: xUnit in `TWL.Tests/`, InMemory repos for unit tests
-- **Commits**: `feat(phase-N): description`
+- **Commits**: `feat(SXX): TYY - description` or `content(SXX): TYY - description`
 
 ---
 
@@ -115,3 +136,28 @@ Profile before optimizing. But `new List<T>()` on every `Update()` frame is not 
 **Content IDs are stable contracts.** Once assigned, an ID never changes or gets reused. Items: 1–9999 | Monsters: 2000+ | Pets: 1000+ | Quests: 1000+ | Skills: 1000+. ID errors corrupt saves and the economy.
 
 **Game data lives in JSON, not in code.** Skills, items, quests, monsters, pets — defined in `Content/Data/`. C# loads and applies them; it does not define them. Hardcoded stats or content names in C# are architecture bugs.
+
+---
+
+## Content Design Rules
+
+- Progressive difficulty: 8 tiers mapping to Lv1-100
+- Elemental coverage: every tier has Earth/Water/Fire/Wind variants
+- Rarity distribution: 60% Common, 25% Uncommon, 10% Rare, 4% Epic, 1% Legend
+- Pet types: `Capture` (wild), `Quest` (story), `HumanLike` (special NPCs)
+- Quest types: Talk, Collect, Kill, Reach, Interact, Craft, Deliver, Instance, UseItem
+- Names must be ORIGINAL (not direct WLO copies) but mechanics should mirror WLO depth
+- Item economy: costs scale exponentially by tier (Tier 1: 50-500g → Tier 8: 300k-1Mg)
+
+## Map Regions
+
+| ID Range  | Region           | Theme            | Level Range |
+|-----------|------------------|------------------|-------------|
+| 0001-0099 | Isla Brisa       | Tropical beach   | 1-10        |
+| 1000-1099 | Puerto Roca      | Port city/jungle | 10-20       |
+| 2000-2099 | Selva Esmeralda  | Deep jungle/ruins| 20-30       |
+| 3000-3099 | Arrecife Hundido | Underwater/caves | 30-45       |
+| 4000-4099 | Isla Volcana     | Volcanic/lava    | 45-60       |
+| 5000-5099 | Cascada Eterna   | Waterfall/mist   | 60-75       |
+| 6000-6099 | Cumbre Ancestral | Mountain/ancient | 75-90       |
+| 7000-7099 | Resonancia Core  | Crystal/endgame  | 90-100      |
