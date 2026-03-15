@@ -16,6 +16,7 @@ using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Constants;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.DTO;
+using TWL.Shared.Domain.Interactions;
 using TWL.Shared.Domain.Guilds;
 using TWL.Shared.Domain.Requests;
 using TWL.Shared.Net.Network;
@@ -439,8 +440,8 @@ public class ClientSession
             case Opcode.TradeConfirm:
                 await HandleTradeConfirmAsync(traceId);
                 break;
-            case Opcode.CompoundEntryRequest:
-                await HandleCompoundEntryAsync(traceId);
+            case Opcode.CMSG_COMPOUND_REQUEST_START:
+                await HandleCompoundStartRequestAsync(traceId);
                 break;
             case Opcode.CompoundRequest:
                 await HandleCompoundRequestAsync(msg.JsonPayload, traceId);
@@ -699,9 +700,9 @@ public class ClientSession
                 await SendQuestUpdateAsync(questId);
             }
 
-            if (result.InteractionType == "Compound")
+            if (result.InteractionType == InteractionType.Compound)
             {
-                await HandleCompoundEntryAsync(traceId);
+                await HandleCompoundStartRequestAsync(traceId);
             }
         }
     }
@@ -801,7 +802,7 @@ public class ClientSession
         });
     }
 
-    private async Task HandleCompoundEntryAsync(string traceId)
+    private async Task HandleCompoundStartRequestAsync(string traceId)
     {
         if (UserId <= 0 || Character == null)
         {
@@ -810,11 +811,11 @@ public class ClientSession
 
         await SendAsync(new NetMessage
         {
-            Op = Opcode.CompoundEntryResponse,
+            Op = Opcode.SMSG_COMPOUND_REQUEST_START_ACK,
             JsonPayload = JsonSerializer.Serialize(new { success = true }, _jsonOptions)
         });
 
-        PipelineLogger.LogStage(traceId, "CompoundEntry", 0, "Success");
+        PipelineLogger.LogStage(traceId, "CompoundStartRequest", 0, "Success");
     }
 
     private async Task HandleCompoundRequestAsync(string payload, string traceId)
@@ -872,6 +873,21 @@ public class ClientSession
             Op = Opcode.CompoundResponse,
             JsonPayload = JsonSerializer.Serialize(response, _jsonOptions)
         });
+
+        if (response.Success)
+        {
+            var update = new InventoryUpdate
+            {
+                PlayerId = UserId,
+                Items = Character.Inventory.ToList()
+            };
+
+            await SendAsync(new NetMessage
+            {
+                Op = Opcode.InventoryUpdate,
+                JsonPayload = JsonSerializer.Serialize(update, _jsonOptions)
+            });
+        }
 
         PipelineLogger.LogStage(traceId, "CompoundRequest", 0, $"Outcome:{response.Outcome} Success:{response.Success}");
     }

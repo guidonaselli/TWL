@@ -135,6 +135,11 @@
     "RewardItems": []
   },
   {
+    "TargetName": "Ruk",
+    "Type": "Compound",
+    "RewardItems": []
+  },
+  {
     "TargetName": "CompoundMaster",
     "Type": "Compound",
     "RewardItems": []

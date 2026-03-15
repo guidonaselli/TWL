@@ -45,8 +45,8 @@ public enum Opcode
     PetActionResponse,
 
     // Compound
-    CompoundEntryRequest,
-    CompoundEntryResponse,
+    CMSG_COMPOUND_REQUEST_START,
+    SMSG_COMPOUND_REQUEST_START_ACK,
     CompoundRequest,
     CompoundResponse,
 

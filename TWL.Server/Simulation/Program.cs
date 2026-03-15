@@ -115,7 +115,12 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<GuildAuditLogService>();
         svcs.AddSingleton<GuildStorageService>();
         svcs.AddSingleton<IRebirthService, RebirthManager>();
-        svcs.AddSingleton<ICompoundService, CompoundManager>();
+        svcs.AddSingleton<ICompoundRatePolicy, CompoundRatePolicy>();
+        svcs.AddSingleton<ICompoundService>(sp => new CompoundManager(
+            sp.GetRequiredService<ILogger<CompoundManager>>(),
+            sp.GetRequiredService<ICompoundRatePolicy>(),
+            sp.GetRequiredService<IRandomService>()
+        ));
         
         // Market Services
         svcs.AddSingleton<TradeManager>();

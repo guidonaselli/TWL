@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using TWL.Server.Simulation.Networking;
 using TWL.Server.Simulation.Networking.Components;
 using TWL.Shared.Domain.Interactions;
@@ -37,7 +38,7 @@ public class InteractionManager
         Console.WriteLine($"Loaded interactions for {_interactions.Count} targets from {path}");
     }
 
-    public string? ProcessInteraction(ServerCharacter character, PlayerQuestComponent questComponent, string targetName)
+    public InteractionType? ProcessInteraction(ServerCharacter character, PlayerQuestComponent questComponent, string targetName)
     {
         if (character == null)
         {

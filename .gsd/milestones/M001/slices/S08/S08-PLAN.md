@@ -18,12 +18,12 @@
 
 Purpose: This establishes the server-authoritative base required for all compound NPC, formula, and fee mechanics.
 Output: Compound service interface/manager, shared DTOs, enhancement item fields, DI wiring, and contract coverage tests.
-- [ ] **T02: 08-compound-system 02**
+- [x] **T02: 08-compound-system 02**
   - Implement compound NPC access and inventory selection validation pipeline.
 
 Purpose: This delivers CMP-01 and CMP-02 by exposing a server-authoritative entry path for compound requests.
 Output: Compound opcodes, session handlers, interaction definitions, and NPC-access/selection validation tests.
-- [ ] **T03: 08-compound-system 03**
+- [x] **T03: 08-compound-system 03**
   - Implement compound success-rate and outcome engine.
 
 Purpose: This delivers CMP-03, CMP-04, and CMP-05 with deterministic server-side compound resolution.
