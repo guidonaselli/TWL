@@ -34,7 +34,7 @@ Output: Rate policy component, compound outcome application in manager, and outc
 
 Purpose: This enables the `CompoundManager` to authoritatively modify character state by calling methods on the `ServerCharacter` entity, respecting encapsulation.
 Output: Updated `ICompoundService` and `CompoundManager` methods, modified call sites in `ClientSession`, and passing tests for `CompoundOutcomeTests`.
-- [ ] **T05: Integrate non-refundable compound fee economics**
+- [x] **T05: Integrate non-refundable compound fee economics**
   - Integrate non-refundable compound fee economics and anti-arbitrage safeguards.
 
 Purpose: This delivers CMP-06 and hardens compound requests against replay and duplicate-charge inconsistencies.
