@@ -24,7 +24,7 @@
 
 ## Tasks
 
-- [ ] **T01: 10-combat-progression-integration 01**
+- [x] **T01: 10-combat-progression-integration 01**
   - Implement death-penalty EXP loss on player death (`CMB-01` partial) using server-authoritative combat event handling.
 
 Purpose: Ensure combat deaths produce deterministic, policy-compliant progression penalties.

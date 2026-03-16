@@ -1,6 +1,7 @@
 using System.Collections.Concurrent;
 using TWL.Server.Features.Combat;
 using TWL.Server.Simulation.Networking;
+using TWL.Server.Services.Combat;
 using TWL.Shared.Domain.Battle;
 using TWL.Shared.Domain.Characters;
 using TWL.Shared.Domain.Requests;
@@ -23,23 +24,36 @@ public class CombatManager
     private readonly AutoBattleManager _autoBattleManager;
     private readonly IPetBattlePolicy _petBattlePolicy;
     private readonly PartyRewardDistributor? _partyRewardDistributor;
+    private readonly DeathPenaltyService? _deathPenaltyService;
 
     public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
-        IStatusEngine statusEngine, PartyRewardDistributor? partyRewardDistributor = null)
-        : this(resolver, random, skills, statusEngine, new AutoBattleManager(skills), partyRewardDistributor)
+        IStatusEngine statusEngine)
+        : this(resolver, random, skills, statusEngine, new AutoBattleManager(skills), null, null)
     {
     }
 
     public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
-        IStatusEngine statusEngine, AutoBattleManager autoBattleManager, PartyRewardDistributor? partyRewardDistributor = null)
+        IStatusEngine statusEngine, PartyRewardDistributor? partyRewardDistributor)
+        : this(resolver, random, skills, statusEngine, new AutoBattleManager(skills), partyRewardDistributor, null)
+    {
+    }
+
+    public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
+        IStatusEngine statusEngine, PartyRewardDistributor? partyRewardDistributor, DeathPenaltyService? deathPenaltyService)
+        : this(resolver, random, skills, statusEngine, new AutoBattleManager(skills), partyRewardDistributor, deathPenaltyService)
+    {
+    }
+
+    public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
+        IStatusEngine statusEngine, AutoBattleManager autoBattleManager, PartyRewardDistributor? partyRewardDistributor = null, DeathPenaltyService? deathPenaltyService = null)
         : this(resolver, random, skills, statusEngine, autoBattleManager, 
             new PetBattlePolicy(autoBattleManager, Microsoft.Extensions.Logging.Abstractions.NullLogger<PetBattlePolicy>.Instance), 
-            partyRewardDistributor)
+            partyRewardDistributor, deathPenaltyService)
     {
     }
 
     public CombatManager(ICombatResolver resolver, IRandomService random, ISkillCatalog skills,
-        IStatusEngine statusEngine, AutoBattleManager autoBattleManager, IPetBattlePolicy petBattlePolicy, PartyRewardDistributor? partyRewardDistributor = null)
+        IStatusEngine statusEngine, AutoBattleManager autoBattleManager, IPetBattlePolicy petBattlePolicy, PartyRewardDistributor? partyRewardDistributor = null, DeathPenaltyService? deathPenaltyService = null)
     {
         _combatants = new ConcurrentDictionary<int, ServerCombatant>();
         _resolver = resolver;
@@ -49,6 +63,7 @@ public class CombatManager
         _autoBattleManager = autoBattleManager;
         _petBattlePolicy = petBattlePolicy;
         _partyRewardDistributor = partyRewardDistributor;
+        _deathPenaltyService = deathPenaltyService;
     }
 
     public event Action<ServerCombatant>? OnCombatantDeath;
@@ -252,6 +267,12 @@ public class CombatManager
             if (newTargetHp <= 0)
             {
                 turnEngine?.RemoveCombatant(target.Id);
+
+                if (target is ServerCharacter playerCharacter && _deathPenaltyService != null)
+                {
+                    _deathPenaltyService.ApplyExpPenalty(playerCharacter, $"combat_death_{target.Id}_{Guid.NewGuid()}");
+                }
+
                 OnCombatantDeath?.Invoke(target);
 
                 // Party Rewards
