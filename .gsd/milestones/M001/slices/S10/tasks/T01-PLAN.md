@@ -36,3 +36,5 @@ Output: DeathPenaltyService, ServerCharacter EXP penalty mutation, and focused r
 - The new service result must expose enough state for tests and future agents to inspect penalty amount, EXP before/after, and duplicate-event suppression without reproducing combat manually.
 - Failure state becomes visible through focused regression tests that assert exact EXP transitions and unchanged state on duplicate handling.
 - No secrets or player PII should be emitted; diagnostics stay limited to EXP values, event identity, and duplicate/applied flags.
+
+4. Enrichment: Ensure `DeathPenaltyService` leverages the unified `_aliveBuffer` convention from `TurnEngine` to minimize allocations when looking up current death states. Add test to verify EXP penalty does not underflow (remains >= 0).
