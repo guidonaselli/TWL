@@ -22,3 +22,5 @@ Output: Item durability model, server durability mutation logic, and durability 
 - `TWL.Server/Simulation/Networking/ServerCharacter.cs`
 - `TWL.Server/Services/Combat/DeathPenaltyService.cs`
 - `TWL.Tests/Server/Equipment/DurabilitySystemTests.cs`
+
+6. Enrichment: Explicitly handle serialization differences between new durability format and legacy items without durability fields in `PlayerSaveData`. Ensure test coverage explicitly checks legacy migration behavior.
