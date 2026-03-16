@@ -15,6 +15,7 @@ using TWL.Server.Persistence.Repositories;
 using TWL.Server.Persistence.Services;
 using TWL.Server.Security;
 using TWL.Server.Services;
+using TWL.Server.Services.Combat;
 using TWL.Server.Services.World;
 using TWL.Server.Simulation;
 using TWL.Server.Simulation.Managers;
@@ -105,6 +106,7 @@ Host.CreateDefaultBuilder(args)
         svcs.AddSingleton<InteractionManager>();
         svcs.AddSingleton<ICombatResolver, StandardCombatResolver>();
         svcs.AddSingleton<PartyRewardDistributor>();
+        svcs.AddSingleton<DeathPenaltyService>();
         svcs.AddSingleton<CombatManager>();
         svcs.AddSingleton<IPartyService, PartyManager>();
         svcs.AddSingleton<IPartyChatService, PartyChatService>();
