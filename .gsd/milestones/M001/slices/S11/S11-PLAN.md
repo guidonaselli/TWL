@@ -17,7 +17,7 @@ Output: Updated `items.json` containing mid-to-endgame items.
 
 Purpose: This satisfies CONT-01 and provides base items for the Compound system and combat mechanics (durability, stat scaling).
 Output: `equipment.json` defining physical and magical gear for all levels.
-- [ ] **T03: 11-content-foundation 04**
+- [x] **T03: 11-content-foundation 04**
   - Expand `monsters.json` from 15 base entries to 80+ fully fleshed-out monsters, covering all 8 tiers and 4 elements.
 
 Purpose: This satisfies CONT-02 and provides targets for combat, exp grinding, and rare drops across the full game world.
