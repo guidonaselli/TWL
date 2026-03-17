@@ -30,7 +30,7 @@
   > After this: Harden pet combat AI to satisfy PET-01 with deterministic, intelligent action selection.
 - [ ] **S10: Combat & Progression Integration** `risk:medium` `depends:[S09]`
   > After this: Implement death-penalty EXP loss on player death (`CMB-01` partial) using server-authoritative combat event handling.
-- [ ] **S11: Content Foundation** `risk:medium` `depends:[S10]`
+- [x] **S11: Content Foundation** `risk:medium` `depends:[S10]`
   > After this: Expand `items.json` with the remaining higher-tier item sets and content coverage needed for the full item database.
 - [ ] **S12: Quest Expansion** `risk:medium` `depends:[S11]`
   > After this: Create the main story quest chains for regions 3 and 4 (Selva Esmeralda and Arrecife Hundido), covering levels 20-45.

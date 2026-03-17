@@ -11,7 +11,7 @@ Output: Completed `pets.json` with capture rates, base stats, and skill arrays.
 
 ## Must-Haves
 
-- [ ] "pets.json contains 50+ pets with full skill sets, evolution paths, and capture rules"
+- [x] "pets.json contains 50+ pets with full skill sets, evolution paths, and capture rules"
 
 ## Files
 
