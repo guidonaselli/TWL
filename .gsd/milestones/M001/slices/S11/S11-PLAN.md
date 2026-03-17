@@ -22,7 +22,7 @@ Output: `equipment.json` defining physical and magical gear for all levels.
 
 Purpose: This satisfies CONT-02 and provides targets for combat, exp grinding, and rare drops across the full game world.
 Output: Expanded `monsters.json` spanning level 1 to 100 with regional boss variants.
-- [ ] **T04: 11-content-foundation 05**
+- [x] **T04: 11-content-foundation 05**
   - Expand `pets.json` to 50+ pets covering all elements, utility roles (combat, mount), and clear evolution trees.
 
 Purpose: This satisfies CONT-03 and enables Phase 9 (Pet System Completion) by providing necessary data for AI, Rebirth, and Riding.

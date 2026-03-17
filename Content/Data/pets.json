@@ -113,10 +113,23 @@
     "BaseInt": 12,
     "BaseWis": 12,
     "BaseAgi": 8,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 6, "SpGrowthPerLevel": 8, "StrWeight": 10, "ConWeight": 10, "IntWeight": 40, "WisWeight": 30, "AgiWeight": 10 },
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 6,
+      "SpGrowthPerLevel": 8,
+      "StrWeight": 10,
+      "ConWeight": 10,
+      "IntWeight": 40,
+      "WisWeight": 30,
+      "AgiWeight": 10
+    },
     "SkillSet": [],
     "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 5, "BaseChance": 0.5 }
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.5
+    }
   },
   {
     "PetTypeId": 1005,
@@ -130,10 +143,641 @@
     "BaseInt": 8,
     "BaseWis": 8,
     "BaseAgi": 20,
-    "GrowthModel": { "CurveType": "EarlyPeaker", "HpGrowthPerLevel": 5, "SpGrowthPerLevel": 5, "StrWeight": 5, "ConWeight": 5, "IntWeight": 25, "WisWeight": 20, "AgiWeight": 40 },
+    "GrowthModel": {
+      "CurveType": "EarlyPeaker",
+      "HpGrowthPerLevel": 5,
+      "SpGrowthPerLevel": 5,
+      "StrWeight": 5,
+      "ConWeight": 5,
+      "IntWeight": 25,
+      "WisWeight": 20,
+      "AgiWeight": 40
+    },
     "SkillSet": [],
     "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 5, "BaseChance": 0.6 }
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.6
+    }
+  },
+  {
+    "PetTypeId": 1011,
+    "Name": "Tiny Sea Otter",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Water",
+    "SpritePath": "Pets/pet_tiny_sea_otter_64_spritesheet.png",
+    "PortraitPath": "Portraits/pet_tiny_sea_otter_portrait_256.png",
+    "BaseHp": 80,
+    "BaseStr": 6,
+    "BaseCon": 6,
+    "BaseInt": 5,
+    "BaseWis": 5,
+    "BaseAgi": 8,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 7,
+      "SpGrowthPerLevel": 2,
+      "StrWeight": 20,
+      "ConWeight": 20,
+      "IntWeight": 20,
+      "WisWeight": 20,
+      "AgiWeight": 20
+    },
+    "Utilities": [
+      {
+        "Type": "Gathering",
+        "Value": 1.1,
+        "RequiredLevel": 5,
+        "RequiredAmity": 20
+      }
+    ],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.6
+    }
+  },
+  {
+    "PetTypeId": 1012,
+    "Name": "Leaf-wing Gecko",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Earth",
+    "SpritePath": "Pets/pet_leaf_wing_gecko_64_spritesheet.png",
+    "PortraitPath": "Portraits/pet_leaf_wing_gecko_portrait_256.png",
+    "BaseHp": 70,
+    "BaseStr": 4,
+    "BaseCon": 5,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 12,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 6,
+      "SpGrowthPerLevel": 3,
+      "StrWeight": 15,
+      "ConWeight": 15,
+      "IntWeight": 15,
+      "WisWeight": 15,
+      "AgiWeight": 40
+    },
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.6
+    }
+  },
+  {
+    "PetTypeId": 1013,
+    "Name": "Pebble Turtle",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Earth",
+    "SpritePath": "Pets/pet_pebble_turtle_64_spritesheet.png",
+    "PortraitPath": "Portraits/pet_pebble_turtle_portrait_256.png",
+    "BaseHp": 100,
+    "BaseStr": 5,
+    "BaseCon": 12,
+    "BaseInt": 3,
+    "BaseWis": 6,
+    "BaseAgi": 2,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 10,
+      "SpGrowthPerLevel": 2,
+      "StrWeight": 20,
+      "ConWeight": 40,
+      "IntWeight": 10,
+      "WisWeight": 20,
+      "AgiWeight": 10
+    },
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.6
+    }
+  },
+  {
+    "PetTypeId": 1014,
+    "Name": "Rock Crab",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Earth",
+    "BaseHp": 120,
+    "BaseStr": 8,
+    "BaseCon": 15,
+    "BaseInt": 2,
+    "BaseWis": 4,
+    "BaseAgi": 3,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 12,
+      "SpGrowthPerLevel": 3,
+      "StrWeight": 25,
+      "ConWeight": 45,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 15
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 8,
+      "BaseChance": 0.5
+    }
+  },
+  {
+    "PetTypeId": 1015,
+    "Name": "Gale Bat",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Wind",
+    "BaseHp": 70,
+    "BaseStr": 6,
+    "BaseCon": 4,
+    "BaseInt": 6,
+    "BaseWis": 6,
+    "BaseAgi": 15,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 6,
+      "SpGrowthPerLevel": 4,
+      "StrWeight": 20,
+      "ConWeight": 10,
+      "IntWeight": 15,
+      "WisWeight": 15,
+      "AgiWeight": 40
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 8,
+      "BaseChance": 0.5
+    }
+  },
+  {
+    "PetTypeId": 1016,
+    "Name": "Magma Slime",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Fire",
+    "BaseHp": 90,
+    "BaseStr": 10,
+    "BaseCon": 8,
+    "BaseInt": 8,
+    "BaseWis": 4,
+    "BaseAgi": 5,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 9,
+      "SpGrowthPerLevel": 4,
+      "StrWeight": 30,
+      "ConWeight": 25,
+      "IntWeight": 20,
+      "WisWeight": 10,
+      "AgiWeight": 15
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 10,
+      "BaseChance": 0.45
+    }
+  },
+  {
+    "PetTypeId": 1017,
+    "Name": "Crystal Spider",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Water",
+    "BaseHp": 80,
+    "BaseStr": 7,
+    "BaseCon": 6,
+    "BaseInt": 10,
+    "BaseWis": 8,
+    "BaseAgi": 8,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 7,
+      "SpGrowthPerLevel": 6,
+      "StrWeight": 20,
+      "ConWeight": 15,
+      "IntWeight": 30,
+      "WisWeight": 20,
+      "AgiWeight": 15
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 12,
+      "BaseChance": 0.45
+    }
+  },
+  {
+    "PetTypeId": 1018,
+    "Name": "Iron Beetle",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Earth",
+    "BaseHp": 150,
+    "BaseStr": 12,
+    "BaseCon": 25,
+    "BaseInt": 2,
+    "BaseWis": 5,
+    "BaseAgi": 2,
+    "GrowthModel": {
+      "CurveType": "LateBloomer",
+      "HpGrowthPerLevel": 15,
+      "SpGrowthPerLevel": 2,
+      "StrWeight": 30,
+      "ConWeight": 50,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 5
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 15,
+      "BaseChance": 0.3
+    }
+  },
+  {
+    "PetTypeId": 1019,
+    "Name": "Cloud Ray",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Wind",
+    "BaseHp": 100,
+    "BaseStr": 8,
+    "BaseCon": 8,
+    "BaseInt": 12,
+    "BaseWis": 12,
+    "BaseAgi": 10,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 9,
+      "SpGrowthPerLevel": 8,
+      "StrWeight": 20,
+      "ConWeight": 20,
+      "IntWeight": 30,
+      "WisWeight": 20,
+      "AgiWeight": 10
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 18,
+      "BaseChance": 0.3
+    }
+  },
+  {
+    "PetTypeId": 1020,
+    "Name": "Ember Fox",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Fire",
+    "BaseHp": 90,
+    "BaseStr": 5,
+    "BaseCon": 5,
+    "BaseInt": 20,
+    "BaseWis": 10,
+    "BaseAgi": 15,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 8,
+      "SpGrowthPerLevel": 10,
+      "StrWeight": 10,
+      "ConWeight": 10,
+      "IntWeight": 45,
+      "WisWeight": 15,
+      "AgiWeight": 20
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 20,
+      "BaseChance": 0.2
+    }
+  },
+  {
+    "PetTypeId": 1021,
+    "Name": "Frost Wolf",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Water",
+    "BaseHp": 110,
+    "BaseStr": 18,
+    "BaseCon": 10,
+    "BaseInt": 5,
+    "BaseWis": 5,
+    "BaseAgi": 18,
+    "GrowthModel": {
+      "CurveType": "EarlyPeaker",
+      "HpGrowthPerLevel": 10,
+      "SpGrowthPerLevel": 4,
+      "StrWeight": 35,
+      "ConWeight": 20,
+      "IntWeight": 5,
+      "WisWeight": 5,
+      "AgiWeight": 35
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 22,
+      "BaseChance": 0.2
+    }
+  },
+  {
+    "PetTypeId": 1022,
+    "Name": "Sand Scorpion",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Earth",
+    "BaseHp": 100,
+    "BaseStr": 12,
+    "BaseCon": 12,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 8,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 9,
+      "SpGrowthPerLevel": 3,
+      "StrWeight": 30,
+      "ConWeight": 30,
+      "IntWeight": 10,
+      "WisWeight": 10,
+      "AgiWeight": 20
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 14,
+      "BaseChance": 0.4
+    }
+  },
+  {
+    "PetTypeId": 1023,
+    "Name": "Storm Hawk",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Wind",
+    "BaseHp": 90,
+    "BaseStr": 15,
+    "BaseCon": 6,
+    "BaseInt": 8,
+    "BaseWis": 6,
+    "BaseAgi": 25,
+    "GrowthModel": {
+      "CurveType": "EarlyPeaker",
+      "HpGrowthPerLevel": 8,
+      "SpGrowthPerLevel": 4,
+      "StrWeight": 30,
+      "ConWeight": 10,
+      "IntWeight": 10,
+      "WisWeight": 10,
+      "AgiWeight": 40
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 25,
+      "BaseChance": 0.15
+    }
+  },
+  {
+    "PetTypeId": 1024,
+    "Name": "Lava Golem",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Fire",
+    "BaseHp": 200,
+    "BaseStr": 25,
+    "BaseCon": 30,
+    "BaseInt": 5,
+    "BaseWis": 5,
+    "BaseAgi": 2,
+    "GrowthModel": {
+      "CurveType": "LateBloomer",
+      "HpGrowthPerLevel": 25,
+      "SpGrowthPerLevel": 3,
+      "StrWeight": 35,
+      "ConWeight": 45,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 5
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 30,
+      "BaseChance": 0.1
+    }
+  },
+  {
+    "PetTypeId": 1025,
+    "Name": "Deep Sea Turtle",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Water",
+    "BaseHp": 250,
+    "BaseStr": 10,
+    "BaseCon": 40,
+    "BaseInt": 10,
+    "BaseWis": 15,
+    "BaseAgi": 1,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 30,
+      "SpGrowthPerLevel": 5,
+      "StrWeight": 15,
+      "ConWeight": 55,
+      "IntWeight": 10,
+      "WisWeight": 15,
+      "AgiWeight": 5
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 35,
+      "BaseChance": 0.1
+    }
+  },
+  {
+    "PetTypeId": 1026,
+    "Name": "Canyon Scorpion",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Earth",
+    "BaseHp": 130,
+    "BaseStr": 18,
+    "BaseCon": 20,
+    "BaseInt": 4,
+    "BaseWis": 5,
+    "BaseAgi": 12,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 12,
+      "SpGrowthPerLevel": 3,
+      "StrWeight": 35,
+      "ConWeight": 30,
+      "IntWeight": 5,
+      "WisWeight": 5,
+      "AgiWeight": 25
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 28,
+      "BaseChance": 0.25
+    }
+  },
+  {
+    "PetTypeId": 1027,
+    "Name": "Mist Spirit",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Water",
+    "BaseHp": 80,
+    "BaseStr": 4,
+    "BaseCon": 8,
+    "BaseInt": 22,
+    "BaseWis": 25,
+    "BaseAgi": 15,
+    "GrowthModel": {
+      "CurveType": "LateBloomer",
+      "HpGrowthPerLevel": 8,
+      "SpGrowthPerLevel": 12,
+      "StrWeight": 5,
+      "ConWeight": 15,
+      "IntWeight": 40,
+      "WisWeight": 30,
+      "AgiWeight": 10
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 32,
+      "BaseChance": 0.2
+    }
+  },
+  {
+    "PetTypeId": 1028,
+    "Name": "Ash Hound",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Fire",
+    "BaseHp": 110,
+    "BaseStr": 22,
+    "BaseCon": 12,
+    "BaseInt": 5,
+    "BaseWis": 8,
+    "BaseAgi": 25,
+    "GrowthModel": {
+      "CurveType": "EarlyPeaker",
+      "HpGrowthPerLevel": 10,
+      "SpGrowthPerLevel": 5,
+      "StrWeight": 35,
+      "ConWeight": 15,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 35
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 24,
+      "BaseChance": 0.3
+    }
+  },
+  {
+    "PetTypeId": 1029,
+    "Name": "Gale Raptor",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Wind",
+    "BaseHp": 95,
+    "BaseStr": 20,
+    "BaseCon": 10,
+    "BaseInt": 8,
+    "BaseWis": 6,
+    "BaseAgi": 30,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 9,
+      "SpGrowthPerLevel": 4,
+      "StrWeight": 30,
+      "ConWeight": 15,
+      "IntWeight": 10,
+      "WisWeight": 5,
+      "AgiWeight": 40
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 26,
+      "BaseChance": 0.25
+    }
+  },
+  {
+    "PetTypeId": 1030,
+    "Name": "Island Monkey",
+    "Type": "Quest",
+    "Rarity": "Common",
+    "Element": "Earth",
+    "SpritePath": "Pets/pet_island_monkey_64_spritesheet.png",
+    "PortraitPath": "Portraits/pet_island_monkey_portrait_256.png",
+    "BaseHp": 85,
+    "BaseStr": 8,
+    "BaseCon": 8,
+    "BaseInt": 4,
+    "BaseWis": 4,
+    "BaseAgi": 12,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 8,
+      "SpGrowthPerLevel": 2,
+      "StrWeight": 25,
+      "ConWeight": 20,
+      "IntWeight": 10,
+      "WisWeight": 10,
+      "AgiWeight": 35
+    },
+    "SkillSet": [],
+    "Utilities": [
+      {
+        "Type": "Gathering",
+        "Value": 1.2,
+        "RequiredLevel": 5,
+        "RequiredAmity": 20
+      }
+    ],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "IsQuestUnique": true
   },
   {
     "PetTypeId": 1031,
@@ -147,10 +791,23 @@
     "BaseInt": 4,
     "BaseWis": 4,
     "BaseAgi": 3,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 10, "SpGrowthPerLevel": 2, "StrWeight": 20, "ConWeight": 45, "IntWeight": 10, "WisWeight": 15, "AgiWeight": 10 },
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 10,
+      "SpGrowthPerLevel": 2,
+      "StrWeight": 20,
+      "ConWeight": 45,
+      "IntWeight": 10,
+      "WisWeight": 15,
+      "AgiWeight": 10
+    },
     "SkillSet": [],
     "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 5, "BaseChance": 0.5 }
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.5
+    }
   },
   {
     "PetTypeId": 1032,
@@ -164,10 +821,23 @@
     "BaseInt": 2,
     "BaseWis": 2,
     "BaseAgi": 5,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 11, "SpGrowthPerLevel": 2, "StrWeight": 35, "ConWeight": 30, "IntWeight": 5, "WisWeight": 10, "AgiWeight": 20 },
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 11,
+      "SpGrowthPerLevel": 2,
+      "StrWeight": 35,
+      "ConWeight": 30,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 20
+    },
     "SkillSet": [],
     "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 5, "BaseChance": 0.5 }
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.5
+    }
   },
   {
     "PetTypeId": 1033,
@@ -181,10 +851,23 @@
     "BaseInt": 6,
     "BaseWis": 6,
     "BaseAgi": 10,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 8, "SpGrowthPerLevel": 4, "StrWeight": 25, "ConWeight": 20, "IntWeight": 15, "WisWeight": 15, "AgiWeight": 25 },
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 8,
+      "SpGrowthPerLevel": 4,
+      "StrWeight": 25,
+      "ConWeight": 20,
+      "IntWeight": 15,
+      "WisWeight": 15,
+      "AgiWeight": 25
+    },
     "SkillSet": [],
     "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 5, "BaseChance": 0.5 }
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 5,
+      "BaseChance": 0.5
+    }
   },
   {
     "PetTypeId": 1034,
@@ -198,10 +881,23 @@
     "BaseInt": 4,
     "BaseWis": 4,
     "BaseAgi": 8,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 10, "SpGrowthPerLevel": 2, "StrWeight": 30, "ConWeight": 30, "IntWeight": 5, "WisWeight": 10, "AgiWeight": 25 },
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 10,
+      "SpGrowthPerLevel": 2,
+      "StrWeight": 30,
+      "ConWeight": 30,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 25
+    },
     "SkillSet": [],
     "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 10, "BaseChance": 0.4 }
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 10,
+      "BaseChance": 0.4
+    }
   },
   {
     "PetTypeId": 1035,
@@ -215,10 +911,23 @@
     "BaseInt": 8,
     "BaseWis": 8,
     "BaseAgi": 10,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 9, "SpGrowthPerLevel": 5, "StrWeight": 20, "ConWeight": 25, "IntWeight": 20, "WisWeight": 20, "AgiWeight": 15 },
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 9,
+      "SpGrowthPerLevel": 5,
+      "StrWeight": 20,
+      "ConWeight": 25,
+      "IntWeight": 20,
+      "WisWeight": 20,
+      "AgiWeight": 15
+    },
     "SkillSet": [],
     "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 10, "BaseChance": 0.4 }
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 10,
+      "BaseChance": 0.4
+    }
   },
   {
     "PetTypeId": 1036,
@@ -232,10 +941,23 @@
     "BaseInt": 4,
     "BaseWis": 4,
     "BaseAgi": 12,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 11, "SpGrowthPerLevel": 2, "StrWeight": 40, "ConWeight": 20, "IntWeight": 5, "WisWeight": 10, "AgiWeight": 25 },
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 11,
+      "SpGrowthPerLevel": 2,
+      "StrWeight": 40,
+      "ConWeight": 20,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 25
+    },
     "SkillSet": [],
     "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 10, "BaseChance": 0.4 }
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 10,
+      "BaseChance": 0.4
+    }
   },
   {
     "PetTypeId": 1037,
@@ -249,10 +971,164 @@
     "BaseInt": 12,
     "BaseWis": 10,
     "BaseAgi": 18,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 8, "SpGrowthPerLevel": 6, "StrWeight": 20, "ConWeight": 15, "IntWeight": 25, "WisWeight": 20, "AgiWeight": 20 },
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 8,
+      "SpGrowthPerLevel": 6,
+      "StrWeight": 20,
+      "ConWeight": 15,
+      "IntWeight": 25,
+      "WisWeight": 20,
+      "AgiWeight": 20
+    },
     "SkillSet": [],
     "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 10, "BaseChance": 0.4 }
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 10,
+      "BaseChance": 0.4
+    }
+  },
+  {
+    "PetTypeId": 1038,
+    "Name": "Obsidian Golem",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Earth",
+    "BaseHp": 350,
+    "BaseStr": 40,
+    "BaseCon": 60,
+    "BaseInt": 5,
+    "BaseWis": 15,
+    "BaseAgi": 2,
+    "GrowthModel": {
+      "CurveType": "LateBloomer",
+      "HpGrowthPerLevel": 40,
+      "SpGrowthPerLevel": 5,
+      "StrWeight": 30,
+      "ConWeight": 50,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 5
+    },
+    "SkillSet": [],
+    "Utilities": [
+      {
+        "Type": "Mount",
+        "Value": 1.1,
+        "RequiredLevel": 50,
+        "RequiredAmity": 80
+      }
+    ],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 60,
+      "BaseChance": 0.05
+    }
+  },
+  {
+    "PetTypeId": 1039,
+    "Name": "Frost Wyrm",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Water",
+    "BaseHp": 280,
+    "BaseStr": 30,
+    "BaseCon": 25,
+    "BaseInt": 45,
+    "BaseWis": 30,
+    "BaseAgi": 20,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 25,
+      "SpGrowthPerLevel": 15,
+      "StrWeight": 20,
+      "ConWeight": 20,
+      "IntWeight": 35,
+      "WisWeight": 15,
+      "AgiWeight": 10
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 65,
+      "BaseChance": 0.05
+    }
+  },
+  {
+    "PetTypeId": 1040,
+    "Name": "Inferno Drake",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Fire",
+    "BaseHp": 260,
+    "BaseStr": 45,
+    "BaseCon": 30,
+    "BaseInt": 20,
+    "BaseWis": 15,
+    "BaseAgi": 35,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 22,
+      "SpGrowthPerLevel": 8,
+      "StrWeight": 35,
+      "ConWeight": 25,
+      "IntWeight": 10,
+      "WisWeight": 10,
+      "AgiWeight": 20
+    },
+    "SkillSet": [],
+    "Utilities": [
+      {
+        "Type": "Mount",
+        "Value": 1.5,
+        "RequiredLevel": 60,
+        "RequiredAmity": 80
+      }
+    ],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 60,
+      "BaseChance": 0.05
+    }
+  },
+  {
+    "PetTypeId": 1041,
+    "Name": "Storm Griffin",
+    "Type": "Capture",
+    "Rarity": "Rare",
+    "Element": "Wind",
+    "BaseHp": 240,
+    "BaseStr": 35,
+    "BaseCon": 20,
+    "BaseInt": 25,
+    "BaseWis": 20,
+    "BaseAgi": 50,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 20,
+      "SpGrowthPerLevel": 10,
+      "StrWeight": 25,
+      "ConWeight": 15,
+      "IntWeight": 15,
+      "WisWeight": 15,
+      "AgiWeight": 30
+    },
+    "SkillSet": [],
+    "Utilities": [
+      {
+        "Type": "Mount",
+        "Value": 1.6,
+        "RequiredLevel": 55,
+        "RequiredAmity": 80
+      }
+    ],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 55,
+      "BaseChance": 0.05
+    }
   },
   {
     "PetTypeId": 2001,
@@ -292,6 +1168,274 @@
     "DurationSeconds": 604800
   },
   {
+    "PetTypeId": 2002,
+    "Name": "Forest Elf",
+    "Type": "HumanLike",
+    "Rarity": "Legend",
+    "Element": "Wind",
+    "BaseHp": 150,
+    "BaseStr": 10,
+    "BaseCon": 10,
+    "BaseInt": 25,
+    "BaseWis": 20,
+    "BaseAgi": 15,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 15,
+      "SpGrowthPerLevel": 15,
+      "StrWeight": 10,
+      "ConWeight": 15,
+      "IntWeight": 40,
+      "WisWeight": 25,
+      "AgiWeight": 10
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "RebirthEligible": true
+  },
+  {
+    "PetTypeId": 2003,
+    "Name": "Stone Guardian",
+    "Type": "Quest",
+    "Rarity": "Rare",
+    "Element": "Earth",
+    "BaseHp": 300,
+    "BaseStr": 20,
+    "BaseCon": 40,
+    "BaseInt": 5,
+    "BaseWis": 10,
+    "BaseAgi": 5,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 20,
+      "SpGrowthPerLevel": 5,
+      "StrWeight": 25,
+      "ConWeight": 50,
+      "IntWeight": 5,
+      "WisWeight": 15,
+      "AgiWeight": 5
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "IsQuestUnique": true
+  },
+  {
+    "PetTypeId": 2004,
+    "Name": "Apprentice Mage",
+    "Type": "HumanLike",
+    "Rarity": "Rare",
+    "Element": "Water",
+    "BaseHp": 100,
+    "BaseStr": 5,
+    "BaseCon": 10,
+    "BaseInt": 25,
+    "BaseWis": 20,
+    "BaseAgi": 10,
+    "GrowthModel": {
+      "CurveType": "LateBloomer",
+      "HpGrowthPerLevel": 10,
+      "SpGrowthPerLevel": 10,
+      "StrWeight": 5,
+      "ConWeight": 15,
+      "IntWeight": 45,
+      "WisWeight": 25,
+      "AgiWeight": 10
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "RebirthEligible": true
+  },
+  {
+    "PetTypeId": 2005,
+    "Name": "Mercenary",
+    "Type": "HumanLike",
+    "Rarity": "Rare",
+    "Element": "Fire",
+    "BaseHp": 180,
+    "BaseStr": 25,
+    "BaseCon": 20,
+    "BaseInt": 5,
+    "BaseWis": 5,
+    "BaseAgi": 15,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 18,
+      "SpGrowthPerLevel": 5,
+      "StrWeight": 35,
+      "ConWeight": 30,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 20
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "RebirthEligible": true
+  },
+  {
+    "PetTypeId": 2006,
+    "Name": "Mechanical Spider",
+    "Type": "Quest",
+    "Rarity": "Rare",
+    "Element": "Earth",
+    "BaseHp": 150,
+    "BaseStr": 15,
+    "BaseCon": 20,
+    "BaseInt": 20,
+    "BaseWis": 10,
+    "BaseAgi": 10,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 12,
+      "SpGrowthPerLevel": 8,
+      "StrWeight": 20,
+      "ConWeight": 25,
+      "IntWeight": 30,
+      "WisWeight": 15,
+      "AgiWeight": 10
+    },
+    "SkillSet": [],
+    "Utilities": [
+      {
+        "Type": "CraftingAssist",
+        "Value": 1.1,
+        "RequiredLevel": 1,
+        "RequiredAmity": 0
+      }
+    ],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "IsQuestUnique": true
+  },
+  {
+    "PetTypeId": 2007,
+    "Name": "Royal Knight",
+    "Type": "HumanLike",
+    "Rarity": "Rare",
+    "Element": "Earth",
+    "BaseHp": 400,
+    "BaseStr": 50,
+    "BaseCon": 55,
+    "BaseInt": 10,
+    "BaseWis": 20,
+    "BaseAgi": 25,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 35,
+      "SpGrowthPerLevel": 8,
+      "StrWeight": 35,
+      "ConWeight": 40,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 10
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "RebirthEligible": true
+  },
+  {
+    "PetTypeId": 2008,
+    "Name": "High Priestess",
+    "Type": "HumanLike",
+    "Rarity": "Rare",
+    "Element": "Water",
+    "BaseHp": 220,
+    "BaseStr": 10,
+    "BaseCon": 25,
+    "BaseInt": 50,
+    "BaseWis": 60,
+    "BaseAgi": 20,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 20,
+      "SpGrowthPerLevel": 25,
+      "StrWeight": 5,
+      "ConWeight": 15,
+      "IntWeight": 35,
+      "WisWeight": 35,
+      "AgiWeight": 10
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "RebirthEligible": true
+  },
+  {
+    "PetTypeId": 2009,
+    "Name": "Assassin Master",
+    "Type": "HumanLike",
+    "Rarity": "Rare",
+    "Element": "Wind",
+    "BaseHp": 200,
+    "BaseStr": 45,
+    "BaseCon": 20,
+    "BaseInt": 15,
+    "BaseWis": 15,
+    "BaseAgi": 60,
+    "GrowthModel": {
+      "CurveType": "EarlyPeaker",
+      "HpGrowthPerLevel": 18,
+      "SpGrowthPerLevel": 12,
+      "StrWeight": 30,
+      "ConWeight": 15,
+      "IntWeight": 10,
+      "WisWeight": 10,
+      "AgiWeight": 35
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "RebirthEligible": true
+  },
+  {
+    "PetTypeId": 2010,
+    "Name": "Pyromancer",
+    "Type": "HumanLike",
+    "Rarity": "Rare",
+    "Element": "Fire",
+    "BaseHp": 180,
+    "BaseStr": 15,
+    "BaseCon": 20,
+    "BaseInt": 65,
+    "BaseWis": 30,
+    "BaseAgi": 25,
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 15,
+      "SpGrowthPerLevel": 20,
+      "StrWeight": 10,
+      "ConWeight": 15,
+      "IntWeight": 45,
+      "WisWeight": 15,
+      "AgiWeight": 15
+    },
+    "SkillSet": [],
+    "Utilities": [],
+    "CaptureRules": {
+      "IsCapturable": false
+    },
+    "RebirthEligible": true
+  },
+  {
     "PetTypeId": 3001,
     "Name": "Robot",
     "Type": "HumanLike",
@@ -327,6 +1471,43 @@
     },
     "RebirthEligible": true,
     "RebirthSkillId": 8001
+  },
+  {
+    "PetTypeId": 3002,
+    "Name": "Carrier Pigeon",
+    "Type": "Capture",
+    "Rarity": "Common",
+    "Element": "Wind",
+    "BaseHp": 50,
+    "BaseStr": 2,
+    "BaseCon": 2,
+    "BaseInt": 2,
+    "BaseWis": 2,
+    "BaseAgi": 30,
+    "GrowthModel": {
+      "CurveType": "EarlyPeaker",
+      "HpGrowthPerLevel": 5,
+      "SpGrowthPerLevel": 2,
+      "StrWeight": 5,
+      "ConWeight": 5,
+      "IntWeight": 5,
+      "WisWeight": 5,
+      "AgiWeight": 80
+    },
+    "SkillSet": [],
+    "Utilities": [
+      {
+        "Type": "Delivery",
+        "Value": 1,
+        "RequiredLevel": 1,
+        "RequiredAmity": 20
+      }
+    ],
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 1,
+      "BaseChance": 0.8
+    }
   },
   {
     "PetTypeId": 4001,
@@ -366,406 +1547,6 @@
     }
   },
   {
-    "PetTypeId": 1011,
-    "Name": "Tiny Sea Otter",
-    "Type": "Capture",
-    "Rarity": "Common",
-    "Element": "Water",
-    "SpritePath": "Pets/pet_tiny_sea_otter_64_spritesheet.png",
-    "PortraitPath": "Portraits/pet_tiny_sea_otter_portrait_256.png",
-    "BaseHp": 80,
-    "BaseStr": 6,
-    "BaseCon": 6,
-    "BaseInt": 5,
-    "BaseWis": 5,
-    "BaseAgi": 8,
-    "GrowthModel": {
-      "CurveType": "Standard",
-      "HpGrowthPerLevel": 7.0,
-      "SpGrowthPerLevel": 2.0,
-      "StrWeight": 20,
-      "ConWeight": 20,
-      "IntWeight": 20,
-      "WisWeight": 20,
-      "AgiWeight": 20
-    },
-    "Utilities": [
-      {
-        "Type": "Gathering",
-        "Value": 1.1,
-        "RequiredLevel": 5,
-        "RequiredAmity": 20
-      }
-    ],
-    "CaptureRules": {
-      "IsCapturable": true,
-      "LevelLimit": 5,
-      "BaseChance": 0.6
-    }
-  },
-  {
-    "PetTypeId": 1012,
-    "Name": "Leaf-wing Gecko",
-    "Type": "Capture",
-    "Rarity": "Common",
-    "Element": "Earth",
-    "SpritePath": "Pets/pet_leaf_wing_gecko_64_spritesheet.png",
-    "PortraitPath": "Portraits/pet_leaf_wing_gecko_portrait_256.png",
-    "BaseHp": 70,
-    "BaseStr": 4,
-    "BaseCon": 5,
-    "BaseInt": 4,
-    "BaseWis": 4,
-    "BaseAgi": 12,
-    "GrowthModel": {
-      "CurveType": "Standard",
-      "HpGrowthPerLevel": 6.0,
-      "SpGrowthPerLevel": 3.0,
-      "StrWeight": 15,
-      "ConWeight": 15,
-      "IntWeight": 15,
-      "WisWeight": 15,
-      "AgiWeight": 40
-    },
-    "Utilities": [],
-    "CaptureRules": {
-      "IsCapturable": true,
-      "LevelLimit": 5,
-      "BaseChance": 0.6
-    }
-  },
-  {
-    "PetTypeId": 1013,
-    "Name": "Pebble Turtle",
-    "Type": "Capture",
-    "Rarity": "Common",
-    "Element": "Earth",
-    "SpritePath": "Pets/pet_pebble_turtle_64_spritesheet.png",
-    "PortraitPath": "Portraits/pet_pebble_turtle_portrait_256.png",
-    "BaseHp": 100,
-    "BaseStr": 5,
-    "BaseCon": 12,
-    "BaseInt": 3,
-    "BaseWis": 6,
-    "BaseAgi": 2,
-    "GrowthModel": {
-      "CurveType": "Standard",
-      "HpGrowthPerLevel": 10.0,
-      "SpGrowthPerLevel": 2.0,
-      "StrWeight": 20,
-      "ConWeight": 40,
-      "IntWeight": 10,
-      "WisWeight": 20,
-      "AgiWeight": 10
-    },
-    "Utilities": [],
-    "CaptureRules": {
-      "IsCapturable": true,
-      "LevelLimit": 5,
-      "BaseChance": 0.6
-    }
-  },
-  {
-    "PetTypeId": 1014,
-    "Name": "Rock Crab",
-    "Type": "Capture",
-    "Rarity": "Common",
-    "Element": "Earth",
-    "BaseHp": 120,
-    "BaseStr": 8,
-    "BaseCon": 15,
-    "BaseInt": 2,
-    "BaseWis": 4,
-    "BaseAgi": 3,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 12, "SpGrowthPerLevel": 3, "StrWeight": 25, "ConWeight": 45, "IntWeight": 5, "WisWeight": 10, "AgiWeight": 15 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 8, "BaseChance": 0.5 }
-  },
-  {
-    "PetTypeId": 1015,
-    "Name": "Gale Bat",
-    "Type": "Capture",
-    "Rarity": "Common",
-    "Element": "Wind",
-    "BaseHp": 70,
-    "BaseStr": 6,
-    "BaseCon": 4,
-    "BaseInt": 6,
-    "BaseWis": 6,
-    "BaseAgi": 15,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 6, "SpGrowthPerLevel": 4, "StrWeight": 20, "ConWeight": 10, "IntWeight": 15, "WisWeight": 15, "AgiWeight": 40 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 8, "BaseChance": 0.5 }
-  },
-  {
-    "PetTypeId": 1016,
-    "Name": "Magma Slime",
-    "Type": "Capture",
-    "Rarity": "Common",
-    "Element": "Fire",
-    "BaseHp": 90,
-    "BaseStr": 10,
-    "BaseCon": 8,
-    "BaseInt": 8,
-    "BaseWis": 4,
-    "BaseAgi": 5,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 9, "SpGrowthPerLevel": 4, "StrWeight": 30, "ConWeight": 25, "IntWeight": 20, "WisWeight": 10, "AgiWeight": 15 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 10, "BaseChance": 0.45 }
-  },
-  {
-    "PetTypeId": 1017,
-    "Name": "Crystal Spider",
-    "Type": "Capture",
-    "Rarity": "Common",
-    "Element": "Water",
-    "BaseHp": 80,
-    "BaseStr": 7,
-    "BaseCon": 6,
-    "BaseInt": 10,
-    "BaseWis": 8,
-    "BaseAgi": 8,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 7, "SpGrowthPerLevel": 6, "StrWeight": 20, "ConWeight": 15, "IntWeight": 30, "WisWeight": 20, "AgiWeight": 15 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 12, "BaseChance": 0.45 }
-  },
-  {
-    "PetTypeId": 1018,
-    "Name": "Iron Beetle",
-    "Type": "Capture",
-    "Rarity": "Common",
-    "Element": "Earth",
-    "BaseHp": 150,
-    "BaseStr": 12,
-    "BaseCon": 25,
-    "BaseInt": 2,
-    "BaseWis": 5,
-    "BaseAgi": 2,
-    "GrowthModel": { "CurveType": "LateBloomer", "HpGrowthPerLevel": 15, "SpGrowthPerLevel": 2, "StrWeight": 30, "ConWeight": 50, "IntWeight": 5, "WisWeight": 10, "AgiWeight": 5 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 15, "BaseChance": 0.3 }
-  },
-  {
-    "PetTypeId": 1019,
-    "Name": "Cloud Ray",
-    "Type": "Capture",
-    "Rarity": "Rare",
-    "Element": "Wind",
-    "BaseHp": 100,
-    "BaseStr": 8,
-    "BaseCon": 8,
-    "BaseInt": 12,
-    "BaseWis": 12,
-    "BaseAgi": 10,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 9, "SpGrowthPerLevel": 8, "StrWeight": 20, "ConWeight": 20, "IntWeight": 30, "WisWeight": 20, "AgiWeight": 10 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 18, "BaseChance": 0.3 }
-  },
-  {
-    "PetTypeId": 1020,
-    "Name": "Ember Fox",
-    "Type": "Capture",
-    "Rarity": "Rare",
-    "Element": "Fire",
-    "BaseHp": 90,
-    "BaseStr": 5,
-    "BaseCon": 5,
-    "BaseInt": 20,
-    "BaseWis": 10,
-    "BaseAgi": 15,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 8, "SpGrowthPerLevel": 10, "StrWeight": 10, "ConWeight": 10, "IntWeight": 45, "WisWeight": 15, "AgiWeight": 20 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 20, "BaseChance": 0.2 }
-  },
-  {
-    "PetTypeId": 1021,
-    "Name": "Frost Wolf",
-    "Type": "Capture",
-    "Rarity": "Rare",
-    "Element": "Water",
-    "BaseHp": 110,
-    "BaseStr": 18,
-    "BaseCon": 10,
-    "BaseInt": 5,
-    "BaseWis": 5,
-    "BaseAgi": 18,
-    "GrowthModel": { "CurveType": "EarlyPeaker", "HpGrowthPerLevel": 10, "SpGrowthPerLevel": 4, "StrWeight": 35, "ConWeight": 20, "IntWeight": 5, "WisWeight": 5, "AgiWeight": 35 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 22, "BaseChance": 0.2 }
-  },
-  {
-    "PetTypeId": 1022,
-    "Name": "Sand Scorpion",
-    "Type": "Capture",
-    "Rarity": "Common",
-    "Element": "Earth",
-    "BaseHp": 100,
-    "BaseStr": 12,
-    "BaseCon": 12,
-    "BaseInt": 4,
-    "BaseWis": 4,
-    "BaseAgi": 8,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 9, "SpGrowthPerLevel": 3, "StrWeight": 30, "ConWeight": 30, "IntWeight": 10, "WisWeight": 10, "AgiWeight": 20 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 14, "BaseChance": 0.4 }
-  },
-  {
-    "PetTypeId": 1023,
-    "Name": "Storm Hawk",
-    "Type": "Capture",
-    "Rarity": "Rare",
-    "Element": "Wind",
-    "BaseHp": 90,
-    "BaseStr": 15,
-    "BaseCon": 6,
-    "BaseInt": 8,
-    "BaseWis": 6,
-    "BaseAgi": 25,
-    "GrowthModel": { "CurveType": "EarlyPeaker", "HpGrowthPerLevel": 8, "SpGrowthPerLevel": 4, "StrWeight": 30, "ConWeight": 10, "IntWeight": 10, "WisWeight": 10, "AgiWeight": 40 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 25, "BaseChance": 0.15 }
-  },
-  {
-    "PetTypeId": 1024,
-    "Name": "Lava Golem",
-    "Type": "Capture",
-    "Rarity": "Rare",
-    "Element": "Fire",
-    "BaseHp": 200,
-    "BaseStr": 25,
-    "BaseCon": 30,
-    "BaseInt": 5,
-    "BaseWis": 5,
-    "BaseAgi": 2,
-    "GrowthModel": { "CurveType": "LateBloomer", "HpGrowthPerLevel": 25, "SpGrowthPerLevel": 3, "StrWeight": 35, "ConWeight": 45, "IntWeight": 5, "WisWeight": 10, "AgiWeight": 5 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 30, "BaseChance": 0.1 }
-  },
-  {
-    "PetTypeId": 1025,
-    "Name": "Deep Sea Turtle",
-    "Type": "Capture",
-    "Rarity": "Rare",
-    "Element": "Water",
-    "BaseHp": 250,
-    "BaseStr": 10,
-    "BaseCon": 40,
-    "BaseInt": 10,
-    "BaseWis": 15,
-    "BaseAgi": 1,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 30, "SpGrowthPerLevel": 5, "StrWeight": 15, "ConWeight": 55, "IntWeight": 10, "WisWeight": 15, "AgiWeight": 5 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 35, "BaseChance": 0.1 }
-  },
-  {
-    "PetTypeId": 2002,
-    "Name": "Forest Elf",
-    "Type": "HumanLike",
-    "Rarity": "Legend",
-    "Element": "Wind",
-    "BaseHp": 150,
-    "BaseStr": 10,
-    "BaseCon": 10,
-    "BaseInt": 25,
-    "BaseWis": 20,
-    "BaseAgi": 15,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 15, "SpGrowthPerLevel": 15, "StrWeight": 10, "ConWeight": 15, "IntWeight": 40, "WisWeight": 25, "AgiWeight": 10 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": false },
-    "RebirthEligible": true
-  },
-  {
-    "PetTypeId": 2003,
-    "Name": "Stone Guardian",
-    "Type": "Quest",
-    "Rarity": "Rare",
-    "Element": "Earth",
-    "BaseHp": 300,
-    "BaseStr": 20,
-    "BaseCon": 40,
-    "BaseInt": 5,
-    "BaseWis": 10,
-    "BaseAgi": 5,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 20, "SpGrowthPerLevel": 5, "StrWeight": 25, "ConWeight": 50, "IntWeight": 5, "WisWeight": 15, "AgiWeight": 5 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": false },
-    "IsQuestUnique": true
-  },
-  {
-    "PetTypeId": 3002,
-    "Name": "Carrier Pigeon",
-    "Type": "Capture",
-    "Rarity": "Common",
-    "Element": "Wind",
-    "BaseHp": 50,
-    "BaseStr": 2,
-    "BaseCon": 2,
-    "BaseInt": 2,
-    "BaseWis": 2,
-    "BaseAgi": 30,
-    "GrowthModel": { "CurveType": "EarlyPeaker", "HpGrowthPerLevel": 5, "SpGrowthPerLevel": 2, "StrWeight": 5, "ConWeight": 5, "IntWeight": 5, "WisWeight": 5, "AgiWeight": 80 },
-    "SkillSet": [],
-    "Utilities": [
-      {
-        "Type": "Delivery",
-        "Value": 1.0,
-        "RequiredLevel": 1,
-        "RequiredAmity": 20
-      }
-    ],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 1, "BaseChance": 0.8 }
-  },
-  {
-    "PetTypeId": 2004,
-    "Name": "Apprentice Mage",
-    "Type": "HumanLike",
-    "Rarity": "Rare",
-    "Element": "Water",
-    "BaseHp": 100,
-    "BaseStr": 5,
-    "BaseCon": 10,
-    "BaseInt": 25,
-    "BaseWis": 20,
-    "BaseAgi": 10,
-    "GrowthModel": { "CurveType": "LateBloomer", "HpGrowthPerLevel": 10, "SpGrowthPerLevel": 10, "StrWeight": 5, "ConWeight": 15, "IntWeight": 45, "WisWeight": 25, "AgiWeight": 10 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": false },
-    "RebirthEligible": true
-  },
-  {
-    "PetTypeId": 2005,
-    "Name": "Mercenary",
-    "Type": "HumanLike",
-    "Rarity": "Rare",
-    "Element": "Fire",
-    "BaseHp": 180,
-    "BaseStr": 25,
-    "BaseCon": 20,
-    "BaseInt": 5,
-    "BaseWis": 5,
-    "BaseAgi": 15,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 18, "SpGrowthPerLevel": 5, "StrWeight": 35, "ConWeight": 30, "IntWeight": 5, "WisWeight": 10, "AgiWeight": 20 },
-    "SkillSet": [],
-    "Utilities": [],
-    "CaptureRules": { "IsCapturable": false },
-    "RebirthEligible": true
-  },
-  {
     "PetTypeId": 4002,
     "Name": "Pack Mule",
     "Type": "Capture",
@@ -777,17 +1558,30 @@
     "BaseInt": 5,
     "BaseWis": 5,
     "BaseAgi": 5,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 20, "SpGrowthPerLevel": 5, "StrWeight": 25, "ConWeight": 45, "IntWeight": 5, "WisWeight": 10, "AgiWeight": 15 },
+    "GrowthModel": {
+      "CurveType": "Standard",
+      "HpGrowthPerLevel": 20,
+      "SpGrowthPerLevel": 5,
+      "StrWeight": 25,
+      "ConWeight": 45,
+      "IntWeight": 5,
+      "WisWeight": 10,
+      "AgiWeight": 15
+    },
     "SkillSet": [],
     "Utilities": [
       {
         "Type": "Delivery",
-        "Value": 1.0,
+        "Value": 1,
         "RequiredLevel": 5,
         "RequiredAmity": 40
       }
     ],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 10, "BaseChance": 0.5 }
+    "CaptureRules": {
+      "IsCapturable": true,
+      "LevelLimit": 10,
+      "BaseChance": 0.5
+    }
   },
   {
     "PetTypeId": 4003,
@@ -801,7 +1595,16 @@
     "BaseInt": 5,
     "BaseWis": 10,
     "BaseAgi": 30,
-    "GrowthModel": { "CurveType": "EarlyPeaker", "HpGrowthPerLevel": 6, "SpGrowthPerLevel": 4, "StrWeight": 20, "ConWeight": 10, "IntWeight": 5, "WisWeight": 15, "AgiWeight": 50 },
+    "GrowthModel": {
+      "CurveType": "EarlyPeaker",
+      "HpGrowthPerLevel": 6,
+      "SpGrowthPerLevel": 4,
+      "StrWeight": 20,
+      "ConWeight": 10,
+      "IntWeight": 5,
+      "WisWeight": 15,
+      "AgiWeight": 50
+    },
     "SkillSet": [],
     "Utilities": [
       {
@@ -811,69 +1614,10 @@
         "RequiredAmity": 30
       }
     ],
-    "CaptureRules": { "IsCapturable": true, "LevelLimit": 12, "BaseChance": 0.4 }
-  },
-  {
-    "PetTypeId": 2006,
-    "Name": "Mechanical Spider",
-    "Type": "Quest",
-    "Rarity": "Rare",
-    "Element": "Earth",
-    "BaseHp": 150,
-    "BaseStr": 15,
-    "BaseCon": 20,
-    "BaseInt": 20,
-    "BaseWis": 10,
-    "BaseAgi": 10,
-    "GrowthModel": { "CurveType": "Standard", "HpGrowthPerLevel": 12, "SpGrowthPerLevel": 8, "StrWeight": 20, "ConWeight": 25, "IntWeight": 30, "WisWeight": 15, "AgiWeight": 10 },
-    "SkillSet": [],
-    "Utilities": [
-      {
-        "Type": "CraftingAssist",
-        "Value": 1.1,
-        "RequiredLevel": 1,
-        "RequiredAmity": 0
-      }
-    ],
-    "CaptureRules": { "IsCapturable": false },
-    "IsQuestUnique": true
-  },
-  {
-    "PetTypeId": 1030,
-    "Name": "Island Monkey",
-    "Type": "Quest",
-    "Rarity": "Common",
-    "Element": "Earth",
-    "SpritePath": "Pets/pet_island_monkey_64_spritesheet.png",
-    "PortraitPath": "Portraits/pet_island_monkey_portrait_256.png",
-    "BaseHp": 85,
-    "BaseStr": 8,
-    "BaseCon": 8,
-    "BaseInt": 4,
-    "BaseWis": 4,
-    "BaseAgi": 12,
-    "GrowthModel": {
-      "CurveType": "Standard",
-      "HpGrowthPerLevel": 8.0,
-      "SpGrowthPerLevel": 2.0,
-      "StrWeight": 25,
-      "ConWeight": 20,
-      "IntWeight": 10,
-      "WisWeight": 10,
-      "AgiWeight": 35
-    },
-    "SkillSet": [],
-    "Utilities": [
-      {
-        "Type": "Gathering",
-        "Value": 1.2,
-        "RequiredLevel": 5,
-        "RequiredAmity": 20
-      }
-    ],
     "CaptureRules": {
-      "IsCapturable": false
-    },
-    "IsQuestUnique": true
+      "IsCapturable": true,
+      "LevelLimit": 12,
+      "BaseChance": 0.4
+    }
   }
 ]
