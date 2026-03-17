@@ -41,6 +41,42 @@ public static class PlayerQueries
             last_saved AS LastSaved
         FROM players
         WHERE user_id = @UserId";
+
+    public const string LoadByUserIds = @"
+        SELECT
+            player_id AS PlayerId,
+            user_id AS UserId,
+            name AS Name,
+            hp AS Hp, sp AS Sp,
+            level AS Level,
+            rebirth_level AS RebirthLevel,
+            exp AS Exp,
+            exp_to_next_level AS ExpToNextLevel,
+            stat_points AS StatPoints,
+            str AS Str, con AS Con, ""int"" AS Int, wis AS Wis, agi AS Agi,
+            element AS Element,
+            gold AS Gold,
+            premium_currency AS PremiumCurrency,
+            daily_gift_accumulator AS DailyGiftAccumulator,
+            last_gift_reset_date AS LastGiftResetDate,
+            map_id AS MapId, x AS X, y AS Y,
+            active_pet_instance_id AS ActivePetInstanceId,
+            inventory_json AS InventoryJson,
+            equipment_json AS EquipmentJson,
+            bank_json AS BankJson,
+            pets_json AS PetsJson,
+            skills_json AS SkillsJson,
+            world_flags_json AS WorldFlagsJson,
+            processed_orders_json AS ProcessedOrdersJson,
+            instance_lockouts_json AS InstanceLockoutsJson,
+            quest_states_json AS QuestStatesJson,
+            quest_progress_json AS QuestProgressJson,
+            quest_flags_json AS QuestFlagsJson,
+            quest_completion_times_json AS QuestCompletionTimesJson,
+            quest_start_times_json AS QuestStartTimesJson,
+            last_saved AS LastSaved
+        FROM players
+        WHERE user_id = ANY(@UserIds)";
 }
 
 /// <summary>

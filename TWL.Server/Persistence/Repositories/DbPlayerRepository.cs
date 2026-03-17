@@ -136,6 +136,29 @@ public class DbPlayerRepository : IPlayerRepository
     }
 
     /// <summary>
+    /// Loads multiple player records in a single batch query.
+    /// </summary>
+    public async Task<IEnumerable<PlayerSaveData>> LoadBatchAsync(IEnumerable<int> userIds)
+    {
+        var idList = userIds.ToList();
+        if (!idList.Any()) return Enumerable.Empty<PlayerSaveData>();
+
+        try
+        {
+            var dtos = await _dapperService.QueryAsync<PlayerDto>(
+                PlayerQueries.LoadByUserIds,
+                new { UserIds = idList.ToArray() });
+
+            return dtos.Select(MapDtoToSaveData);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to batch load player data for {Count} users", idList.Count);
+            return Enumerable.Empty<PlayerSaveData>();
+        }
+    }
+
+    /// <summary>
     /// Synchronous load wrapper. Prefer LoadAsync when possible.
     /// </summary>
     [Obsolete("Use LoadAsync instead")]

@@ -254,7 +254,7 @@ public class ClientSession
                 var guild = _guildService.GetGuildByMember(UserId);
                 if (guild != null)
                 {
-                    _guildRosterService.BroadcastMemberPresenceUpdate(UserId, false);
+                    await _guildRosterService.BroadcastMemberPresenceUpdateAsync(UserId, false);
                 }
 
                 await _playerService.SaveSessionAsync(this);
@@ -1066,9 +1066,9 @@ public class ClientSession
             var guild = _guildService.GetGuildByMember(UserId);
             if (guild != null)
             {
-                _guildRosterService.SendFullRoster(UserId);
+                await _guildRosterService.SendFullRosterAsync(UserId);
                 _guildChatService.SendBacklog(UserId);
-                _guildRosterService.BroadcastMemberPresenceUpdate(UserId, true);
+                await _guildRosterService.BroadcastMemberPresenceUpdateAsync(UserId, true);
             }
         }
     }
@@ -1400,7 +1400,7 @@ public class ClientSession
             QuestComponent.HandleGuildAction("Create");
             if (Character.GuildId.HasValue)
             {
-                await BroadcastGuildUpdateAsync(Character.GuildId.Value, traceId);
+                await _guildRosterService.BroadcastRosterUpdateAsync(Character.GuildId.Value, UserId, false);
             }
         }
         else
@@ -1451,7 +1451,8 @@ public class ClientSession
         {
             Character.GuildId = request.GuildId;
             QuestComponent.HandleGuildAction("Join");
-            await BroadcastGuildUpdateAsync(request.GuildId, traceId);
+            await _guildRosterService.SendFullRosterAsync(UserId);
+            await _guildRosterService.BroadcastRosterUpdateAsync(request.GuildId, UserId, false);
         }
         else
         {
@@ -1481,7 +1482,7 @@ public class ClientSession
         {
             Character.GuildId = null;
             await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "You left the guild." }, _jsonOptions) });
-            await BroadcastGuildUpdateAsync(guildId, traceId);
+            await _guildRosterService.BroadcastRosterUpdateAsync(guildId, UserId, true);
         }
     }
 
@@ -1503,7 +1504,7 @@ public class ClientSession
                 await targetSession.SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "You were kicked from the guild." }, _jsonOptions) });
             }
             await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "Player kicked from guild." }, _jsonOptions) });
-            await BroadcastGuildUpdateAsync(guildId, traceId);
+            await _guildRosterService.BroadcastRosterUpdateAsync(guildId, request.TargetId, true);
         }
         else
         {
@@ -1523,7 +1524,7 @@ public class ClientSession
         if (result.Success)
         {
             await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "Player promoted." }, _jsonOptions) });
-            await BroadcastGuildUpdateAsync(guildId, traceId);
+            await _guildRosterService.BroadcastRosterUpdateAsync(guildId, request.TargetMemberId, false);
         }
         else
         {
@@ -1543,7 +1544,7 @@ public class ClientSession
         if (result.Success)
         {
             await SendAsync(new NetMessage { Op = Opcode.SystemMessage, JsonPayload = JsonSerializer.Serialize(new { Message = "Player demoted." }, _jsonOptions) });
-            await BroadcastGuildUpdateAsync(guildId, traceId);
+            await _guildRosterService.BroadcastRosterUpdateAsync(guildId, request.TargetMemberId, false);
         }
         else
         {
@@ -1551,48 +1552,6 @@ public class ClientSession
         }
     }
 
-    private async Task BroadcastGuildUpdateAsync(int guildId, string traceId)
-    {
-        var guild = _guildService.GetGuild(guildId);
-        if (guild == null) return; // Guild disbanded
-
-        var updateMsg = new GuildUpdateBroadcast
-        {
-            GuildId = guild.GuildId,
-            GuildName = guild.Name
-        };
-
-        List<int> currentMembers;
-        lock (guild.MemberIds)
-        {
-             currentMembers = guild.MemberIds.ToList();
-        }
-
-        foreach (var memberId in currentMembers)
-        {
-            var session = _playerService.GetSession(memberId);
-            updateMsg.Members.Add(new GuildMemberDto
-            {
-                CharacterId = memberId,
-                Name = session?.Character?.Name ?? "Unknown",
-                Level = session?.Character?.Level ?? 1,
-                IsOnline = session != null,
-                Rank = guild.MemberRanks.GetValueOrDefault(memberId, GuildRank.Recruit)
-            });
-        }
-
-        var json = JsonSerializer.Serialize(updateMsg, _jsonOptions);
-        var msg = new NetMessage { Op = Opcode.GuildUpdateBroadcast, JsonPayload = json };
-
-        foreach (var memberId in currentMembers)
-        {
-            var session = _playerService.GetSession(memberId);
-            if (session != null)
-            {
-                await session.SendAsync(msg);
-            }
-        }
-    }
 
     private async Task HandleGuildChatAsync(string payload, string traceId)
     {

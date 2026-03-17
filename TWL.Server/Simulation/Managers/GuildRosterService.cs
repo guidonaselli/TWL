@@ -17,7 +17,7 @@ public class GuildRosterService
         _playerService = playerService;
     }
 
-    public void SendFullRoster(int memberId)
+    public async Task SendFullRosterAsync(int memberId)
     {
         var guild = _guildManager.GetGuildByMember(memberId);
         if (guild == null) return;
@@ -33,33 +33,123 @@ public class GuildRosterService
             members = guild.MemberIds.ToArray();
         }
 
+        // Optimization: Identify offline members for batch loading
+        var offlineMemberIds = new List<int>();
+        var memberDtos = new Dictionary<int, GuildMemberDto>();
+
         foreach (var pId in members)
         {
-            syncEvent.Members.Add(CreateMemberDto(guild, pId));
+            var pSession = _playerService.GetSession(pId);
+            if (pSession != null && pSession.Character != null)
+            {
+                memberDtos[pId] = new GuildMemberDto
+                {
+                    CharacterId = pId,
+                    Name = pSession.Character.Name,
+                    Level = pSession.Character.Level,
+                    IsOnline = true,
+                    Rank = guild.MemberRanks.GetValueOrDefault(pId, GuildRank.Recruit),
+                    LastLoginUtc = pSession.Character.LastLoginUtc
+                };
+            }
+            else
+            {
+                offlineMemberIds.Add(pId);
+            }
         }
 
-        var msg = new TWL.Shared.Net.Network.NetMessage 
-        { 
-            Op = TWL.Shared.Net.Network.Opcode.GuildRosterSync, 
+        if (offlineMemberIds.Count > 0)
+        {
+            var offlineData = await _playerService.LoadDataBatchAsync(offlineMemberIds);
+            foreach (var data in offlineData)
+            {
+                memberDtos[data.Character.Id] = new GuildMemberDto
+                {
+                    CharacterId = data.Character.Id,
+                    Name = data.Character.Name,
+                    Level = data.Character.Level,
+                    IsOnline = false,
+                    Rank = guild.MemberRanks.GetValueOrDefault(data.Character.Id, GuildRank.Recruit),
+                    LastLoginUtc = data.Character.LastLoginUtc
+                };
+            }
+        }
+
+        // Fill in defaults for any members not found in DB
+        foreach (var pId in members)
+        {
+            if (!memberDtos.TryGetValue(pId, out var dto))
+            {
+                dto = new GuildMemberDto
+                {
+                    CharacterId = pId,
+                    Name = "Unknown",
+                    Level = 1,
+                    IsOnline = false,
+                    Rank = guild.MemberRanks.GetValueOrDefault(pId, GuildRank.Recruit),
+                    LastLoginUtc = DateTime.UtcNow
+                };
+            }
+            syncEvent.Members.Add(dto);
+        }
+
+        var msg = new TWL.Shared.Net.Network.NetMessage
+        {
+            Op = TWL.Shared.Net.Network.Opcode.GuildRosterSync,
             JsonPayload = System.Text.Json.JsonSerializer.Serialize(syncEvent, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
         };
-        _ = session.SendAsync(msg);
+        await session.SendAsync(msg);
     }
 
-    public void BroadcastRosterUpdate(int guildId, int targetMemberId, bool isRemoved = false)
+    public async Task BroadcastRosterUpdateAsync(int guildId, int targetMemberId, bool isRemoved = false)
     {
         var guild = _guildManager.GetGuild(guildId);
         if (guild == null) return;
 
+        GuildMemberDto memberDto;
+        if (isRemoved)
+        {
+            memberDto = new GuildMemberDto { CharacterId = targetMemberId };
+        }
+        else
+        {
+            var session = _playerService.GetSession(targetMemberId);
+            if (session != null && session.Character != null)
+            {
+                memberDto = new GuildMemberDto
+                {
+                    CharacterId = targetMemberId,
+                    Name = session.Character.Name,
+                    Level = session.Character.Level,
+                    IsOnline = true,
+                    Rank = guild.MemberRanks.GetValueOrDefault(targetMemberId, GuildRank.Recruit),
+                    LastLoginUtc = session.Character.LastLoginUtc
+                };
+            }
+            else
+            {
+                var saveData = await _playerService.LoadDataAsync(targetMemberId);
+                memberDto = new GuildMemberDto
+                {
+                    CharacterId = targetMemberId,
+                    Name = saveData?.Character.Name ?? "Unknown",
+                    Level = saveData?.Character.Level ?? 1,
+                    IsOnline = false,
+                    Rank = guild.MemberRanks.GetValueOrDefault(targetMemberId, GuildRank.Recruit),
+                    LastLoginUtc = saveData?.Character.LastLoginUtc ?? DateTime.UtcNow
+                };
+            }
+        }
+
         var updateEvent = new GuildRosterUpdateEvent
         {
-            Member = isRemoved ? new GuildMemberDto { CharacterId = targetMemberId } : CreateMemberDto(guild, targetMemberId),
+            Member = memberDto,
             IsRemoved = isRemoved
         };
 
-        var msg = new TWL.Shared.Net.Network.NetMessage 
-        { 
-            Op = TWL.Shared.Net.Network.Opcode.GuildRosterUpdate, 
+        var msg = new TWL.Shared.Net.Network.NetMessage
+        {
+            Op = TWL.Shared.Net.Network.Opcode.GuildRosterUpdate,
             JsonPayload = System.Text.Json.JsonSerializer.Serialize(updateEvent, new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true })
         };
 
@@ -79,50 +169,11 @@ public class GuildRosterService
         }
     }
 
-    public void BroadcastMemberPresenceUpdate(int memberId, bool isOnline)
+    public async Task BroadcastMemberPresenceUpdateAsync(int memberId, bool isOnline)
     {
         var guild = _guildManager.GetGuildByMember(memberId);
         if (guild == null) return;
 
-        BroadcastRosterUpdate(guild.GuildId, memberId, false);
-    }
-
-    private GuildMemberDto CreateMemberDto(Guild guild, int characterId)
-    {
-        var session = _playerService.GetSession(characterId);
-        var isOnline = session != null && session.Character != null;
-        var rank = guild.MemberRanks.GetValueOrDefault(characterId, GuildRank.Recruit);
-
-        string name = "Unknown";
-        int level = 1;
-        DateTime lastLogin = DateTime.UtcNow;
-
-        if (isOnline)
-        {
-            name = session!.Character!.Name;
-            level = session.Character.Level;
-            lastLogin = session.Character.LastLoginUtc;
-        }
-        else
-        {
-            // Try to load offline data
-            var saveData = _playerService.LoadData(characterId);
-            if (saveData != null)
-            {
-                name = saveData.Character.Name;
-                level = saveData.Character.Level;
-                lastLogin = saveData.Character.LastLoginUtc;
-            }
-        }
-
-        return new GuildMemberDto
-        {
-            CharacterId = characterId,
-            Name = name,
-            Level = level,
-            IsOnline = isOnline,
-            Rank = rank,
-            LastLoginUtc = lastLogin
-        };
+        await BroadcastRosterUpdateAsync(guild.GuildId, memberId, false);
     }
 }

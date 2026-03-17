@@ -215,6 +215,8 @@ public class PlayerService
 
     public async Task<PlayerSaveData?> LoadDataAsync(int userId) => await _repo.LoadAsync(userId);
 
+    public async Task<IEnumerable<PlayerSaveData>> LoadDataBatchAsync(IEnumerable<int> userIds) => await _repo.LoadBatchAsync(userIds);
+
     public virtual void SaveSession(ClientSession session) => SaveSessionAsync(session).GetAwaiter().GetResult();
 
     public async Task SaveSessionAsync(ClientSession session)
