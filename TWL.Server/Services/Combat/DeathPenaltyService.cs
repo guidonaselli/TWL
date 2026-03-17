@@ -29,6 +29,16 @@ public class DeathPenaltyService
 
             character.Exp = newExp;
 
+            // Apply Durability Loss
+            foreach (var item in character.Equipment)
+            {
+                if (item.MaxDurability > 0 && item.Durability > 0)
+                {
+                    item.Durability -= 1;
+                    character.IsDirty = true;
+                }
+            }
+
             return new DeathPenaltyResult(true, previousExp - newExp, previousExp, newExp, false);
         }
     }

@@ -11,9 +11,9 @@ Output: Item durability model, server durability mutation logic, and durability 
 
 ## Must-Haves
 
-- [ ] "Every equipped item loses 1 durability when player death penalty is applied"
-- [ ] "Items at 0 durability are treated as Broken and no longer contribute stat effects"
-- [ ] "Durability and broken-state data persist through save/load without corrupting legacy saves"
+- [x] "Every equipped item loses 1 durability when player death penalty is applied"
+- [x] "Items at 0 durability are treated as Broken and no longer contribute stat effects"
+- [x] "Durability and broken-state data persist through save/load without corrupting legacy saves"
 
 ## Files
 

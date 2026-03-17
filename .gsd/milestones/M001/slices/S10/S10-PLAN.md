@@ -29,7 +29,7 @@
 
 Purpose: Ensure combat deaths produce deterministic, policy-compliant progression penalties.
 Output: DeathPenaltyService, ServerCharacter EXP penalty mutation, and focused regression tests.
-- [ ] **T02: 10-combat-progression-integration 02**
+- [x] **T02: 10-combat-progression-integration 02**
   - Implement durability and broken-state mechanics for equipped items to complete the non-EXP portion of `CMB-01` and all of `CMB-02`.
 
 Purpose: Attach item wear to death penalties and enforce stat-disable semantics for broken gear.
