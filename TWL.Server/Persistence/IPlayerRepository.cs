@@ -7,4 +7,6 @@ public interface IPlayerRepository
     Task SaveAsync(int userId, PlayerSaveData data);
 
     Task<PlayerSaveData?> LoadAsync(int userId);
+
+    Task<IEnumerable<PlayerSaveData>> LoadBatchAsync(IEnumerable<int> userIds);
 }
