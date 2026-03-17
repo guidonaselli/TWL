@@ -101,7 +101,9 @@ public class ServerCharacter : ServerCombatant
                         Policy = i.Policy,
                         BoundToId = i.BoundToId,
                         EnhancementLevel = i.EnhancementLevel,
-                        EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
+                        EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null,
+                        Durability = i.Durability,
+                        MaxDurability = i.MaxDurability
                     }).ToArray();
                 }
 
@@ -191,8 +193,31 @@ public class ServerCharacter : ServerCombatant
     private int? _overrideMaxHp;
     private int? _overrideMaxSp;
 
-    public override int MaxHp => _overrideMaxHp ?? base.MaxHp;
-    public override int MaxSp => _overrideMaxSp ?? base.MaxSp;
+    public override int MaxHp => (_overrideMaxHp ?? base.MaxHp) + GetEquipmentStatModifier("MaxHp");
+    public override int MaxSp => (_overrideMaxSp ?? base.MaxSp) + GetEquipmentStatModifier("MaxSp");
+
+    public override int Atk => base.Atk + GetEquipmentStatModifier("Atk");
+    public override int Def => base.Def + GetEquipmentStatModifier("Def");
+    public override int Mat => base.Mat + GetEquipmentStatModifier("Mat");
+    public override int Mdf => base.Mdf + GetEquipmentStatModifier("Mdf");
+    public override int Spd => base.Spd + GetEquipmentStatModifier("Spd");
+
+    private int GetEquipmentStatModifier(string stat)
+    {
+        int total = 0;
+        lock (_equipment)
+        {
+            foreach (var item in _equipment)
+            {
+                if (item.IsBroken) continue;
+                if (item.EnhancementStats != null && item.EnhancementStats.TryGetValue(stat, out var val))
+                {
+                    total += (int)val;
+                }
+            }
+        }
+        return total;
+    }
 
     public void SetOverrideStats(int maxHp, int maxSp)
     {
@@ -295,7 +320,9 @@ public class ServerCharacter : ServerCombatant
                         Policy = i.Policy,
                         BoundToId = i.BoundToId,
                         EnhancementLevel = i.EnhancementLevel,
-                        EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
+                        EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null,
+                        Durability = i.Durability,
+                        MaxDurability = i.MaxDurability
                     }).ToArray();
                 }
 
@@ -324,7 +351,9 @@ public class ServerCharacter : ServerCombatant
                         Policy = i.Policy,
                         BoundToId = i.BoundToId,
                         EnhancementLevel = i.EnhancementLevel,
-                        EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
+                        EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null,
+                        Durability = i.Durability,
+                        MaxDurability = i.MaxDurability
                     }).ToArray();
                 }
 
@@ -828,7 +857,9 @@ public class ServerCharacter : ServerCombatant
                     Policy = item.Policy,
                     BoundToId = item.BoundToId,
                     EnhancementLevel = item.EnhancementLevel,
-                    EnhancementStats = item.EnhancementStats != null ? new Dictionary<string, float>(item.EnhancementStats) : null
+                    EnhancementStats = item.EnhancementStats != null ? new Dictionary<string, float>(item.EnhancementStats) : null,
+                        Durability = item.Durability,
+                        MaxDurability = item.MaxDurability
                 };
                 return true;
             }
@@ -851,7 +882,9 @@ public class ServerCharacter : ServerCombatant
                     Policy = item.Policy,
                     BoundToId = item.BoundToId,
                     EnhancementLevel = item.EnhancementLevel,
-                    EnhancementStats = item.EnhancementStats != null ? new Dictionary<string, float>(item.EnhancementStats) : null
+                    EnhancementStats = item.EnhancementStats != null ? new Dictionary<string, float>(item.EnhancementStats) : null,
+                        Durability = item.Durability,
+                        MaxDurability = item.MaxDurability
                 };
 
                 // Update Total Quantities Cache
@@ -980,7 +1013,9 @@ public class ServerCharacter : ServerCombatant
                         Policy = item.Policy,
                         BoundToId = item.BoundToId,
                         EnhancementLevel = item.EnhancementLevel,
-                        EnhancementStats = item.EnhancementStats != null ? new Dictionary<string, float>(item.EnhancementStats) : null
+                        EnhancementStats = item.EnhancementStats != null ? new Dictionary<string, float>(item.EnhancementStats) : null,
+                        Durability = item.Durability,
+                        MaxDurability = item.MaxDurability
                     });
                 }
             }
@@ -1152,7 +1187,9 @@ public class ServerCharacter : ServerCombatant
                 Policy = i.Policy,
                 BoundToId = i.BoundToId,
                 EnhancementLevel = i.EnhancementLevel,
-                EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
+                EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null,
+                        Durability = i.Durability,
+                        MaxDurability = i.MaxDurability
             }).ToList();
         }
 
@@ -1170,7 +1207,9 @@ public class ServerCharacter : ServerCombatant
                 Policy = i.Policy,
                 BoundToId = i.BoundToId,
                 EnhancementLevel = i.EnhancementLevel,
-                EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
+                EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null,
+                        Durability = i.Durability,
+                        MaxDurability = i.MaxDurability
             }).ToList();
         }
 
@@ -1188,7 +1227,9 @@ public class ServerCharacter : ServerCombatant
                 Policy = i.Policy,
                 BoundToId = i.BoundToId,
                 EnhancementLevel = i.EnhancementLevel,
-                EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null
+                EnhancementStats = i.EnhancementStats != null ? new Dictionary<string, float>(i.EnhancementStats) : null,
+                        Durability = i.Durability,
+                        MaxDurability = i.MaxDurability
             }).ToList();
         }
 

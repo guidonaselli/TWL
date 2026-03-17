@@ -14,6 +14,12 @@ public class Item
     [JsonPropertyName("el")] public int EnhancementLevel { get; set; }
     [JsonPropertyName("es")] public Dictionary<string, float>? EnhancementStats { get; set; }
 
+    [JsonPropertyName("dur")] public int Durability { get; set; }
+    [JsonPropertyName("mdur")] public int MaxDurability { get; set; }
+
+    [JsonIgnore]
+    public bool IsBroken => MaxDurability > 0 && Durability <= 0;
+
     [JsonPropertyName("bp")] public BindPolicy Policy { get; set; } = BindPolicy.Unbound;
     [JsonPropertyName("bid")] public int? BoundToId { get; set; }
 }
