@@ -8,7 +8,7 @@
 
 ## Tasks
 
-- [ ] **T01: 12-quest-expansion 01**
+- [x] **T01: 12-quest-expansion 01**
   - Create the main story quest chains for regions 3 and 4 (Selva Esmeralda and Arrecife Hundido), covering levels 20-45.
 
 Purpose: This supports CONT-04 and provides structured progression content beyond the initial tutorial zones.
