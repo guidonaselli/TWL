@@ -24,6 +24,9 @@ internal class InMemoryBenchmarkRepository : IPlayerRepository
 
     public Task<PlayerSaveData?> LoadAsync(int userId) =>
         Task.FromResult(Load(userId));
+
+    public Task<IEnumerable<PlayerSaveData>> LoadBatchAsync(IEnumerable<int> userIds) =>
+        Task.FromResult(userIds.Where(_store.ContainsKey).Select(id => _store[id]));
 }
 
 public class PlayerPersistenceBenchmark

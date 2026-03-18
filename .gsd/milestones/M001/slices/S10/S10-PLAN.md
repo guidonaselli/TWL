@@ -34,7 +34,7 @@ Output: DeathPenaltyService, ServerCharacter EXP penalty mutation, and focused r
 
 Purpose: Attach item wear to death penalties and enforce stat-disable semantics for broken gear.
 Output: Item durability model, server durability mutation logic, and durability regression tests.
-- [ ] **T03: 10-combat-progression-integration 03**
+- [x] **T03: 10-combat-progression-integration 03**
   - Implement per-instance daily run limits with UTC reset and entry rejection to satisfy `INST-01`, `INST-02`, and `INST-03`.
 
 Purpose: Prevent unlimited instance farming by enforcing server-authoritative daily quotas.

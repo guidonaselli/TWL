@@ -85,6 +85,9 @@ public class PlayerServicePerformanceTests
 
         public Task<PlayerSaveData?> LoadAsync(int userId) => Task.FromResult<PlayerSaveData?>(null);
 
+        public Task<IEnumerable<PlayerSaveData>> LoadBatchAsync(IEnumerable<int> userIds) =>
+            Task.FromResult(Enumerable.Empty<PlayerSaveData>());
+
         public void Save(int userId, PlayerSaveData data)
         {
             // Simulate blocking I/O

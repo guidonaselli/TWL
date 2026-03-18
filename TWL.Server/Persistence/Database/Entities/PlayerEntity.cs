@@ -57,6 +57,8 @@ public class PlayerEntity
     public string WorldFlagsJson { get; set; } = "[]";
     public string ProcessedOrdersJson { get; set; } = "[]";
     public string InstanceLockoutsJson { get; set; } = "{}";
+    public string InstanceDailyRunsJson { get; set; } = "{}";
+    public DateTime InstanceDailyResetUtc { get; set; }
     public string QuestStatesJson { get; set; } = "{}";
     public string QuestProgressJson { get; set; } = "{}";
     public string QuestFlagsJson { get; set; } = "[]";

@@ -177,6 +177,9 @@ public class ServerCharacter : ServerCombatant
     // InstanceId -> ReleaseTime
     public Dictionary<string, DateTime> InstanceLockouts { get; } = new();
 
+    public Dictionary<string, int> InstanceDailyRuns { get; } = new();
+    public DateTime InstanceDailyResetUtc { get; set; }
+
     // Utility Modifiers
     public bool IsMounted { get; set; }
     public float MoveSpeedModifier { get; set; } = 1.0f;
@@ -1150,6 +1153,8 @@ public class ServerCharacter : ServerCombatant
             LastLoginUtc = LastLoginUtc,
             ActivePetInstanceId = ActivePetInstanceId,
             InstanceLockouts = new Dictionary<string, DateTime>(InstanceLockouts),
+            InstanceDailyRuns = new Dictionary<string, int>(InstanceDailyRuns),
+            InstanceDailyResetUtc = InstanceDailyResetUtc,
             MapId = MapId,
             X = X,
             Y = Y,
@@ -1290,6 +1295,17 @@ public class ServerCharacter : ServerCombatant
                 InstanceLockouts[kvp.Key] = kvp.Value;
             }
         }
+
+        InstanceDailyRuns.Clear();
+        if (data.InstanceDailyRuns != null)
+        {
+            foreach (var kvp in data.InstanceDailyRuns)
+            {
+                InstanceDailyRuns[kvp.Key] = kvp.Value;
+            }
+        }
+        InstanceDailyResetUtc = data.InstanceDailyResetUtc;
+
         MapId = data.MapId;
         X = data.X;
         Y = data.Y;

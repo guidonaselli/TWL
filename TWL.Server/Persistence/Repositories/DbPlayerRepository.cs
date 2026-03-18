@@ -92,6 +92,8 @@ public class DbPlayerRepository : IPlayerRepository
             entity.WorldFlagsJson = JsonSerializer.Serialize(c.WorldFlags, JsonOptions);
             entity.ProcessedOrdersJson = JsonSerializer.Serialize(c.ProcessedOrders, JsonOptions);
             entity.InstanceLockoutsJson = JsonSerializer.Serialize(c.InstanceLockouts, JsonOptions);
+            entity.InstanceDailyRunsJson = JsonSerializer.Serialize(c.InstanceDailyRuns, JsonOptions);
+            entity.InstanceDailyResetUtc = DateTime.SpecifyKind(c.InstanceDailyResetUtc, DateTimeKind.Utc);
 
             // Serialize quest data
             var q = data.Quests;
@@ -201,7 +203,9 @@ public class DbPlayerRepository : IPlayerRepository
             Skills = DeserializeOrDefault<List<SkillMasteryData>>(dto.SkillsJson) ?? new List<SkillMasteryData>(),
             WorldFlags = DeserializeOrDefault<HashSet<string>>(dto.WorldFlagsJson) ?? new HashSet<string>(),
             ProcessedOrders = DeserializeOrDefault<HashSet<string>>(dto.ProcessedOrdersJson) ?? new HashSet<string>(),
-            InstanceLockouts = DeserializeOrDefault<Dictionary<string, DateTime>>(dto.InstanceLockoutsJson) ?? new Dictionary<string, DateTime>()
+            InstanceLockouts = DeserializeOrDefault<Dictionary<string, DateTime>>(dto.InstanceLockoutsJson) ?? new Dictionary<string, DateTime>(),
+            InstanceDailyRuns = DeserializeOrDefault<Dictionary<string, int>>(dto.InstanceDailyRunsJson) ?? new Dictionary<string, int>(),
+            InstanceDailyResetUtc = dto.InstanceDailyResetUtc
         };
 
         var quests = new QuestData

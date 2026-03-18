@@ -31,7 +31,7 @@ public class GuildRosterPerformanceTests
         var guildRepoMock = new Mock<IGuildRepository>();
         var guildManager = new GuildManager(guildRepoMock.Object);
 
-        var guild = new Guild
+        var guild = new TWL.Shared.Domain.Guilds.Guild
         {
             GuildId = guildId,
             Name = "PerfTestGuild",
@@ -47,7 +47,7 @@ public class GuildRosterPerformanceTests
         var guildsField = typeof(GuildManager).GetField("_guilds", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
         var playerGuildMapField = typeof(GuildManager).GetField("_playerGuildMap", System.Reflection.BindingFlags.NonPublic | System.Reflection.BindingFlags.Instance);
 
-        var guilds = (System.Collections.Concurrent.ConcurrentDictionary<int, Guild>)guildsField.GetValue(guildManager);
+        var guilds = (System.Collections.Concurrent.ConcurrentDictionary<int, TWL.Shared.Domain.Guilds.Guild>)guildsField.GetValue(guildManager);
         var playerGuildMap = (System.Collections.Concurrent.ConcurrentDictionary<int, int>)playerGuildMapField.GetValue(guildManager);
 
         guilds[guildId] = guild;
