@@ -1,0 +1,112 @@
+[
+  {
+    "QuestId": 2080,
+    "Title": "Into the Emerald Jungle",
+    "Description": "The jungle is overgrown. Clear the path by defeating the Rock Monkeys.",
+    "Requirements": [],
+    "RequiredLevel": 20,
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "RockMonkey(Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Rock Monkeys."
+      }
+    ],
+    "Rewards": {
+      "Exp": 1500,
+      "Gold": 1000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2081,
+    "Title": "Vine Entanglement",
+    "Description": "Root Vines are trapping travelers. We need to cut them down.",
+    "Requirements": [
+      2080
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "RootVine(Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Root Vines."
+      }
+    ],
+    "Rewards": {
+      "Exp": 1800,
+      "Gold": 1200,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2082,
+    "Title": "Monkey Business",
+    "Description": "The Rock Monkeys have returned in greater numbers.",
+    "Requirements": [
+      2081
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "RockMonkey(Earth)",
+        "RequiredCount": 10,
+        "Description": "Defeat 10 Rock Monkeys."
+      }
+    ],
+    "Rewards": {
+      "Exp": 2200,
+      "Gold": 1500,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2083,
+    "Title": "Deep into the Roots",
+    "Description": "We must venture deeper where the Root Vines are thickest.",
+    "Requirements": [
+      2082
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "RootVine(Earth)",
+        "RequiredCount": 10,
+        "Description": "Defeat 10 Root Vines."
+      }
+    ],
+    "Rewards": {
+      "Exp": 2600,
+      "Gold": 2000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 2084,
+    "Title": "The Emerald Core",
+    "Description": "A fierce battle awaits to secure the heart of the jungle.",
+    "Requirements": [
+      2083
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "RockMonkey(Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Rock Monkeys."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "RootVine(Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Root Vines."
+      }
+    ],
+    "Rewards": {
+      "Exp": 3500,
+      "Gold": 3000,
+      "Items": []
+    }
+  }
+]

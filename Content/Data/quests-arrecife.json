@@ -1,0 +1,112 @@
+[
+  {
+    "QuestId": 3080,
+    "Title": "Sunken Secrets",
+    "Description": "The Arrecife Hundido hides many dangers. The Tide Crabs are aggressive.",
+    "Requirements": [],
+    "RequiredLevel": 30,
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "TideCrab(Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Tide Crabs."
+      }
+    ],
+    "Rewards": {
+      "Exp": 4000,
+      "Gold": 3000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 3081,
+    "Title": "Tangled Kelp",
+    "Description": "Kelp Vines are ensnaring swimmers. Cut them down.",
+    "Requirements": [
+      3080
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "KelpVine(Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Kelp Vines."
+      }
+    ],
+    "Rewards": {
+      "Exp": 4500,
+      "Gold": 3500,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 3082,
+    "Title": "Crab Infestation",
+    "Description": "The Tide Crabs have formed a large swarm.",
+    "Requirements": [
+      3081
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "TideCrab(Water)",
+        "RequiredCount": 10,
+        "Description": "Defeat 10 Tide Crabs."
+      }
+    ],
+    "Rewards": {
+      "Exp": 5000,
+      "Gold": 4000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 3083,
+    "Title": "Deep Water Weeds",
+    "Description": "The kelp is growing thicker in the deeper waters.",
+    "Requirements": [
+      3082
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "KelpVine(Water)",
+        "RequiredCount": 10,
+        "Description": "Defeat 10 Kelp Vines."
+      }
+    ],
+    "Rewards": {
+      "Exp": 5500,
+      "Gold": 4500,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 3084,
+    "Title": "The Ocean's Fury",
+    "Description": "A final push into the depths of the reef.",
+    "Requirements": [
+      3083
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "TideCrab(Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Tide Crabs."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "KelpVine(Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Kelp Vines."
+      }
+    ],
+    "Rewards": {
+      "Exp": 6500,
+      "Gold": 6000,
+      "Items": []
+    }
+  }
+]
