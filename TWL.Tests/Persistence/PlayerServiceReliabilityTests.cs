@@ -39,6 +39,9 @@ public class MockPlayerRepository : IPlayerRepository
     public PlayerSaveData? Load(int userId) => null;
 
     public Task<PlayerSaveData?> LoadAsync(int userId) => Task.FromResult<PlayerSaveData?>(null);
+
+    public Task<IEnumerable<PlayerSaveData>> LoadBatchAsync(IEnumerable<int> userIds) =>
+        Task.FromResult(Enumerable.Empty<PlayerSaveData>());
 }
 
 public class PlayerServiceReliabilityTests

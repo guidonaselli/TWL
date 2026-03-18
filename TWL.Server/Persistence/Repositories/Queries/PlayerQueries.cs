@@ -33,6 +33,8 @@ public static class PlayerQueries
             world_flags_json AS WorldFlagsJson,
             processed_orders_json AS ProcessedOrdersJson,
             instance_lockouts_json AS InstanceLockoutsJson,
+            instance_daily_runs_json AS InstanceDailyRunsJson,
+            instance_daily_reset_utc AS InstanceDailyResetUtc,
             quest_states_json AS QuestStatesJson,
             quest_progress_json AS QuestProgressJson,
             quest_flags_json AS QuestFlagsJson,
@@ -69,6 +71,8 @@ public static class PlayerQueries
             world_flags_json AS WorldFlagsJson,
             processed_orders_json AS ProcessedOrdersJson,
             instance_lockouts_json AS InstanceLockoutsJson,
+            instance_daily_runs_json AS InstanceDailyRunsJson,
+            instance_daily_reset_utc AS InstanceDailyResetUtc,
             quest_states_json AS QuestStatesJson,
             quest_progress_json AS QuestProgressJson,
             quest_flags_json AS QuestFlagsJson,
@@ -116,6 +120,8 @@ public class PlayerDto
     public string WorldFlagsJson { get; set; } = "[]";
     public string ProcessedOrdersJson { get; set; } = "[]";
     public string InstanceLockoutsJson { get; set; } = "{}";
+    public string InstanceDailyRunsJson { get; set; } = "{}";
+    public DateTime InstanceDailyResetUtc { get; set; }
     public string QuestStatesJson { get; set; } = "{}";
     public string QuestProgressJson { get; set; } = "{}";
     public string QuestFlagsJson { get; set; } = "[]";

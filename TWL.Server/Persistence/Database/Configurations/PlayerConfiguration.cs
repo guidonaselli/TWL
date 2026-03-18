@@ -70,6 +70,8 @@ public class PlayerConfiguration : IEntityTypeConfiguration<PlayerEntity>
         builder.Property(x => x.WorldFlagsJson).HasColumnName("world_flags_json").HasColumnType("jsonb").HasDefaultValue("[]");
         builder.Property(x => x.ProcessedOrdersJson).HasColumnName("processed_orders_json").HasColumnType("jsonb").HasDefaultValue("[]");
         builder.Property(x => x.InstanceLockoutsJson).HasColumnName("instance_lockouts_json").HasColumnType("jsonb").HasDefaultValue("{}");
+        builder.Property(x => x.InstanceDailyRunsJson).HasColumnName("instance_daily_runs_json").HasColumnType("jsonb").HasDefaultValue("{}");
+        builder.Property(x => x.InstanceDailyResetUtc).HasColumnName("instance_daily_reset_utc");
         builder.Property(x => x.QuestStatesJson).HasColumnName("quest_states_json").HasColumnType("jsonb").HasDefaultValue("{}");
         builder.Property(x => x.QuestProgressJson).HasColumnName("quest_progress_json").HasColumnType("jsonb").HasDefaultValue("{}");
         builder.Property(x => x.QuestFlagsJson).HasColumnName("quest_flags_json").HasColumnType("jsonb").HasDefaultValue("[]");
