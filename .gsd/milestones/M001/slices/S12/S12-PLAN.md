@@ -13,7 +13,7 @@
 
 Purpose: This supports CONT-04 and provides structured progression content beyond the initial tutorial zones.
 Output: Two new JSON quest files mapping the storyline across these regions.
-- [ ] **T02: 12-quest-expansion 02**
+- [x] **T02: 12-quest-expansion 02**
   - Create the main story quest chains for regions 5 and 6 (Isla Volcana and Cascada Eterna), covering levels 45-75.
 
 Purpose: This supports CONT-04 and provides structured progression content for the late-mid game.
