@@ -1,0 +1,118 @@
+[
+  {
+    "QuestId": 7010,
+    "Title": "Entering the Core",
+    "Description": "The crystal energy here is overwhelming. Fend off the Abyssal Minions.",
+    "Requirements": [],
+    "RequiredLevel": 90,
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Abyssal Minion (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Abyssal Minions (Earth)."
+      }
+    ],
+    "Rewards": {
+      "Exp": 150000,
+      "Gold": 100000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 7011,
+    "Title": "Crystal Resonance",
+    "Description": "The minions are drawn to the crystals. We must clear them to proceed.",
+    "Requirements": [
+      7010
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Abyssal Minion (Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Abyssal Minions (Water)."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Abyssal Minion (Fire)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Abyssal Minions (Fire)."
+      }
+    ],
+    "Rewards": {
+      "Exp": 160000,
+      "Gold": 110000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 7012,
+    "Title": "The Deep Abyss",
+    "Description": "We are getting closer to the core. The resistance is getting stronger.",
+    "Requirements": [
+      7011
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Abyssal Minion (Wind)",
+        "RequiredCount": 10,
+        "Description": "Defeat 10 Abyssal Minions (Wind)."
+      }
+    ],
+    "Rewards": {
+      "Exp": 180000,
+      "Gold": 130000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 7013,
+    "Title": "Core Overload",
+    "Description": "The core is reacting to our presence. Defeat the remaining guardians.",
+    "Requirements": [
+      7012
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Abyssal Minion (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Abyssal Minions (Earth)."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Abyssal Minion (Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Abyssal Minions (Water)."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200000,
+      "Gold": 150000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 7014,
+    "Title": "The Ultimate Resonance",
+    "Description": "The guardian of the core stands before you. Defeat it to reach your full potential.",
+    "Requirements": [
+      7013
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Resonancia Core Boss (Wind)",
+        "RequiredCount": 1,
+        "Description": "Defeat the Resonancia Core Boss."
+      }
+    ],
+    "Rewards": {
+      "Exp": 500000,
+      "Gold": 300000,
+      "Items": []
+    }
+  }
+]
