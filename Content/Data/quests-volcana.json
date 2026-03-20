@@ -1,0 +1,124 @@
+[
+  {
+    "QuestId": 4010,
+    "Title": "Volcanic Arrival",
+    "Description": "The Isla Volcana is incredibly hot. Be careful not to get burned by the local wildlife.",
+    "Requirements": [],
+    "RequiredLevel": 45,
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Gale Orc (Wind)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Gale Orcs."
+      }
+    ],
+    "Rewards": {
+      "Exp": 12000,
+      "Gold": 8000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 4011,
+    "Title": "Molten Core",
+    "Description": "The golems here are tough. We need to clear them out to advance.",
+    "Requirements": [
+      4010
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Dirt Golem (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Dirt Golems."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Aqua Golem (Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Aqua Golems."
+      }
+    ],
+    "Rewards": {
+      "Exp": 13000,
+      "Gold": 9000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 4012,
+    "Title": "Burning Skies",
+    "Description": "More golems have appeared. Don't let your guard down.",
+    "Requirements": [
+      4011
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Flame Golem (Fire)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Flame Golems."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Gale Golem (Wind)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Gale Golems."
+      }
+    ],
+    "Rewards": {
+      "Exp": 14000,
+      "Gold": 10000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 4013,
+    "Title": "Harpy Infestation",
+    "Description": "Harpies are attacking from above. We need to reduce their numbers.",
+    "Requirements": [
+      4012
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Dirt Harpy (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Dirt Harpies."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Aqua Harpy (Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Aqua Harpies."
+      }
+    ],
+    "Rewards": {
+      "Exp": 15000,
+      "Gold": 11000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 4014,
+    "Title": "The Volcanic Boss",
+    "Description": "The boss of this island has shown itself. We must defeat it.",
+    "Requirements": [
+      4013
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Isla Volcana Boss (Earth)",
+        "RequiredCount": 1,
+        "Description": "Defeat the Isla Volcana Boss."
+      }
+    ],
+    "Rewards": {
+      "Exp": 25000,
+      "Gold": 20000,
+      "Items": []
+    }
+  }
+]
