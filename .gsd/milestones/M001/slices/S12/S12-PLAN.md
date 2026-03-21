@@ -18,7 +18,7 @@ Output: Two new JSON quest files mapping the storyline across these regions.
 
 Purpose: This supports CONT-04 and provides structured progression content for the late-mid game.
 Output: Two new JSON quest files mapping the storyline across these regions.
-- [ ] **T03: 12-quest-expansion 03**
+- [x] **T03: 12-quest-expansion 03**
   - Create the main story quest chains for regions 7 and 8 (Cumbre Ancestral and Resonancia Core), covering levels 75-100.
 
 Purpose: This supports CONT-04 and provides the endgame narrative leading to Rebirth.
