@@ -1,0 +1,124 @@
+[
+  {
+    "QuestId": 5010,
+    "Title": "Eternal Mist",
+    "Description": "The mist is thick in Cascada Eterna. The Gale Harpies are treacherous here.",
+    "Requirements": [],
+    "RequiredLevel": 60,
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Gale Harpy (Wind)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Gale Harpies."
+      }
+    ],
+    "Rewards": {
+      "Exp": 18000,
+      "Gold": 12000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 5011,
+    "Title": "Forest Guardians",
+    "Description": "The Treants are aggressive. We must thin their numbers.",
+    "Requirements": [
+      5010
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Dirt Treant (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Dirt Treants."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Aqua Treant (Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Aqua Treants."
+      }
+    ],
+    "Rewards": {
+      "Exp": 19000,
+      "Gold": 13000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 5012,
+    "Title": "River Defenders",
+    "Description": "More Treants are coming from the river.",
+    "Requirements": [
+      5011
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Flame Treant (Fire)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Flame Treants."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Gale Treant (Wind)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Gale Treants."
+      }
+    ],
+    "Rewards": {
+      "Exp": 20000,
+      "Gold": 14000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 5013,
+    "Title": "Lizardman Threat",
+    "Description": "Lizardmen have begun to gather near the waterfall.",
+    "Requirements": [
+      5012
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Dirt Lizardman (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Dirt Lizardmen."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Aqua Lizardman (Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Aqua Lizardmen."
+      }
+    ],
+    "Rewards": {
+      "Exp": 21000,
+      "Gold": 15000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 5014,
+    "Title": "The Waterfall Boss",
+    "Description": "The powerful guardian of the waterfall awaits.",
+    "Requirements": [
+      5013
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Cascada Eterna Boss (Water)",
+        "RequiredCount": 1,
+        "Description": "Defeat the Cascada Eterna Boss."
+      }
+    ],
+    "Rewards": {
+      "Exp": 30000,
+      "Gold": 25000,
+      "Items": []
+    }
+  }
+]
