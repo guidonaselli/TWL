@@ -150,4 +150,33 @@ public class QuestCombatIntegrationTests
         // Assert Quest Progress
         Assert.Equal(1, _playerQuests.QuestProgress[1][0]);
     }
+
+    [Fact]
+    public void CombatKill_ByPetWhenOwnerIsDead_ShouldNotProgressOwnerQuest()
+    {
+        // Setup Owner and Pet
+        var hero = new ServerCharacter { Id = 1, Name = "Hero", Hp = 0 }; // DEAD
+        var pet = new ServerPet { Id = -1, Name = "FaithfulDog", OwnerId = 1 };
+        pet.Str = 50; // High STR
+
+        var mob = new ServerCharacter { Id = 2, Name = "WeakCrab", Hp = 10, Team = Team.Enemy };
+
+        // Owner is NOT in combatants because they are dead, or they were removed
+        // _combatManager.AddCharacter(hero);
+        _combatManager.RegisterCombatant(pet);
+        _combatManager.AddCharacter(mob);
+
+        // Link PlayerQuestComponent to Character
+        _playerQuests.Character = hero;
+
+        // Pet attacks Mob
+        var request = new UseSkillRequest { PlayerId = -1, TargetId = 2, SkillId = 999 };
+        var results = _combatManager.UseSkill(request);
+
+        Assert.Single(results);
+        Assert.True(results[0].TargetDied);
+
+        // Assert Quest Progress is STILL 0 because owner is dead
+        Assert.False(_playerQuests.QuestProgress.ContainsKey(1));
+    }
 }
