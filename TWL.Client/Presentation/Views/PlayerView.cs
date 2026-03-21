@@ -41,6 +41,7 @@ public class PlayerView : IDisposable
     private Vector2 _hairOriginSide = HairOriginDefault;
     private Texture2D _down, _up, _left, _right;
     private FacingDirection _lastDirection = FacingDirection.Down; // Force update on first frame
+    private bool _lastMounted = false;
     private Effect _paletteEffect;
 
     public PlayerView(PlayerCharacter player)
@@ -187,10 +188,11 @@ public class PlayerView : IDisposable
 
     public void Update(GameTime gameTime)
     {
-        // Optimize: Update overlay cache only when direction changes
-        if (_player.CurrentDirection != _lastDirection)
+        // Optimize: Update overlay cache only when direction changes, or if mount state changes
+        if (_player.CurrentDirection != _lastDirection || _player.IsMounted != _lastMounted)
         {
             _lastDirection = _player.CurrentDirection;
+            _lastMounted = _player.IsMounted;
             UpdateOverlayCache();
         }
     }
