@@ -39,7 +39,7 @@ Output: Item durability model, server durability mutation logic, and durability 
 
 Purpose: Prevent unlimited instance farming by enforcing server-authoritative daily quotas.
 Output: Run-counter persistence model, quota-aware instance admission, and quota regression tests.
-- [ ] **T04: 10-combat-progression-integration 04**
+- [x] **T04: 10-combat-progression-integration 04**
   - Integrate full Phase 10 combat flow (`CMB-04`) so death penalties, pet AI, skill/status behavior, and utility movement seams operate coherently.
 
 Purpose: Remove integration gaps between independent subsystems now required to function together in production combat loops.
