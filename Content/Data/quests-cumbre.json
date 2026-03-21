@@ -1,0 +1,91 @@
+[
+  {
+    "QuestId": 6010,
+    "Title": "The Ancient Peak",
+    "Description": "You have reached Cumbre Ancestral. The air here is thin, and the Gargoyles are relentless.",
+    "Requirements": [],
+    "RequiredLevel": 75,
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Dirt Gargoyle (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Dirt Gargoyles."
+      }
+    ],
+    "Rewards": {
+      "Exp": 35000,
+      "Gold": 25000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 6011,
+    "Title": "Wings of Stone",
+    "Description": "More Gargoyles approach from the higher peaks.",
+    "Requirements": [
+      6010
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Aqua Gargoyle (Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Aqua Gargoyles."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Flame Gargoyle (Fire)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Flame Gargoyles."
+      }
+    ],
+    "Rewards": {
+      "Exp": 40000,
+      "Gold": 28000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 6012,
+    "Title": "Gale Warnings",
+    "Description": "The winds are picking up. The Gale Gargoyles are taking flight.",
+    "Requirements": [
+      6011
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Gale Gargoyle (Wind)",
+        "RequiredCount": 10,
+        "Description": "Defeat 10 Gale Gargoyles."
+      }
+    ],
+    "Rewards": {
+      "Exp": 45000,
+      "Gold": 32000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 6013,
+    "Title": "The Ancestral Guardian",
+    "Description": "The master of the peak has awakened. Prepare for battle.",
+    "Requirements": [
+      6012
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Cumbre Ancestral Boss (Fire)",
+        "RequiredCount": 1,
+        "Description": "Defeat the Cumbre Ancestral Boss."
+      }
+    ],
+    "Rewards": {
+      "Exp": 80000,
+      "Gold": 50000,
+      "Items": []
+    }
+  }
+]

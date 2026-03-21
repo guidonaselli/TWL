@@ -1,0 +1,91 @@
+[
+  {
+    "QuestId": 7010,
+    "Title": "The Crystal Core",
+    "Description": "You have finally reached Resonancia Core. The magical energy here is intense.",
+    "Requirements": [],
+    "RequiredLevel": 90,
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Dirt Wyvern (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Dirt Wyverns."
+      }
+    ],
+    "Rewards": {
+      "Exp": 60000,
+      "Gold": 45000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 7011,
+    "Title": "Elemental Imbalance",
+    "Description": "The core's energy is causing the Wyverns to become unstable. We must contain them.",
+    "Requirements": [
+      7010
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Aqua Wyvern (Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Aqua Wyverns."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Flame Wyvern (Fire)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Flame Wyverns."
+      }
+    ],
+    "Rewards": {
+      "Exp": 65000,
+      "Gold": 50000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 7012,
+    "Title": "Winds of Change",
+    "Description": "The Gale Wyverns are defending the inner chambers of the Core.",
+    "Requirements": [
+      7011
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Gale Wyvern (Wind)",
+        "RequiredCount": 10,
+        "Description": "Defeat 10 Gale Wyverns."
+      }
+    ],
+    "Rewards": {
+      "Exp": 70000,
+      "Gold": 55000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 7013,
+    "Title": "The Ultimate Test",
+    "Description": "This is it. The final trial before the path to rebirth opens.",
+    "Requirements": [
+      7012
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Resonancia Core Boss (Wind)",
+        "RequiredCount": 1,
+        "Description": "Defeat the Resonancia Core Boss."
+      }
+    ],
+    "Rewards": {
+      "Exp": 120000,
+      "Gold": 100000,
+      "Items": []
+    }
+  }
+]
