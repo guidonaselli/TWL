@@ -1,0 +1,192 @@
+[
+  {
+    "QuestId": 8100,
+    "Title": "Basic Crafting Trial",
+    "Description": "Learn to craft a minor potion for survival.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Craft",
+        "TargetName": "Minor HP Potion",
+        "RequiredCount": 1,
+        "Description": "Craft 1 Minor HP Potion.",
+        "DataId": 100
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 1000, "Items": [] }
+  },
+  {
+    "QuestId": 8101,
+    "Title": "Intermediate Crafting",
+    "Description": "Craft a Tier 1 weapon to defend yourself.",
+    "Requirements": [8100],
+    "Objectives": [
+      {
+        "Type": "Craft",
+        "TargetName": "Tier 1 Sword",
+        "RequiredCount": 1,
+        "Description": "Craft 1 Tier 1 Sword.",
+        "DataId": 3000
+      }
+    ],
+    "Rewards": { "Exp": 1000, "Gold": 10000, "Items": [] }
+  },
+  {
+    "QuestId": 8102,
+    "Title": "Master Crafting",
+    "Description": "Craft a legendary Tier 5 weapon.",
+    "Requirements": [8101],
+    "Objectives": [
+      {
+        "Type": "Craft",
+        "TargetName": "Tier 5 Sword",
+        "RequiredCount": 1,
+        "Description": "Craft 1 Tier 5 Sword.",
+        "DataId": 3088
+      }
+    ],
+    "Rewards": { "Exp": 5000, "Gold": 100000, "Items": [] }
+  },
+  {
+    "QuestId": 8110,
+    "Title": "Gathering Iron",
+    "Description": "Collect iron ore for basic compounding.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Iron Ore",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Iron Ores.",
+        "DataId": 2000
+      }
+    ],
+    "Rewards": { "Exp": 200, "Gold": 3000, "Items": [] }
+  },
+  {
+    "QuestId": 8111,
+    "Title": "Gathering Gold",
+    "Description": "Collect gold ore for advanced compounding.",
+    "Requirements": [8110],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Gold Ore",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Gold Ores.",
+        "DataId": 4000
+      }
+    ],
+    "Rewards": { "Exp": 2000, "Gold": 50000, "Items": [] }
+  },
+  {
+    "QuestId": 8112,
+    "Title": "Gathering Mythril",
+    "Description": "Collect mythril ore for legendary compounding.",
+    "Requirements": [8111],
+    "Objectives": [
+      {
+        "Type": "Collect",
+        "TargetName": "Mythril Ore",
+        "RequiredCount": 5,
+        "Description": "Collect 5 Mythril Ores.",
+        "DataId": 7000
+      }
+    ],
+    "Rewards": { "Exp": 10000, "Gold": 500000, "Items": [] }
+  },
+  {
+    "QuestId": 8120,
+    "Title": "Wisdom of the Hermit",
+    "Description": "Seek out El Viejo Coral to learn about pet taming.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "El Viejo Coral",
+        "RequiredCount": 1,
+        "Description": "Talk to El Viejo Coral.",
+        "DataId": 1005
+      }
+    ],
+    "Rewards": { "Exp": 100, "Gold": 500, "Items": [] }
+  },
+  {
+    "QuestId": 8121,
+    "Title": "Mystery of the Drifting Box",
+    "Description": "Investigate the drifting box for clues about a rare pet.",
+    "Requirements": [8120],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "Caja a la Deriva",
+        "RequiredCount": 1,
+        "Description": "Interact with the drifting box."
+      }
+    ],
+    "Rewards": { "Exp": 1000, "Gold": 20000, "Items": [] }
+  },
+  {
+    "QuestId": 8122,
+    "Title": "The Ancient Tablet",
+    "Description": "Decipher the ancient tablet to unlock the legendary pet trial.",
+    "Requirements": [8121],
+    "Objectives": [
+      {
+        "Type": "Interact",
+        "TargetName": "AncientTablet",
+        "RequiredCount": 1,
+        "Description": "Interact with the Ancient Tablet."
+      }
+    ],
+    "Rewards": { "Exp": 5000, "Gold": 150000, "Items": [] }
+  },
+  {
+    "QuestId": 8130,
+    "Title": "Trial of the Coast",
+    "Description": "Prove your strength by defeating Coast Crabs.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Coast Crab (Earth)",
+        "RequiredCount": 5,
+        "Description": "Kill 5 Coast Crabs.",
+        "DataId": 2001
+      }
+    ],
+    "Rewards": { "Exp": 200, "Gold": 2000, "Items": [] }
+  },
+  {
+    "QuestId": 8131,
+    "Title": "Trial of Fire",
+    "Description": "Prove your endurance by defeating Magma Crabs.",
+    "Requirements": [8130],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Magma Crab (Fire)",
+        "RequiredCount": 5,
+        "Description": "Kill 5 Magma Crabs.",
+        "DataId": 2003
+      }
+    ],
+    "Rewards": { "Exp": 2000, "Gold": 40000, "Items": [] }
+  },
+  {
+    "QuestId": 8132,
+    "Title": "The Ultimate Technique",
+    "Description": "Speak with the Wandering Tinkerer to learn an advanced skill.",
+    "Requirements": [8131],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Wandering Tinkerer",
+        "RequiredCount": 1,
+        "Description": "Talk to the Wandering Tinkerer.",
+        "DataId": 3003
+      }
+    ],
+    "Rewards": { "Exp": 15000, "Gold": 800000, "Items": [] }
+  }
+]
