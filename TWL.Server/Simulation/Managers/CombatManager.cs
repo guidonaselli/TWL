@@ -93,7 +93,7 @@ public class CombatManager
             RegisterCombatant(p);
         }
 
-        var turnEngine = new TurnEngine(_random);
+        var turnEngine = new TurnEngine(_random, _statusEngine);
         turnEngine.StartEncounter(participants);
         _encounters[encounterId] = turnEngine;
 
