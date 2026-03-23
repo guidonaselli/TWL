@@ -11,7 +11,7 @@ Output: A new JSON quest file containing utility-focused side arcs.
 
 ## Must-Haves
 
-- [ ] "Side quest arcs cover crafting, pet capture, exploration, and special skill trials"
+- [x] "Side quest arcs cover crafting, pet capture, exploration, and special skill trials"
 
 ## Files
 
