@@ -12,6 +12,9 @@ Output: A new JSON quest file containing utility-focused side arcs.
 ## Must-Haves
 
 - [ ] "Side quest arcs cover crafting, pet capture, exploration, and special skill trials"
+- [ ] "Quest IDs must be 1000+"
+- [ ] "Verify proper JSON validation, checking for ID collisions, missing localization keys, and broken quest chain references"
+- [ ] "Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done."
 
 ## Files
 
