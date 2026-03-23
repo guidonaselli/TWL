@@ -647,6 +647,11 @@ public class ClientSession
 
     private async Task HandleAttackAsync(string payload)
     {
+        if (Character == null || Character.Hp <= 0)
+        {
+            return;
+        }
+
         var request = JsonSerializer.Deserialize<UseSkillRequest>(payload, _jsonOptions);
         if (request == null)
         {
@@ -1093,9 +1098,9 @@ public class ClientSession
     private async Task HandleMoveAsync(string payload)
     {
         // EJ: {"dx":1,"dy":0}
-        if (UserId < 0 || Character == null)
+        if (UserId < 0 || Character == null || Character.Hp <= 0)
         {
-            return; // no logueado
+            return; // no logueado or dead
         }
 
         // Block movement if in combat

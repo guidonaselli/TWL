@@ -6,6 +6,7 @@ namespace TWL.Server.Features.Combat;
 public class TurnEngine : ITurnEngine
 {
     private readonly IRandomService _random;
+    private readonly IStatusEngine? _statusEngine;
     private readonly List<ServerCombatant> _combatants = new();
     private readonly List<ServerCombatant> _aliveBuffer = new();
     private readonly Queue<ServerCombatant> _turnQueue = new();
@@ -14,9 +15,10 @@ public class TurnEngine : ITurnEngine
     public ServerCombatant? CurrentCombatant { get; private set; }
     public long LastActionTick { get; set; }
 
-    public TurnEngine(IRandomService random)
+    public TurnEngine(IRandomService random, IStatusEngine? statusEngine = null)
     {
         _random = random;
+        _statusEngine = statusEngine;
     }
 
     public void StartEncounter(IEnumerable<ServerCombatant> combatants)
@@ -48,6 +50,10 @@ public class TurnEngine : ITurnEngine
             {
                 CurrentCombatant = candidate;
                 CurrentCombatant.TickCooldowns();
+                if (_statusEngine != null)
+                {
+                    CurrentCombatant.TickStatusEffects(_statusEngine);
+                }
                 return CurrentCombatant;
             }
         }

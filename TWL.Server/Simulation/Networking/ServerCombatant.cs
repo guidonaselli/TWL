@@ -77,6 +77,15 @@ public abstract class ServerCombatant : ICombatant
         }
     }
 
+    public void TickStatusEffects(IStatusEngine engine)
+    {
+        lock (_statusLock)
+        {
+            engine.Tick(_statusEffects);
+            IsDirty = true;
+        }
+    }
+
     public IReadOnlyList<StatusEffectInstance> StatusEffects
     {
         get

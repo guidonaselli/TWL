@@ -8,13 +8,13 @@
     "title": "Combat & Progression Integration"
   },
   "activeTask": {
-    "id": "T04",
-    "title": "10-combat-progression-integration 04"
+    "id": "T05",
+    "title": "10-combat-progression-integration 05"
   },
   "phase": "executing",
   "recentDecisions": [],
   "blockers": [],
-  "nextAction": "Execute T04: 10-combat-progression-integration 04 in slice S10.",
+  "nextAction": "Execute T05: 10-combat-progression-integration 05 in slice S10.",
   "registry": [
     {
       "id": "M001",
@@ -40,7 +40,7 @@
       "total": 13
     },
     "tasks": {
-      "done": 3,
+      "done": 4,
       "total": 5
     }
   }
