@@ -1,0 +1,124 @@
+[
+  {
+    "QuestId": 6010,
+    "Title": "Ascending the Ancestral Peak",
+    "Description": "The air grows thin. Defeat the local wildlife to prove your worth.",
+    "Requirements": [],
+    "RequiredLevel": 75,
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Dirt Gargoyle (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Dirt Gargoyles."
+      }
+    ],
+    "Rewards": {
+      "Exp": 50000,
+      "Gold": 40000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 6011,
+    "Title": "Gargoyle Guardian",
+    "Description": "Gargoyles guard the ancient path. Clear them out.",
+    "Requirements": [
+      6010
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Aqua Gargoyle (Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Aqua Gargoyles."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Flame Gargoyle (Fire)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Flame Gargoyles."
+      }
+    ],
+    "Rewards": {
+      "Exp": 55000,
+      "Gold": 45000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 6012,
+    "Title": "Wyvern's Roost",
+    "Description": "We have reached the domain of Wyverns. Proceed with caution.",
+    "Requirements": [
+      6011
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Gale Gargoyle (Wind)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Gale Gargoyles."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Dirt Wyvern (Earth)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Dirt Wyverns."
+      }
+    ],
+    "Rewards": {
+      "Exp": 60000,
+      "Gold": 50000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 6013,
+    "Title": "Aerial Supremacy",
+    "Description": "The wyverns are relentlessly attacking. We must hold our ground.",
+    "Requirements": [
+      6012
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Aqua Wyvern (Water)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Aqua Wyverns."
+      },
+      {
+        "Type": "Kill",
+        "TargetName": "Flame Wyvern (Fire)",
+        "RequiredCount": 5,
+        "Description": "Defeat 5 Flame Wyverns."
+      }
+    ],
+    "Rewards": {
+      "Exp": 65000,
+      "Gold": 55000,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 6014,
+    "Title": "The Ancestral Trial",
+    "Description": "The peak's guardian awaits. Defeat it to reach the summit.",
+    "Requirements": [
+      6013
+    ],
+    "Objectives": [
+      {
+        "Type": "Kill",
+        "TargetName": "Cumbre Ancestral Boss (Fire)",
+        "RequiredCount": 1,
+        "Description": "Defeat the Cumbre Ancestral Boss."
+      }
+    ],
+    "Rewards": {
+      "Exp": 100000,
+      "Gold": 80000,
+      "Items": []
+    }
+  }
+]
