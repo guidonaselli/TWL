@@ -99,7 +99,7 @@ public class GracefulShutdownTests
         // 3. Disconnect All Players (Verified by Sequence)
 
         // 4. Scheduler Stop
-        mockWorldScheduler.Verify(x => x.Stop(), Times.Once);
+        mockWorldScheduler.Verify(x => x.StopAsync(), Times.Once);
 
         // 5. Player Service Stop (Flush)
         mockPlayerService.Verify(x => x.StopAsync(), Times.Once);

@@ -66,7 +66,7 @@ public class ShutdownTests
         // Assert
         mockNet.Verify(n => n.Stop(), Times.Once);
         mockPlayerService.Verify(s => s.DisconnectAllAsync("Server Shutdown"), Times.Once);
-        mockScheduler.Verify(s => s.Stop(), Times.Once);
+        mockScheduler.Verify(s => s.StopAsync(), Times.Once);
         mockPlayerService.Verify(s => s.StopAsync(), Times.Once);
 
         // Verify metrics
