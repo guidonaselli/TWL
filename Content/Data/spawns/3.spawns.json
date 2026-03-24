@@ -1,5 +1,5 @@
 {
-  "MapId": 1001,
+  "MapId": 3,
   "RandomEncounterEnabled": true,
   "StepChance": 0.05,
   "MinMobCount": 5,
@@ -11,7 +11,7 @@
       "Y": 0,
       "Width": 40,
       "Height": 40,
-      "AllowedMonsterIds": [ 2022 ]
+      "AllowedMonsterIds": [ 2002, 2003, 9101, 2004 ]
     }
   ]
 }

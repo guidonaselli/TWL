@@ -8,7 +8,7 @@
 
 ## Tasks
 
-- [ ] **T01: 13-world-expansion 01**
+- [x] **T01: 13-world-expansion 01**
   - Finalize spawn tables for Regions 1 and 2 (Isla Brisa and Puerto Roca) using expanded monster data.
 
 Purpose: This supports CONT-06 and ensures early-game zones have balanced monster distribution matching the new `monsters.json`.
