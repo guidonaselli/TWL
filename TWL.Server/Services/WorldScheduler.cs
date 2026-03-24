@@ -30,7 +30,15 @@ public class WorldScheduler : IWorldScheduler, IDisposable
 
     public void Dispose()
     {
-        Stop();
+        _cts?.Cancel();
+        try
+        {
+            _loopTask?.Wait(2000);
+        }
+        catch
+        {
+            /* best effort */
+        }
         _cts?.Dispose();
     }
 
@@ -50,14 +58,17 @@ public class WorldScheduler : IWorldScheduler, IDisposable
         _logger.LogInformation("WorldScheduler started.");
     }
 
-    public void Stop()
+    public async Task StopAsync()
     {
         _cts?.Cancel();
         try
         {
-            _loopTask?.Wait(2000);
+            if (_loopTask != null)
+            {
+                await _loopTask;
+            }
         }
-        catch (AggregateException)
+        catch (OperationCanceledException)
         {
         } // Ignore cancel exception
         catch (Exception ex)

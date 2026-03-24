@@ -19,7 +19,7 @@ public class WorldLoopObservabilityTests
         // Wait for it to execute
         await Task.Delay(200);
 
-        scheduler.Stop();
+        await scheduler.StopAsync();
 
         var snapshot = metrics.GetSnapshot();
         Assert.True(snapshot.WorldLoopSlowTasks > 0,
@@ -40,7 +40,7 @@ public class WorldLoopObservabilityTests
         // Wait for it to execute
         await Task.Delay(1500);
 
-        scheduler.Stop();
+        await scheduler.StopAsync();
 
         var snapshot = metrics.GetSnapshot();
         Assert.True(snapshot.WorldLoopSlowTicks > 0,
@@ -66,7 +66,7 @@ public class WorldLoopObservabilityTests
         // 2. Wait for it to process
         await Task.Delay(1000);
 
-        scheduler.Stop();
+        await scheduler.StopAsync();
 
         var snapshot = metrics.GetSnapshot();
 

@@ -213,7 +213,7 @@ public class ServerWorker : IHostedService
         // Allow buffers to flush
         await Task.Delay(500, ct);
 
-        _worldScheduler.Stop();
+        await _worldScheduler.StopAsync();
         await _playerService.StopAsync();
 
         sw.Stop();
