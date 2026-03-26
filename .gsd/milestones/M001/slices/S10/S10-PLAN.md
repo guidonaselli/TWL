@@ -44,7 +44,7 @@ Output: Run-counter persistence model, quota-aware instance admission, and quota
 
 Purpose: Remove integration gaps between independent subsystems now required to function together in production combat loops.
 Output: Combat/session integration updates and cross-system integration tests.
-- [ ] **T05: 10-combat-progression-integration 05**
+- [x] **T05: 10-combat-progression-integration 05**
   - Finalize Phase 10 with requirement-mapped acceptance verification and traceable evidence output.
 
 Purpose: Ensure the phase is execution-ready and auditable against all roadmap requirements.
