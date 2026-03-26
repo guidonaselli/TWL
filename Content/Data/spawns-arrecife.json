@@ -1,19 +1,17 @@
-[
-  {
-    "MapId": 3000,
-    "RandomEncounterEnabled": true,
-    "StepChance": 0.05,
-    "MinMobCount": 5,
-    "MaxMobCount": 15,
-    "RespawnSeconds": 60,
-    "SpawnRegions": [
-      {
-        "X": 0,
-        "Y": 0,
-        "Width": 100,
-        "Height": 100,
-        "AllowedMonsterIds": [ 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2040 ]
-      }
-    ]
-  }
-]
+{
+  "MapId": 3000,
+  "RandomEncounterEnabled": true,
+  "StepChance": 0.05,
+  "MinMobCount": 5,
+  "MaxMobCount": 15,
+  "RespawnSeconds": 60,
+  "SpawnRegions": [
+    {
+      "X": 0,
+      "Y": 0,
+      "Width": 40,
+      "Height": 40,
+      "AllowedMonsterIds": [ 2032, 2033, 2034, 2035, 2036, 2037, 2038, 2039, 2072 ]
+    }
+  ]
+}
