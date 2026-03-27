@@ -1,0 +1,86 @@
+[
+  {
+    "QuestId": 8100,
+    "Title": "First Craft",
+    "Description": "Learn the basics of crafting.",
+    "Requirements": [],
+    "Objectives": [
+      {
+        "Type": "Craft",
+        "TargetName": "Maria",
+        "RequiredCount": 1,
+        "Description": "Craft Cotton Cloth.",
+        "DataId": 1001
+      }
+    ],
+    "Rewards": {
+      "Exp": 100,
+      "Gold": 50,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 8101,
+    "Title": "Pet Capture 101",
+    "Description": "Learn how to capture pets using mysterious items.",
+    "Requirements": [
+      8100
+    ],
+    "Objectives": [
+      {
+        "Type": "UseItem",
+        "TargetName": "Mysterious Letter",
+        "RequiredCount": 1,
+        "Description": "Use a Mysterious Letter.",
+        "DataId": 9000
+      }
+    ],
+    "Rewards": {
+      "Exp": 150,
+      "Gold": 75,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 8102,
+    "Title": "Exploration Trial",
+    "Description": "Prove your worth as an explorer.",
+    "Requirements": [
+      8101
+    ],
+    "Objectives": [
+      {
+        "Type": "Reach",
+        "TargetName": "Isla Volcana",
+        "RequiredCount": 1,
+        "Description": "Reach Isla Volcana."
+      }
+    ],
+    "Rewards": {
+      "Exp": 200,
+      "Gold": 100,
+      "Items": []
+    }
+  },
+  {
+    "QuestId": 8103,
+    "Title": "Skill Unlocks",
+    "Description": "Speak with the combat instructor to unlock new abilities.",
+    "Requirements": [
+      8102
+    ],
+    "Objectives": [
+      {
+        "Type": "Talk",
+        "TargetName": "Instructor de Combate",
+        "RequiredCount": 1,
+        "Description": "Talk to Instructor de Combate."
+      }
+    ],
+    "Rewards": {
+      "Exp": 300,
+      "Gold": 150,
+      "Items": []
+    }
+  }
+]

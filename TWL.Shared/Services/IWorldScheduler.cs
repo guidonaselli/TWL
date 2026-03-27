@@ -9,7 +9,7 @@ public interface IWorldScheduler
     long CurrentTick { get; }
 
     void Start();
-    void Stop();
+    Task StopAsync();
 
     /// <summary>
     ///     Event fired every world tick.

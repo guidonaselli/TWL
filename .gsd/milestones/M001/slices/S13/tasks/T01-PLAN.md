@@ -12,6 +12,9 @@ Output: Updated spawn table JSON files for the first two regions.
 ## Must-Haves
 
 - [ ] "Spawn tables for Isla Brisa and Puerto Roca contain 3-5 mobs per map"
+- [ ] "Map Region IDs must be 0001-0099 for Isla Brisa and 1000-1099 for Puerto Roca"
+- [ ] "JSON validation: verify no ID collisions"
+- [ ] "Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done."
 
 ## Files
 

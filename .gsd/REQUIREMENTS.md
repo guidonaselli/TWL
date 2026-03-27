@@ -464,3 +464,13 @@ Map region directories and metadata exist for regions 3-8 (Selva Esmeralda throu
 ## Deferred
 
 ## Out of Scope
+
+## Discovered Requirements
+
+### [DISCOVERED] PET-08 — Player needs a way to revive KO'd pets (consumable item or NPC healer)
+- Status: discovered
+- Class: core-capability
+- Source: inferred
+- Primary Slice: S09
+
+Player needs a way to revive KO'd pets (consumable item or NPC healer)

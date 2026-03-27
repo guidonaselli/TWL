@@ -23,7 +23,7 @@ Output: Two new JSON quest files mapping the storyline across these regions.
 
 Purpose: This supports CONT-04 and provides the endgame narrative leading to Rebirth.
 Output: Two new JSON quest files mapping the final storyline.
-- [ ] **T04: 12-quest-expansion 04**
+- [x] **T04: 12-quest-expansion 04**
   - Create side quest arcs across all regions focusing on utility mechanics (crafting, compounding, pet capture, skill unlocks).
 
 Purpose: This satisfies CONT-05 and ensures players are guided to engage with non-combat progression systems.

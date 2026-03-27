@@ -25,7 +25,7 @@ public class WorldSchedulerTests : IDisposable
 
     public void Dispose()
     {
-        _scheduler.Stop();
+        _scheduler.StopAsync().GetAwaiter().GetResult();
         _scheduler.Dispose();
     }
 

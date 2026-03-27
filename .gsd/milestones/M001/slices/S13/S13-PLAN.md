@@ -8,12 +8,12 @@
 
 ## Tasks
 
-- [ ] **T01: 13-world-expansion 01**
+- [x] **T01: 13-world-expansion 01**
   - Finalize spawn tables for Regions 1 and 2 (Isla Brisa and Puerto Roca) using expanded monster data.
 
 Purpose: This supports CONT-06 and ensures early-game zones have balanced monster distribution matching the new `monsters.json`.
 Output: Updated spawn table JSON files for the first two regions.
-- [ ] **T02: 13-world-expansion 02**
+- [x] **T02: 13-world-expansion 02**
   - Create spawn tables and map directory stubs for Regions 3 and 4 (Selva Esmeralda and Arrecife Hundido).
 
 Purpose: This supports CONT-06 and CONT-07, providing the geographical and combat foundation for mid-game questing.

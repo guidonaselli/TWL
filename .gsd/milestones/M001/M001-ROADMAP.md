@@ -32,7 +32,7 @@
   > After this: Implement death-penalty EXP loss on player death (`CMB-01` partial) using server-authoritative combat event handling.
 - [x] **S11: Content Foundation** `risk:medium` `depends:[S10]`
   > After this: Expand `items.json` with the remaining higher-tier item sets and content coverage needed for the full item database.
-- [ ] **S12: Quest Expansion** `risk:medium` `depends:[S11]`
+- [x] **S12: Quest Expansion** `risk:medium` `depends:[S11]`
   > After this: Create the main story quest chains for regions 3 and 4 (Selva Esmeralda and Arrecife Hundido), covering levels 20-45.
 - [ ] **S13: World Expansion** `risk:medium` `depends:[S12]`
   > After this: Finalize spawn tables for Regions 1 and 2 (Isla Brisa and Puerto Roca) using expanded monster data.
