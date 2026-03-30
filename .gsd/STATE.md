@@ -1,24 +1,20 @@
 {
-  "activeMilestone": {
-    "id": "M001",
-    "title": "Core Multiplayer Systems"
-  },
-  "activeSlice": {
-    "id": "S13",
-    "title": "World Expansion"
-  },
-  "activeTask": {
-    "id": "T03",
-    "title": "13-world-expansion 03"
-  },
-  "phase": "executing",
+  "activeMilestone": null,
+  "activeSlice": null,
+  "activeTask": null,
+  "phase": "complete",
   "recentDecisions": [],
   "blockers": [],
-  "nextAction": "Execute T03: 13-world-expansion 03 in slice S13.",
+  "nextAction": "All milestones complete.",
   "registry": [
     {
       "id": "M001",
       "title": "Core Multiplayer Systems",
+      "status": "complete"
+    },
+    {
+      "id": "M002",
+      "title": "M002",
       "status": "active"
     }
   ],
@@ -32,16 +28,8 @@
   },
   "progress": {
     "milestones": {
-      "done": 0,
-      "total": 1
-    },
-    "slices": {
-      "done": 10,
-      "total": 13
-    },
-    "tasks": {
-      "done": 4,
-      "total": 5
+      "done": 1,
+      "total": 2
     }
   }
 }
