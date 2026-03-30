@@ -11,11 +11,11 @@ Output: Phase acceptance suite and verification artifact documenting requirement
 
 ## Must-Haves
 
-- [ ] "Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done."
+- [x] "Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done."
 
-- [ ] "All phase requirements CMB-01/02/03/04 and INST-01/02/03 are represented by executable acceptance tests"
-- [ ] "Acceptance tests validate exact policy values (1% EXP loss, -1 durability, 5/day cap, UTC reset)"
-- [ ] "Phase-level verification artifacts clearly map requirement IDs to passing checks"
+- [x] "All phase requirements CMB-01/02/03/04 and INST-01/02/03 are represented by executable acceptance tests"
+- [x] "Acceptance tests validate exact policy values (1% EXP loss, -1 durability, 5/day cap, UTC reset)"
+- [x] "Phase-level verification artifacts clearly map requirement IDs to passing checks"
 
 ## Files
 
