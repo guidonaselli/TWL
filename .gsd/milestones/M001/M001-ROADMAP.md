@@ -28,7 +28,7 @@
   > After this: Create Phase 8 compound foundation contracts and persistence metadata.
 - [x] **S09: Pet System Completion** `risk:medium` `depends:[S08]`
   > After this: Harden pet combat AI to satisfy PET-01 with deterministic, intelligent action selection.
-- [ ] **S10: Combat & Progression Integration** `risk:medium` `depends:[S09]`
+- [x] **S10: Combat & Progression Integration** `risk:medium` `depends:[S09]`
   > After this: Implement death-penalty EXP loss on player death (`CMB-01` partial) using server-authoritative combat event handling.
 - [x] **S11: Content Foundation** `risk:medium` `depends:[S10]`
   > After this: Expand `items.json` with the remaining higher-tier item sets and content coverage needed for the full item database.

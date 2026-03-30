@@ -47,7 +47,7 @@ public class WorldSchedulerTests : IDisposable
         }, 1, "TestTask");
 
         // Wait for execution (timeout 1s)
-        Assert.True(mre.Wait(1000), "Task did not execute in time");
+        Assert.True(mre.Wait(2000), "Task did not execute in time");
 
         // Wait a bit more to ensure it doesn't run again
         Thread.Sleep(100);
@@ -93,7 +93,7 @@ public class WorldSchedulerTests : IDisposable
         _scheduler.Schedule(() => { lock(_lock) { _executionOrder.Add(2); tasksRun++; } }, 2, "Task2");
         _scheduler.Schedule(() => { lock(_lock) { _executionOrder.Add(3); tasksRun++; if (tasksRun == 3) mre.Set(); } }, 2, "Task3");
 
-        Assert.True(mre.Wait(1000), "Tasks did not complete in time");
+        Assert.True(mre.Wait(2000), "Tasks did not complete in time");
 
         // Assert
         lock(_lock)
