@@ -1,5 +1,17 @@
-# S10: Combat Progression Integration - Summary
+# S10: Combat & Progression Integration (Summary)
 
-All requirements (CMB-01, CMB-02, CMB-03, CMB-04, and INST-01, INST-02, INST-03) mapped in the S10 slice have been implemented and verified. The acceptance test `CombatProgressionPhaseAcceptanceTests` covers EXP/Durability death penalties and instance lockouts successfully, and the artifact `10-VERIFICATION.md` confirms all criteria are met.
+**Milestone:** M001
 
-Phase 10 is now verified and marked complete.
+## Goal Achieved
+Implemented the Phase 10 Combat and Progression Integration, including death penalties (EXP and Durability), broken gear mechanics, daily instance limits, and pet combat AI turn integration.
+
+## Key Deliverables
+- Fully functioning `DeathPenaltyService` dropping 1% EXP and -1 Durability.
+- Enforcement of `Broken` status disabling gear stats.
+- `InstanceService` locking entry to 5 runs per UTC day.
+- Robust cross-subsystem acceptance tests proving compliance with `CMB-01`, `CMB-02`, `CMB-03`, `CMB-04`, and `INST-**` rules.
+
+## Artifacts
+- Source code in `TWL.Server/Services/Combat/DeathPenaltyService.cs`
+- Source code in `TWL.Server/Services/InstanceService.cs`
+- Verifications logged in `.planning/phases/10-combat-progression-integration/10-VERIFICATION.md`

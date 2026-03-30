@@ -1,28 +1,40 @@
-# Phase 10: Combat Progression Integration Verification
+# Phase 10: Combat Progression Integration - Verification
 
-**Status**: Verified
-**Date**: $(date -u +"%Y-%m-%d")
-**Milestone**: M001
-**Slice**: S10
+This document traces the Phase 10 requirements to their verified test coverage.
 
-This document tracks the acceptance criteria for Phase 10 (Combat Progression Integration) mapped to roadmap requirements. All requirements have executable test coverage.
+## Requirement Coverage
 
-## CMB-01 / CMB-02: Death Penalty (EXP & Durability Loss)
-* **Requirement**: Player death results in 1% EXP loss and -1 Durability to all equipped items.
-* **Acceptance Test**: `Requirement_CMB01_02_DeathPenaltyAppliesExactlyOnePercentExpAndMinusOneDurability`
-* **Status**: PASS
-* **Evidence**: The acceptance test explicitly verifies a 1% calculation, a -1 decrement to equipment durability, and state transitions to `IsBroken` for items reaching 0 durability.
+### CMB-01: Death Penalty
+**Requirement:** Combat deaths remove exactly 1% of current-level EXP, floored at zero. Equipped items lose 1 durability per death.
+**Verification:**
+- `TWL.Tests.Server.Combat.CombatProgressionPhaseAcceptanceTests.Phase10_CMB01_DeathPenalty_AppliesCorrectly`: Verifies the 1% EXP calculation and durability deduction across item types (destructible vs indestructible).
+- `TWL.Tests.Server.Combat.DeathPenaltyServiceTests`: Covers idempotent application and EXP floor validation.
+- `TWL.Tests.Server.Equipment.DurabilitySystemTests`: Covers the disabled stats behavior when items break.
 
-## INST-01 / INST-02 / INST-03: Instance Daily Limits
-* **Requirement**: Players are capped at 5 daily runs per instance. Resets at UTC midnight. Server-authoritative enforcement.
-* **Acceptance Test**: `Requirement_INST01_02_03_InstanceDailyLimitsEnforcedWithUtcReset`
-* **Status**: PASS
-* **Evidence**: The acceptance test ensures `InstanceService.DailyLimit` is exactly 5. It confirms 5 successful entries and 1 rejection for the 6th attempt on the same UTC date. Simulating a UTC day rollover immediately permits entry again and clears the run counter.
+### CMB-02: Item Durability & Broken Gear
+**Requirement:** If an item reaches 0 durability, it becomes `Broken` (stats disabled).
+**Verification:**
+- `TWL.Tests.Server.Combat.CombatProgressionPhaseAcceptanceTests.Phase10_CMB01_DeathPenalty_AppliesCorrectly`: Checks `IsBroken` flags on items reaching 0 durability.
+- `TWL.Tests.Server.Equipment.DurabilitySystemTests.BrokenItems_DoNotContributeToStats`: Verifies that broken items no longer contribute to the player's calculated stats.
 
-## CMB-04: Combat Flow Integration
-* **Requirement**: Integration of death penalties, pet AI, and status processing.
-* **Acceptance Test**: `CombatFlowIntegrationTests` suite
-* **Status**: PASS
-* **Evidence**: Combat death successfully triggers penalties and removes players from turn calculation without crashing pet AI turns or status processing loops. Out-of-combat utility behaviors accurately track in-combat states.
+### CMB-03: Phase 10 Core Combat Behavior
+**Requirement:** Idempotent combat resolution, status effect stability after death, and pet utility availability when player dies.
+**Verification:**
+- `TWL.Tests.Server.Combat.CombatFlowIntegrationTests`: Verifies that `PlayerDeath_DoesNotBreakPetTurn` works correctly, `StatusEffect_RemainsStable_AfterDeath`, and `PetUtility_RemainsAvailable_AfterOwnerDeathPenalty`.
 
-All phase acceptance tests are passing, clearing the requirements for Phase 10 integration.
+### CMB-04: Quest Integration
+**Requirement:** Combat kills (including by pets) progress quest objectives correctly.
+**Verification:**
+- `TWL.Tests.Server.QuestCombatIntegrationTests`: Covers `CombatKill_ShouldProgressQuest` and `CombatKill_ByPet_ShouldProgressOwnerQuest`.
+
+### INST-01, INST-02, INST-03: Instance Locking
+**Requirement:** Enforce a server-authoritative daily quota of 5 instance entries per character, resetting at midnight UTC.
+**Verification:**
+- `TWL.Tests.Server.Combat.CombatProgressionPhaseAcceptanceTests.Phase10_INST01_InstanceLimit_AppliesCorrectly`: Validates the entry restriction at the exact limit of 5 and the UTC reset behavior.
+- `TWL.Tests.Server.Instances.InstanceRunLimitTests`: Covers edge cases like being under cap, hitting the exact cap, and incrementing counters on valid entry.
+
+## Acceptance Criteria Met
+
+- [x] All phase requirements CMB-01/02/03/04 and INST-01/02/03 are represented by executable acceptance tests.
+- [x] Acceptance tests validate exact policy values (1% EXP loss, -1 durability, 5/day cap, UTC reset).
+- [x] Phase-level verification artifacts clearly map requirement IDs to passing checks.
