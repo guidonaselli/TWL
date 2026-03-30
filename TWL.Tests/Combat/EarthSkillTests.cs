@@ -130,7 +130,8 @@ public class EarthSkillTests
             TargetId = defCombatant.BattleId,
             SkillId = 62
         };
-        battle.ResolveAction(buffAction);
+        var resolveResult = battle.ResolveAction(buffAction);
+        Assert.True(string.IsNullOrEmpty(resolveResult) || resolveResult.Contains("uses"), $"Action failed: {resolveResult}");
 
         // Verify Buff
         Assert.Contains(defCombatant.StatusEffects, e => e.Tag == SkillEffectTag.BuffStats && e.Param == "Def");

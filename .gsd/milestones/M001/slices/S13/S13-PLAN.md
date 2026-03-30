@@ -18,7 +18,7 @@ Output: Updated spawn table JSON files for the first two regions.
 
 Purpose: This supports CONT-06 and CONT-07, providing the geographical and combat foundation for mid-game questing.
 Output: Spawn JSONs and Map directory structures for regions 3 and 4.
-- [ ] **T03: 13-world-expansion 03**
+- [x] **T03: 13-world-expansion 03**
   - Create spawn tables and map directory stubs for Regions 5 and 6 (Isla Volcana and Cascada Eterna).
 
 Purpose: This supports CONT-06 and CONT-07, providing the foundation for late-mid game zones.
