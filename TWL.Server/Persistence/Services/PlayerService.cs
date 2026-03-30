@@ -207,7 +207,7 @@ public class PlayerService
         }
     }
 
-    public PlayerSaveData? LoadData(int userId)
+    public virtual PlayerSaveData? LoadData(int userId)
     {
         // Keeping synchronous LoadData for compatibility if needed
         return _repo.Load(userId);

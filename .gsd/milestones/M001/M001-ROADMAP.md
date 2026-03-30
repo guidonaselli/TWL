@@ -7,7 +7,7 @@
 - Core multiplayer loop works end-to-end across party, guild, market, and rebirth systems.
 - Persistence and security foundations are strong enough for valuable multiplayer operations.
 - Content and progression blockers are resolved so players can advance without broken quest chains or data integrity failures.
-
+https://github.com/guidonaselli/TWL/pull/456/conflict?name=.gsd%252Fmilestones%252FM001%252Fslices%252FS10%252Ftasks%252FT05-SUMMARY.md&base_oid=10275930b3331769093c0549ddd9dd31f137f728&head_oid=7fbd7118eb5553acc051f92980cb37a0ef898b50
 ## Slices
 
 - [x] **S01: Infrastructure Foundation** `risk:medium` `depends:[]`
@@ -32,7 +32,7 @@
   > After this: Implement death-penalty EXP loss on player death (`CMB-01` partial) using server-authoritative combat event handling.
 - [x] **S11: Content Foundation** `risk:medium` `depends:[S10]`
   > After this: Expand `items.json` with the remaining higher-tier item sets and content coverage needed for the full item database.
-- [ ] **S12: Quest Expansion** `risk:medium` `depends:[S11]`
+- [x] **S12: Quest Expansion** `risk:medium` `depends:[S11]`
   > After this: Create the main story quest chains for regions 3 and 4 (Selva Esmeralda and Arrecife Hundido), covering levels 20-45.
 - [ ] **S13: World Expansion** `risk:medium` `depends:[S12]`
   > After this: Finalize spawn tables for Regions 1 and 2 (Isla Brisa and Puerto Roca) using expanded monster data.

@@ -7,11 +7,11 @@
   "RespawnSeconds": 60,
   "SpawnRegions": [
     {
-      "X": 10,
-      "Y": 10,
+      "X": 0,
+      "Y": 0,
       "Width": 40,
       "Height": 40,
-      "AllowedMonsterIds": [ 2001, 2002 ]
+      "AllowedMonsterIds": [ 2013, 2009 ]
     }
   ]
 }

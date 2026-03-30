@@ -168,8 +168,16 @@ public class PetService : IPetService
             return false;
         }
 
+        var chara = session.Character;
+
+        // Block dead or in-combat players from switching pets
+        if (chara.Hp <= 0 || _combatManager.GetCombatant(chara.Id) != null)
+        {
+            return false;
+        }
+
         var pet = GetPet(ownerId, petInstanceId);
-        if (pet == null)
+        if (pet == null || pet.IsDead)
         {
             return false;
         }
@@ -330,8 +338,6 @@ public class PetService : IPetService
             return false;
         }
 
-        var chara = session.Character;
-
         // Cooldown Check (e.g. 60 seconds)
         if (DateTime.UtcNow < chara.LastPetSwitchTime.AddSeconds(60))
         {
@@ -404,8 +410,16 @@ public class PetService : IPetService
             return false;
         }
 
+        var chara = session.Character;
+
+        // Block dead or in-combat players from using utilities
+        if (chara.Hp <= 0 || _combatManager.GetCombatant(chara.Id) != null)
+        {
+            return false;
+        }
+
         var pet = GetPet(ownerId, petInstanceId);
-        if (pet == null)
+        if (pet == null || pet.IsDead)
         {
             return false;
         }
@@ -415,8 +429,6 @@ public class PetService : IPetService
         {
             return false;
         }
-
-        var chara = session.Character;
 
         switch (type)
         {

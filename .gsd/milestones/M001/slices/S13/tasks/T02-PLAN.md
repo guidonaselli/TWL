@@ -12,6 +12,9 @@ Output: Spawn JSONs and Map directory structures for regions 3 and 4.
 ## Must-Haves
 
 - [ ] "Spawn tables and map directory stubs exist for Selva Esmeralda and Arrecife Hundido"
+- [ ] "Map Region IDs must be 2000-2099 for Selva Esmeralda and 3000-3099 for Arrecife Hundido"
+- [ ] "JSON validation: verify no ID collisions and check for missing localization keys"
+- [ ] "Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done."
 
 ## Files
 
