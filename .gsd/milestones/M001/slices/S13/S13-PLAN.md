@@ -23,7 +23,7 @@ Output: Spawn JSONs and Map directory structures for regions 3 and 4.
 
 Purpose: This supports CONT-06 and CONT-07, providing the foundation for late-mid game zones.
 Output: Spawn JSONs and Map directory structures for regions 5 and 6.
-- [ ] **T04: 13-world-expansion 04**
+- [x] **T04: 13-world-expansion 04**
   - Create spawn tables and map directory stubs for Regions 7 and 8 (Cumbre Ancestral and Resonancia Core).
 
 Purpose: This fully satisfies CONT-06 and CONT-07, finalizing the world geography and enemy spawns up to max level (100).

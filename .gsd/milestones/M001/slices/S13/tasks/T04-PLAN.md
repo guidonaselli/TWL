@@ -11,10 +11,10 @@ Output: Spawn JSONs and Map directory structures for regions 7 and 8.
 
 ## Must-Haves
 
-- [ ] "Spawn tables and map directory stubs exist for Cumbre Ancestral and Resonancia Core"
-- [ ] "Map Region IDs must be 6000-6099 for Cumbre Ancestral and 7000-7099 for Resonancia Core"
-- [ ] "JSON validation: verify no ID collisions and check for missing localization keys"
-- [ ] "Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done."
+- [x] "Spawn tables and map directory stubs exist for Cumbre Ancestral and Resonancia Core"
+- [x] "Map Region IDs must be 6000-6099 for Cumbre Ancestral and 7000-7099 for Resonancia Core"
+- [x] "JSON validation: verify no ID collisions and check for missing localization keys"
+- [x] "Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done."
 
 ## Files
 

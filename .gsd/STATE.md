@@ -19,6 +19,11 @@
     {
       "id": "M001",
       "title": "Core Multiplayer Systems",
+      "status": "complete"
+    },
+    {
+      "id": "M002",
+      "title": "M002",
       "status": "active"
     }
   ],
