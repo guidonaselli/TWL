@@ -7,7 +7,7 @@
 - Core multiplayer loop works end-to-end across party, guild, market, and rebirth systems.
 - Persistence and security foundations are strong enough for valuable multiplayer operations.
 - Content and progression blockers are resolved so players can advance without broken quest chains or data integrity failures.
-
+https://github.com/guidonaselli/TWL/pull/456/conflict?name=.gsd%252Fmilestones%252FM001%252Fslices%252FS10%252Ftasks%252FT05-SUMMARY.md&base_oid=10275930b3331769093c0549ddd9dd31f137f728&head_oid=7fbd7118eb5553acc051f92980cb37a0ef898b50
 ## Slices
 
 - [x] **S01: Infrastructure Foundation** `risk:medium` `depends:[]`
