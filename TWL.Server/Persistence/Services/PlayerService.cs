@@ -207,15 +207,15 @@ public class PlayerService
         }
     }
 
-    public PlayerSaveData? LoadData(int userId)
+    public virtual PlayerSaveData? LoadData(int userId)
     {
         // Keeping synchronous LoadData for compatibility if needed
         return _repo.Load(userId);
     }
 
-    public async Task<PlayerSaveData?> LoadDataAsync(int userId) => await _repo.LoadAsync(userId);
+    public virtual async Task<PlayerSaveData?> LoadDataAsync(int userId) => await _repo.LoadAsync(userId);
 
-    public async Task<IEnumerable<PlayerSaveData>> LoadDataBatchAsync(IEnumerable<int> userIds) => await _repo.LoadBatchAsync(userIds);
+    public virtual async Task<IEnumerable<PlayerSaveData>> LoadDataBatchAsync(IEnumerable<int> userIds) => await _repo.LoadBatchAsync(userIds);
 
     public virtual void SaveSession(ClientSession session) => SaveSessionAsync(session).GetAwaiter().GetResult();
 

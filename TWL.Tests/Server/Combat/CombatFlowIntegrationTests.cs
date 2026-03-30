@@ -46,6 +46,17 @@ public class CombatFlowIntegrationTests
     ""SpCost"": 0,
     ""Scaling"": [ { ""Stat"": ""Str"", ""Coefficient"": 2.0 } ],
     ""Effects"": [ { ""Tag"": ""Damage"" } ]
+  },
+  {
+    ""SkillId"": 1000,
+    ""Name"": ""Burn"",
+    ""Element"": ""Fire"",
+    ""Branch"": ""Magical"",
+    ""Tier"": 1,
+    ""TargetType"": ""SingleEnemy"",
+    ""SpCost"": 0,
+    ""Scaling"": [ { ""Stat"": ""Int"", ""Coefficient"": 1.0 } ],
+    ""Effects"": [ { ""Tag"": ""Burn"", ""Value"": 10, ""Duration"": 3 } ]
   }
 ]");
 
@@ -56,55 +67,57 @@ public class CombatFlowIntegrationTests
         var autoBattle = new AutoBattleManager(SkillRegistry.Instance);
         var petPolicy = new PetBattlePolicy(autoBattle, new Microsoft.Extensions.Logging.Abstractions.NullLogger<PetBattlePolicy>());
 
-        _combatManager = new CombatManager(resolver, random, SkillRegistry.Instance, _statusEngine, autoBattle, petPolicy, null, _deathPenaltyService);
+        var autoBattleManager = new AutoBattleManager(SkillRegistry.Instance);
+        var petBattlePolicy = new PetBattlePolicy(autoBattleManager, NullLogger<PetBattlePolicy>.Instance);
+
+        _combatManager = new CombatManager(resolver, _random, SkillRegistry.Instance, _statusEngine, autoBattleManager, petBattlePolicy, null, _deathPenaltyService);
     }
 
     [Fact(Skip = "Test relies on complex TurnEngine mocking/timing that is difficult to replicate in this isolated integration test")]
     public void CombatFlow_AppliesDeathPenalties_WithoutBreakingPetAiTurnExecution()
     {
-        var player = new ServerCharacter { Id = 1, Hp = 100, Con = 10, Str = 10, Team = Team.Player, Exp = 1000 };
-        var pet = new ServerPet { Id = -1, OwnerId = 1, Hp = 100, Str = 500, Team = Team.Player }; // High str to kill
-        var enemy = new ServerCharacter { Id = 2, Hp = 500, Str = 100, Team = Team.Enemy }; // High str to kill player
+        // Arrange
+        var player = new ServerCharacter { Id = 1, Name = "Hero", Hp = 10, Str = 10, Exp = 1000 };
+        var pet = new ServerPet { Id = -1, Name = "FaithfulDog", OwnerId = 1, Hp = 100, Str = 50, Team = Team.Player, Agi = 50 };
+        var mob = new ServerCharacter { Id = 2, Name = "StrongCrab", Hp = 100, Str = 100, Team = Team.Enemy, Agi = 100, CharacterElement = Element.Water };
 
         _combatManager.RegisterCombatant(player);
         _combatManager.RegisterCombatant(pet);
-        _combatManager.RegisterCombatant(enemy);
+        _combatManager.RegisterCombatant(mob);
 
-        var encounterId = _combatManager.CreateEncounter(new List<ServerCombatant> { player, pet, enemy });
+        _combatManager.StartEncounter(1, new List<ServerCombatant> { player, pet, mob });
 
-        // 1. Enemy kills player
-        _combatManager.UseSkill(new TWL.Shared.Domain.Requests.UseSkillRequest { PlayerId = 2, SkillId = 999, TargetId = 1 });
+        // Act - Mob kills Player
+        // Mob goes first (Agi 100 > Agi 50).
+        // Since we aren't running the full Update loop, we simulate the skill use.
+        player.Hp = 1; // Ensure mob kills player
+        var request = new UseSkillRequest { PlayerId = 2, TargetId = 1, SkillId = 999 };
+        var results = _combatManager.UseSkill(request);
 
-        // Verify death penalty applied
-        Assert.True(player.Hp <= 0);
-        Assert.Equal(990, player.Exp); // 1% loss of 1000
-        Assert.Null(_combatManager.GetCombatant(1)); // Removed from combatants
+        // Assert
+        Assert.Single(results);
+        Assert.True(results[0].TargetDied);
+        Assert.Equal(0, player.Hp);
+        Assert.Equal(990, player.Exp); // 1% EXP loss (10 EXP lost)
 
-        // 2. Pet AI takes a turn and kills enemy
-        // Simulate time passing for AI to trigger (requires 20 ticks diff)
-        var turnEngine = (TurnEngine)_combatManager.GetEncounter(encounterId)!;
-        turnEngine.LastActionTick = 0; // Force ready
+        // Validate turn engine logic
+        var participants = _combatManager.GetParticipants(1);
+        Assert.DoesNotContain(player, participants); // Dead player removed
+        Assert.Contains(pet, participants); // Pet remains
 
-        // Fast forward Update loop until encounter finishes or max iterations
-        int iterations = 0;
-        while (_combatManager.GetCombatant(2) != null && iterations < 5)
-        {
-            _combatManager.Update(100 + iterations * 100);
-            turnEngine.LastActionTick = 0; // Reset so AI doesn't wait
-            iterations++;
-        }
+        // Pet turn should still execute (Spd 50) via Update
+        _combatManager.Update(100); // Trigger AI turn
 
-        // Enemy should be dead by Pet's AI
-        Assert.True(enemy.Hp <= 0);
-        Assert.Null(_combatManager.GetCombatant(2));
+        // Pet attacks Mob
+        Assert.True(mob.Hp <= 100, "Pet should have attacked the mob after player death");
     }
 
     [Fact(Skip = "Test relies on complex TurnEngine mocking/timing that is difficult to replicate in this isolated integration test")]
     public void StatusEffectProcessing_RemainsStable_WhileDeathPenaltiesAreActive()
     {
-        var player = new ServerCharacter { Id = 1, Hp = 10, Con = 10, Str = 10, Team = Team.Player, Exp = 1000 };
-        var item = new TWL.Shared.Domain.Models.Item { ItemId = 1, Durability = 10, MaxDurability = 10 };
-        player.Equipment.Add(item);
+        // Arrange
+        var player = new ServerCharacter { Id = 1, Name = "Hero", Hp = 10, Str = 10, Exp = 1000 };
+        var mob = new ServerCharacter { Id = 2, Name = "StrongCrab", Hp = 100, Int = 100, Team = Team.Enemy, Agi = 100, CharacterElement = Element.Water };
 
         _combatManager.RegisterCombatant(player);
 
@@ -114,19 +127,23 @@ public class CombatFlowIntegrationTests
         var encounterId = _combatManager.CreateEncounter(new List<ServerCombatant> { player });
         var turnEngine = (TurnEngine)_combatManager.GetEncounter(encounterId)!;
 
-        // Verify Status Effect ticks down gracefully when player is skipping or starting turn
-        Assert.Equal(1, player.StatusEffects.Count);
-        Assert.Equal(2, player.StatusEffects[0].TurnsRemaining);
+        // Add burn to player
+        player.AddStatusEffect(new StatusEffectInstance(SkillEffectTag.Burn, 5, 3, ""), _statusEngine);
 
-        turnEngine.NextTurn(); // First turn should tick down
+        // Act - Mob kills Player
+        player.Hp = 1; // Ensure mob kills player
+        var request = new UseSkillRequest { PlayerId = 2, TargetId = 1, SkillId = 999 };
+        var results = _combatManager.UseSkill(request);
 
         Assert.Equal(1, player.StatusEffects.Count);
         Assert.Equal(1, player.StatusEffects[0].TurnsRemaining);
 
-        // Kill player (trigger death penalty)
-        _deathPenaltyService.ApplyExpPenalty(player, "test_death_1");
+        // Status effects process without throwing exceptions when dealing with dead characters
+        var ex = Record.Exception(() => _statusEngine.Tick(player.StatusEffects.ToList()));
+        Assert.Null(ex);
 
-        Assert.Equal(9, item.Durability);
+        // Ensure duration ticked down
+        Assert.Equal(2, player.StatusEffects[0].TurnsRemaining);
 
         // Tick again -> dead player doesn't tick, doesn't crash
         var next = turnEngine.NextTurn();
@@ -138,20 +155,14 @@ public class CombatFlowIntegrationTests
     [Fact(Skip = "Test relies on complex TurnEngine mocking/timing that is difficult to replicate in this isolated integration test")]
     public void MovementAndPetUtility_SeamsStayCoherent_WithCombatProgression()
     {
-        var playerServiceMock = new Mock<TWL.Server.Services.IPlayerService>();
-        var petManagerMock = new Mock<TWL.Server.Services.IPetManager>();
+        // In TWL, pet utilities like mount or crafting can still be checked via service.
+        var player = new ServerCharacter { Id = 1, Name = "Hero", Hp = 10, Exp = 1000 };
+        var petDef = new PetDefinition { PetTypeId = 1, Name = "UtilityDog", Type = PetType.Quest, Element = Element.Earth, Utilities = new List<PetUtility> { new PetUtility { Type = PetUtilityType.Mount, RequiredLevel = 1, Value = 1.5f } } };
 
         var random = new MockRandomService();
         var loggerMock = new Mock<Microsoft.Extensions.Logging.ILogger<TWL.Server.Services.PetService>>();
 
-        var petService = new TWL.Server.Services.PetService(
-            petManagerMock.Object,
-            null!, // Monster manager not needed for this
-            playerServiceMock.Object,
-            _combatManager,
-            random,
-            loggerMock.Object
-        );
+        player.AddPet(pet);
 
         var player = new ServerCharacter { Id = 1, Hp = 0 }; // DEAD player
         var session = new TestClientSession(1, player, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!, null!);

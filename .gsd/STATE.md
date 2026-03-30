@@ -4,17 +4,17 @@
     "title": "Core Multiplayer Systems"
   },
   "activeSlice": {
-    "id": "S10",
-    "title": "Combat & Progression Integration"
+    "id": "S13",
+    "title": "World Expansion"
   },
   "activeTask": {
-    "id": "T05",
-    "title": "10-combat-progression-integration 05"
+    "id": "T03",
+    "title": "13-world-expansion 03"
   },
   "phase": "executing",
   "recentDecisions": [],
   "blockers": [],
-  "nextAction": "Execute T05: 10-combat-progression-integration 05 in slice S10.",
+  "nextAction": "Execute T03: 13-world-expansion 03 in slice S13.",
   "registry": [
     {
       "id": "M001",
