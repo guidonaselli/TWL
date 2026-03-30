@@ -34,5 +34,5 @@ https://github.com/guidonaselli/TWL/pull/456/conflict?name=.gsd%252Fmilestones%2
   > After this: Expand `items.json` with the remaining higher-tier item sets and content coverage needed for the full item database.
 - [x] **S12: Quest Expansion** `risk:medium` `depends:[S11]`
   > After this: Create the main story quest chains for regions 3 and 4 (Selva Esmeralda and Arrecife Hundido), covering levels 20-45.
-- [ ] **S13: World Expansion** `risk:medium` `depends:[S12]`
+- [x] **S13: World Expansion** `risk:medium` `depends:[S12]`
   > After this: Finalize spawn tables for Regions 1 and 2 (Isla Brisa and Puerto Roca) using expanded monster data.
