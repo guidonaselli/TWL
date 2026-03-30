@@ -1,21 +1,28 @@
-# Phase 10: Combat Progression Integration - Verification
+# Phase 10: Combat Progression Integration Verification
 
-This document traces the Phase 10 requirements to their executable acceptance verification.
+**Status**: Verified
+**Date**: $(date -u +"%Y-%m-%d")
+**Milestone**: M001
+**Slice**: S10
 
-## Requirement Mapping
+This document tracks the acceptance criteria for Phase 10 (Combat Progression Integration) mapped to roadmap requirements. All requirements have executable test coverage.
 
-| ID      | Description                               | Status     | Verification Test (xUnit)                                     |
-|---------|-------------------------------------------|------------|---------------------------------------------------------------|
-| CMB-01  | Death-penalty EXP loss (1%)               | `VERIFIED` | `CombatProgressionPhaseAcceptanceTests.CMB_01_PlayerDeath_AppliesPenalty` |
-| CMB-02  | Item durability loss on death (-1)        | `VERIFIED` | `CombatProgressionPhaseAcceptanceTests.CMB_01_PlayerDeath_AppliesPenalty` |
-| CMB-03  | Combat flow coherence & pet AI resilience | `VERIFIED` | `CombatFlowIntegrationTests.CombatFlow_AppliesDeathPenalties_WithoutBreakingPetAiTurnExecution` |
-| CMB-04  | Status effects tick stable on dead entity | `VERIFIED` | `CombatFlowIntegrationTests.StatusEffectProcessing_RemainsStable_WhileDeathPenaltiesAreActive` |
-| INST-01 | Instance daily limit cap (5 runs)         | `VERIFIED` | `CombatProgressionPhaseAcceptanceTests.INST_01_02_03_InstanceLimits_Enforced` |
-| INST-02 | Instance entry rejection at cap           | `VERIFIED` | `CombatProgressionPhaseAcceptanceTests.INST_01_02_03_InstanceLimits_Enforced` |
-| INST-03 | UTC midnight reset of instance runs       | `VERIFIED` | `CombatProgressionPhaseAcceptanceTests.INST_01_02_03_InstanceLimits_Enforced` |
+## CMB-01 / CMB-02: Death Penalty (EXP & Durability Loss)
+* **Requirement**: Player death results in 1% EXP loss and -1 Durability to all equipped items.
+* **Acceptance Test**: `Requirement_CMB01_02_DeathPenaltyAppliesExactlyOnePercentExpAndMinusOneDurability`
+* **Status**: PASS
+* **Evidence**: The acceptance test explicitly verifies a 1% calculation, a -1 decrement to equipment durability, and state transitions to `IsBroken` for items reaching 0 durability.
 
-## Notes
+## INST-01 / INST-02 / INST-03: Instance Daily Limits
+* **Requirement**: Players are capped at 5 daily runs per instance. Resets at UTC midnight. Server-authoritative enforcement.
+* **Acceptance Test**: `Requirement_INST01_02_03_InstanceDailyLimitsEnforcedWithUtcReset`
+* **Status**: PASS
+* **Evidence**: The acceptance test ensures `InstanceService.DailyLimit` is exactly 5. It confirms 5 successful entries and 1 rejection for the 6th attempt on the same UTC date. Simulating a UTC day rollover immediately permits entry again and clears the run counter.
 
-- **Death Penalty (CMB-01/02):** Validated in `TWL.Tests.Server.Combat.CombatProgressionPhaseAcceptanceTests`. Checks for exact policy values: 1% EXP deduction, -1 durability loss.
-- **Instance Limits (INST-01/02/03):** Validated in `TWL.Tests.Server.Combat.CombatProgressionPhaseAcceptanceTests`. Asserts exact cap (5) and UTC date boundary reset.
-- **Combat Flow (CMB-03/04):** Validated in `CombatFlowIntegrationTests`. Ensured that dead entities don't break turn loops, pet AI, or status effect ticking.
+## CMB-04: Combat Flow Integration
+* **Requirement**: Integration of death penalties, pet AI, and status processing.
+* **Acceptance Test**: `CombatFlowIntegrationTests` suite
+* **Status**: PASS
+* **Evidence**: Combat death successfully triggers penalties and removes players from turn calculation without crashing pet AI turns or status processing loops. Out-of-combat utility behaviors accurately track in-combat states.
+
+All phase acceptance tests are passing, clearing the requirements for Phase 10 integration.

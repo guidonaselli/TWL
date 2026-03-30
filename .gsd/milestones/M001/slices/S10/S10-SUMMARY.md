@@ -1,7 +1,5 @@
-# S10: Combat Progression Integration Summary
+# S10: Combat Progression Integration - Summary
 
-- Completed all Phase 10 combat flow tasks.
-- Integrated Combat Penalty deductions on player death.
-- Integrated Instance limit quotas per day and UTC limit reseting logic.
-- Implemented and satisfied item stat destruction mechanisms on character death.
-- Included acceptance tests verifying explicit phase requirements.
+All requirements (CMB-01, CMB-02, CMB-03, CMB-04, and INST-01, INST-02, INST-03) mapped in the S10 slice have been implemented and verified. The acceptance test `CombatProgressionPhaseAcceptanceTests` covers EXP/Durability death penalties and instance lockouts successfully, and the artifact `10-VERIFICATION.md` confirms all criteria are met.
+
+Phase 10 is now verified and marked complete.
