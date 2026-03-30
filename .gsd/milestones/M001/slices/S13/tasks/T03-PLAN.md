@@ -11,10 +11,10 @@ Output: Spawn JSONs and Map directory structures for regions 5 and 6.
 
 ## Must-Haves
 
-- [ ] "Spawn tables and map directory stubs exist for Isla Volcana and Cascada Eterna"
-- [ ] "Map Region IDs must be 4000-4099 for Isla Volcana and 5000-5099 for Cascada Eterna"
-- [ ] "JSON validation: verify no ID collisions"
-- [ ] "Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done."
+- [x] "Spawn tables and map directory stubs exist for Isla Volcana and Cascada Eterna"
+- [x] "Map Region IDs must be 4000-4099 for Isla Volcana and 5000-5099 for Cascada Eterna"
+- [x] "JSON validation: verify no ID collisions"
+- [x] "Complete pre-commit steps to ensure proper testing, verification, review, and reflection are done."
 
 ## Files
 
