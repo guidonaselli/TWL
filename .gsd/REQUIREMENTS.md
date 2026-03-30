@@ -474,3 +474,11 @@ Map region directories and metadata exist for regions 3-8 (Selva Esmeralda throu
 - Primary Slice: S09
 
 Player needs a way to revive KO'd pets (consumable item or NPC healer)
+
+### [DISCOVERED] WORLD-01 — Map transition portal system to move between different regions (e.g. Isla Brisa to Puerto Roca)
+- Status: discovered
+- Class: core-capability
+- Source: architect
+- Primary Slice: S13
+
+Map transition portal system is required to seamlessly move between different regions and dungeon instances.
