@@ -171,7 +171,7 @@ public class PetService : IPetService
         var chara = session.Character;
 
         // Block dead or in-combat players from switching pets
-        if (chara.Hp <= 0 || _combatManager.GetCombatant(chara.Id) != null)
+        if (session.Character.Hp <= 0 || _combatManager.GetCombatant(session.Character.Id) != null)
         {
             return false;
         }
@@ -339,7 +339,7 @@ public class PetService : IPetService
         }
 
         // Cooldown Check (e.g. 60 seconds)
-        if (DateTime.UtcNow < chara.LastPetSwitchTime.AddSeconds(60))
+        if (DateTime.UtcNow < session.Character.LastPetSwitchTime.AddSeconds(60))
         {
             return false;
         }
@@ -350,7 +350,7 @@ public class PetService : IPetService
             return false;
         }
 
-        var oldPet = chara.GetActivePet();
+        var oldPet = session.Character.GetActivePet();
         var inCombat = oldPet != null && oldPet.EncounterId > 0;
 
         // 1. Unregister existing pet from Combat
@@ -360,15 +360,15 @@ public class PetService : IPetService
         }
 
         // 2. Set new Active Pet
-        var success = chara.SetActivePet(petInstanceId);
+        var success = session.Character.SetActivePet(petInstanceId);
         if (!success)
         {
             return false;
         }
 
-        chara.LastPetSwitchTime = DateTime.UtcNow;
+        session.Character.LastPetSwitchTime = DateTime.UtcNow;
 
-        var newPet = chara.GetActivePet();
+        var newPet = session.Character.GetActivePet();
         if (newPet != null)
         {
             // 3. Assign Runtime ID: -OwnerId
@@ -413,7 +413,7 @@ public class PetService : IPetService
         var chara = session.Character;
 
         // Block dead or in-combat players from using utilities
-        if (chara.Hp <= 0 || _combatManager.GetCombatant(chara.Id) != null)
+        if (session.Character.Hp <= 0 || _combatManager.GetCombatant(session.Character.Id) != null)
         {
             return false;
         }
@@ -433,16 +433,16 @@ public class PetService : IPetService
         switch (type)
         {
             case PetUtilityType.Mount:
-                if (chara.IsMounted)
+                if (session.Character.IsMounted)
                 {
-                    chara.IsMounted = false;
-                    chara.MoveSpeedModifier = 1.0f;
+                    session.Character.IsMounted = false;
+                    session.Character.MoveSpeedModifier = 1.0f;
                 }
                 else
                 {
-                    chara.IsMounted = true;
+                    session.Character.IsMounted = true;
                     // value is treated as the bonus (e.g. 0.5 -> 1.5x speed)
-                    chara.MoveSpeedModifier = 1.0f + value;
+                    session.Character.MoveSpeedModifier = 1.0f + value;
                 }
 
                 // Sync to client
@@ -451,8 +451,8 @@ public class PetService : IPetService
                     Op = TWL.Shared.Net.Network.Opcode.StatsUpdate,
                     JsonPayload = System.Text.Json.JsonSerializer.Serialize(new
                     {
-                        isMounted = chara.IsMounted,
-                        moveSpeedModifier = chara.MoveSpeedModifier
+                        isMounted = session.Character.IsMounted,
+                        moveSpeedModifier = session.Character.MoveSpeedModifier
                     })
                 });
 
@@ -460,26 +460,26 @@ public class PetService : IPetService
 
             case PetUtilityType.Gathering:
                 // Toggle Gathering Mode/Bonus
-                if (chara.GatheringBonus > 0)
+                if (session.Character.GatheringBonus > 0)
                 {
-                    chara.GatheringBonus = 0f;
+                    session.Character.GatheringBonus = 0f;
                 }
                 else
                 {
-                    chara.GatheringBonus = value;
+                    session.Character.GatheringBonus = value;
                 }
 
                 break;
 
             case PetUtilityType.CraftingAssist:
                 // Toggle Crafting Assist
-                if (chara.CraftingAssistBonus > 0)
+                if (session.Character.CraftingAssistBonus > 0)
                 {
-                    chara.CraftingAssistBonus = 0f;
+                    session.Character.CraftingAssistBonus = 0f;
                 }
                 else
                 {
-                    chara.CraftingAssistBonus = value;
+                    session.Character.CraftingAssistBonus = value;
                 }
 
                 break;
@@ -495,7 +495,7 @@ public class PetService : IPetService
                 // Get Item from Inventory (Snapshot)
                 // Since we rely on index, we need to be careful with concurrency, but UseUtility is likely sequential per user request.
                 // However, Character.Inventory is thread-safe snapshot.
-                var inventory = chara.Inventory;
+                var inventory = session.Character.Inventory;
                 if (slotIndex < 0 || slotIndex >= inventory.Count)
                 {
                     return false;
@@ -505,10 +505,10 @@ public class PetService : IPetService
 
                 // Attempt to remove EXACTLY this item (using policy filter if needed, but here we assume unbound/bound specific)
                 // RemoveItem takes quantity. We move the whole stack.
-                if (chara.RemoveItem(item.ItemId, item.Quantity, item.Policy))
+                if (session.Character.RemoveItem(item.ItemId, item.Quantity, item.Policy))
                 {
                     // Success removed -> Add to Bank
-                    chara.AddToBank(item);
+                    session.Character.AddToBank(item);
                     _logger.LogInformation("Pet {PetId} delivered Item {ItemId} x{Qty} to Bank for Owner {OwnerId}",
                         petInstanceId, item.ItemId, item.Quantity, ownerId);
                 }
