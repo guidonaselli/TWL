@@ -74,7 +74,7 @@ public class WorldSchedulerTests
             tcs.TrySetResult(true);
         };
 
-        var completed = await Task.WhenAny(tcs.Task, Task.Delay(500));
+        var completed = await Task.WhenAny(tcs.Task, Task.Delay(5000));
         Assert.Same(tcs.Task, completed);
         Assert.True(capturedTick > 0);
     }

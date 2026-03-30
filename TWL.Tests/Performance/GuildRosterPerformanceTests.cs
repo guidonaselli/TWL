@@ -70,7 +70,7 @@ public class GuildRosterPerformanceTests
         {
             int id = i;
             playerServiceMock.Setup(ps => ps.GetSession(id)).Returns((ClientSession)null);
-            playerServiceMock.Setup(ps => ps.LoadData(id)).Returns(() =>
+            playerServiceMock.Setup(ps => ps.LoadDataAsync(id)).ReturnsAsync(() =>
             {
                 Thread.Sleep(ioDelayMs); // Simulate synchronous IO delay
                 return new PlayerSaveData
