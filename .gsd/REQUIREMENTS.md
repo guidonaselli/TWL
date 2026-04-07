@@ -482,3 +482,39 @@ Player needs a way to revive KO'd pets (consumable item or NPC healer)
 - Primary Slice: S13
 
 Map transition portal system is required to seamlessly move between different regions and dungeon instances.
+
+### [DISCOVERED] CMP-01 — Players can access compound flow from configured compound NPC targets
+- Status: discovered
+- Class: core-capability
+- Source: architect
+- Primary Slice: S08
+
+### [DISCOVERED] CMP-02 — Compound request rejects invalid base-item/material selections
+- Status: discovered
+- Class: core-capability
+- Source: architect
+- Primary Slice: S08
+
+### [DISCOVERED] CMP-03 — Success chance is calculated server-side from enhancement level and selected material bonuses
+- Status: discovered
+- Class: core-capability
+- Source: architect
+- Primary Slice: S08
+
+### [DISCOVERED] CMP-04 — Successful compound attempts apply permanent enhancement bonuses to the target equipment
+- Status: discovered
+- Class: core-capability
+- Source: architect
+- Primary Slice: S08
+
+### [DISCOVERED] CMP-05 — Failed attempts consume materials but preserve the base equipment item
+- Status: discovered
+- Class: core-capability
+- Source: architect
+- Primary Slice: S08
+
+### [DISCOVERED] CMP-06 — Integrate non-refundable compound fee economics and anti-arbitrage safeguards
+- Status: discovered
+- Class: core-capability
+- Source: architect
+- Primary Slice: S08
