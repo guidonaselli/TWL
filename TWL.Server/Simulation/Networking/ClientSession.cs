@@ -1151,6 +1151,11 @@ public class ClientSession
     {
         msg.SchemaVersion = ProtocolConstants.CurrentSchemaVersion;
         var bytes = JsonSerializer.SerializeToUtf8Bytes(msg);
+        await SendAsync(bytes);
+    }
+
+    public virtual async Task SendAsync(byte[] bytes)
+    {
         await _stream.WriteAsync(bytes, 0, bytes.Length);
         _metrics?.RecordNetBytesSent(bytes.Length);
     }

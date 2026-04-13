@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text.Json;
 using System.Threading.Tasks;
@@ -54,14 +55,25 @@ public class PartyChatService : IPartyChatService
         var netMsg = new NetMessage
         {
             Op = Opcode.PartyChatBroadcast,
+            SchemaVersion = ProtocolConstants.CurrentSchemaVersion,
             JsonPayload = json
         };
 
-        var sendTasks = party.MemberIds
-            .Select(memberId => _playerService.GetSession(memberId))
-            .Where(session => session != null)
-            .Select(session => session!.SendAsync(netMsg));
+        var bytes = JsonSerializer.SerializeToUtf8Bytes(netMsg);
+        var sendTasks = new List<Task>(party.MemberIds.Count);
 
-        await Task.WhenAll(sendTasks);
+        foreach (var memberId in party.MemberIds)
+        {
+            var session = _playerService.GetSession(memberId);
+            if (session != null)
+            {
+                sendTasks.Add(session.SendAsync(bytes));
+            }
+        }
+
+        if (sendTasks.Count > 0)
+        {
+            await Task.WhenAll(sendTasks);
+        }
     }
 }
