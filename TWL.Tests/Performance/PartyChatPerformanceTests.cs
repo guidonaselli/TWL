@@ -49,6 +49,8 @@ public class PartyChatPerformanceTests
             var sessionMock = new Mock<ClientSession>();
             sessionMock.Setup(s => s.SendAsync(It.IsAny<NetMessage>()))
                 .Returns(async () => await Task.Delay(ioDelayMs));
+            sessionMock.Setup(s => s.SendAsync(It.IsAny<byte[]>()))
+                .Returns(async () => await Task.Delay(ioDelayMs));
 
             playerServiceMock.Setup(ps => ps.GetSession(i)).Returns(sessionMock.Object);
             sessions.Add(sessionMock);
