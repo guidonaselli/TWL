@@ -1067,7 +1067,7 @@ public class ServerCharacter : ServerCombatant
 
     public bool Unequip(int equipmentSlotIndex)
     {
-        // Fix potential deadlock: Always acquire locks in consistent order (_inventory -> _equipment)
+        // Deadlock Prevention: Always acquire locks in consistent order (_inventory -> _equipment)
         lock (_inventory)
         {
             lock (_equipment)
