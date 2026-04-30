@@ -13,6 +13,7 @@ namespace TWL.Server.Simulation.Networking;
 public class ServerCharacter : ServerCombatant
 {
     private readonly List<Item> _inventory = new();
+    private readonly Dictionary<int, List<Item>> _inventoryById = new();
     private readonly List<Item> _equipment = new();
     private readonly List<Item> _bank = new();
 
@@ -505,10 +506,15 @@ public class ServerCharacter : ServerCombatant
         {
             // Strict match on Policy and BoundToId
             long total = 0;
-            var candidates = new List<Item>();
-            foreach (var item in _inventory)
+            if (!_inventoryById.TryGetValue(itemId, out var candidatesForId))
             {
-                if (item.ItemId == itemId && item.Policy == policy && item.BoundToId == boundToId)
+                return false;
+            }
+
+            var candidates = new List<Item>();
+            foreach (var item in candidatesForId)
+            {
+                if (item.Policy == policy && item.BoundToId == boundToId)
                 {
                     total += item.Quantity;
                     candidates.Add(item);
@@ -534,6 +540,11 @@ public class ServerCharacter : ServerCombatant
                 if (item.Quantity <= 0)
                 {
                     _inventory.Remove(item);
+                    if (_inventoryById.TryGetValue(itemId, out var list))
+                    {
+                        list.Remove(item);
+                        if (list.Count == 0) _inventoryById.Remove(itemId);
+                    }
                 }
             }
 
@@ -561,7 +572,12 @@ public class ServerCharacter : ServerCombatant
         lock (_inventory)
         {
             // 1. Check if stackable
-            var existing = _inventory.Find(i => i.ItemId == itemId && i.Policy == policy && i.BoundToId == boundToId);
+            Item? existing = null;
+            if (_inventoryById.TryGetValue(itemId, out var list))
+            {
+                existing = list.Find(i => i.Policy == policy && i.BoundToId == boundToId);
+            }
+
             if (existing != null)
             {
                 // Assuming unlimited stack size for simplicity or check MaxStack if needed
@@ -725,7 +741,12 @@ public class ServerCharacter : ServerCombatant
         lock (_inventory)
         {
             // Only stack if ID, Policy, BoundToId and EnhancementLevel match
-            var existing = _inventory.Find(i => i.ItemId == itemId && i.Policy == policy && i.BoundToId == boundToId && i.EnhancementLevel == 0);
+            Item? existing = null;
+            if (_inventoryById.TryGetValue(itemId, out var list))
+            {
+                existing = list.Find(i => i.Policy == policy && i.BoundToId == boundToId && i.EnhancementLevel == 0);
+            }
+
             if (existing != null)
             {
                 existing.Quantity += quantity;
@@ -748,6 +769,13 @@ public class ServerCharacter : ServerCombatant
 
             var newItem = new Item { ItemId = itemId, Quantity = quantity, Policy = policy, BoundToId = boundToId };
             _inventory.Add(newItem);
+            if (!_inventoryById.TryGetValue(itemId, out var newList))
+            {
+                newList = new List<Item>();
+                _inventoryById[itemId] = newList;
+            }
+            newList.Add(newItem);
+
             if (!_itemTotalQuantities.ContainsKey(itemId))
             {
                 _itemTotalQuantities[itemId] = 0;
@@ -798,6 +826,11 @@ public class ServerCharacter : ServerCombatant
             if (item.Quantity <= 0)
             {
                 _inventory.Remove(item);
+                if (_inventoryById.TryGetValue(item.ItemId, out var list))
+                {
+                    list.Remove(item);
+                    if (list.Count == 0) _inventoryById.Remove(item.ItemId);
+                }
             }
 
             // Update Total Quantities Cache
@@ -907,6 +940,11 @@ public class ServerCharacter : ServerCombatant
                 if (item.Quantity <= 0)
                 {
                     _inventory.RemoveAt(slotIndex);
+                    if (_inventoryById.TryGetValue(item.ItemId, out var list))
+                    {
+                        list.Remove(item);
+                        if (list.Count == 0) _inventoryById.Remove(item.ItemId);
+                    }
                 }
 
                 _inventoryCache = null;
@@ -930,19 +968,21 @@ public class ServerCharacter : ServerCombatant
         {
             // Calculate total available first to ensure atomicity
             long total = 0;
-            var candidates = new List<Item>();
-            foreach (var item in _inventory)
+            if (!_inventoryById.TryGetValue(itemId, out var candidatesForId))
             {
-                if (item.ItemId == itemId)
-                {
-                    if (policyFilter.HasValue && item.Policy != policyFilter.Value)
-                    {
-                        continue;
-                    }
+                return false;
+            }
 
-                    total += item.Quantity;
-                    candidates.Add(item);
+            var candidates = new List<Item>();
+            foreach (var item in candidatesForId)
+            {
+                if (policyFilter.HasValue && item.Policy != policyFilter.Value)
+                {
+                    continue;
                 }
+
+                total += item.Quantity;
+                candidates.Add(item);
             }
 
             if (total < quantity)
@@ -968,6 +1008,11 @@ public class ServerCharacter : ServerCombatant
                 if (item.Quantity <= 0)
                 {
                     _inventory.Remove(item);
+                    if (_inventoryById.TryGetValue(itemId, out var list))
+                    {
+                        list.Remove(item);
+                        if (list.Count == 0) _inventoryById.Remove(itemId);
+                    }
                 }
             }
 
@@ -990,22 +1035,52 @@ public class ServerCharacter : ServerCombatant
         }
     }
 
+    public long GetItemQuantity(int itemId, BindPolicy? policyFilter = null)
+    {
+        lock (_inventory)
+        {
+            if (!_inventoryById.TryGetValue(itemId, out var list))
+            {
+                return 0;
+            }
+
+            if (!policyFilter.HasValue)
+            {
+                return _itemTotalQuantities.GetValueOrDefault(itemId);
+            }
+
+            long total = 0;
+            foreach (var item in list)
+            {
+                if (item.Policy == policyFilter.Value)
+                {
+                    total += item.Quantity;
+                }
+            }
+
+            return total;
+        }
+    }
+
     public List<Item> GetItems(int itemId, BindPolicy? policyFilter = null)
     {
         lock (_inventory)
         {
             var results = new List<Item>();
-            foreach (var item in _inventory)
+            if (!_inventoryById.TryGetValue(itemId, out var list))
             {
-                if (item.ItemId == itemId)
-                {
-                    if (policyFilter.HasValue && item.Policy != policyFilter.Value)
-                    {
-                        continue;
-                    }
+                return results;
+            }
 
-                    // Return copies
-                    results.Add(new Item
+            foreach (var item in list)
+            {
+                if (policyFilter.HasValue && item.Policy != policyFilter.Value)
+                {
+                    continue;
+                }
+
+                // Return copies
+                results.Add(new Item
                     {
                         ItemId = item.ItemId,
                         InstanceId = item.InstanceId,
@@ -1038,6 +1113,11 @@ public class ServerCharacter : ServerCombatant
 
             var item = _inventory[inventorySlotIndex];
             _inventory.RemoveAt(inventorySlotIndex);
+            if (_inventoryById.TryGetValue(item.ItemId, out var list))
+            {
+                list.Remove(item);
+                if (list.Count == 0) _inventoryById.Remove(item.ItemId);
+            }
             _inventoryCache = null;
 
             // Update cache for inventory
@@ -1088,6 +1168,12 @@ public class ServerCharacter : ServerCombatant
                 _equipmentCache = null;
 
                 _inventory.Add(item);
+                if (!_inventoryById.TryGetValue(item.ItemId, out var list))
+                {
+                    list = new List<Item>();
+                    _inventoryById[item.ItemId] = list;
+                }
+                list.Add(item);
                 _inventoryCache = null;
 
                 // Update cache
@@ -1341,6 +1427,7 @@ public class ServerCharacter : ServerCombatant
         lock (_inventory)
         {
             _inventory.Clear();
+            _inventoryById.Clear();
             _inventoryCache = null;
             _itemTotalQuantities.Clear();
             if (data.Inventory != null)
@@ -1348,6 +1435,13 @@ public class ServerCharacter : ServerCombatant
                 _inventory.AddRange(data.Inventory);
                 foreach (var item in _inventory)
                 {
+                    if (!_inventoryById.TryGetValue(item.ItemId, out var list))
+                    {
+                        list = new List<Item>();
+                        _inventoryById[item.ItemId] = list;
+                    }
+                    list.Add(item);
+
                     if (!_itemTotalQuantities.ContainsKey(item.ItemId))
                     {
                         _itemTotalQuantities[item.ItemId] = 0;
