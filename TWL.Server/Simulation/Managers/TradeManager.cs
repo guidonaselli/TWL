@@ -62,12 +62,7 @@ public class TradeManager
         }
 
         // 1. Locate Item(s)
-        var items = source.GetItems(itemId, policyFilter);
-        long available = 0;
-        foreach (var i in items)
-        {
-            available += i.Quantity;
-        }
+        long available = source.GetItemQuantity(itemId, policyFilter);
 
         if (available < quantity)
         {
@@ -77,6 +72,7 @@ public class TradeManager
         }
 
         // 2. Validate Bind Policy for candidates
+        var items = source.GetItems(itemId, policyFilter);
         var tradableItems = new List<Item>();
         long tradableQty = 0;
 
@@ -184,7 +180,8 @@ public class TradeManager
         if (p2ToP1Gold > 0 && p2.Gold < p2ToP1Gold) return false;
 
         // Verify P1 has items and they are tradable
-        foreach (var (itemId, qty) in p1ToP2Items)
+        var p1Aggregated = p1ToP2Items.GroupBy(x => x.ItemId).ToDictionary(g => g.Key, g => g.Sum(x => (long)x.Qty));
+        foreach (var (itemId, qty) in p1Aggregated)
         {
             var items = p1.GetItems(itemId);
             long tradableQty = items.Where(i => ValidateTransfer(i, p2.Id, p1.Id)).Sum(i => (long)i.Quantity);
@@ -192,7 +189,8 @@ public class TradeManager
         }
 
         // Verify P2 has items and they are tradable
-        foreach (var (itemId, qty) in p2ToP1Items)
+        var p2Aggregated = p2ToP1Items.GroupBy(x => x.ItemId).ToDictionary(g => g.Key, g => g.Sum(x => (long)x.Qty));
+        foreach (var (itemId, qty) in p2Aggregated)
         {
             var items = p2.GetItems(itemId);
             long tradableQty = items.Where(i => ValidateTransfer(i, p1.Id, p2.Id)).Sum(i => (long)i.Quantity);
